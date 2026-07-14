@@ -1,0 +1,167 @@
+// This is your Prisma schema file
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  admin
+  nodal_centre
+  teacher
+  student
+}
+
+model User {
+  id       String  @id @default(uuid())
+  name     String
+  email    String  @unique
+  password String
+  role     Role
+  isActive Boolean @default(true)
+
+  // Hierarchy: who created this user
+  createdById  String?
+  createdBy    User?   @relation("CreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  createdUsers User[]  @relation("CreatedBy")
+
+  // Which nodal centre this teacher/student belongs to
+  nodalCentreId String?
+  nodalCentre   User?   @relation("NodalCentre", fields: [nodalCentreId], references: [id], onDelete: SetNull)
+  centreMembers User[]  @relation("NodalCentre")
+
+  // Lab management relations
+  subjectsCreated    Subject[]    @relation("SubjectCreator")
+  labsCreated        Lab[]        @relation("LabCreator")
+  labsAsNodalCentre  Lab[]        @relation("LabNodalCentre")
+  experimentsCreated Experiment[] @relation("ExperimentCreator")
+
+  // Analytics relations
+  quizAttempts       QuizAttempt[]
+  experimentVisits   ExperimentVisit[]
+  feedbacks          Feedback[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+model Subject {
+  id          String  @id @default(uuid())
+  title       String
+  icon        String  @default("📚")
+  description String?
+  gradient    String  @default("from-blue-600 to-indigo-700")
+  isActive    Boolean @default(true)
+
+  createdById String
+  createdBy   User   @relation("SubjectCreator", fields: [createdById], references: [id])
+
+  labs Lab[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("subjects")
+}
+
+model Lab {
+  id          String  @id @default(uuid())
+  title       String
+  description String?
+  icon        String  @default("🔬")
+  isActive    Boolean @default(true)
+
+  subjectId String
+  subject   Subject @relation(fields: [subjectId], references: [id])
+
+  createdById String
+  createdBy   User   @relation("LabCreator", fields: [createdById], references: [id])
+
+  // Which nodal centre owns this lab (null = admin-created global lab)
+  nodalCentreId String?
+  nodalCentre   User?   @relation("LabNodalCentre", fields: [nodalCentreId], references: [id])
+
+  experiments Experiment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("labs")
+}
+
+model Experiment {
+  id          String  @id @default(uuid())
+  title       String
+  description String?
+  duration    String  @default("60 min")
+  difficulty  String  @default("Beginner")
+  isActive    Boolean @default(true)
+
+  // Paths to extracted zip content (relative to uploads/)
+  contentPath    String? // e.g. experiments/{id}/content
+  simulationPath String? // e.g. experiments/{id}/simulation
+
+  labId String
+  lab   Lab    @relation(fields: [labId], references: [id])
+
+  createdById String
+  createdBy   User   @relation("ExperimentCreator", fields: [createdById], references: [id])
+
+  // Analytics relations
+  quizAttempts     QuizAttempt[]
+  experimentVisits ExperimentVisit[]
+  feedbacks        Feedback[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("experiments")
+}
+
+model QuizAttempt {
+  id           String     @id @default(uuid())
+  userId       String
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  experimentId String
+  experiment   Experiment @relation(fields: [experimentId], references: [id], onDelete: Cascade)
+  quizType     String     // "pretest" or "posttest"
+  score        Int
+  maxScore     Int
+  passed       Boolean
+  createdAt    DateTime   @default(now())
+
+  @@map("quiz_attempts")
+}
+
+model ExperimentVisit {
+  id           String     @id @default(uuid())
+  userId       String
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  experimentId String
+  experiment   Experiment @relation(fields: [experimentId], references: [id], onDelete: Cascade)
+  duration     Int        @default(0) // seconds spent
+  device       String?    // mobile, tablet, desktop
+  browser      String?    // chrome, firefox, safari
+  createdAt    DateTime   @default(now())
+
+  @@map("experiment_visits")
+}
+
+model Feedback {
+  id           String     @id @default(uuid())
+  userId       String
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  experimentId String
+  experiment   Experiment @relation(fields: [experimentId], references: [id], onDelete: Cascade)
+  rating       Int        // 1 to 5 stars
+  comment      String?
+  createdAt    DateTime   @default(now())
+
+  @@map("feedbacks")
+}
