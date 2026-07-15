@@ -2,6 +2,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  output   = "../src/generated/client"
 }
 
 datasource db {
@@ -24,6 +25,29 @@ model User {
   role     Role
   isActive Boolean @default(true)
 
+  // Additional fields requested by user
+  username          String? @unique
+  mobile            String?
+  profilePic        String?
+  org               String?
+  dept              String?
+  course            String?
+  yearSemester      String?
+  country           String?
+  state             String?
+  city              String?
+  studentId         String?
+  batch             String?
+  section           String?
+  employeeId        String?
+  designation       String?
+  facultyDept       String?
+  facultyInst       String?
+  
+  // Password reset fields
+  resetToken        String?
+  resetTokenExpiry  DateTime?
+
   // Hierarchy: who created this user
   createdById  String?
   createdBy    User?   @relation("CreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
@@ -44,6 +68,12 @@ model User {
   quizAttempts       QuizAttempt[]
   experimentVisits   ExperimentVisit[]
   feedbacks          Feedback[]
+
+  // Communication relations
+  chatSent           ChatMessage[]          @relation("SentMessages")
+  chatReceived       ChatMessage[]          @relation("ReceivedMessages")
+  hostedCalls        ScheduledCall[]        @relation("HostedCalls")
+  inviteeRecords     ScheduledCallInvitee[] @relation("InviteeRecords")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -165,3 +195,74 @@ model Feedback {
 
   @@map("feedbacks")
 }
+
+model ChatMessage {
+  id         String   @id @default(uuid())
+  senderId   String
+  sender     User     @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  receiverId String
+  receiver   User     @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
+  content    String
+  createdAt  DateTime @default(now())
+
+  @@map("chat_messages")
+}
+
+model ScheduledCall {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  scheduledAt DateTime
+  duration    Int      // Duration in minutes (e.g. 30, 60)
+  hostId      String
+  host        User     @relation("HostedCalls", fields: [hostId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+
+  invitees ScheduledCallInvitee[]
+
+  @@map("scheduled_calls")
+}
+
+model ScheduledCallInvitee {
+  id              String        @id @default(uuid())
+  scheduledCallId String
+  scheduledCall   ScheduledCall @relation(fields: [scheduledCallId], references: [id], onDelete: Cascade)
+  userId          String
+  user            User          @relation("InviteeRecords", fields: [userId], references: [id], onDelete: Cascade)
+  status          String        @default("pending") // pending, accepted, declined
+  createdAt       DateTime      @default(now())
+
+  @@unique([scheduledCallId, userId])
+  @@map("scheduled_call_invitees")
+}
+
+// ── CMS: Page Content Management ─────────────────────────────
+
+model Page {
+  id        String        @id @default(uuid())
+  slug      String        @unique // e.g. "home", "project", "workshop"
+  title     String
+  sections  PageSection[]
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@map("pages")
+}
+
+model PageSection {
+  id         String   @id @default(uuid())
+  pageId     String
+  page       Page     @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  sectionKey String   // e.g. "hero", "news", "sponsors", "cta"
+  label      String   // Human-readable name shown in admin UI
+  title      String?
+  subtitle   String?
+  content    Json     @default("{}") // Flexible blob for section-specific data
+  isVisible  Boolean  @default(true)
+  order      Int      @default(0)
+  updatedAt  DateTime @updatedAt
+
+  @@unique([pageId, sectionKey])
+  @@map("page_sections")
+}
+

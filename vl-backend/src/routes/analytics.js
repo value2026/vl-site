@@ -8,12 +8,14 @@ const {
   getDashboardStats,
   getAcademicReport,
   getStudentDetailsReport,
+  getMyPerformance,
 } = require('../controllers/analyticsController');
 
 // Recording stats (public for student role)
-router.post('/visit',    verifyToken, recordVisit);
-router.post('/quiz',     verifyToken, recordQuizAttempt);
-router.post('/feedback', verifyToken, recordFeedback);
+router.post('/visit',          verifyToken, recordVisit);
+router.post('/quiz',           verifyToken, recordQuizAttempt);
+router.post('/feedback',       verifyToken, recordFeedback);
+router.get('/my-performance', verifyToken, getMyPerformance);
 
 // Viewing dashboard stats (staff only)
 router.get('/dashboard',        verifyToken, requireRole('admin', 'nodal_centre', 'teacher'), getDashboardStats);

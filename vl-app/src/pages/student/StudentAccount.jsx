@@ -1,14 +1,16 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { FlaskConical, BookOpen, Award, User, Mail, Calendar, Home, Loader2 } from 'lucide-react';
+import { FlaskConical, BookOpen, Award, User, Mail, Calendar, Home, Loader2, KeyRound } from 'lucide-react';
 import StudentNav from '../../components/student/StudentNav';
 import { useAuth } from '../../context/AuthContext';
 import { api } from '../../utils/api';
+import ChangePasswordModal from '../../components/ChangePasswordModal';
 
 export default function StudentAccount() {
   const { user } = useAuth();
   const [stats, setStats] = useState({ subjects: 0, labs: 0 });
   const [loading, setLoading] = useState(true);
+  const [changePwOpen, setChangePwOpen] = useState(false);
 
   useEffect(() => {
     const loadStats = async () => {
@@ -99,6 +101,22 @@ export default function StudentAccount() {
           </div>
         </div>
 
+        {/* Security / Password Change card */}
+        <div className="bg-white border border-gray-200 rounded-2xl p-6 mb-6">
+          <h2 className="text-gray-900 font-bold text-base mb-2 flex items-center gap-2">
+            <KeyRound className="w-4 h-4 text-gray-400" /> Security Settings
+          </h2>
+          <p className="text-gray-500 text-xs mb-4">
+            Keep your account secure by updating your password.
+          </p>
+          <button
+            onClick={() => setChangePwOpen(true)}
+            className="px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-xl transition-colors shadow-sm"
+          >
+            Change Password
+          </button>
+        </div>
+
         {/* Back to learning */}
         <div className="bg-blue-50 border border-blue-200 rounded-2xl p-5 flex items-center justify-between">
           <div>
@@ -113,6 +131,8 @@ export default function StudentAccount() {
           </Link>
         </div>
       </main>
+
+      <ChangePasswordModal isOpen={changePwOpen} onClose={() => setChangePwOpen(false)} />
     </div>
   );
 }

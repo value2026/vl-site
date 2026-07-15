@@ -1,9 +1,7 @@
-const { PrismaClient } = require('@prisma/client');
+const prisma = require('../db');
 const path = require('path');
 const fs   = require('fs');
 const { extractZip, uploadsPath, UPLOADS_DIR } = require('../middleware/upload');
-
-const prisma = new PrismaClient();
 
 // HTML section file names (returned as raw HTML)
 const HTML_SECTIONS = ['aim', 'theory', 'procedure'];

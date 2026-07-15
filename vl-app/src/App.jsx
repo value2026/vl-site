@@ -13,11 +13,14 @@ import NodalCentres  from './pages/NodalCentres';
 import Publications  from './pages/Publications';
 import Contact       from './pages/Contact';
 import Login         from './pages/Login';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword  from './pages/ResetPassword';
 
 // Dashboard pages (admin / nodal centre / teacher)
 import AdminDashboard       from './pages/dashboards/AdminDashboard';
 import NodalCentreDashboard from './pages/dashboards/NodalCentreDashboard';
 import TeacherDashboard     from './pages/dashboards/TeacherDashboard';
+import ManagePages          from './pages/dashboards/ManagePages';
 
 // Student learning platform
 import StudentHome    from './pages/student/StudentHome';
@@ -31,6 +34,7 @@ import DashboardLayout from './components/dashboard/DashboardLayout';
 import LabManagement    from './pages/dashboards/LabManagement';
 import AnalyticsDashboard from './pages/dashboards/AnalyticsDashboard';
 import StudentAcademicReports from './components/dashboard/StudentAcademicReports';
+import ChatPanel from './components/communication/ChatPanel';
 
 // Auth
 import { useAuth } from './context/AuthContext';
@@ -96,12 +100,14 @@ const DASHBOARD_PATHS = ['/dashboard', '/student'];
 function AppLayout() {
   const { pathname } = useLocation();
   const isDashboard  = DASHBOARD_PATHS.some((p) => pathname.startsWith(p));
-  const hideShell    = isDashboard || pathname === '/login';
+  const hideShell    = isDashboard || pathname === '/login' || pathname === '/forgot-password' || pathname === '/reset-password';
 
   if (hideShell) {
     return (
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
 
         {/* Admin */}
         <Route path="/dashboard/admin" element={
@@ -118,6 +124,11 @@ function AppLayout() {
         <Route path="/dashboard/admin/analytics" element={
           <ProtectedRoute allowedRole="admin">
             <DashboardLayout title="Usage Analytics"><AnalyticsDashboard /></DashboardLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/dashboard/admin/pages" element={
+          <ProtectedRoute allowedRole="admin">
+            <DashboardLayout title="Manage Pages"><ManagePages /></DashboardLayout>
           </ProtectedRoute>
         } />
 
@@ -217,6 +228,7 @@ function AppLayout() {
         </Routes>
       </div>
       <Footer />
+      <ChatPanel />
     </div>
   );
 }

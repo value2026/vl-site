@@ -1,8 +1,8 @@
+const crypto        = require('crypto');
 const bcrypt        = require('bcryptjs');
 const jwt           = require('jsonwebtoken');
-const { PrismaClient } = require('@prisma/client');
-
-const prisma = new PrismaClient();
+const prisma        = require('../db');
+const { sendPasswordResetEmail } = require('../utils/mailer');
 
 // POST /api/auth/login
 const login = async (req, res) => {
@@ -10,15 +10,23 @@ const login = async (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(400).json({ message: 'Email and password are required' });
+      return res.status(400).json({ message: 'Email/username and password are required' });
     }
 
-    const user = await prisma.user.findUnique({
-      where: { email: email.toLowerCase().trim() },
+    const cleanIdentifier = email.toLowerCase().trim();
+
+    // Find user by either email or username (case-insensitive for username)
+    const user = await prisma.user.findFirst({
+      where: {
+        OR: [
+          { email: cleanIdentifier },
+          { username: { equals: cleanIdentifier, mode: 'insensitive' } }
+        ]
+      }
     });
 
     if (!user) {
-      return res.status(401).json({ message: 'Invalid email or password' });
+      return res.status(401).json({ message: 'Invalid email/username or password' });
     }
 
     if (!user.isActive) {
@@ -29,7 +37,7 @@ const login = async (req, res) => {
 
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) {
-      return res.status(401).json({ message: 'Invalid email or password' });
+      return res.status(401).json({ message: 'Invalid email/username or password' });
     }
 
     const token = jwt.sign(
@@ -86,4 +94,126 @@ const getMe = async (req, res) => {
   }
 };
 
-module.exports = { login, getMe };
+// POST /api/auth/forgot-password
+const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ message: 'Email address is required' });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email: email.toLowerCase().trim() }
+    });
+
+    // For security reasons, do not explicitly reveal if email is not found
+    if (!user) {
+      return res.json({ message: 'If this email is registered, a password reset link has been sent.' });
+    }
+
+    // Generate token
+    const token = crypto.randomBytes(32).toString('hex');
+    const expiry = new Date(Date.now() + 60 * 60 * 1000); // 1 hour expiry
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        resetToken: token,
+        resetTokenExpiry: expiry
+      }
+    });
+
+    // Send email
+    await sendPasswordResetEmail(user, token);
+
+    res.json({ message: 'If this email is registered, a password reset link has been sent.' });
+  } catch (err) {
+    console.error('ForgotPassword error:', err);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+// POST /api/auth/reset-password
+const resetPassword = async (req, res) => {
+  try {
+    const { token, newPassword } = req.body;
+
+    if (!token || !newPassword) {
+      return res.status(400).json({ message: 'Token and new password are required' });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({ message: 'Password must be at least 6 characters long' });
+    }
+
+    const user = await prisma.user.findFirst({
+      where: {
+        resetToken: token,
+        resetTokenExpiry: { gte: new Date() }
+      }
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid or expired password reset token' });
+    }
+
+    const hashed = await bcrypt.hash(newPassword, 12);
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        password: hashed,
+        resetToken: null,
+        resetTokenExpiry: null
+      }
+    });
+
+    res.json({ message: 'Password has been reset successfully' });
+  } catch (err) {
+    console.error('ResetPassword error:', err);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+// PUT /api/auth/change-password
+const changePassword = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ message: 'Current password and new password are required' });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({ message: 'New password must be at least 6 characters long' });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId }
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const match = await bcrypt.compare(currentPassword, user.password);
+    if (!match) {
+      return res.status(400).json({ message: 'Current password is incorrect' });
+    }
+
+    const hashed = await bcrypt.hash(newPassword, 12);
+
+    await prisma.user.update({
+      where: { id: userId },
+      data: { password: hashed }
+    });
+
+    res.json({ message: 'Password updated successfully' });
+  } catch (err) {
+    console.error('ChangePassword error:', err);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+module.exports = { login, getMe, forgotPassword, resetPassword, changePassword };

@@ -3,19 +3,45 @@ const express = require('express');
 const cors    = require('cors');
 const path    = require('path');
 
+const http    = require('http');
+const { initSocket } = require('./socket');
+
 const authRoutes        = require('./routes/auth');
 const userRoutes        = require('./routes/users');
 const subjectRoutes     = require('./routes/subjects');
 const labRoutes         = require('./routes/labs');
 const experimentRoutes  = require('./routes/experiments');
 const analyticsRoutes   = require('./routes/analytics');
+const callRoutes        = require('./routes/calls');
+const pagesRoutes       = require('./routes/pages');
 
 const app  = express();
 const PORT = process.env.PORT || 5000;
 
+// Create HTTP Server
+const server = http.createServer(app);
+initSocket(server);
+
 // ── Middleware ────────────────────────────────────────────────
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+  process.env.FRONTEND_URL
+].filter(Boolean);
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+    if (
+      allowedOrigins.indexOf(origin) !== -1 ||
+      origin.startsWith('http://localhost:') ||
+      origin.startsWith('http://127.0.0.1:')
+    ) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
 }));
 app.use(express.json());
@@ -38,6 +64,8 @@ app.use('/api/subjects',    subjectRoutes);
 app.use('/api/labs',        labRoutes);
 app.use('/api/experiments', experimentRoutes);
 app.use('/api/analytics',   analyticsRoutes);
+app.use('/api/calls',       callRoutes);
+app.use('/api/pages',       pagesRoutes);
 
 // Health check
 app.get('/api/health', (_req, res) => {
@@ -56,7 +84,7 @@ app.use((err, _req, res, _next) => {
 });
 
 // ── Start ─────────────────────────────────────────────────────
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`\n🚀 Virtual Labs API running at http://localhost:${PORT}`);
   console.log(`   Health: http://localhost:${PORT}/api/health\n`);
 });

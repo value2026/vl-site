@@ -1,20 +1,67 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight, Calendar } from 'lucide-react';
-import { news, categoryColors } from '../data/news';
 
-export default function NewsSection() {
+const DEFAULT_ITEMS = [
+  {
+    id: '1',
+    title: 'Virtual Labs Reaches 5 Million Students Milestone',
+    excerpt: 'The platform celebrates a major milestone as student registrations surpass 5 million across India, marking significant growth in digital education adoption.',
+    date: 'June 28, 2025',
+    category: 'Milestone',
+    href: '/news/5-million-milestone',
+  },
+  {
+    id: '2',
+    title: 'New Physics Lab Collaboration with IIT Madras',
+    excerpt: 'A groundbreaking partnership brings 24 new quantum mechanics experiments to the platform.',
+    date: 'June 15, 2025',
+    category: 'Partnership',
+    href: '/news/iit-madras-physics',
+  },
+  {
+    id: '3',
+    title: 'Annual Workshop on Virtual Lab Integration',
+    excerpt: '300+ educators participate in the annual workshop on integrating virtual labs into curricula.',
+    date: 'June 3, 2025',
+    category: 'Workshop',
+    href: '/news/annual-workshop-2025',
+  },
+  {
+    id: '4',
+    title: 'Mobile App Beta Launch for Android',
+    excerpt: 'Virtual Labs launches its first mobile application, bringing experiments to smartphones.',
+    date: 'May 20, 2025',
+    category: 'Technology',
+    href: '/news/mobile-app-beta',
+  },
+];
+
+const CATEGORY_COLORS = {
+  Milestone:   'bg-purple-100 text-purple-700',
+  Partnership: 'bg-blue-100 text-blue-700',
+  Workshop:    'bg-amber-100 text-amber-700',
+  Technology:  'bg-green-100 text-green-700',
+  Announcement:'bg-red-100 text-red-700',
+};
+
+export default function NewsSection({ sectionTitle, sectionSubtitle, content = {} }) {
+  const items      = content.items?.length ? content.items : DEFAULT_ITEMS;
+  const heading    = sectionTitle || 'News & Events';
+  const tag        = content.sectionTag || 'Latest Updates';
+  const viewAllHref = content.viewAllHref || '/news';
+
   return (
     <section className="py-24 bg-gray-50" aria-labelledby="news-heading">
       <div className="container-custom">
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-12">
           <div>
-            <span className="tag">Latest Updates</span>
+            <span className="tag">{tag}</span>
             <h2 id="news-heading" className="section-title mt-4 mb-0">
-              News & Events
+              {heading}
             </h2>
           </div>
           <Link
-            to="/news"
+            to={viewAllHref}
             className="inline-flex items-center gap-2 text-primary-800 font-semibold hover:underline text-sm whitespace-nowrap"
           >
             View All News
@@ -26,39 +73,61 @@ export default function NewsSection() {
           {/* Featured news — first item larger */}
           <div className="lg:col-span-2">
             <Link
-              to={news[0].href}
-              className="card group block h-full p-8 bg-gradient-to-br from-primary-50 to-white border border-primary-100 hover:border-transparent"
+              to={items[0].href}
+              className="card group block h-full overflow-hidden border border-primary-100 hover:border-transparent bg-gradient-to-br from-primary-50 to-white"
             >
-              <div className="flex items-center gap-3 mb-5">
-                <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${categoryColors[news[0].category]}`}>
-                  {news[0].category}
-                </span>
-                <span className="flex items-center gap-1.5 text-xs text-gray-400">
-                  <Calendar className="w-3.5 h-3.5" />
-                  {news[0].date}
-                </span>
+              <div className="grid md:grid-cols-5 h-full">
+                {items[0].imageUrl && (
+                  <div className="md:col-span-2 relative h-56 md:h-full overflow-hidden">
+                    <img 
+                      src={items[0].imageUrl} 
+                      alt={items[0].title} 
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  </div>
+                )}
+                <div className={`p-8 flex flex-col justify-center ${items[0].imageUrl ? 'md:col-span-3' : 'md:col-span-5'}`}>
+                  <div className="flex items-center gap-3 mb-5">
+                    <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${CATEGORY_COLORS[items[0].category] || 'bg-gray-100 text-gray-700'}`}>
+                      {items[0].category}
+                    </span>
+                    <span className="flex items-center gap-1.5 text-xs text-gray-400">
+                      <Calendar className="w-3.5 h-3.5" />
+                      {items[0].date}
+                    </span>
+                  </div>
+                  <h3 className="font-heading text-2xl font-bold text-gray-900 mb-4 group-hover:text-primary-800 transition-colors leading-snug">
+                    {items[0].title}
+                  </h3>
+                  <p className="text-gray-500 leading-relaxed mb-6">{items[0].excerpt}</p>
+                  <span className="inline-flex items-center gap-2 text-sm font-semibold text-primary-800">
+                    Read More <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  </span>
+                </div>
               </div>
-              <h3 className="font-heading text-2xl font-bold text-gray-900 mb-4 group-hover:text-primary-800 transition-colors leading-snug">
-                {news[0].title}
-              </h3>
-              <p className="text-gray-500 leading-relaxed mb-6">{news[0].excerpt}</p>
-              <span className="inline-flex items-center gap-2 text-sm font-semibold text-primary-800">
-                Read More <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </span>
             </Link>
           </div>
 
           {/* Remaining news — stacked */}
           <div className="flex flex-col gap-4">
-            {news.slice(1, 4).map((item) => (
+            {items.slice(1, 4).map((item) => (
               <Link
                 key={item.id}
                 to={item.href}
-                className="card group flex gap-4 p-5 border border-gray-100 hover:border-transparent"
+                className="card group flex gap-4 p-5 border border-gray-100 hover:border-transparent overflow-hidden"
               >
+                {item.imageUrl && (
+                  <div className="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0 relative">
+                    <img 
+                      src={item.imageUrl} 
+                      alt={item.title} 
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  </div>
+                )}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-2">
-                    <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${categoryColors[item.category]}`}>
+                    <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${CATEGORY_COLORS[item.category] || 'bg-gray-100 text-gray-700'}`}>
                       {item.category}
                     </span>
                   </div>

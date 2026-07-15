@@ -2,9 +2,10 @@ import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   FlaskConical, LayoutDashboard, Users, GraduationCap, BookOpen,
-  LogOut, Menu, X, ChevronRight, Bell, TrendingUp, FileText
+  LogOut, Menu, X, ChevronRight, Bell, TrendingUp, FileText, Globe, KeyRound
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import ChangePasswordModal from '../ChangePasswordModal';
 
 const NAV = {
   admin: [
@@ -12,6 +13,7 @@ const NAV = {
     { icon: Users,           label: 'User Management', path: '/dashboard/admin/users' },
     { icon: FlaskConical,    label: 'Lab Management',  path: '/dashboard/admin/labs' },
     { icon: TrendingUp,      label: 'Usage Analytics',  path: '/dashboard/admin/analytics' },
+    { icon: Globe,           label: 'Manage Pages',    path: '/dashboard/admin/pages' },
   ],
   nodal_centre: [
     { icon: LayoutDashboard, label: 'Overview',  path: '/dashboard/nodal' },
@@ -45,6 +47,7 @@ export default function DashboardLayout({ children, title }) {
   const navigate         = useNavigate();
   const location         = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [changePwOpen, setChangePwOpen] = useState(false);
 
   const cfg     = ROLE_CONFIG[user?.role] || ROLE_CONFIG.student;
   const navItems = NAV[user?.role] || [];
@@ -76,7 +79,13 @@ export default function DashboardLayout({ children, title }) {
           {cfg.label}
         </div>
         <div className="text-white font-semibold text-sm truncate">{user?.name}</div>
-        <div className="text-slate-400 text-xs truncate">{user?.email}</div>
+        <div className="text-slate-400 text-xs truncate mb-2">{user?.email}</div>
+        <button
+          onClick={() => setChangePwOpen(true)}
+          className="w-full flex items-center justify-center gap-1.5 px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-[10px] font-bold text-slate-350 hover:text-white uppercase tracking-wider transition-all"
+        >
+          <KeyRound className="w-3 h-3" /> Change Password
+        </button>
       </div>
 
       {/* Nav */}
@@ -162,6 +171,8 @@ export default function DashboardLayout({ children, title }) {
           {children}
         </main>
       </div>
+
+      <ChangePasswordModal isOpen={changePwOpen} onClose={() => setChangePwOpen(false)} />
     </div>
   );
 }

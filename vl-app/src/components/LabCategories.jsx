@@ -2,18 +2,20 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, FlaskConical } from 'lucide-react';
 import { labs } from '../data/labs';
 
-export default function LabCategories() {
+export default function LabCategories({ sectionTitle, sectionSubtitle, content = {} }) {
+  const heading  = sectionTitle || 'Explore Virtual Lab Categories';
+  const subtitle = sectionSubtitle || 'From biotechnology to mechanical engineering — we cover every core STEM discipline.';
+  const tag      = content.sectionTag || 'Disciplines';
+
   return (
     <section className="py-24 bg-white" aria-labelledby="labs-heading">
       <div className="container-custom">
         <div className="text-center mb-16">
-          <span className="tag">Disciplines</span>
+          <span className="tag">{tag}</span>
           <h2 id="labs-heading" className="section-title mt-4">
-            Explore Virtual Lab Categories
+            {heading}
           </h2>
-          <p className="section-subtitle">
-            From biotechnology to mechanical engineering — we cover every core STEM discipline.
-          </p>
+          <p className="section-subtitle">{subtitle}</p>
         </div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">

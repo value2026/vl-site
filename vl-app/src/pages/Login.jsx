@@ -32,7 +32,7 @@ export default function Login() {
     e.preventDefault();
     setError('');
     if (!form.email || !form.password) {
-      setError('Please enter your email and password.');
+      setError('Please enter your email/username and password.');
       return;
     }
 
@@ -100,19 +100,19 @@ export default function Login() {
           )}
 
           <form onSubmit={handleSubmit} noValidate>
-            {/* Email */}
+            {/* Email / Username */}
             <div className="mb-4">
               <label htmlFor="login-email" className="block text-sm font-medium text-slate-300 mb-1.5">
-                Email Address
+                Email or Username
               </label>
               <input
                 id="login-email"
                 name="email"
-                type="email"
-                autoComplete="email"
+                type="text"
+                autoComplete="username"
                 value={form.email}
                 onChange={handleChange}
-                placeholder="you@institution.edu"
+                placeholder="you@institution.edu or username"
                 className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
               />
             </div>
@@ -123,9 +123,9 @@ export default function Login() {
                 <label htmlFor="login-password" className="text-sm font-medium text-slate-300">
                   Password
                 </label>
-                <a href="#" className="text-xs text-blue-400 hover:text-blue-300 hover:underline">
+                <Link to="/forgot-password" className="text-xs text-blue-400 hover:text-blue-300 hover:underline">
                   Forgot password?
-                </a>
+                </Link>
               </div>
               <div className="relative">
                 <input

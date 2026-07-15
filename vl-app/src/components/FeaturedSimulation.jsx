@@ -2,10 +2,21 @@ import { Link } from 'react-router-dom';
 import {
   ArrowRight, Clock, BarChart2, BookOpen, Building2, Layers
 } from 'lucide-react';
-import { featuredSimulation } from '../data/simulations';
 
-export default function FeaturedSimulation() {
-  const sim = featuredSimulation;
+const DEFAULTS = {
+  tag: 'Physics',
+  category: 'Mechanics',
+  title: 'Simple Pendulum Simulation',
+  description: 'Explore the physics of oscillatory motion with our interactive pendulum simulation. Adjust parameters like length, mass, and gravity to observe real-time changes.',
+  institution: 'IIT Bombay',
+  duration: '45 min',
+  difficulty: 'Intermediate',
+  experiments: 12,
+  href: '/simulations/pendulum',
+};
+
+export default function FeaturedSimulation({ content = {} }) {
+  const sim = { ...DEFAULTS, ...content };
 
   return (
     <section className="py-24 bg-white" aria-labelledby="featured-sim-heading">
@@ -55,39 +66,42 @@ export default function FeaturedSimulation() {
 
             {/* Right — visual */}
             <div className="relative bg-hero-gradient p-10 lg:p-14 flex flex-col items-center justify-center min-h-72 lg:min-h-auto">
-              {/* Decorative physics animation */}
-              <div className="relative w-full max-w-sm mx-auto">
-                {/* Pendulum visual */}
-                <div className="flex flex-col items-center">
-                  <div className="w-1 h-32 bg-white/30 mx-auto rounded-full relative">
-                    <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-12 h-12 bg-secondary-400 rounded-full shadow-lg flex items-center justify-center">
-                      <span className="text-gray-900 font-bold text-xs">m</span>
+              {sim.imageUrl ? (
+                <img src={sim.imageUrl} alt={sim.title} className="w-full max-w-sm mx-auto rounded-2xl object-cover" />
+              ) : (
+                <div className="relative w-full max-w-sm mx-auto">
+                  {/* Pendulum visual */}
+                  <div className="flex flex-col items-center">
+                    <div className="w-1 h-32 bg-white/30 mx-auto rounded-full relative">
+                      <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-12 h-12 bg-secondary-400 rounded-full shadow-lg flex items-center justify-center">
+                        <span className="text-gray-900 font-bold text-xs">m</span>
+                      </div>
+                    </div>
+                    <div className="mt-10 grid grid-cols-3 gap-4 w-full">
+                      {['F = ma', 'p = mv', 'W = Fd'].map((formula) => (
+                        <div key={formula} className="glass rounded-xl p-3 text-center">
+                          <span className="text-white font-mono text-sm font-bold">{formula}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="mt-6 flex gap-3">
+                      {[1, 2, 3].map((i) => (
+                        <div
+                          key={i}
+                          className="w-3 h-3 bg-secondary-400 rounded-full animate-pulse"
+                          style={{ animationDelay: `${i * 0.3}s` }}
+                        />
+                      ))}
                     </div>
                   </div>
-                  <div className="mt-10 grid grid-cols-3 gap-4 w-full">
-                    {['F = ma', 'p = mv', 'W = Fd'].map((formula) => (
-                      <div key={formula} className="glass rounded-xl p-3 text-center">
-                        <span className="text-white font-mono text-sm font-bold">{formula}</span>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="mt-6 flex gap-3">
-                    {[1, 2, 3].map((i) => (
-                      <div
-                        key={i}
-                        className="w-3 h-3 bg-secondary-400 rounded-full animate-pulse"
-                        style={{ animationDelay: `${i * 0.3}s` }}
-                      />
-                    ))}
+                  <div className="absolute top-2 right-2 glass rounded-xl px-3 py-2">
+                    <div className="flex items-center gap-2">
+                      <BookOpen className="w-4 h-4 text-secondary-400" />
+                      <span className="text-white text-xs font-medium">{sim.institution}</span>
+                    </div>
                   </div>
                 </div>
-                <div className="absolute top-2 right-2 glass rounded-xl px-3 py-2">
-                  <div className="flex items-center gap-2">
-                    <BookOpen className="w-4 h-4 text-secondary-400" />
-                    <span className="text-white text-xs font-medium">IIT Bombay</span>
-                  </div>
-                </div>
-              </div>
+              )}
             </div>
           </div>
         </div>

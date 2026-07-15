@@ -1,5 +1,4 @@
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const prisma = require('../db');
 
 // ── RECORD STUDENT INTERACTIONS ────────────────────────────────
 
@@ -395,6 +394,81 @@ const getStudentDetailsReport = async (req, res) => {
   }
 };
 
+const getMyPerformance = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    // Fetch user visits, quizzes, feedbacks, and total active experiments
+    const [visits, quizzes, feedbacks, totalActiveExps] = await Promise.all([
+      prisma.experimentVisit.findMany({
+        where: { userId },
+        include: { experiment: { select: { id: true, title: true, duration: true, difficulty: true, labId: true } } },
+        orderBy: { createdAt: 'desc' },
+      }),
+      prisma.quizAttempt.findMany({
+        where: { userId },
+        select: { experimentId: true, score: true, maxScore: true, passed: true }
+      }),
+      prisma.feedback.count({ where: { userId } }),
+      prisma.experiment.count({ where: { isActive: true } })
+    ]);
+
+    // Calculate unique experiments visited
+    const visitedExpIds = new Set(visits.map(v => v.experimentId));
+    const uniqueVisitedCount = visitedExpIds.size;
+
+    // Completion Rate (visited vs total active exps)
+    const completionRate = totalActiveExps > 0 ? Math.round((uniqueVisitedCount / totalActiveExps) * 100) : 0;
+
+    // Total time spent (sum of durations in seconds, converted to minutes)
+    const totalTimeSeconds = visits.reduce((sum, v) => sum + (v.duration || 0), 0);
+    const totalTimeMinutes = Math.round(totalTimeSeconds / 60);
+
+    // Quiz calculations
+    const totalQuizzes = quizzes.length;
+    const passedQuizzes = quizzes.filter(q => q.passed).length;
+    const quizPassRate = totalQuizzes > 0 ? Math.round((passedQuizzes / totalQuizzes) * 100) : 0;
+    const averageScore = totalQuizzes > 0
+      ? Math.round((quizzes.reduce((sum, q) => sum + (q.score / q.maxScore), 0) / totalQuizzes) * 100)
+      : 0;
+
+    // Get unique list of recently visited experiments (max 3) for the "Resume" card
+    const uniqueRecentVisits = [];
+    const seenRecent = new Set();
+    for (const visit of visits) {
+      if (!visit.experiment) continue;
+      if (!seenRecent.has(visit.experimentId)) {
+        seenRecent.add(visit.experimentId);
+        uniqueRecentVisits.push({
+          id: visit.experiment.id,
+          title: visit.experiment.title,
+          duration: visit.experiment.duration,
+          difficulty: visit.experiment.difficulty,
+          visitedAt: visit.createdAt
+        });
+      }
+      if (uniqueRecentVisits.length >= 3) break;
+    }
+
+    res.json({
+      analytics: {
+        uniqueVisitedCount,
+        totalActiveExps,
+        completionRate,
+        totalTimeMinutes,
+        quizAttemptsCount: totalQuizzes,
+        quizPassRate,
+        averageQuizScore: averageScore,
+        feedbacksSubmitted: feedbacks,
+      },
+      resumeExperiments: uniqueRecentVisits
+    });
+  } catch (err) {
+    console.error('getMyPerformance error:', err);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
 module.exports = {
   recordVisit,
   recordQuizAttempt,
@@ -402,4 +476,5 @@ module.exports = {
   getDashboardStats,
   getAcademicReport,
   getStudentDetailsReport,
+  getMyPerformance,
 };

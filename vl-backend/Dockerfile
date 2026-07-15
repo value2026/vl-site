@@ -1,28 +1,30 @@
 # ============================================================
-# Backend Dockerfile — Node.js 20 (Alpine)
+# Backend Dockerfile — Production (Node.js 20 Alpine)
 # ============================================================
 
-FROM node:20-alpine
+FROM node:20-alpine AS base
 
-# Install openssl for Prisma
-RUN apk add --no-cache openssl
+# Install system deps needed by Prisma
+RUN apk add --no-cache openssl libc6-compat
 
 WORKDIR /app
 
-# Copy dependency files first (layer caching)
+# ── Install dependencies ──────────────────────────────────────
 COPY package*.json ./
 COPY prisma ./prisma/
 
-# Install dependencies
-RUN npm ci
+RUN npm ci --omit=dev
 
-# Generate Prisma client
+# Generate Prisma Client
 RUN npx prisma generate
 
-# Copy source
-COPY . .
+# ── Copy source ───────────────────────────────────────────────
+COPY src ./src/
+
+# Create uploads directory
+RUN mkdir -p uploads
 
 EXPOSE 5000
 
-# Run migrations + seed + start server
+# Run DB migrations + seed + start
 CMD ["sh", "-c", "npx prisma migrate deploy && node prisma/seed.js && node src/server.js"]

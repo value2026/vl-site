@@ -1,140 +1,335 @@
-import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, FlaskConical, Loader2 } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { 
+  ArrowRight, FlaskConical, Loader2, History, Play, 
+  TrendingUp, Clock, Award, CheckCircle, Sparkles, BookOpen
+} from 'lucide-react';
 import StudentNav from '../../components/student/StudentNav';
 import { useAuth } from '../../context/AuthContext';
 import { api } from '../../utils/api';
 
+// ── Stat Card Component (Used inside the sidebar) ─────────────
+function PerformanceCard({ icon: Icon, iconColor, label, value, subText, badgeText }) {
+  return (
+    <div className="relative bg-white border border-slate-100 rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-slate-200 transition-all duration-300 overflow-hidden group">
+      {/* Background soft glow decoration */}
+      <div className="absolute -right-4 -top-4 w-16 h-16 bg-slate-50 rounded-full group-hover:scale-150 transition-transform duration-500" />
+      
+      <div className="relative z-10 flex items-start justify-between">
+        <div className={`w-11 h-11 rounded-xl flex items-center justify-center ${iconColor}`}>
+          <Icon className="w-5 h-5" />
+        </div>
+        {badgeText && (
+          <span className="text-[10px] font-bold bg-slate-100 text-slate-600 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+            {badgeText}
+          </span>
+        )}
+      </div>
+
+      <div className="mt-4 relative z-10">
+        <div className="text-2xl font-extrabold text-slate-900 tracking-tight">{value}</div>
+        <div className="text-xs font-semibold text-slate-500 mt-1">{label}</div>
+        <p className="text-[10px] text-slate-400 mt-1.5 leading-relaxed">{subText}</p>
+      </div>
+    </div>
+  );
+}
+
 export default function StudentHome() {
   const { user } = useAuth();
-  const [subjects, setSubjects] = useState([]);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const load = async () => {
-      try {
-        const res = await api.get('/subjects');
-        if (res.ok) {
-          setSubjects(await res.json());
-        }
-      } catch (err) {
-        console.error('Failed to load subjects', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    load();
-  }, []);
+  // 1. Fetch Subjects list
+  const { data: subjects = [], isLoading: subjectsLoading } = useQuery({
+    queryKey: ['student-subjects'],
+    queryFn: () => api.get('/subjects').then(r => r.json()),
+  });
+
+  // 2. Fetch student performance/activities
+  const { data: perfData, isLoading: perfLoading } = useQuery({
+    queryKey: ['student-performance'],
+    queryFn: () => api.get('/analytics/my-performance').then(r => r.json()),
+  });
 
   const totalLabs = subjects.reduce((sum, s) => sum + (s._count?.labs || 0), 0);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-slate-50/50">
       <StudentNav />
 
-      <main className="pt-14">
-        {/* Hero / Welcome */}
-        <div className="bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 px-6 py-12 relative overflow-hidden">
-          {/* Orbs */}
-          <div className="absolute -top-20 -right-20 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-20 -left-20 w-72 h-72 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+      {/* Main Container — Full page layout */}
+      <main className="pt-14 pb-12 px-4 sm:px-6 lg:px-8 xl:px-12 w-full max-w-[1600px] mx-auto">
+        
+        {/* Dynamic Curved Hero Banner */}
+        <div className="mt-6 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-950 rounded-3xl p-8 md:p-12 relative overflow-hidden shadow-lg shadow-indigo-950/20">
+          {/* Animated decorative orbs */}
+          <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-blue-600/10 rounded-full blur-3xl pointer-events-none translate-x-1/3 -translate-y-1/3" />
+          <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-indigo-500/10 rounded-full blur-3xl pointer-events-none -translate-x-1/4 translate-y-1/4" />
 
-          <div className="max-w-5xl mx-auto relative z-10">
-            <div className="flex items-start gap-5">
-              <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-green-600 rounded-2xl flex items-center justify-center text-3xl shadow-xl flex-shrink-0">
-                🎓
+          <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-8">
+            <div className="flex items-start gap-6 max-w-2xl">
+              <div className="w-16 h-16 bg-white/10 backdrop-blur border border-white/20 rounded-2xl flex items-center justify-center text-3xl shadow-xl flex-shrink-0 animate-pulse">
+                🔬
               </div>
               <div>
-                <h1 className="text-white text-3xl font-bold mb-1">
+                <div className="inline-flex items-center gap-1.5 bg-indigo-500/20 backdrop-blur border border-indigo-400/30 text-indigo-300 text-xs font-bold px-3 py-1 rounded-full mb-3">
+                  <Sparkles className="w-3.5 h-3.5" /> Virtual Learning Workspace
+                </div>
+                <h1 className="text-white text-3xl md:text-4xl font-extrabold mb-2 tracking-tight">
                   Welcome back, {user?.name?.split(' ')[0]}!
                 </h1>
-                <p className="text-slate-400 text-base">
-                  Your virtual laboratory is ready. Choose a subject to start exploring.
+                <p className="text-slate-300 text-sm md:text-base leading-relaxed">
+                  Your personalized dashboard tracking active labs, completion records, and simulation analytics. Get started or continue your saved experiments.
                 </p>
-                <div className="flex flex-wrap items-center gap-3 mt-4">
-                  <span className="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur text-white text-xs font-medium px-3 py-1.5 rounded-full border border-white/20">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> Active Student
-                  </span>
-                  <span className="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur text-slate-300 text-xs font-medium px-3 py-1.5 rounded-full border border-white/20">
-                    <FlaskConical className="w-3.5 h-3.5" /> {subjects.length} Subjects · {totalLabs} Labs Available
-                  </span>
-                </div>
+              </div>
+            </div>
+
+            {/* Quick stats board in hero */}
+            <div className="flex flex-wrap md:flex-nowrap gap-4 flex-shrink-0">
+              <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-5 text-center min-w-[120px] flex-1 md:flex-initial">
+                <div className="text-white text-3xl font-extrabold">{subjects.length}</div>
+                <div className="text-slate-400 text-xs mt-1">Subjects</div>
+              </div>
+              <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-5 text-center min-w-[120px] flex-1 md:flex-initial">
+                <div className="text-white text-3xl font-extrabold">{totalLabs}</div>
+                <div className="text-slate-400 text-xs mt-1">Labs</div>
+              </div>
+              <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-5 text-center min-w-[120px] flex-1 md:flex-initial">
+                <div className="text-emerald-400 text-3xl font-extrabold">{perfData?.analytics?.completionRate || 0}%</div>
+                <div className="text-slate-400 text-xs mt-1">Completion</div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Subject grid */}
-        <div className="max-w-5xl mx-auto px-6 py-10">
-          <h2 className="text-gray-900 font-bold text-xl mb-1">Choose a Subject Area</h2>
-          <p className="text-gray-500 text-sm mb-7">Select a broad area to explore labs and experiments</p>
+        {/* 2-Column Responsive Workspace Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 mt-8 items-start">
+          
+          {/* LEFT 3-COLUMNS AREA (Active Workspace, Resume and Subjects) */}
+          <div className="lg:col-span-3 space-y-8">
+            
+            {/* Resume Experiments List */}
+            {!perfLoading && perfData?.resumeExperiments?.length > 0 && (
+              <div className="bg-white border border-slate-100 rounded-3xl p-6 md:p-8 shadow-sm">
+                <div className="flex items-center justify-between mb-5">
+                  <div>
+                    <h2 className="text-slate-900 font-extrabold text-lg flex items-center gap-2">
+                      <History className="w-5 h-5 text-indigo-600" />
+                      Resume Experiments
+                    </h2>
+                    <p className="text-slate-500 text-xs mt-0.5">Pick up exactly where you left off on your latest simulations</p>
+                  </div>
+                  <span className="text-xs font-semibold text-slate-400 bg-slate-50 px-3 py-1 rounded-full border border-slate-100">
+                    {perfData.resumeExperiments.length} Pending
+                  </span>
+                </div>
 
-          {loading ? (
-            <div className="flex justify-center py-20 text-gray-400">
-              <Loader2 className="w-8 h-8 animate-spin" />
-            </div>
-          ) : subjects.length === 0 ? (
-            <div className="text-center py-20 bg-white border border-gray-200 rounded-2xl p-8">
-              <div className="text-5xl mb-4">📚</div>
-              <h3 className="text-gray-900 font-bold text-lg mb-1">No subjects available</h3>
-              <p className="text-gray-500 text-sm">Please check back later or contact your administrator.</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              {subjects.map((subject) => {
-                const labCount = subject._count?.labs || 0;
-                return (
-                  <Link
-                    key={subject.id}
-                    to={`/student/subject/${subject.id}`}
-                    className="group relative bg-white border border-gray-200 rounded-2xl overflow-hidden hover:border-blue-300 hover:shadow-lg transition-all duration-300 flex flex-col"
-                  >
-                    {/* Gradient header strip */}
-                    <div className={`h-2 bg-gradient-to-r ${subject.gradient}`} />
-
-                    <div className="p-6 flex-1 flex flex-col">
-                      {/* Icon + title */}
-                      <div className="flex items-start gap-4 mb-4">
-                        <div className={`w-14 h-14 bg-gradient-to-br ${subject.gradient} rounded-2xl flex items-center justify-center text-2xl shadow-md flex-shrink-0`}>
-                          {subject.icon}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {perfData.resumeExperiments.map((exp) => (
+                    <div 
+                      key={exp.id}
+                      className="group flex flex-col justify-between p-5 bg-slate-50/50 border border-slate-100 hover:border-indigo-200 hover:bg-white rounded-2xl hover:shadow-md transition-all duration-300"
+                    >
+                      <div className="flex items-start gap-4">
+                        <div className="w-12 h-12 bg-indigo-50 border border-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center text-xl flex-shrink-0 font-bold shadow-sm">
+                          🔬
                         </div>
                         <div className="min-w-0">
-                          <h3 className="text-gray-900 font-bold text-base leading-tight truncate">{subject.title}</h3>
-                          <div className="mt-1.5 inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100">
-                            {labCount} Labs
+                          <h3 className="text-slate-900 font-bold text-sm leading-snug group-hover:text-indigo-600 transition-colors truncate">
+                            {exp.title}
+                          </h3>
+                          <div className="flex items-center gap-2 mt-1.5 text-[11px] font-semibold text-slate-400">
+                            <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" />{exp.duration}</span>
+                            <span>•</span>
+                            <span className="bg-slate-200/60 text-slate-600 px-2 py-0.5 rounded text-[9px] font-bold uppercase">{exp.difficulty}</span>
                           </div>
                         </div>
                       </div>
 
-                      <p className="text-gray-500 text-sm leading-relaxed flex-1 line-clamp-3">{subject.description}</p>
+                      <div className="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between">
+                        <span className="text-[10px] text-slate-400">Last visited recently</span>
+                        <Link
+                          to={`/student/experiment/${exp.id}`}
+                          className="flex items-center gap-1.5 text-xs font-bold bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors shadow-sm"
+                        >
+                          Resume <Play className="w-3.5 h-3.5 fill-current" />
+                        </Link>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
-                      {/* Footer */}
-                      <div className="flex items-center justify-between mt-5 pt-4 border-t border-gray-100">
-                        <span className="text-xs text-gray-400">{labCount} labs available</span>
-                        <span className="flex items-center gap-1 text-xs font-semibold text-blue-600 group-hover:gap-2 transition-all">
-                          Explore <ArrowRight className="w-3.5 h-3.5" />
+            {/* Subject Exploration Cards */}
+            <div className="bg-white border border-slate-100 rounded-3xl p-6 md:p-8 shadow-sm">
+              <div className="mb-6">
+                <h2 className="text-slate-900 font-extrabold text-lg flex items-center gap-2">
+                  <BookOpen className="w-5 h-5 text-indigo-600" />
+                  Explore Subjects
+                </h2>
+                <p className="text-slate-500 text-xs mt-0.5">Select a discipline below to browse virtual laboratory categories</p>
+              </div>
+
+              {subjectsLoading ? (
+                <div className="flex justify-center py-20 text-gray-400">
+                  <Loader2 className="w-8 h-8 animate-spin" />
+                </div>
+              ) : subjects.length === 0 ? (
+                <div className="text-center py-20 bg-slate-50 border border-slate-100 rounded-2xl p-8">
+                  <div className="text-5xl mb-4">📚</div>
+                  <h3 className="text-slate-900 font-bold text-lg mb-1">No subjects available</h3>
+                  <p className="text-slate-500 text-sm">Please check back later or contact your administrator.</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
+                  {subjects.map((subject) => {
+                    const labCount = subject._count?.labs || 0;
+                    return (
+                      <Link
+                        key={subject.id}
+                        to={`/student/subject/${subject.id}`}
+                        className="group relative bg-white border border-slate-100 rounded-2xl overflow-hidden hover:border-indigo-300 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 flex flex-col h-full"
+                      >
+                        {/* Colorful top gradient line */}
+                        <div className={`h-1.5 bg-gradient-to-r ${subject.gradient}`} />
+
+                        <div className="p-6 flex-1 flex flex-col justify-between">
+                          <div>
+                            <div className="flex items-center gap-4 mb-4">
+                              <div className={`w-12 h-12 bg-gradient-to-br ${subject.gradient} rounded-xl flex items-center justify-center text-xl shadow-sm flex-shrink-0`}>
+                                {subject.icon}
+                              </div>
+                              <div className="min-w-0">
+                                <h3 className="text-slate-900 font-extrabold text-sm leading-tight group-hover:text-indigo-600 transition-colors truncate">{subject.title}</h3>
+                                <span className="mt-1 inline-block text-[10px] font-bold px-2 py-0.5 rounded bg-indigo-50 text-indigo-600 border border-indigo-100">
+                                  {labCount} Labs
+                                </span>
+                              </div>
+                            </div>
+                            <p className="text-slate-500 text-xs leading-relaxed line-clamp-3 mb-6">
+                              {subject.description}
+                            </p>
+                          </div>
+
+                          <div className="flex items-center justify-between pt-4 border-t border-slate-50">
+                            <span className="text-[10px] font-bold text-slate-400 tracking-wide uppercase">Core Discipline</span>
+                            <span className="flex items-center gap-1 text-xs font-bold text-indigo-600 group-hover:gap-2 transition-all">
+                              View Labs <ArrowRight className="w-3.5 h-3.5" />
+                            </span>
+                          </div>
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+          </div>
+
+          {/* RIGHT 1-COLUMN AREA (Analytics Panel) */}
+          <div className="space-y-6">
+            
+            <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm">
+              <h2 className="text-slate-900 font-extrabold text-base flex items-center gap-2 mb-6 border-b border-slate-50 pb-4">
+                <TrendingUp className="w-5 h-5 text-emerald-600" />
+                My Performance
+              </h2>
+
+              {perfLoading ? (
+                <div className="flex justify-center py-12 text-slate-400">
+                  <Loader2 className="w-6 h-6 animate-spin" />
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  {/* Completion Rate circular chart widget */}
+                  <div className="flex flex-col items-center pb-6 border-b border-slate-50">
+                    <div className="relative inline-flex items-center justify-center">
+                      <svg className="w-28 h-28 transform -rotate-90">
+                        <circle
+                          cx="56"
+                          cy="56"
+                          r="46"
+                          stroke="#f1f5f9"
+                          strokeWidth="8"
+                          fill="transparent"
+                        />
+                        <circle
+                          cx="56"
+                          cy="56"
+                          r="46"
+                          stroke="#10b981"
+                          strokeWidth="8"
+                          fill="transparent"
+                          strokeDasharray={289}
+                          strokeDashoffset={289 - (289 * (perfData?.analytics?.completionRate || 0)) / 100}
+                          className="transition-all duration-1000 ease-out"
+                        />
+                      </svg>
+                      <div className="absolute flex flex-col items-center">
+                        <span className="text-2xl font-extrabold text-slate-900 leading-none">
+                          {perfData?.analytics?.completionRate}%
+                        </span>
+                        <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider mt-1.5">
+                          Progress
                         </span>
                       </div>
                     </div>
-                  </Link>
-                );
-              })}
-            </div>
-          )}
-        </div>
+                    <h3 className="text-slate-800 font-bold text-sm mt-4">Module Completion Rate</h3>
+                    <p className="text-slate-400 text-[11px] mt-1.5 text-center max-w-[200px] leading-normal">
+                      Completed <strong>{perfData?.analytics?.uniqueVisitedCount || 0}</strong> of <strong>{perfData?.analytics?.totalActiveExps || 0}</strong> active experiments.
+                    </p>
+                  </div>
 
-        {/* Quick tip */}
-        <div className="max-w-5xl mx-auto px-6 pb-12">
-          <div className="bg-blue-50 border border-blue-200 rounded-2xl p-5 flex items-start gap-4">
-            <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0 text-xl">💡</div>
-            <div>
-              <div className="text-blue-900 font-semibold text-sm">Getting Started</div>
-              <div className="text-blue-700 text-sm mt-0.5">
-                Each experiment has 9 sections: Aim, Theory, Pretest, Procedure, Simulation, Posttest, References, Contributors and Feedback. Complete them in order for the best learning experience.
+                  {/* Curated Mini Performance Cards Grid */}
+                  <div className="grid grid-cols-1 gap-4">
+                    <PerformanceCard 
+                      icon={Clock} 
+                      iconColor="text-blue-600 bg-blue-50 border border-blue-100"
+                      label="Active Time" 
+                      value={`${perfData?.analytics?.totalTimeMinutes || 0}m`}
+                      badgeText="Simulator"
+                      subText="Total accumulated active training time in sessions."
+                    />
+                    <PerformanceCard 
+                      icon={Award} 
+                      iconColor="text-purple-600 bg-purple-50 border border-purple-100"
+                      label="Quiz Success" 
+                      value={`${perfData?.analytics?.quizPassRate || 0}%`}
+                      badgeText={`${perfData?.analytics?.quizAttemptsCount || 0} Tests`}
+                      subText="Success percentage computed based on passing marks."
+                    />
+                    <PerformanceCard 
+                      icon={CheckCircle} 
+                      iconColor="text-amber-600 bg-amber-50 border border-amber-100"
+                      label="Average Grade" 
+                      value={`${perfData?.analytics?.averageQuizScore || 0}%`}
+                      badgeText="All Quizzes"
+                      subText="Overall grade parsed from combined testing modules."
+                    />
+                  </div>
+
+                </div>
+              )}
+            </div>
+
+            {/* Quick tips card */}
+            <div className="bg-indigo-50/50 border border-indigo-100 rounded-3xl p-6 shadow-sm">
+              <div className="flex items-start gap-4">
+                <span className="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center flex-shrink-0 text-lg shadow-sm">💡</span>
+                <div>
+                  <h4 className="text-indigo-900 font-bold text-sm">Pedagogical Process</h4>
+                  <p className="text-indigo-800 text-[11px] leading-relaxed mt-1">
+                    Virtual Labs are mapped to direct academic pedagogy. Be sure to perform Pretests to gauge initial understanding, read Procedures carefully, run Simulations dynamically, and complete Posttests to submit your record.
+                  </p>
+                </div>
               </div>
             </div>
+
           </div>
+
         </div>
+
       </main>
     </div>
   );

@@ -1,4 +1,4 @@
-const { PrismaClient } = require('@prisma/client');
+const { PrismaClient } = require('../src/generated/client');
 const bcrypt = require('bcryptjs');
 
 const prisma = new PrismaClient();
@@ -55,6 +55,58 @@ async function main() {
       },
     });
     console.log('✅ Teacher user created!');
+  }
+
+  // Get teacher record (needed for linking)
+  const teacher = await prisma.user.findUnique({ where: { email: teacherEmail } });
+
+  // Create default nodal centre if not exists
+  const nodalEmail = 'nodal@virtuallabs.in';
+  let nodalCentre = await prisma.user.findUnique({ where: { email: nodalEmail } });
+  if (!nodalCentre) {
+    const hashed = await bcrypt.hash('VLNodal@2024', 12);
+    nodalCentre = await prisma.user.create({
+      data: {
+        name: 'Nodal Centre',
+        email: nodalEmail,
+        password: hashed,
+        role: 'nodal_centre',
+        createdById: admin.id,
+      },
+    });
+    console.log('✅ Nodal Centre user created!');
+  }
+
+  // Link teacher to nodal centre (if not already linked)
+  if (teacher && !teacher.nodalCentreId) {
+    await prisma.user.update({
+      where: { id: teacher.id },
+      data: { nodalCentreId: nodalCentre.id, createdById: nodalCentre.id }
+    });
+  }
+
+  // Link default student to teacher + nodal centre (so they appear in contacts)
+  const defaultStudent = await prisma.user.findUnique({ where: { email: 'student@virtuallabs.in' } });
+  if (defaultStudent && !defaultStudent.createdById && teacher) {
+    await prisma.user.update({
+      where: { id: defaultStudent.id },
+      data: { createdById: teacher.id, nodalCentreId: nodalCentre.id }
+    });
+  }
+
+  // Link extra students (alice, bob, charlie) to teacher + nodal centre
+  const extraStudentEmails = ['alice@virtuallabs.in', 'bob@virtuallabs.in', 'charlie@virtuallabs.in'];
+  for (const email of extraStudentEmails) {
+    const s = await prisma.user.findUnique({ where: { email } });
+    if (s) {
+      await prisma.user.update({
+        where: { id: s.id },
+        data: {
+          createdById: teacher?.id || null,
+          nodalCentreId: nodalCentre.id
+        }
+      });
+    }
   }
 
   // 2. Clear existing subjects/labs/experiments if any to prevent duplicates on re-seed
@@ -246,7 +298,7 @@ async function main() {
 
   // 5. Insert Mock Analytics Data
   const student = await prisma.user.findFirst({ where: { role: 'student' } });
-  const teacher = await prisma.user.findFirst({ where: { role: 'teacher' } });
+  const teacherForAnalytics = await prisma.user.findFirst({ where: { role: 'teacher' } });
   const allExps = await prisma.experiment.findMany();
 
   if (student && allExps.length > 0) {
@@ -271,7 +323,7 @@ async function main() {
             email: est.email,
             password: hashed,
             role: 'student',
-            nodalCentreId: teacher?.nodalCentreId || null, // Group them to make report work
+            nodalCentreId: teacherForAnalytics?.nodalCentreId || null, // Group them to make report work
           },
         });
       }
