@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { FlaskConical, Star, Bug, Menu, X, ChevronLeft, CheckCircle, Circle, Loader2, Maximize2, Monitor } from 'lucide-react';
 import { api, fileUrl } from '../../utils/api';
+import { trackEvent } from '../../utils/analytics';
 import QuizBlock from '../../components/student/QuizBlock';
+import { useAuth } from '../../context/AuthContext';
 
 // ── Sidebar sections ─────────────────────────────────────────
 const SECTIONS = [
@@ -196,6 +198,7 @@ function FeedbackSection({ onComplete }) {
 export default function ExperimentPage() {
   const { expId }  = useParams();
   const navigate   = useNavigate();
+  const { user }   = useAuth();
   const [active, setActive]         = useState('aim');
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -255,6 +258,25 @@ export default function ExperimentPage() {
     }
   }, [experiment, expId]);
 
+  // Listen for custom GA events coming from the simulation iframe via postMessage
+  useEffect(() => {
+    const handleMessage = (e) => {
+      if (e.data && e.data.type === 'GA_EVENT') {
+        trackEvent({
+          category: 'Simulation',
+          action: e.data.action,
+          label: e.data.label || experiment?.title,
+          value: e.data.value,
+          experiment_id: expId,
+          experiment_name: experiment?.title,
+          user_id: user?.id
+        });
+      }
+    };
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, [experiment, user, expId]);
+
   const handleFullscreen = () => {
     const elem = document.getElementById('simulation-frame-container');
     if (elem) {
@@ -294,6 +316,15 @@ export default function ExperimentPage() {
         experimentId: expId,
         rating,
         comment,
+      });
+      trackEvent({
+        category: 'Experiment',
+        action: 'Experiment Completed',
+        label: experiment?.title,
+        value: rating,
+        experiment_id: expId,
+        experiment_name: experiment?.title,
+        user_id: user?.id
       });
     } catch (err) {
       console.error(err);
@@ -364,7 +395,13 @@ export default function ExperimentPage() {
         return (
           <div>
             <SectionHeader title="Pretest" subtitle="Answer these questions before starting the simulation to assess your prior knowledge." />
-            <QuizBlock experimentId={expId} quizType="pretest" questions={sections.pretest?.questions || []} />
+            <QuizBlock 
+              experimentId={expId} 
+              experimentName={experiment.title}
+              userId={user?.id}
+              quizType="pretest" 
+              questions={sections.pretest?.questions || []} 
+            />
           </div>
         );
 
@@ -417,13 +454,18 @@ export default function ExperimentPage() {
                     </div>
                   </div>
 
-                  {/* Sandbox IFrame */}
                   <iframe
                     src={fileUrl(`${experiment.simulationPath}/index.html`)}
                     className="w-full flex-1 border-none bg-[#3CA4AB]"
                     title="Simulation"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
+                    onLoad={(e) => {
+                      const measurementId = import.meta.env.VITE_GA_MEASUREMENT_ID;
+                      if (measurementId) {
+                        e.target.contentWindow.postMessage({ type: 'INIT_GA', measurementId }, '*');
+                      }
+                    }}
                   />
                 </div>
               </div>
@@ -439,7 +481,13 @@ export default function ExperimentPage() {
         return (
           <div>
             <SectionHeader title="Posttest" subtitle="Test your understanding after completing the simulation." />
-            <QuizBlock experimentId={expId} quizType="posttest" questions={sections.posttest?.questions || []} />
+            <QuizBlock 
+              experimentId={expId} 
+              experimentName={experiment.title}
+              userId={user?.id}
+              quizType="posttest" 
+              questions={sections.posttest?.questions || []} 
+            />
           </div>
         );
 
@@ -544,7 +592,26 @@ export default function ExperimentPage() {
               return (
                 <button
                   key={id}
-                  onClick={() => { setActive(id); setSidebarOpen(false); }}
+                  onClick={() => { 
+                    setActive(id); 
+                    setSidebarOpen(false);
+                    if (id === 'simulation') {
+                      trackEvent({ 
+                        category: 'Experiment', action: 'Simulation Started', label: experiment?.title,
+                        experiment_id: expId, experiment_name: experiment?.title, user_id: user?.id 
+                      });
+                    } else if (id === 'posttest') {
+                      trackEvent({ 
+                        category: 'Experiment', action: 'Quiz Started', label: `${experiment?.title} - Posttest`,
+                        experiment_id: expId, experiment_name: experiment?.title, quiz_type: 'posttest', user_id: user?.id 
+                      });
+                    } else if (id === 'pretest') {
+                      trackEvent({ 
+                        category: 'Experiment', action: 'Quiz Started', label: `${experiment?.title} - Pretest`,
+                        experiment_id: expId, experiment_name: experiment?.title, quiz_type: 'pretest', user_id: user?.id 
+                      });
+                    }
+                  }}
                   className={`w-full text-left px-5 py-3 text-sm transition-all duration-150 relative ${
                     isActive
                       ? 'text-blue-700 font-semibold bg-blue-50'

@@ -64,6 +64,23 @@ const indexHtmlContent = `
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Simulation</title>
+    <script>
+      window.addEventListener('message', function(event) {
+        if (event.data && event.data.type === 'INIT_GA') {
+          var measurementId = event.data.measurementId;
+          if (window.gaInitialized) return;
+          window.gaInitialized = true;
+          var script = document.createElement('script');
+          script.async = true;
+          script.src = 'https://www.googletagmanager.com/gtag/js?id=' + measurementId;
+          document.head.appendChild(script);
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', measurementId, { debug_mode: true });
+        }
+      });
+    </script>
   </head>
   <body style="margin: 0; padding: 0; overflow: hidden; background-color: #3CA4AB;">
     <div id="root"></div>

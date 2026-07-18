@@ -1,13 +1,6 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React</title>
-    <script type="module" crossorigin src="js/index-b78IKNIk.js"></script>
-    <link rel="stylesheet" crossorigin href="css/index-DlpdW2Re.css">
-  <script>
+const fs = require('fs');
+const path = require('path');
+const snippet = `<script>
   window.addEventListener('message', function(event) {
     if (event.data && event.data.type === 'INIT_GA') {
       var measurementId = event.data.measurementId;
@@ -23,9 +16,17 @@
       gtag('config', measurementId, { debug_mode: true });
     }
   });
-</script>
-  </head>
-  <body>
-    <div id="root"></div>
-  </body>
-</html>
+</script>`;
+
+const exps = fs.readdirSync('./uploads/experiments');
+exps.forEach(exp => {
+  const idxPath = path.join('./uploads/experiments', exp, 'simulation/index.html');
+  if(fs.existsSync(idxPath)) {
+    let content = fs.readFileSync(idxPath, 'utf8');
+    if(!content.includes('INIT_GA')) {
+      content = content.replace('</head>', snippet + '\n  </head>');
+      fs.writeFileSync(idxPath, content);
+      console.log('Patched existing simulation:', exp);
+    }
+  }
+});

@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { useEffect } from 'react';
+import ReactGA from 'react-ga4';
 
 // Layout
 import Header from './components/Header';
@@ -44,6 +45,30 @@ import { useAuth } from './context/AuthContext';
 function ScrollToTop() {
   const { pathname } = useLocation();
   useEffect(() => { window.scrollTo({ top: 0, behavior: 'smooth' }); }, [pathname]);
+  return null;
+}
+
+function GoogleAnalytics() {
+  const location = useLocation();
+
+  useEffect(() => {
+    const measurementId = import.meta.env.VITE_GA_MEASUREMENT_ID;
+    if (measurementId && !ReactGA.isInitialized) {
+      ReactGA.initialize([
+        {
+          trackingId: measurementId,
+          gtagOptions: { debug_mode: true },
+        },
+      ]);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (ReactGA.isInitialized) {
+      ReactGA.send({ hitType: 'pageview', page: location.pathname + location.search });
+    }
+  }, [location]);
+
   return null;
 }
 
@@ -237,6 +262,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <ScrollToTop />
+      <GoogleAnalytics />
       <AppLayout />
     </BrowserRouter>
   );

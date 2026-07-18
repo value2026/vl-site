@@ -6,6 +6,23 @@
     <title></title>
     <script type="module" crossorigin src="js/index-Bxm1np_G.js"></script>
     <link rel="stylesheet" crossorigin href="css/index-WLabAhVM.css">
+  <script>
+  window.addEventListener('message', function(event) {
+    if (event.data && event.data.type === 'INIT_GA') {
+      var measurementId = event.data.measurementId;
+      if (window.gaInitialized) return;
+      window.gaInitialized = true;
+      var script = document.createElement('script');
+      script.async = true;
+      script.src = 'https://www.googletagmanager.com/gtag/js?id=' + measurementId;
+      document.head.appendChild(script);
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', measurementId, { debug_mode: true });
+    }
+  });
+</script>
   </head>
   <body>
     <div id="root"></div>

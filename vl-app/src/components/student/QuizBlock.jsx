@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { CheckCircle2, AlertCircle, HelpCircle, Loader2, RefreshCw } from 'lucide-react';
 import { api } from '../../utils/api';
+import { trackEvent } from '../../utils/analytics';
 
-export default function QuizBlock({ experimentId, quizType, questions = [] }) {
+export default function QuizBlock({ experimentId, experimentName, userId, quizType, questions = [] }) {
   const [answers, setAnswers] = useState({}); // { [questionIndex]: 'a' | 'b' ... }
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -55,6 +56,17 @@ export default function QuizBlock({ experimentId, quizType, questions = [] }) {
       if (!res.ok) {
         console.warn('Failed to record quiz attempt in analytics.');
       }
+      trackEvent({
+        category: 'Experiment',
+        action: 'Quiz Completed',
+        label: `${experimentId} - ${quizType}`,
+        value: Math.round((calculatedScore / questions.length) * 100),
+        experiment_id: experimentId,
+        experiment_name: experimentName,
+        quiz_type: quizType,
+        score: calculatedScore,
+        user_id: userId
+      });
     } catch (err) {
       console.error('Quiz record error:', err);
     } finally {
