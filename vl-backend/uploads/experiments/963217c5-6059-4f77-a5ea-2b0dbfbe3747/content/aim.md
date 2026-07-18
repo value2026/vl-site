@@ -1,1 +1,0 @@
-To perform binary classification using QSVM.

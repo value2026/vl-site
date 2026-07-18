@@ -469,6 +469,121 @@ const getMyPerformance = async (req, res) => {
   }
 };
 
+const getQuizReport = async (req, res) => {
+  try {
+    const role = req.user.role;
+    const userId = req.user.id;
+
+    let userFilter = {};
+    if (role === 'teacher') {
+      userFilter = { nodalCentreId: req.user.nodalCentreId };
+    } else if (role === 'nodal_centre') {
+      userFilter = { nodalCentreId: userId };
+    }
+
+    const attempts = await prisma.quizAttempt.findMany({
+      where: role !== 'admin' ? { user: userFilter } : {},
+      include: {
+        user: { select: { name: true, email: true, dept: true } },
+        experiment: { select: { title: true, lab: { select: { title: true } } } },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    res.json(attempts);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+const getFeedbackReport = async (req, res) => {
+  try {
+    const role = req.user.role;
+    const userId = req.user.id;
+
+    let userFilter = {};
+    if (role === 'teacher') {
+      userFilter = { nodalCentreId: req.user.nodalCentreId };
+    } else if (role === 'nodal_centre') {
+      userFilter = { nodalCentreId: userId };
+    }
+
+    const feedbacks = await prisma.feedback.findMany({
+      where: role !== 'admin' ? { user: userFilter } : {},
+      include: {
+        user: { select: { name: true, email: true } },
+        experiment: { select: { title: true, lab: { select: { title: true } } } },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    res.json(feedbacks);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+const getPagewiseReport = async (req, res) => {
+  try {
+    const role = req.user.role;
+    const userId = req.user.id;
+
+    let userFilter = {};
+    if (role === 'teacher') {
+      userFilter = { nodalCentreId: req.user.nodalCentreId };
+    } else if (role === 'nodal_centre') {
+      userFilter = { nodalCentreId: userId };
+    }
+
+    const visits = await prisma.experimentVisit.findMany({
+      where: role !== 'admin' ? { user: userFilter } : {},
+      include: {
+        experiment: {
+          select: {
+            id: true,
+            title: true,
+            lab: { select: { title: true } }
+          }
+        }
+      }
+    });
+
+    const expStats = {};
+    visits.forEach(v => {
+      if (!v.experiment) return;
+      const expId = v.experiment.id;
+      if (!expStats[expId]) {
+        expStats[expId] = {
+          id: expId,
+          title: v.experiment.title,
+          labTitle: v.experiment.lab?.title || 'Unknown Lab',
+          totalVisits: 0,
+          totalDuration: 0,
+          devices: { desktop: 0, mobile: 0, tablet: 0 }
+        };
+      }
+      expStats[expId].totalVisits++;
+      expStats[expId].totalDuration += v.duration || 0;
+      const d = v.device || 'desktop';
+      if (expStats[expId].devices[d] !== undefined) {
+        expStats[expId].devices[d]++;
+      }
+    });
+
+    const report = Object.values(expStats).map(e => ({
+      ...e,
+      avgDurationMinutes: e.totalVisits > 0 ? Math.round((e.totalDuration / e.totalVisits) / 60) : 0
+    })).sort((a, b) => b.totalVisits - a.totalVisits);
+
+    res.json(report);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
 module.exports = {
   recordVisit,
   recordQuizAttempt,
@@ -477,4 +592,7 @@ module.exports = {
   getAcademicReport,
   getStudentDetailsReport,
   getMyPerformance,
+  getQuizReport,
+  getFeedbackReport,
+  getPagewiseReport,
 };

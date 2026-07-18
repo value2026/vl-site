@@ -4,9 +4,10 @@ const { sendWelcomeEmail } = require('../utils/mailer');
 
 // Which roles each role is allowed to create
 const CREATION_RULES = {
-  admin:        ['admin', 'nodal_centre', 'teacher', 'student'],
+  admin:        ['admin', 'content_admin', 'nodal_centre', 'teacher', 'student'],
+  content_admin:[],
   nodal_centre: ['teacher', 'student'],
-  teacher:      ['student'],
+  teacher:      [],
   student:      [],
 };
 
@@ -50,6 +51,11 @@ const getUsers = async (req, res) => {
         nodalCentreId: true,
         createdById:  true,
         createdAt:    true,
+        org:          true,
+        dept:         true,
+        designation:  true,
+        facultyDept:  true,
+        facultyInst:  true,
         nodalCentre:  { select: { name: true } },
         createdBy:    { select: { name: true } },
       },
@@ -284,13 +290,14 @@ const getStats = async (req, res) => {
     const { role, id } = req.user;
 
     if (role === 'admin') {
-      const [totalAdmins, totalNodalCentres, totalTeachers, totalStudents] = await Promise.all([
+      const [totalAdmins, totalContentAdmins, totalNodalCentres, totalTeachers, totalStudents] = await Promise.all([
         prisma.user.count({ where: { role: 'admin' } }),
+        prisma.user.count({ where: { role: 'content_admin' } }),
         prisma.user.count({ where: { role: 'nodal_centre' } }),
         prisma.user.count({ where: { role: 'teacher' } }),
         prisma.user.count({ where: { role: 'student' } }),
       ]);
-      res.json({ totalAdmins, totalNodalCentres, totalTeachers, totalStudents });
+      res.json({ totalAdmins, totalContentAdmins, totalNodalCentres, totalTeachers, totalStudents });
 
     } else if (role === 'nodal_centre') {
       const [totalTeachers, totalStudents] = await Promise.all([

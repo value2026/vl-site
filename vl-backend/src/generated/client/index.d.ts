@@ -80,6 +80,7 @@ export type PageSection = $Result.DefaultSelection<Prisma.$PageSectionPayload>
 export namespace $Enums {
   export const Role: {
   admin: 'admin',
+  content_admin: 'content_admin',
   nodal_centre: 'nodal_centre',
   teacher: 'teacher',
   student: 'student'

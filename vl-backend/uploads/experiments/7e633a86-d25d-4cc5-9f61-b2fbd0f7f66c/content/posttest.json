@@ -1,0 +1,73 @@
+{
+  "version": 2.0,
+  "questions": [
+    {
+      "question": "Mathematically, which of the following corresponds to the action of applying multiple quantum gates sequentially to a single qubit?",
+      "answers": {
+        "a": "Vector addition",
+        "b": "Taking the tensor product of the matrices",
+        "c": "Matrix-matrix multiplication",
+        "d": "Solving a differential equation"
+      },
+      "explanations": {
+        "a": "Vector addition represents superposition, not sequential operations.",
+        "b": "Tensor products combine gates acting on *different* qubits simultaneously.",
+        "c": "Sequential gates on the same qubit correspond to multiplying their individual unitary matrices.",
+        "d": "Differential equations govern continuous time evolution (Schrödinger equation), whereas gate sequences use discrete multiplication."
+      },
+      "correctAnswer": "c",
+      "difficulty": "intermediate"
+    },
+    {
+      "question": "What is the dimension of the resulting state vector when taking the tensor product of two independent single-qubit state vectors?",
+      "answers": {
+        "a": "2x1",
+        "b": "4x1",
+        "c": "2x2",
+        "d": "4x4"
+      },
+      "explanations": {
+        "a": "This is the dimension of a single qubit state vector.",
+        "b": "The tensor product of two 2-dimensional vectors yields a vector of dimension 4 (2^2).",
+        "c": "This is the dimension of a single-qubit gate matrix.",
+        "d": "This is the dimension of a two-qubit gate matrix, not the state vector."
+      },
+      "correctAnswer": "b",
+      "difficulty": "intermediate"
+    },
+    {
+      "question": "The matrix representation for the Hadamard gate includes which normalization factor to maintain unitarity?",
+      "answers": {
+        "a": "1/2",
+        "b": "1/sqrt(2)",
+        "c": "sqrt(2)",
+        "d": "There is no normalization factor."
+      },
+      "explanations": {
+        "a": "1/2 does not properly normalize the state probabilities to 1.",
+        "b": "The factor 1/sqrt(2) ensures that the sum of the squared amplitudes for the |0> and |1> components equals 1.",
+        "c": "Squaring sqrt(2) gives 2, which would violate the rule of total probability.",
+        "d": "A normalization factor is physically required so probabilities sum to 100%."
+      },
+      "correctAnswer": "b",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "A quantum register containing n computation qubits is characterized mathematically by a complex vector space of what dimension?",
+      "answers": {
+        "a": "2n",
+        "b": "n^2",
+        "c": "2^n",
+        "d": "n!"
+      },
+      "explanations": {
+        "a": "This would be true if the space grew linearly, like classical memory bits.",
+        "b": "This matches a quadratic scaling, common in some distance metrics but not quantum state dimensions.",
+        "c": "The dimension of the Hilbert space scales exponentially with the number of qubits (2 to the power of n), via the tensor product.",
+        "d": "Factorial scaling is common in combinatorics, not quantum state dimensions."
+      },
+      "correctAnswer": "c",
+      "difficulty": "advanced"
+    }
+  ]
+}

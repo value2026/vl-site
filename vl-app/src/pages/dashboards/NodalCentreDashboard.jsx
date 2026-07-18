@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { GraduationCap, BookOpen, Plus, RefreshCw, Building2 } from 'lucide-react';
+import { GraduationCap, BookOpen, Plus, RefreshCw, Building2, Eye, Award, TrendingUp } from 'lucide-react';
 import DashboardLayout from '../../components/dashboard/DashboardLayout';
 import UserTable       from '../../components/dashboard/UserTable';
 import AddUserModal    from '../../components/dashboard/AddUserModal';
@@ -8,15 +8,15 @@ import { useAuth }     from '../../context/AuthContext';
 
 function StatCard({ icon: Icon, label, value, gradient }) {
   return (
-    <div className={`relative bg-gradient-to-br ${gradient} rounded-2xl p-6 overflow-hidden flex flex-col justify-between min-h-40 shadow-lg shadow-black/10`}>
+    <div className={`relative bg-gradient-to-br ${gradient} rounded-2xl p-6 overflow-hidden flex flex-col justify-between min-h-36 shadow-lg shadow-black/10`}>
       <div className="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full" />
       <div className="absolute -right-8 -bottom-8 w-32 h-32 bg-white/5 rounded-full" />
       <div className="relative z-10">
-        <div className="w-10 h-10 bg-white/20 backdrop-blur rounded-xl flex items-center justify-center mb-4">
+        <div className="w-10 h-10 bg-white/20 backdrop-blur rounded-xl flex items-center justify-center mb-3">
           <Icon className="w-5 h-5 text-white" />
         </div>
-        <div className="text-white/70 text-sm font-medium mb-1">{label}</div>
-        <div className="text-white text-4xl font-bold">{value ?? '—'}</div>
+        <div className="text-white/70 text-xs font-semibold uppercase tracking-wider mb-1">{label}</div>
+        <div className="text-white text-3xl font-extrabold">{value ?? '—'}</div>
       </div>
     </div>
   );
@@ -34,8 +34,8 @@ export default function NodalCentreDashboard() {
     setLoading(true);
     try {
       const [statsRes, usersRes] = await Promise.all([
-        fetch(`${API_URL}/users/stats`, { headers: { Authorization: `Bearer ${token}` } }),
-        fetch(`${API_URL}/users`,       { headers: { Authorization: `Bearer ${token}` } }),
+        fetch(`${API_URL}/analytics/dashboard`, { headers: { Authorization: `Bearer ${token}` } }),
+        fetch(`${API_URL}/users`,               { headers: { Authorization: `Bearer ${token}` } }),
       ]);
       const [statsData, usersData] = await Promise.all([statsRes.json(), usersRes.json()]);
       setStats(statsData);
@@ -73,10 +73,17 @@ export default function NodalCentreDashboard() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <StatCard icon={GraduationCap} label="Teachers"  value={stats?.totalTeachers} gradient="from-blue-600 to-indigo-700" />
-        <StatCard icon={BookOpen}      label="Students"  value={stats?.totalStudents}  gradient="from-emerald-500 to-green-600" />
-        <div className="col-span-1">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+        <StatCard icon={GraduationCap} label="Teachers"  value={teachers.length} gradient="from-blue-600 to-indigo-700" />
+        <StatCard icon={BookOpen}      label="Students"  value={students.length}  gradient="from-emerald-500 to-green-600" />
+        <StatCard icon={Eye}           label="Total Visits" value={stats?.counts?.totalVisits} gradient="from-purple-600 to-violet-700" />
+        <StatCard icon={Award}         label="Avg Quiz Score" value={stats?.quizzes?.averageScore !== undefined ? `${stats.quizzes.averageScore}%` : '—'} gradient="from-amber-500 to-orange-600" />
+        <StatCard icon={TrendingUp}    label="Active Users" value={stats?.activeUsers?.mau} gradient="from-pink-500 to-rose-600" />
+      </div>
+
+      {/* Upcoming calls row */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        <div className="lg:col-span-2">
           <UpcomingCallsCard />
         </div>
       </div>

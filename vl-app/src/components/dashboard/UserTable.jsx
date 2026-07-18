@@ -146,17 +146,28 @@ export default function UserTable({ users, loading, onRefresh }) {
                       }`}>
                         {u.name[0]?.toUpperCase()}
                       </div>
-                      {u.role === 'student' ? (
-                        <span
-                          onClick={() => setSelectedStudentId(u.id)}
-                          className="text-white text-sm font-medium hover:underline cursor-pointer text-blue-400"
-                          title="Click to view analytics"
-                        >
-                          {u.name}
-                        </span>
-                      ) : (
-                        <span className="text-white text-sm font-medium">{u.name}</span>
-                      )}
+                      <div>
+                        {u.role === 'student' ? (
+                          <span
+                            onClick={() => setSelectedStudentId(u.id)}
+                            className="text-white text-sm font-medium hover:underline cursor-pointer text-blue-400"
+                            title="Click to view analytics"
+                          >
+                            {u.name}
+                          </span>
+                        ) : (
+                          <span className="text-white text-sm font-medium">{u.name}</span>
+                        )}
+                        {(u.dept || u.facultyDept || u.org) && (
+                          <div className="text-[10px] text-slate-500 mt-0.5">
+                            {[
+                              u.role === 'teacher' && u.designation,
+                              u.facultyDept || u.dept,
+                              u.org
+                            ].filter(Boolean).join(' • ')}
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </td>
                   <td className="px-4 py-3 text-slate-400 text-sm">{u.email}</td>
@@ -194,14 +205,16 @@ export default function UserTable({ users, loading, onRefresh }) {
                             <Eye className="w-4 h-4" />
                           </button>
                         )}
-                        <button
-                          onClick={() => deleteUser(u.id, u.name)}
-                          disabled={actionLoading === u.id + '_delete'}
-                          title="Delete user"
-                          className="text-slate-400 hover:text-red-400 transition-colors p-1"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                        {self?.role === 'admin' && (
+                          <button
+                            onClick={() => deleteUser(u.id, u.name)}
+                            disabled={actionLoading === u.id + '_delete'}
+                            title="Delete user"
+                            className="text-slate-400 hover:text-red-400 transition-colors p-1"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        )}
                       </div>
                     )}
                   </td>

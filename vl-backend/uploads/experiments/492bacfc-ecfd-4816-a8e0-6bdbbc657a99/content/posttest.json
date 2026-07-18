@@ -1,0 +1,141 @@
+{
+  "version": 2.0,
+  "questions": [
+    {
+      "question": "What is the purpose of selecting a dataset at the beginning of the experiment?",
+      "answers": {
+        "a": "To visualize the data distribution and inspect dataset properties before applying kernels",
+        "b": "To reduce the number of samples",
+        "c": "To automatically train the model",
+        "d": "To remove class labels"
+      },
+      "explanations": {
+        "a": "Correct. Dataset selection allows users to view the scatter plot and dataset details before applying kernel methods.",
+        "b": "Dataset selection does not reduce samples.",
+        "c": "Model training occurs later during classification.",
+        "d": "Class labels are necessary for classification tasks."
+      },
+      "correctAnswer": "a",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "Which classical kernels are available for comparison in the experiment?",
+      "answers": {
+        "a": "Linear, Polynomial, and RBF",
+        "b": "Linear, Logistic, and Gaussian",
+        "c": "Decision Tree and Random Forest",
+        "d": "K-Means and DBSCAN"
+      },
+      "explanations": {
+        "a": "Correct. The experiment allows the selection of Linear, Polynomial, and RBF kernels.",
+        "b": "Logistic is not a kernel function.",
+        "c": "These are machine learning algorithms, not kernels.",
+        "d": "These are clustering algorithms."
+      },
+      "correctAnswer": "a",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "What does the gamma parameter control when using the RBF kernel?",
+      "answers": {
+        "a": "The learning rate of the model",
+        "b": "The influence range of individual data points",
+        "c": "The number of features in the dataset",
+        "d": "The number of classes in the dataset"
+      },
+      "explanations": {
+        "a": "Gamma does not control learning rate.",
+        "b": "Correct. Gamma determines how far the influence of a single data point reaches in the RBF kernel.",
+        "c": "The number of features is determined by the dataset.",
+        "d": "Gamma does not control class count."
+      },
+      "correctAnswer": "b",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "What is the main role of the quantum feature map in the experiment?",
+      "answers": {
+        "a": "To compress the dataset",
+        "b": "To encode classical data into quantum states",
+        "c": "To remove irrelevant features",
+        "d": "To label the dataset automatically"
+      },
+      "explanations": {
+        "a": "Feature maps do not compress datasets.",
+        "b": "Correct. Quantum feature maps encode classical data into quantum states using quantum circuits.",
+        "c": "Feature maps do not remove features.",
+        "d": "Labels are provided by the dataset."
+      },
+      "correctAnswer": "b",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "Which parameter determines how many quantum bits are used in the circuit?",
+      "answers": {
+        "a": "Gamma",
+        "b": "Qubits",
+        "c": "Kernel type",
+        "d": "Dataset size"
+      },
+      "explanations": {
+        "a": "Gamma is related to the RBF kernel.",
+        "b": "Correct. The qubits slider controls the number of quantum bits used in the circuit.",
+        "c": "Kernel type selects the classical kernel.",
+        "d": "Dataset size does not control the quantum circuit."
+      },
+      "correctAnswer": "b",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "What does the Kernel Alignment Score indicate in the experiment?",
+      "answers": {
+        "a": "The training time of the model",
+        "b": "The similarity between classical and quantum kernel matrices",
+        "c": "The number of qubits used",
+        "d": "The number of samples in the dataset"
+      },
+      "explanations": {
+        "a": "Kernel alignment does not measure training time.",
+        "b": "Correct. It measures how similar the classical and quantum kernel structures are.",
+        "c": "Qubit count is set separately.",
+        "d": "Dataset size is unrelated to the alignment score."
+      },
+      "correctAnswer": "b",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "Which machine learning model is used for classification in this experiment?",
+      "answers": {
+        "a": "Support Vector Machine (SVM)",
+        "b": "Decision Tree",
+        "c": "K-Nearest Neighbors",
+        "d": "Naive Bayes"
+      },
+      "explanations": {
+        "a": "Correct. Both classical and quantum kernels are evaluated using an SVM classifier.",
+        "b": "Decision Trees are not used in this experiment.",
+        "c": "KNN is not used here.",
+        "d": "Naive Bayes is unrelated to kernel methods."
+      },
+      "correctAnswer": "a",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "What is the purpose of comparing classical and quantum classification accuracy?",
+      "answers": {
+        "a": "To determine which kernel representation performs better for the dataset",
+        "b": "To reduce the number of training samples",
+        "c": "To change the dataset labels",
+        "d": "To modify the quantum circuit automatically"
+      },
+      "explanations": {
+        "a": "Correct. The comparison shows how the quantum kernel performs relative to the classical kernel.",
+        "b": "Accuracy comparison does not change dataset size.",
+        "c": "Labels remain fixed.",
+        "d": "The circuit configuration is set earlier in the experiment."
+      },
+      "correctAnswer": "a",
+      "difficulty": "beginner"
+    }
+  ]
+}

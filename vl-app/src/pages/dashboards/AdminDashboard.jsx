@@ -75,13 +75,20 @@ export default function AdminDashboard() {
       </div>
 
       {/* Stat cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4 mb-8">
         <StatCard
           icon={ShieldCheck}
           label="Administrators"
           value={stats?.totalAdmins}
           gradient="from-red-600 to-rose-700"
           sub="Full access"
+        />
+        <StatCard
+          icon={ShieldCheck}
+          label="Content Admins"
+          value={stats?.totalContentAdmins}
+          gradient="from-purple-500 to-fuchsia-600"
+          sub="Lab Management"
         />
         <StatCard
           icon={Building2}

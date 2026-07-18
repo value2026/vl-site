@@ -2,10 +2,11 @@ import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   FlaskConical, LayoutDashboard, Users, GraduationCap, BookOpen,
-  LogOut, Menu, X, ChevronRight, Bell, TrendingUp, FileText, Globe, KeyRound
+  LogOut, Menu, X, ChevronRight, Bell, TrendingUp, FileText, Globe, KeyRound, User
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import ChangePasswordModal from '../ChangePasswordModal';
+import UpdateProfileModal from './UpdateProfileModal';
 
 const NAV = {
   admin: [
@@ -15,18 +16,21 @@ const NAV = {
     { icon: TrendingUp,      label: 'Usage Analytics',  path: '/dashboard/admin/analytics' },
     { icon: Globe,           label: 'Manage Pages',    path: '/dashboard/admin/pages' },
   ],
+  content_admin: [
+    { icon: LayoutDashboard, label: 'Overview',        path: '/dashboard/content' },
+    { icon: FlaskConical,    label: 'Lab Management',  path: '/dashboard/content/labs' },
+    { icon: TrendingUp,      label: 'Usage Analytics',  path: '/dashboard/content/analytics' },
+  ],
   nodal_centre: [
     { icon: LayoutDashboard, label: 'Overview',  path: '/dashboard/nodal' },
     { icon: GraduationCap,   label: 'Teachers',  path: '/dashboard/nodal/teachers' },
     { icon: BookOpen,        label: 'Students',  path: '/dashboard/nodal/students' },
-    { icon: FlaskConical,    label: 'Lab Management',  path: '/dashboard/nodal/labs' },
     { icon: TrendingUp,      label: 'Usage Analytics',  path: '/dashboard/nodal/analytics' },
     { icon: FileText,        label: 'Academic Reports', path: '/dashboard/nodal/reports' },
   ],
   teacher: [
     { icon: LayoutDashboard, label: 'Overview',    path: '/dashboard/teacher' },
     { icon: BookOpen,        label: 'My Students', path: '/dashboard/teacher/students' },
-    { icon: FlaskConical,    label: 'Lab Management',  path: '/dashboard/teacher/labs' },
     { icon: TrendingUp,      label: 'Usage Analytics',  path: '/dashboard/teacher/analytics' },
     { icon: FileText,        label: 'Academic Reports', path: '/dashboard/teacher/reports' },
   ],
@@ -37,6 +41,7 @@ const NAV = {
 
 const ROLE_CONFIG = {
   admin:        { label: 'Administrator', gradient: 'from-red-500 to-rose-600',     badge: 'bg-red-500/20 text-red-300 border-red-500/30' },
+  content_admin:{ label: 'Content Admin', gradient: 'from-purple-500 to-fuchsia-600',badge:'bg-purple-500/20 text-purple-300 border-purple-500/30'},
   nodal_centre: { label: 'Nodal Centre',  gradient: 'from-orange-500 to-amber-500', badge: 'bg-orange-500/20 text-orange-300 border-orange-500/30' },
   teacher:      { label: 'Teacher',       gradient: 'from-blue-500 to-indigo-600',  badge: 'bg-blue-500/20 text-blue-300 border-blue-500/30' },
   student:      { label: 'Student',       gradient: 'from-emerald-500 to-green-600',badge: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' },
@@ -48,6 +53,7 @@ export default function DashboardLayout({ children, title }) {
   const location         = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [changePwOpen, setChangePwOpen] = useState(false);
+  const [updateProfileOpen, setUpdateProfileOpen] = useState(false);
 
   const cfg     = ROLE_CONFIG[user?.role] || ROLE_CONFIG.student;
   const navItems = NAV[user?.role] || [];
@@ -79,13 +85,21 @@ export default function DashboardLayout({ children, title }) {
           {cfg.label}
         </div>
         <div className="text-white font-semibold text-sm truncate">{user?.name}</div>
-        <div className="text-slate-400 text-xs truncate mb-2">{user?.email}</div>
-        <button
-          onClick={() => setChangePwOpen(true)}
-          className="w-full flex items-center justify-center gap-1.5 px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-[10px] font-bold text-slate-350 hover:text-white uppercase tracking-wider transition-all"
-        >
-          <KeyRound className="w-3 h-3" /> Change Password
-        </button>
+        <div className="text-slate-400 text-xs truncate mb-3">{user?.email}</div>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setUpdateProfileOpen(true)}
+            className="flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-[10px] font-bold text-slate-350 hover:text-white uppercase tracking-wider transition-all"
+          >
+            <User className="w-3 h-3" /> Profile
+          </button>
+          <button
+            onClick={() => setChangePwOpen(true)}
+            className="flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-[10px] font-bold text-slate-350 hover:text-white uppercase tracking-wider transition-all"
+          >
+            <KeyRound className="w-3 h-3" /> Password
+          </button>
+        </div>
       </div>
 
       {/* Nav */}
@@ -173,6 +187,7 @@ export default function DashboardLayout({ children, title }) {
       </div>
 
       <ChangePasswordModal isOpen={changePwOpen} onClose={() => setChangePwOpen(false)} />
+      <UpdateProfileModal isOpen={updateProfileOpen} onClose={() => setUpdateProfileOpen(false)} />
     </div>
   );
 }

@@ -1,0 +1,42 @@
+<Solvents>
+  <Solvent ID="1">
+    <name>Water</name>
+    <density>1</density>
+    <kb>0.512</kb>
+    <kf>-1.858</kf>
+    <meltingpoint>0</meltingpoint>
+    <boilingpoint>100</boilingpoint>
+  </Solvent>
+  <Solvent ID="2">
+    <name>Benzene</name>
+    <density>0.8786</density>
+    <kb>2.65</kb>
+    <kf>-4.90</kf>
+    <meltingpoint>5.5</meltingpoint>
+    <boilingpoint>80.1</boilingpoint>
+  </Solvent>
+  <Solvent ID="3">
+    <name>Carbon Disulphide</name>
+    <density>1.261</density>
+    <kb>2.34</kb>
+    <kf>-3.83</kf>
+    <meltingpoint>-111.5</meltingpoint>
+    <boilingpoint>46.2</boilingpoint>
+  </Solvent>
+  <Solvent ID="4">
+    <name>Carbon Tetrachloride</name>
+    <density>1.5867</density>
+    <kb>4.88</kb>
+    <kf>-29.8</kf>
+    <meltingpoint>-22.8</meltingpoint>
+    <boilingpoint>76.8</boilingpoint>
+  </Solvent>
+  <Solvent ID="5">
+    <name>Chloroform</name>
+    <density>1.48</density>
+    <kb>3.88</kb>
+    <kf>-4.90</kf>
+    <meltingpoint>-63.56</meltingpoint>
+    <boilingpoint>61.2</boilingpoint>
+  </Solvent>
+</Solvents>

@@ -5,13 +5,15 @@ import CloudinaryUploader from './CloudinaryUploader';
 
 // Roles each caller can create
 const CREATABLE_ROLES = {
-  admin:        ['admin', 'nodal_centre', 'teacher', 'student'],
+  admin:        ['admin', 'content_admin', 'nodal_centre', 'teacher', 'student'],
+  content_admin:[],
   nodal_centre: ['teacher', 'student'],
-  teacher:      ['student'],
+  teacher:      [],
 };
 
 const ROLE_LABELS = {
   admin:        'Administrator',
+  content_admin:'Content Admin / Lab Admin',
   nodal_centre: 'Nodal Centre',
   teacher:      'Faculty / Instructor',
   student:      'Student',

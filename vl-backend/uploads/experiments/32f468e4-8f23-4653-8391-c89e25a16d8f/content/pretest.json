@@ -1,0 +1,73 @@
+{
+  "version": 2.0,
+  "questions": [
+    {
+      "question": "What is the primary goal of a standard Support Vector Machine (SVM)?",
+      "answers": {
+        "a": "To cluster data points into similar groups.",
+        "b": "To find the optimal hyperplane that separates data points of different classes with the maximum margin.",
+        "c": "To reduce the dimensionality of the dataset.",
+        "d": "To predict continuous numerical values based on input features."
+      },
+      "explanations": {
+        "a": "This describes clustering algorithms like K-means.",
+        "b": "The main objective of SVM is to maximize the margin between classes using a separating hyperplane.",
+        "c": "This describes algorithms like PCA.",
+        "d": "This describes regression."
+      },
+      "correctAnswer": "b",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "How do classical SVMs typically handle non-linearly separable data?",
+      "answers": {
+        "a": "By increasing the number of training epochs.",
+        "b": "By randomly dropping data points.",
+        "c": "By using the 'kernel trick' to map data into a higher-dimensional feature space.",
+        "d": "They cannot handle non-linearly separable data."
+      },
+      "explanations": {
+        "a": "SVM training is not based on epochs in the way neural networks are.",
+        "b": "Dropping data points loses information and isn't a strategy for non-linear data.",
+        "c": "The kernel trick implicitly maps inputs into high-dimensional feature spaces where they may become linearly separable.",
+        "d": "SVMs can handle non-linear data using kernels."
+      },
+      "correctAnswer": "c",
+      "difficulty": "intermediate"
+    },
+    {
+      "question": "In a Quantum Support Vector Machine (QSVM), what is the function of a Quantum Feature Map?",
+      "answers": {
+        "a": "It classicalizes quantum data.",
+        "b": "It maps classical data vectors into a high-dimensional quantum Hilbert space.",
+        "c": "It reduces the number of qubits required.",
+        "d": "It directly outputs the final classification label."
+      },
+      "explanations": {
+        "a": "QSVM does the opposite; it uses quantum states for classical data.",
+        "b": "A quantum feature map encodes classical data into quantum states, projecting it into a massive Hilbert space.",
+        "c": "Feature maps require a sufficient number of qubits to represent the data.",
+        "d": "The feature map only encodes data; classification happens after kernel calculation."
+      },
+      "correctAnswer": "b",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "What is mathematically represented by the quantum kernel in QSVM?",
+      "answers": {
+        "a": "The Euclidean distance between two classical points.",
+        "b": "The probability of measuring a zero state.",
+        "c": "The squared inner product (fidelity) between the quantum states representing two data points.",
+        "d": "The number of support vectors chosen."
+      },
+      "explanations": {
+        "a": "This is a classical distance metric, not the quantum kernel.",
+        "b": "This might be used in some routines, but the kernel itself represents similarity via overlap.",
+        "c": "The kernel evaluates how similar two data points are in the quantum feature space, measured as the overlap or inner product of their corresponding quantum states.",
+        "d": "Support vectors are identified during optimization, not directly given by the kernel value."
+      },
+      "correctAnswer": "c",
+      "difficulty": "intermediate"
+    }
+  ]
+}
