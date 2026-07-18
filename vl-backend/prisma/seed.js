@@ -180,59 +180,6 @@ async function main() {
           ]
         }
       ]
-    },
-    {
-      title: 'Chemistry',
-      icon: '🧪',
-      description: 'Interact with virtual retorts, acids, bases, and examine organic reactions.',
-      gradient: 'from-emerald-600 to-green-700',
-      labs: []
-    },
-    {
-      title: 'Physics',
-      icon: '⚛️',
-      description: 'Explore kinematic forces, optics, thermodynamics, and electromagnetism.',
-      gradient: 'from-amber-500 to-orange-600',
-      labs: []
-    },
-    {
-      title: 'Chemical Science',
-      icon: '🧪',
-      description: 'Explore chemical systems, molecular reactions, and physical chemistry principles.',
-      gradient: 'from-teal-500 to-cyan-600',
-      labs: [
-        {
-          title: 'Physical Chemistry Virtual Lab',
-          icon: '⚗️',
-          description: 'Explore spectrophotometry, cryoscopy, ebullioscopy and EMF measurement.',
-          experiments: [
-            {
-              title: 'Spectrophotometry',
-              description: 'Measure the absorption of light by a chemical substance as a function of wavelength.',
-              duration: '60 min',
-              difficulty: 'Intermediate',
-            },
-            {
-              title: 'Cryoscopy',
-              description: 'Determine the depression of freezing point to calculate molecular mass.',
-              duration: '60 min',
-              difficulty: 'Intermediate',
-            },
-            {
-              title: 'Ebullioscopy',
-              description: 'Determine the elevation of boiling point of a solvent due to a solute.',
-              duration: '60 min',
-              difficulty: 'Intermediate',
-            },
-            {
-              title: 'EMF Measurement',
-              description: 'Measure electromotive force of galvanic cells to study thermodynamics.',
-              duration: '60 min',
-              difficulty: 'Advanced',
-            }
-          ]
-        }
-      ]
     }
   ];
 
@@ -262,18 +209,34 @@ async function main() {
       console.log(`   🔬 Created Lab: ${lab.title}`);
 
       for (const eData of lData.experiments) {
-        // Automatically make Stack Operations dynamic on default simulation fallback
+        const specificId = {
+          'Expectation Value Calculation in Quantum Systems': 'cbf34d52-0faa-4905-a232-5eeeba2a2775',
+          'Factorization Using Shor\'s Algorithm': '3e16b36e-6443-46a5-992d-6a8595f984f6',
+          'Variational Quantum Eigensolver (VQE) Optimization': '02f63ce2-8ee9-49da-84aa-fc847f6092e2',
+          'Quantum Measurement and Result Interpretation': 'af183cbb-1a73-41d7-8f16-cc4337a63287',
+          'Quantum Linear Algebra – Matrix and Vector Operations': '7e633a86-d25d-4cc5-9f61-b2fbd0f7f66c',
+          'Applied Linear Algebra – Quantum Gates in Action': '500c175a-d20d-4146-b1a0-3b7274d40922',
+          'Quantum Kernel Alignment in Machine Learning': '492bacfc-ecfd-4816-a8e0-6bdbbc657a99',
+          'Quantum Support Vector Machines (QSVM)': '32f468e4-8f23-4653-8391-c89e25a16d8f'
+        }[eData.title];
+
+        const expData = {
+          title: eData.title,
+          description: eData.description,
+          duration: eData.duration,
+          difficulty: eData.difficulty,
+          labId: lab.id,
+          createdById: admin.id,
+          simulationPath: eData.title === 'Stack Operations' ? null : (specificId ? 'experiments/' + specificId + '/simulation' : null),
+          contentPath: specificId ? 'experiments/' + specificId + '/content' : null,
+        };
+
+        if (specificId) {
+          expData.id = specificId;
+        }
+
         const exp = await prisma.experiment.create({
-          data: {
-            title: eData.title,
-            description: eData.description,
-            duration: eData.duration,
-            difficulty: eData.difficulty,
-            labId: lab.id,
-            createdById: admin.id,
-            // Stack Operations will use the fallback react simulation
-            simulationPath: eData.title === 'Stack Operations' ? null : null,
-          }
+          data: expData
         });
         console.log(`      ⚗️ Created Experiment: ${exp.title}`);
       }
