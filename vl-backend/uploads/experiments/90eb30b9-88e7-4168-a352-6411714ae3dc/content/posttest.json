@@ -1,0 +1,175 @@
+{
+  "version": 2.0,
+  "questions": [
+    {
+      "question": "What information must be entered when adding a new job in the scheduling interface?",
+      "answers": {
+        "a": "Job Name, Duration, and Machine",
+        "b": "Dataset Name and Features",
+        "c": "Kernel Type and Gamma",
+        "d": "Energy Value and Iterations"
+      },
+      "explanations": {
+        "a": "Correct. Each job requires a job name, duration, and assigned machine before being added to the schedule.",
+        "b": "Datasets and features are unrelated to job scheduling input.",
+        "c": "Kernel settings belong to machine learning experiments, not scheduling input.",
+        "d": "Energy and iterations appear later during optimization."
+      },
+      "correctAnswer": "a",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "In the experiment, how is each job represented in the quantum model?",
+      "answers": {
+        "a": "Each job is mapped to a dataset",
+        "b": "Each job is mapped to a classical bit",
+        "c": "Each job is mapped to a qubit",
+        "d": "Each job is mapped to a machine"
+      },
+      "explanations": {
+        "a": "Jobs are not represented as datasets.",
+        "b": "The experiment uses quantum bits rather than classical bits.",
+        "c": "Correct. The system follows the mapping 1 job = 1 qubit to represent scheduling states.",
+        "d": "Machines are resources, not the quantum representation."
+      },
+      "correctAnswer": "c",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "What is the purpose of defining ordering rules between jobs?",
+      "answers": {
+        "a": "To reduce the number of machines",
+        "b": "To specify dependencies between jobs",
+        "c": "To increase the number of qubits",
+        "d": "To automatically train the optimizer"
+      },
+      "explanations": {
+        "a": "Ordering rules do not change the number of machines.",
+        "b": "Correct. Ordering rules define dependencies such as one job finishing before another starts.",
+        "c": "The number of qubits depends on the number of jobs, not rules.",
+        "d": "Rules do not train the optimizer directly."
+      },
+      "correctAnswer": "b",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "How are scheduling constraints represented in the quantum optimization model?",
+      "answers": {
+        "a": "As penalty terms in the Hamiltonian energy function",
+        "b": "As classical datasets",
+        "c": "As kernel matrices",
+        "d": "As training labels"
+      },
+      "explanations": {
+        "a": "Correct. Each rule contributes a penalty term to the Hamiltonian, increasing energy if the rule is violated.",
+        "b": "Constraints are not stored as datasets.",
+        "c": "Kernel matrices are used in machine learning experiments.",
+        "d": "Training labels are unrelated to scheduling constraints."
+      },
+      "correctAnswer": "a",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "What happens to the Hamiltonian energy when a scheduling rule is violated?",
+      "answers": {
+        "a": "The energy decreases",
+        "b": "The energy remains constant",
+        "c": "The energy increases",
+        "d": "The energy becomes zero"
+      },
+      "explanations": {
+        "a": "Correct scheduling results in lower energy, not violations.",
+        "b": "Violating rules changes the energy value.",
+        "c": "Correct. Violating a rule adds a penalty term, increasing the energy.",
+        "d": "Energy does not automatically become zero."
+      },
+      "correctAnswer": "c",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "What is the purpose of the ansatz circuit in this experiment?",
+      "answers": {
+        "a": "To generate possible scheduling configurations using parameterized quantum gates",
+        "b": "To store job data",
+        "c": "To remove scheduling constraints",
+        "d": "To define the number of machines"
+      },
+      "explanations": {
+        "a": "Correct. The ansatz circuit generates candidate scheduling solutions using adjustable parameters.",
+        "b": "Job data is stored in the job list, not the circuit.",
+        "c": "Constraints are encoded in the Hamiltonian.",
+        "d": "Machine count is defined when jobs are created."
+      },
+      "correctAnswer": "a",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "Which quantum gate is applied to each qubit in the ansatz circuit?",
+      "answers": {
+        "a": "Hadamard gate",
+        "b": "Rx rotation gate",
+        "c": "Swap gate",
+        "d": "Toffoli gate"
+      },
+      "explanations": {
+        "a": "Hadamard gates create superposition but are not used here for parameter control.",
+        "b": "Correct. Each qubit receives an Rx(θ) rotation gate whose parameter can be adjusted.",
+        "c": "Swap gates exchange qubit states.",
+        "d": "Toffoli gates are multi-controlled logic gates."
+      },
+      "correctAnswer": "b",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "What happens when the 'Run VQE Optimization' button is clicked?",
+      "answers": {
+        "a": "Jobs are deleted from the schedule",
+        "b": "The classical optimizer begins adjusting circuit parameters to minimize energy",
+        "c": "The number of qubits is doubled",
+        "d": "All constraints are removed"
+      },
+      "explanations": {
+        "a": "Running VQE does not delete jobs.",
+        "b": "Correct. VQE starts an iterative optimization where parameters are updated to minimize the Hamiltonian energy.",
+        "c": "The number of qubits remains fixed.",
+        "d": "Constraints remain encoded in the Hamiltonian."
+      },
+      "correctAnswer": "b",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "What information is displayed during the VQE optimization process?",
+      "answers": {
+        "a": "Dataset labels",
+        "b": "Kernel matrices",
+        "c": "Parameter evolution and energy reduction over iterations",
+        "d": "Feature map selection"
+      },
+      "explanations": {
+        "a": "Datasets are unrelated to this scheduling experiment.",
+        "b": "Kernel matrices belong to quantum kernel experiments.",
+        "c": "Correct. The interface shows parameter updates and decreasing energy values during optimization.",
+        "d": "Feature maps are not part of this experiment."
+      },
+      "correctAnswer": "c",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "What does the final optimized schedule represent after VQE completes?",
+      "answers": {
+        "a": "The schedule with the highest energy",
+        "b": "A random scheduling configuration",
+        "c": "The schedule corresponding to the lowest Hamiltonian energy",
+        "d": "The schedule with the most rule violations"
+      },
+      "explanations": {
+        "a": "The algorithm searches for the lowest energy state.",
+        "b": "Optimization aims to find the best solution rather than a random one.",
+        "c": "Correct. The final optimized schedule corresponds to the minimum energy configuration that satisfies constraints.",
+        "d": "Rule violations increase energy rather than minimize it."
+      },
+      "correctAnswer": "c",
+      "difficulty": "beginner"
+    }
+  ]
+}

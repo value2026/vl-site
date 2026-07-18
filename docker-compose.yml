@@ -1,0 +1,83 @@
+# ============================================================
+# Virtual Labs — Docker Compose (Production)
+# ============================================================
+# Usage:
+#   docker-compose up -d --build
+#   docker-compose down
+#   docker-compose logs -f
+# ============================================================
+
+version: "3.9"
+
+services:
+
+  # ── PostgreSQL Database ─────────────────────────────────────
+  db:
+    image: postgres:16-alpine
+    container_name: vl-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: vluser
+      POSTGRES_PASSWORD: vlpassword
+      POSTGRES_DB: virtuallabs_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vluser -d virtuallabs_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - vl-network
+
+  # ── Node.js Backend ─────────────────────────────────────────
+  backend:
+    build:
+      context: ./vl-backend
+      dockerfile: Dockerfile
+    container_name: vl-backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://vluser:vlpassword@db:5432/virtuallabs_db
+      JWT_SECRET: ${JWT_SECRET:-vl-super-secret-change-this-in-production}
+      PORT: 5000
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost}
+    volumes:
+      # Persist uploaded files (experiment content, etc.)
+      - uploads_data:/app/uploads
+    networks:
+      - vl-network
+    # Backend is NOT exposed to host directly — Nginx proxies it
+
+  # ── React Frontend (Nginx) ──────────────────────────────────
+  frontend:
+    build:
+      context: ./vl-app
+      dockerfile: Dockerfile
+      args:
+        # /api maps to the backend via Nginx proxy — no hardcoded host needed
+        VITE_API_URL: /api
+    container_name: vl-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "80:80"        # HTTP — access at http://localhost
+      # - "443:443"    # Uncomment after adding SSL certificates
+    networks:
+      - vl-network
+
+# ── Volumes ──────────────────────────────────────────────────
+volumes:
+  postgres_data:
+    driver: local
+  uploads_data:
+    driver: local
+
+# ── Network ───────────────────────────────────────────────────
+networks:
+  vl-network:
+    driver: bridge

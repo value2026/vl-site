@@ -1,0 +1,90 @@
+{
+  "version": 2.0,
+  "questions": [
+    {
+      "question": "What is the fundamental unit of information in quantum computing?",
+      "answers": {
+        "a": "Bit",
+        "b": "Qubit",
+        "c": "Byte",
+        "d": "Qutrit"
+      },
+      "explanations": {
+        "a": "A bit is the fundamental unit of classical computing, not quantum computing.",
+        "b": "A qubit is the fundamental unit of quantum information, as described in the theory.",
+        "c": "A byte is a unit of digital information in classical computing (8 bits).",
+        "d": "A qutrit is a three-level quantum system, but the fundamental unit is the two-level qubit."
+      },
+      "correctAnswer": "b",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "Which quantum principle allows a qubit to exist in a combination of both |0⟩ and |1⟩ simultaneously?",
+      "answers": {
+        "a": "Entanglement",
+        "b": "Interference",
+        "c": "Decoherence",
+        "d": "Superposition"
+      },
+      "explanations": {
+        "a": "Entanglement is the sharing of information between multiple qubits.",
+        "b": "Interference is the way quantum states combine, but superposition is the ability to be in multiple states.",
+        "c": "Decoherence is the loss of quantum properties due to interaction with the environment.",
+        "d": "Superposition is the key principle that allows a qubit to be in a linear combination of |0⟩ and |1⟩."
+      },
+      "correctAnswer": "d",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "For a qubit state |ψ⟩ = α|0⟩ + β|1⟩, what is the required normalization condition?",
+      "answers": {
+        "a": "α + β = 1",
+        "b": "α² + β² = 1",
+        "c": "|α|² + |β|² = 1",
+        "d": "|α| + |β| = 1"
+      },
+      "explanations": {
+        "a": "The simple sum of coefficients does not satisfy normalization.",
+        "b": "Normalization involves the absolute squares of the complex coefficients.",
+        "c": "The sum of the squares of the absolute values must be 1 to ensure total probability is 1.",
+        "d": "The sum of absolute values is not the normalization condition."
+      },
+      "correctAnswer": "c",
+      "difficulty": "intermediate"
+    },
+    {
+      "question": "Which Pauli operator corresponds to the standard measurement basis (computational basis)?",
+      "answers": {
+        "a": "Pauli-X",
+        "b": "Pauli-Y",
+        "c": "Pauli-Z",
+        "d": "Hadamard"
+      },
+      "explanations": {
+        "a": "Pauli-X measures in the |+⟩/|-⟩ basis.",
+        "b": "Pauli-Y measures along the Y-axis.",
+        "c": "Pauli-Z is the standard computational basis for measuring whether a qubit is in |0⟩ or |1⟩.",
+        "d": "Hadamard is a gate that creates superposition, not a Pauli measurement operator."
+      },
+      "correctAnswer": "c",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "What are the possible eigenvalues (measurement outcomes) for any Pauli operator on a single qubit?",
+      "answers": {
+        "a": "0 and 1",
+        "b": "+1 and -1",
+        "c": "+i and -i",
+        "d": "1 and 2"
+      },
+      "explanations": {
+        "a": "0 and 1 are classical bit values, not eigenvalues of Pauli matrices.",
+        "b": "Pauli matrices are Hermitian and have eigenvalues +1 and -1, corresponding to the measurement results.",
+        "c": "Eigenvalues of Hermitian operators must be real numbers.",
+        "d": "1 and 2 are not the eigenvalues of the Pauli matrices."
+      },
+      "correctAnswer": "b",
+      "difficulty": "intermediate"
+    }
+  ]
+}

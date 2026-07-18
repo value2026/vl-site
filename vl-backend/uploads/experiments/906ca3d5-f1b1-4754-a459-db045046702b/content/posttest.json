@@ -1,0 +1,107 @@
+{
+  "version": 2.0,
+  "questions": [
+    {
+      "question": "For the state |ψ⟩ = 0.6|0⟩ + 0.8|1⟩, what is the probability of measuring |1⟩?",
+      "answers": {
+        "a": "0.6",
+        "b": "0.8",
+        "c": "0.36",
+        "d": "0.64"
+      },
+      "explanations": {
+        "a": "Incorrect. The amplitude is 0.8, but you need to square it for probability.",
+        "b": "Incorrect. That is the amplitude, not the probability. Use Born's rule: P = |amplitude|²",
+        "c": "Incorrect. That is 0.6² = 0.36.",
+        "d": "Correct! P(1) = |0.8|² = 0.64 according to Born's rule."
+      },
+      "correctAnswer": "d",
+      "difficulty": "intermediate"
+    },
+    {
+      "question": "What is the key difference between measuring a quantum state in the Computational basis versus the Hadamard basis?",
+      "answers": {
+        "a": "There is no difference; both bases give identical results",
+        "b": "The Computational basis always gives |0⟩ as the result",
+        "c": "Different bases reveal different aspects of the quantum state and may yield different outcome probabilities",
+        "d": "The Hadamard basis cannot be used for measurement"
+      },
+      "explanations": {
+        "a": "Incorrect. Different bases reveal different information about the quantum state.",
+        "b": "Incorrect. The outcome depends on the state and basis, not fixed.",
+        "c": "Correct! Different measurement bases reveal different properties and give different probability distributions.",
+        "d": "Incorrect. The Hadamard basis is a valid measurement basis."
+      },
+      "correctAnswer": "c",
+      "difficulty": "intermediate"
+    },
+    {
+      "question": "When conducting 1000 quantum measurement shots on the state |ψ⟩ = (1/√2)(|0⟩ + |1⟩) in the computational basis, approximately how many times would you expect to measure |0⟩?",
+      "answers": {
+        "a": "0 times",
+        "b": "250 times",
+        "c": "500 times",
+        "d": "1000 times"
+      },
+      "explanations": {
+        "a": "Incorrect. The state has an equal superposition, so |0⟩ will appear.",
+        "b": "Incorrect. The probability of |0⟩ is (1/√2)² = 0.5, so expect approximately 500.",
+        "c": "Correct! With equal superposition amplitudes of 1/√2, P(0) = 0.5, so ~500 out of 1000 shots.",
+        "d": "Incorrect. You would get both |0⟩ and |1⟩ with equal probability."
+      },
+      "correctAnswer": "c",
+      "difficulty": "intermediate"
+    },
+    {
+      "question": "What is wave function collapse in quantum measurement?",
+      "answers": {
+        "a": "The measurement basis automatically changes",
+        "b": "The quantum state transitions from superposition to a definite eigenstate of the measurement operator",
+        "c": "The quantum state loses all information",
+        "d": "Multiple quantum states merge together"
+      },
+      "explanations": {
+        "a": "Incorrect. The basis is a choice we make, not something that changes automatically.",
+        "b": "Correct! Wave function collapse is the transition of the superposition state to a definite basis state.",
+        "c": "Incorrect. After collapse, the system is in a definite state with complete information.",
+        "d": "Incorrect. Collapse selects one state, not a merger of multiple states."
+      },
+      "correctAnswer": "b",
+      "difficulty": "advanced"
+    },
+    {
+      "question": "Why is repeated measurement important in quantum computing simulations?",
+      "answers": {
+        "a": "To verify that the state is changing each time",
+        "b": "To observe the statistical distribution of probabilistic outcomes and verify theoretical predictions",
+        "c": "Because single measurements are always incorrect",
+        "d": "To ensure the quantum state remains unchanged"
+      },
+      "explanations": {
+        "a": "Incorrect. Each measurement may be independent but gives individual outcomes.",
+        "b": "Correct! Multiple measurements build a histogram showing the probability distribution, validating quantum theory.",
+        "c": "Incorrect. Single measurements are valid; repeated measurements provide statistical insight.",
+        "d": "Incorrect. Each measurement collapses the state; repeating means repreparing."
+      },
+      "correctAnswer": "b",
+      "difficulty": "advanced"
+    },
+    {
+      "question": "Given a quantum state with measurement probabilities P(0) = 0.4 and P(1) = 0.6, what is the variance in a large number of shots measuring this state?",
+      "answers": {
+        "a": "0.24",
+        "b": "0.40",
+        "c": "0.60",
+        "d": "1.00"
+      },
+      "explanations": {
+        "a": "Correct! Variance = p(1-p) = 0.6 × 0.4 = 0.24 for a binary outcome with p=0.6.",
+        "b": "Incorrect. This is the probability of one outcome.",
+        "c": "Incorrect. This is the probability of the other outcome.",
+        "d": "Incorrect. The maximum variance for a binary distribution is 0.25."
+      },
+      "correctAnswer": "a",
+      "difficulty": "advanced"
+    }
+  ]
+}

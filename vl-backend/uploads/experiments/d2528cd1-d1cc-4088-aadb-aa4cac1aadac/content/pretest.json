@@ -1,0 +1,90 @@
+{
+  "version": 2.0,
+  "questions": [
+    {
+      "question": "What is the normalization condition for a single qubit state |ψ⟩ = α|0⟩ + β|1⟩?",
+      "answers": {
+        "a": "|α| + |β| = 1",
+        "b": "|α|² + |β|² = 1",
+        "c": "α + β = 1",
+        "d": "α² + β² = 1"
+      },
+      "explanations": {
+        "a": "Incorrect. This is not the correct normalization condition for quantum states.",
+        "b": "Correct! The sum of the squared magnitudes of amplitudes equals 1. This preserves probability.",
+        "c": "Incorrect. Normalization applies to magnitudes of complex numbers, not their sum.",
+        "d": "Incorrect. The magnitudes must be squared, and they are complex numbers."
+      },
+      "correctAnswer": "b",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "What property must a quantum gate matrix U satisfy to be valid?",
+      "answers": {
+        "a": "U × U = I (identity matrix)",
+        "b": "U† × U = U × U† = I (unitary property)",
+        "c": "U is always symmetric",
+        "d": "U has no complex numbers"
+      },
+      "explanations": {
+        "a": "Incorrect. This is only half the requirement.",
+        "b": "Correct! Quantum gates must be unitary matrices where U† (adjoint) times U equals identity.",
+        "c": "Incorrect. Quantum gates can have complex entries and need not be symmetric.",
+        "d": "Incorrect. Quantum gates often contain complex numbers."
+      },
+      "correctAnswer": "b",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "What does the Hadamard gate do to the |0⟩ state?",
+      "answers": {
+        "a": "It leaves it unchanged",
+        "b": "It converts it to (1/√2)(|0⟩ - |1⟩)",
+        "c": "It converts it to (1/√2)(|0⟩ + |1⟩)",
+        "d": "It converts it to |1⟩"
+      },
+      "explanations": {
+        "a": "Incorrect. The Hadamard gate creates superposition.",
+        "b": "Incorrect. H|0⟩ produces a positive superposition, not negative.",
+        "c": "Correct! H|0⟩ = (1/√2)(|0⟩ + |1⟩), creating equal superposition.",
+        "d": "Incorrect. That would be the X (NOT) gate."
+      },
+      "correctAnswer": "c",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "For a two-qubit state with amplitudes [1/√2, 0, 0, 1/√2], what are the measurement probabilities?",
+      "answers": {
+        "a": "100% |00⟩, 0% others",
+        "b": "50% |00⟩, 50% |11⟩, 0% others",
+        "c": "25% each state",
+        "d": "50% |00⟩, 25% |01⟩, 25% |10⟩, 0% |11⟩"
+      },
+      "explanations": {
+        "a": "Incorrect. There are non-zero amplitudes for other states.",
+        "b": "Correct! Using the Born rule: |(1/√2)|² = 0.5 for |00⟩ and |11⟩, 0 for others.",
+        "c": "Incorrect. Only |00⟩ and |11⟩ have non-zero amplitudes.",
+        "d": "Incorrect. |01⟩ and |10⟩ have zero amplitudes in this state."
+      },
+      "correctAnswer": "b",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "In a quantum circuit, what does CNOT stand for?",
+      "answers": {
+        "a": "Complex NOT gate",
+        "b": "Controlled-NOT gate",
+        "c": "Conjugate NOT gate",
+        "d": "Combined NOT operation"
+      },
+      "explanations": {
+        "a": "Incorrect. CNOT is not about complexity.",
+        "b": "Correct! CNOT is the Controlled-NOT gate that flips a target qubit based on a control qubit.",
+        "c": "Incorrect. Conjugate refers to complex conjugates, not this gate.",
+        "d": "Incorrect. It's specifically about control and targeting."
+      },
+      "correctAnswer": "b",
+      "difficulty": "beginner"
+    }
+  ]
+}

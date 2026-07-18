@@ -1,0 +1,56 @@
+{
+  "version": 2.0,
+  "questions": [
+    {
+      "question": "What is the length of the hash value produced by the MD5 algorithm?",
+      "answers": {
+        "a": "128 bits",
+        "b": "160 bits",
+        "c": "256 bits",
+        "d": "512 bits"
+      },
+      "explanations": {
+        "a": "Explanation: The MD5 algorithm produces a hash value that is 128 bits long. More information can be found <a href='https://en.wikipedia.org/wiki/MD5'>here</a>",
+        "b": "Explanation: Incorrect answer. The MD5 algorithm produces a 128-bit hash value.",
+        "c": "Explanation: Incorrect answer. The MD5 algorithm produces a 128-bit hash value.",
+        "d": "Explanation: Incorrect answer. The MD5 algorithm produces a 128-bit hash value."
+      },
+      "correctAnswer": "a",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "Which of the following is a known vulnerability of the MD5 algorithm?",
+      "answers": {
+        "a": "High computational cost",
+        "b": "Collision resistance",
+        "c": "Length extension attack",
+        "d": "Not generating unique hashes"
+      },
+      "explanations": {
+        "a": "Explanation: Incorrect answer. MD5 is known for its low computational cost.",
+        "b": "Explanation: Incorrect answer. Collision resistance is a property that MD5 lacks.",
+        "c": "Explanation: The MD5 algorithm is vulnerable to length extension attacks, where an attacker can append data to the hash and still produce a valid hash. More information can be found <a href='https://en.wikipedia.org/wiki/MD5'>here</a>",
+        "d": "Explanation: Incorrect answer. The issue with MD5 is not with uniqueness but with collision vulnerabilities."
+      },
+      "correctAnswer": "c",
+      "difficulty": "intermediate"
+    },
+    {
+      "question": "In which year was the MD5 algorithm publicly released?",
+      "answers": {
+        "a": "1985",
+        "b": "1991",
+        "c": "1995",
+        "d": "2000"
+      },
+      "explanations": {
+        "a": "Explanation: Incorrect answer. MD5 was not released in 1985.",
+        "b": "Explanation: The MD5 algorithm was publicly released in 1991 by Ronald Rivest. More information can be found <a href='https://en.wikipedia.org/wiki/MD5'>here</a>",
+        "c": "Explanation: Incorrect answer. MD5 was released earlier, in 1991.",
+        "d": "Explanation: Incorrect answer. MD5 was released earlier, in 1991."
+      },
+      "correctAnswer": "b",
+      "difficulty": "intermediate"
+    }
+  ]
+}

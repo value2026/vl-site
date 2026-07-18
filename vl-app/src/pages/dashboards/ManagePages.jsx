@@ -1,0 +1,330 @@
+import { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import {
+  GripVertical, Eye, EyeOff, Pencil, ExternalLink,
+  RefreshCw, Globe, AlertCircle, Loader2, CheckCircle2
+} from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
+import SectionEditorModal from '../../components/dashboard/SectionEditorModal';
+
+// ── API helpers ───────────────────────────────────────────────
+
+function usePageSections(slug, token, API_URL) {
+  return useQuery({
+    queryKey: ['admin-page-sections', slug],
+    queryFn: async () => {
+      const res = await fetch(`${API_URL}/pages/${slug}/sections`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error('Failed to load sections');
+      return res.json();
+    },
+  });
+}
+
+// ── Section card (draggable) ──────────────────────────────────
+
+const SECTION_ICONS = {
+  hero:                '🏠',
+  featured_simulation: '🔬',
+  cta:                 '📣',
+  sponsors:            '🏛',
+  lab_categories:      '🧪',
+  news:                '📰',
+  media:               '🎬',
+};
+
+function SortableSection({ section, onEdit, onToggle, isSaving }) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: section.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`group flex items-center gap-4 p-4 rounded-2xl border transition-all duration-200 ${
+        isDragging
+          ? 'bg-slate-700 border-red-500/40 shadow-2xl shadow-red-500/10 z-50'
+          : 'bg-slate-800/60 border-white/10 hover:border-white/20 hover:bg-slate-800'
+      }`}
+    >
+      {/* Drag handle */}
+      <button
+        type="button"
+        {...attributes}
+        {...listeners}
+        className="flex-shrink-0 text-slate-600 hover:text-slate-300 cursor-grab active:cursor-grabbing transition-colors p-1 touch-none"
+        aria-label="Drag to reorder"
+      >
+        <GripVertical className="w-5 h-5" />
+      </button>
+
+      {/* Icon */}
+      <div className="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center text-xl flex-shrink-0">
+        {SECTION_ICONS[section.sectionKey] || '📄'}
+      </div>
+
+      {/* Info */}
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2">
+          <span className="text-white font-semibold text-sm truncate">{section.label}</span>
+          {isSaving && <Loader2 className="w-3.5 h-3.5 text-slate-400 animate-spin" />}
+        </div>
+        <p className="text-slate-500 text-xs font-mono mt-0.5">{section.sectionKey}</p>
+      </div>
+
+      {/* Visibility badge */}
+      <div className={`flex-shrink-0 px-2.5 py-1 rounded-full text-xs font-semibold border ${
+        section.isVisible
+          ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+          : 'bg-slate-700/50 text-slate-500 border-slate-600/30'
+      }`}>
+        {section.isVisible ? 'Visible' : 'Hidden'}
+      </div>
+
+      {/* Actions */}
+      <div className="flex items-center gap-2 flex-shrink-0">
+        <button
+          type="button"
+          onClick={() => onToggle(section)}
+          title={section.isVisible ? 'Hide section' : 'Show section'}
+          className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition-all"
+        >
+          {section.isVisible ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+        </button>
+        <button
+          type="button"
+          onClick={() => onEdit(section)}
+          className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium text-slate-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all"
+        >
+          <Pencil className="w-3.5 h-3.5" />
+          Edit
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ── Main page ─────────────────────────────────────────────────
+
+export default function ManagePages() {
+  const { token, API_URL } = useAuth();
+  const queryClient        = useQueryClient();
+  const [editingSection, setEditingSection] = useState(null);
+  const [savingId,       setSavingId]       = useState(null);
+  const [savedId,        setSavedId]        = useState(null);
+
+  const { data: sections = [], isLoading, isError, refetch } = usePageSections('home', token, API_URL);
+
+  // Local ordering state (optimistic UI)
+  const [localOrder, setLocalOrder] = useState(null);
+  const displaySections = (localOrder || sections).slice().sort((a, b) => a.order - b.order);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
+
+  // Visibility toggle mutation
+  const toggleMutation = useMutation({
+    mutationFn: async (section) => {
+      setSavingId(section.id);
+      const res = await fetch(`${API_URL}/pages/home/sections/${section.id}/visibility`, {
+        method:  'PATCH',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error('Failed to toggle');
+      return res.json();
+    },
+    onSuccess: (updated) => {
+      queryClient.setQueryData(['admin-page-sections', 'home'], (old) =>
+        old?.map(s => s.id === updated.id ? updated : s)
+      );
+      // Also invalidate the public home sections cache
+      queryClient.invalidateQueries(['home-sections']);
+      setSavedId(updated.id);
+      setTimeout(() => setSavedId(null), 2000);
+    },
+    onSettled: () => setSavingId(null),
+  });
+
+  // Reorder mutation
+  const reorderMutation = useMutation({
+    mutationFn: async (items) => {
+      const res = await fetch(`${API_URL}/pages/home/sections/reorder`, {
+        method:  'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization:  `Bearer ${token}`,
+        },
+        body: JSON.stringify({ items }),
+      });
+      if (!res.ok) throw new Error('Reorder failed');
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['home-sections']);
+    },
+  });
+
+  const handleDragEnd = (event) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const current = localOrder || sections;
+    const sorted  = [...current].sort((a, b) => a.order - b.order);
+    const oldIdx  = sorted.findIndex(s => s.id === active.id);
+    const newIdx  = sorted.findIndex(s => s.id === over.id);
+    const reordered = arrayMove(sorted, oldIdx, newIdx).map((s, i) => ({ ...s, order: i }));
+
+    setLocalOrder(reordered);
+
+    reorderMutation.mutate(
+      reordered.map(s => ({ id: s.id, order: s.order }))
+    );
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-24">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="w-8 h-8 text-slate-400 animate-spin" />
+          <p className="text-slate-400 text-sm">Loading page sections…</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="flex items-center justify-center py-24">
+        <div className="flex flex-col items-center gap-4 text-center">
+          <AlertCircle className="w-10 h-10 text-red-400" />
+          <p className="text-white font-semibold">Failed to load sections</p>
+          <button onClick={() => refetch()} className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm text-slate-300 bg-white/5 hover:bg-white/10 border border-white/10 transition-all">
+            <RefreshCw className="w-4 h-4" /> Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="max-w-3xl mx-auto">
+      {/* Header */}
+      <div className="flex items-start justify-between mb-8">
+        <div>
+          <h2 className="text-white text-2xl font-bold flex items-center gap-3">
+            <Globe className="w-6 h-6 text-red-400" />
+            Home Page
+          </h2>
+          <p className="text-slate-400 text-sm mt-1.5">
+            Drag to reorder sections · Toggle visibility · Click Edit to change content
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => refetch()}
+            className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 transition-all"
+          >
+            <RefreshCw className="w-4 h-4" />
+          </button>
+          <a
+            href="/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-slate-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 transition-all"
+          >
+            <ExternalLink className="w-4 h-4" />
+            View Live
+          </a>
+        </div>
+      </div>
+
+      {/* Info banner */}
+      <div className="flex items-center gap-3 p-4 bg-blue-500/10 border border-blue-500/20 rounded-2xl mb-6">
+        <Globe className="w-5 h-5 text-blue-400 flex-shrink-0" />
+        <p className="text-blue-300 text-sm">
+          Changes are <strong>live immediately</strong> after saving. Hidden sections are invisible to visitors but stay saved in the database.
+        </p>
+      </div>
+
+      {/* Section list with DnD */}
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+      >
+        <SortableContext
+          items={displaySections.map(s => s.id)}
+          strategy={verticalListSortingStrategy}
+        >
+          <div className="space-y-3">
+            {displaySections.map(section => (
+              <div key={section.id} className="relative">
+                <SortableSection
+                  section={section}
+                  onEdit={setEditingSection}
+                  onToggle={s => toggleMutation.mutate(s)}
+                  isSaving={savingId === section.id}
+                />
+                {savedId === section.id && (
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-1.5 text-emerald-400 text-xs font-medium animate-fade-in">
+                    <CheckCircle2 className="w-4 h-4" />
+                    Saved!
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </SortableContext>
+      </DndContext>
+
+      {/* Reorder status */}
+      {reorderMutation.isPending && (
+        <div className="flex items-center justify-center gap-2 mt-4 text-slate-500 text-sm">
+          <Loader2 className="w-4 h-4 animate-spin" />
+          Saving order…
+        </div>
+      )}
+
+      {/* Edit modal */}
+      {editingSection && (
+        <SectionEditorModal
+          section={editingSection}
+          onClose={() => setEditingSection(null)}
+          onSaved={() => {
+            refetch();
+            setLocalOrder(null);
+          }}
+        />
+      )}
+    </div>
+  );
+}

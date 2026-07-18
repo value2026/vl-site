@@ -1,0 +1,74 @@
+{
+  "version": 2.0,
+  "questions": [
+    {
+      "question": "Why is superposition important in Shor’s Algorithm simulation?",
+      "answers": {
+        "a": "It allows evaluation of many inputs simultaneously",
+        "b": "It increases classical memory",
+        "c": "It removes modular arithmetic",
+        "d": "It avoids measurement"
+      },
+      "explanations": {
+        "a": "Superposition enables quantum parallelism by evaluating many values at once.",
+        "b": "It does not increase classical memory.",
+        "c": "Modular arithmetic is still required.",
+        "d": "Measurement is still necessary."
+      },
+      "correctAnswer": "a",
+      "difficulty": "intermediate"
+    },
+    {
+      "question": "In the simulation, what step reveals periodic peaks?",
+      "answers": {
+        "a": "Initial state preparation",
+        "b": "Modular exponentiation",
+        "c": "Quantum Fourier Transform",
+        "d": "Final GCD calculation"
+      },
+      "explanations": {
+        "a": "Initial state only prepares superposition.",
+        "b": "Modular exponentiation encodes periodicity.",
+        "c": "QFT transforms periodicity into measurable peaks.",
+        "d": "GCD is a classical step."
+      },
+      "correctAnswer": "c",
+      "difficulty": "intermediate"
+    },
+    {
+      "question": "Why is classical post-processing required?",
+      "answers": {
+        "a": "To build quantum circuits",
+        "b": "To convert measurement results into the period",
+        "c": "To remove superposition",
+        "d": "To prepare qubits"
+      },
+      "explanations": {
+        "a": "Circuit building happens earlier.",
+        "b": "Classical processing extracts r from measurement results.",
+        "c": "Superposition collapses during measurement.",
+        "d": "Qubits are prepared before computation."
+      },
+      "correctAnswer": "b",
+      "difficulty": "advanced"
+    },
+  
+    {
+      "question": "Which part of Shor’s Algorithm is quantum?",
+      "answers": {
+        "a": "GCD computation",
+        "b": "Continued fraction method",
+        "c": "Period finding using QFT",
+        "d": "Prime listing"
+      },
+      "explanations": {
+        "a": "GCD is classical.",
+        "b": "Continued fractions are classical.",
+        "c": "Period finding using QFT is the quantum part.",
+        "d": "Prime listing is not part of the algorithm."
+      },
+      "correctAnswer": "c",
+      "difficulty": "advanced"
+    }
+  ]
+}
