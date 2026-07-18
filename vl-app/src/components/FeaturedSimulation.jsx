@@ -18,6 +18,11 @@ const DEFAULTS = {
 export default function FeaturedSimulation({ content = {} }) {
   const sim = { ...DEFAULTS, ...content };
 
+  // Retroactive fix: rewrite legacy plural routes to matching singular route format
+  if (sim.href && sim.href.startsWith('/student/experiments/')) {
+    sim.href = sim.href.replace('/student/experiments/', '/student/experiment/');
+  }
+
   return (
     <section className="py-24 bg-white" aria-labelledby="featured-sim-heading">
       <div className="container-custom">
@@ -65,9 +70,13 @@ export default function FeaturedSimulation({ content = {} }) {
             </div>
 
             {/* Right — visual */}
-            <div className="relative bg-hero-gradient p-10 lg:p-14 flex flex-col items-center justify-center min-h-72 lg:min-h-auto">
+            <div className={`relative ${sim.imageUrl ? 'p-0 overflow-hidden' : 'bg-hero-gradient p-10 lg:p-14'} flex flex-col items-center justify-center min-h-72 lg:min-h-auto`}>
               {sim.imageUrl ? (
-                <img src={sim.imageUrl} alt={sim.title} className="w-full max-w-sm mx-auto rounded-2xl object-cover" />
+                <img 
+                  src={sim.imageUrl} 
+                  alt={sim.title} 
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 hover:scale-105" 
+                />
               ) : (
                 <div className="relative w-full max-w-sm mx-auto">
                   {/* Pendulum visual */}

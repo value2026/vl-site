@@ -1,0 +1,41 @@
+{
+  "version": 2.0,
+  "questions": [
+    {
+      "question": "An aqueous solution of Ni2+ absorbs from red region of the visible spectrum. The probable colour of the solution is ________",
+      "answers": {
+        "a": "Blue",
+        "b": "Red",
+        "c": "Yellow",
+        "d": "Green"
+      },
+      
+      "correctAnswer": "d",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "he relation between absorbance and % transmittance is ______.",
+      "answers": {
+        "a": "A=ln % T",
+        "b": "A = -%T",
+        "c": "A=2/%T",
+        "d": "A=-log(%T/100)"
+      },
+     
+      "correctAnswer": "d",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "A solution of 0.2M has an absorbance of 0.4, while another solution of the same compound measured under the same conditions has an absorbance of 0.57. Then the concentration of the latter is ______",
+      "answers": {
+        "a": "0.045",
+        "b": "0.285",
+        "c": "1.14",
+        "d": "0.140"
+      },
+     
+      "correctAnswer": "b",
+      "difficulty": "beginner"
+    }
+  ]
+}

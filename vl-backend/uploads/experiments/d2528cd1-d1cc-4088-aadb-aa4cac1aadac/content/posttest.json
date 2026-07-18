@@ -1,0 +1,107 @@
+{
+  "version": 2.0,
+  "questions": [
+    {
+      "question": "What is the final state of the Bell state circuit: initial |00⟩ → Hadamard → CNOT?",
+      "answers": {
+        "a": "(1/√2)(|00⟩ - |11⟩)",
+        "b": "(1/√2)(|00⟩ + |11⟩)",
+        "c": "(1/√2)(|01⟩ + |10⟩)",
+        "d": "|00⟩"
+      },
+      "explanations": {
+        "a": "Incorrect. This is a different Bell state.",
+        "b": "Correct! H creates (1/√2)(|00⟩ + |10⟩), then CNOT produces (1/√2)(|00⟩ + |11⟩).",
+        "c": "Incorrect. This is another Bell state but not from this circuit.",
+        "d": "Incorrect. The Hadamard creates superposition immediately."
+      },
+      "correctAnswer": "b",
+      "difficulty": "intermediate"
+    },
+    {
+      "question": "What quantum property does the Bell state (1/√2)(|00⟩ + |11⟩) demonstrate?",
+      "answers": {
+        "a": "Superposition only",
+        "b": "Entanglement - perfect correlation between qubits",
+        "c": "Unitarity of gates",
+        "d": "Measurement collapse"
+      },
+      "explanations": {
+        "a": "Incorrect. Superposition alone doesn't create this correlation.",
+        "b": "Correct! Measuring one qubit determines the other - they're perfectly correlated and cannot be factored.",
+        "c": "Incorrect. Unitarity is a property of gates, not states.",
+        "d": "Incorrect. This describes what happens during measurement, not the state property."
+      },
+      "correctAnswer": "b",
+      "difficulty": "intermediate"
+    },
+    {
+      "question": "If you measure a qubit in the Bell state (1/√2)(|00⟩ + |11⟩) and get |0⟩, what is the measurement outcome for the second qubit?",
+      "answers": {
+        "a": "Could be |0⟩ or |1⟩ with equal probability",
+        "b": "Must be |0⟩",
+        "c": "Must be |1⟩",
+        "d": "Depends on external factors"
+      },
+      "explanations": {
+        "a": "Incorrect. Bell states have perfect correlation.",
+        "b": "Correct! The state (1/√2)(|00⟩ + |11⟩) means both qubits must be the same.",
+        "c": "Incorrect. If the first qubit is |0⟩, the second is also |0⟩ in this state.",
+        "d": "Incorrect. Quantum states are deterministic given the state vector."
+      },
+      "correctAnswer": "b",
+      "difficulty": "intermediate"
+    },
+    {
+      "question": "What is the difference between the Bell state (2-qubit) and GHZ state (3-qubit)?",
+      "answers": {
+        "a": "No difference, just more qubits",
+        "b": "Bell state has 2-qubit entanglement; GHZ state has 3-qubit entanglement",
+        "c": "GHZ uses different gates than Bell",
+        "d": "GHZ is used for different applications only"
+      },
+      "explanations": {
+        "a": "Incorrect. The level of entanglement increases with more qubits.",
+        "b": "Correct! Bell: (1/√2)(|00⟩ + |11⟩) involves 2 qubits. GHZ: (1/√2)(|000⟩ + |111⟩) involves 3.",
+        "c": "Incorrect. GHZ uses the same Hadamard and CNOT gates.",
+        "d": "Incorrect. Both demonstrate fundamental entanglement principles."
+      },
+      "correctAnswer": "b",
+      "difficulty": "intermediate"
+    },
+    {
+      "question": "When you apply matrix operation |ψ_new⟩ = U|ψ_old⟩, what does U represent?",
+      "answers": {
+        "a": "A unitary matrix representing a quantum gate operation",
+        "b": "The measurement outcome",
+        "c": "The probability of each state",
+        "d": "A classical transformation"
+      },
+      "explanations": {
+        "a": "Correct! U is the unitary matrix of the quantum gate being applied to the state vector.",
+        "b": "Incorrect. U is the operator, not the measurement result.",
+        "c": "Incorrect. Probabilities come from |amplitude|², not from U itself.",
+        "d": "Incorrect. Matrix operations in quantum mechanics are unitary, not classical."
+      },
+      "correctAnswer": "a",
+      "difficulty": "intermediate"
+    },
+    {
+      "question": "In the simulation, when 1000 measurements are performed on a Bell state, what distribution of outcomes is expected?",
+      "answers": {
+        "a": "All 1000 measurements give |00⟩",
+        "b": "Approximately 500 |00⟩ and 500 |11⟩",
+        "c": "Approximately 250 each of |00⟩, |01⟩, |10⟩, |11⟩",
+        "d": "Random distribution varies each time"
+      },
+      "explanations": {
+        "a": "Incorrect. The Bell state is a superposition.",
+        "b": "Correct! The Born rule predicts |(1/√2)|² = 50% for each outcome.",
+        "c": "Incorrect. |01⟩ and |10⟩ have zero probability in this state.",
+        "d": "Incorrect. Quantum predictions are statistical but consistent with the Born rule."
+      },
+      "correctAnswer": "b",
+      "difficulty": "advanced"
+    }
+  ]
+}

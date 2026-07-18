@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors    = require('cors');
 const path    = require('path');
+const fs      = require('fs');
 
 const http    = require('http');
 const { initSocket } = require('./socket');
@@ -66,6 +67,39 @@ app.use('/api/experiments', experimentRoutes);
 app.use('/api/analytics',   analyticsRoutes);
 app.use('/api/calls',       callRoutes);
 app.use('/api/pages',       pagesRoutes);
+
+// Local media upload endpoint (fallback when Cloudinary is not configured)
+const multer = require('multer');
+const imageStorage = multer.diskStorage({
+  destination: (_req, _file, cb) => {
+    const dir = path.join(__dirname, '..', 'uploads', 'media');
+    fs.mkdirSync(dir, { recursive: true });
+    cb(null, dir);
+  },
+  filename: (_req, file, cb) => {
+    const safeName = file.originalname.replace(/\s+/g, '-');
+    cb(null, `${Date.now()}-${safeName}`);
+  }
+});
+const imageUpload = multer({
+  storage: imageStorage,
+  limits: { fileSize: 10 * 1024 * 1024 } // 10MB
+});
+
+app.post('/api/upload', imageUpload.single('file'), (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'No file uploaded' });
+    }
+    const relativeUrl = `media/${req.file.filename}`;
+    const absoluteUrl = `${req.protocol}://${req.get('host')}/files/${relativeUrl}`;
+    console.log(`📸 Local uploader: Saved image to ${absoluteUrl}`);
+    res.json({ url: absoluteUrl });
+  } catch (err) {
+    console.error('❌ Media upload failed:', err);
+    res.status(500).json({ message: 'Media upload failed' });
+  }
+});
 
 // Health check
 app.get('/api/health', (_req, res) => {

@@ -125,46 +125,57 @@ async function main() {
       gradient: 'from-blue-600 to-indigo-700',
       labs: [
         {
-          title: 'Data Structures Lab',
-          icon: '🔬',
-          description: 'Hands-on practice with stacks, queues, linked lists, trees, and hash tables.',
+          title: 'Quantum Computing Lab',
+          icon: '⚛️',
+          description: 'Hands-on simulations covering quantum state preparation, Shor\'s algorithm, VQE optimization, QSVM, and quantum machine learning.',
           experiments: [
             {
-              title: 'Stack Operations',
-              description: 'Learn stack concepts using Push, Pop, and Peek operations with live visualization.',
-              duration: '45 min',
-              difficulty: 'Beginner',
-            },
-            {
-              title: 'Queue Operations',
-              description: 'Understand linear and circular queues using Enqueue and Dequeue operations.',
-              duration: '45 min',
-              difficulty: 'Beginner',
-            },
-            {
-              title: 'Binary Search Tree',
-              description: 'Visualize insertion, deletion, and traversals (Inorder, Preorder, Postorder) of a BST.',
-              duration: '60 min',
-              difficulty: 'Intermediate',
-            }
-          ]
-        },
-        {
-          title: 'Computer Networks Lab',
-          icon: '🌐',
-          description: 'Simulate networks, routing protocols, subnetting, and TCP handshake concepts.',
-          experiments: [
-            {
-              title: 'IP Subnetting',
-              description: 'Calculate subnet masks, network addresses, and broadcast addresses for IPv4 networks.',
+              title: 'Expectation Value Calculation in Quantum Systems',
+              description: 'Calculate expectation values of observables for various parameterized quantum state vectors.',
               duration: '60 min',
               difficulty: 'Intermediate',
             },
             {
-              title: 'TCP Three-Way Handshake',
-              description: 'Simulate connection establishment and termination processes in transmission control protocol.',
+              title: 'Factorization Using Shor\'s Algorithm',
+              description: 'Simulate Shor\'s period-finding quantum circuits to factor prime products.',
+              duration: '90 min',
+              difficulty: 'Advanced',
+            },
+            {
+              title: 'Variational Quantum Eigensolver (VQE) Optimization',
+              description: 'Solve for the ground state energy of molecular Hamiltonians using parameterized ansatz circuits.',
+              duration: '75 min',
+              difficulty: 'Advanced',
+            },
+            {
+              title: 'Quantum Measurement and Result Interpretation',
+              description: 'Observe quantum measurement collapse, state tomography, and evaluate probability distributions.',
               duration: '45 min',
+              difficulty: 'Beginner',
+            },
+            {
+              title: 'Quantum Linear Algebra – Matrix and Vector Operations',
+              description: 'Explore quantum algorithms for systems of linear equations and state vector operations.',
+              duration: '60 min',
               difficulty: 'Intermediate',
+            },
+            {
+              title: 'Applied Linear Algebra – Quantum Gates in Action',
+              description: 'Apply Hadamard, Pauli, CNOT, and phase gates in quantum circuits to observe state rotations.',
+              duration: '60 min',
+              difficulty: 'Intermediate',
+            },
+            {
+              title: 'Quantum Kernel Alignment in Machine Learning',
+              description: 'Optimize quantum kernel parameters to increase data separability in high-dimensional feature spaces.',
+              duration: '90 min',
+              difficulty: 'Advanced',
+            },
+            {
+              title: 'Quantum Support Vector Machines (QSVM)',
+              description: 'Classify complex data distributions using quantum-enhanced kernels and support vectors.',
+              duration: '90 min',
+              difficulty: 'Advanced',
             }
           ]
         }
@@ -175,74 +186,47 @@ async function main() {
       icon: '🧪',
       description: 'Interact with virtual retorts, acids, bases, and examine organic reactions.',
       gradient: 'from-emerald-600 to-green-700',
-      labs: [
-        {
-          title: 'Physical Chemistry Lab',
-          icon: '⚗️',
-          description: 'Measure reaction rates, thermodynamic variables, and perform acid-base titrations.',
-          experiments: [
-            {
-              title: 'Acid-Base Titration',
-              description: 'Determine the concentration of an acid by neutralizing it with a standard base.',
-              duration: '45 min',
-              difficulty: 'Beginner',
-            },
-            {
-              title: 'Chemical Kinetics',
-              description: 'Study the effect of concentration and temperature on the rate of reaction.',
-              duration: '60 min',
-              difficulty: 'Intermediate',
-            }
-          ]
-        },
-        {
-          title: 'Organic Chemistry Lab',
-          icon: '🧫',
-          description: 'Understand purification techniques, chromatography, and reaction synthesis.',
-          experiments: [
-            {
-              title: 'Paper Chromatography',
-              description: 'Separate different pigments in ink based on their solubility in a mobile phase.',
-              duration: '30 min',
-              difficulty: 'Beginner',
-            }
-          ]
-        }
-      ]
+      labs: []
     },
     {
       title: 'Physics',
       icon: '⚛️',
       description: 'Explore kinematic forces, optics, thermodynamics, and electromagnetism.',
       gradient: 'from-amber-500 to-orange-600',
+      labs: []
+    },
+    {
+      title: 'Chemical Science',
+      icon: '🧪',
+      description: 'Explore chemical systems, molecular reactions, and physical chemistry principles.',
+      gradient: 'from-teal-500 to-cyan-600',
       labs: [
         {
-          title: 'Mechanics Lab',
-          icon: '📐',
-          description: 'Analyze mechanical movements, projectile dynamics, and wave oscillations.',
+          title: 'Physical Chemistry Virtual Lab',
+          icon: '⚗️',
+          description: 'Explore spectrophotometry, cryoscopy, ebullioscopy and EMF measurement.',
           experiments: [
             {
-              title: 'Projectile Motion',
-              description: 'Simulate launches with varying angles, velocities, and gravity settings.',
-              duration: '45 min',
-              difficulty: 'Beginner',
+              title: 'Spectrophotometry',
+              description: 'Measure the absorption of light by a chemical substance as a function of wavelength.',
+              duration: '60 min',
+              difficulty: 'Intermediate',
             },
             {
-              title: 'Simple Pendulum',
-              description: 'Verify the laws of simple pendulum and determine the acceleration due to gravity.',
-              duration: '30 min',
-              difficulty: 'Beginner',
-            }
-          ]
-        },
-        {
-          title: 'Optics Lab',
-          icon: '🔭',
-          description: 'Examine light paths, diffraction patterns, reflection, and refraction indices.',
-          experiments: [
+              title: 'Cryoscopy',
+              description: 'Determine the depression of freezing point to calculate molecular mass.',
+              duration: '60 min',
+              difficulty: 'Intermediate',
+            },
             {
-              title: 'Young\'s Double Slit Experiment',
-              description: 'Study wave interference of light and determine the wavelength of light source.',
+              title: 'Ebullioscopy',
+              description: 'Determine the elevation of boiling point of a solvent due to a solute.',
+              duration: '60 min',
+              difficulty: 'Intermediate',
+            },
+            {
+              title: 'EMF Measurement',
+              description: 'Measure electromotive force of galvanic cells to study thermodynamics.',
               duration: '60 min',
               difficulty: 'Advanced',
             }

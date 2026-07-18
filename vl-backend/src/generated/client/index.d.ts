@@ -4712,6 +4712,7 @@ export namespace Prisma {
     title: string | null
     description: string | null
     icon: string | null
+    coverPic: string | null
     isActive: boolean | null
     subjectId: string | null
     createdById: string | null
@@ -4725,6 +4726,7 @@ export namespace Prisma {
     title: string | null
     description: string | null
     icon: string | null
+    coverPic: string | null
     isActive: boolean | null
     subjectId: string | null
     createdById: string | null
@@ -4738,6 +4740,7 @@ export namespace Prisma {
     title: number
     description: number
     icon: number
+    coverPic: number
     isActive: number
     subjectId: number
     createdById: number
@@ -4753,6 +4756,7 @@ export namespace Prisma {
     title?: true
     description?: true
     icon?: true
+    coverPic?: true
     isActive?: true
     subjectId?: true
     createdById?: true
@@ -4766,6 +4770,7 @@ export namespace Prisma {
     title?: true
     description?: true
     icon?: true
+    coverPic?: true
     isActive?: true
     subjectId?: true
     createdById?: true
@@ -4779,6 +4784,7 @@ export namespace Prisma {
     title?: true
     description?: true
     icon?: true
+    coverPic?: true
     isActive?: true
     subjectId?: true
     createdById?: true
@@ -4865,6 +4871,7 @@ export namespace Prisma {
     title: string
     description: string | null
     icon: string
+    coverPic: string | null
     isActive: boolean
     subjectId: string
     createdById: string
@@ -4895,6 +4902,7 @@ export namespace Prisma {
     title?: boolean
     description?: boolean
     icon?: boolean
+    coverPic?: boolean
     isActive?: boolean
     subjectId?: boolean
     createdById?: boolean
@@ -4913,6 +4921,7 @@ export namespace Prisma {
     title?: boolean
     description?: boolean
     icon?: boolean
+    coverPic?: boolean
     isActive?: boolean
     subjectId?: boolean
     createdById?: boolean
@@ -4929,6 +4938,7 @@ export namespace Prisma {
     title?: boolean
     description?: boolean
     icon?: boolean
+    coverPic?: boolean
     isActive?: boolean
     subjectId?: boolean
     createdById?: boolean
@@ -4963,6 +4973,7 @@ export namespace Prisma {
       title: string
       description: string | null
       icon: string
+      coverPic: string | null
       isActive: boolean
       subjectId: string
       createdById: string
@@ -5370,6 +5381,7 @@ export namespace Prisma {
     readonly title: FieldRef<"Lab", 'String'>
     readonly description: FieldRef<"Lab", 'String'>
     readonly icon: FieldRef<"Lab", 'String'>
+    readonly coverPic: FieldRef<"Lab", 'String'>
     readonly isActive: FieldRef<"Lab", 'Boolean'>
     readonly subjectId: FieldRef<"Lab", 'String'>
     readonly createdById: FieldRef<"Lab", 'String'>
@@ -5759,6 +5771,7 @@ export namespace Prisma {
     description: string | null
     duration: string | null
     difficulty: string | null
+    coverPic: string | null
     isActive: boolean | null
     contentPath: string | null
     simulationPath: string | null
@@ -5774,6 +5787,7 @@ export namespace Prisma {
     description: string | null
     duration: string | null
     difficulty: string | null
+    coverPic: string | null
     isActive: boolean | null
     contentPath: string | null
     simulationPath: string | null
@@ -5789,6 +5803,7 @@ export namespace Prisma {
     description: number
     duration: number
     difficulty: number
+    coverPic: number
     isActive: number
     contentPath: number
     simulationPath: number
@@ -5806,6 +5821,7 @@ export namespace Prisma {
     description?: true
     duration?: true
     difficulty?: true
+    coverPic?: true
     isActive?: true
     contentPath?: true
     simulationPath?: true
@@ -5821,6 +5837,7 @@ export namespace Prisma {
     description?: true
     duration?: true
     difficulty?: true
+    coverPic?: true
     isActive?: true
     contentPath?: true
     simulationPath?: true
@@ -5836,6 +5853,7 @@ export namespace Prisma {
     description?: true
     duration?: true
     difficulty?: true
+    coverPic?: true
     isActive?: true
     contentPath?: true
     simulationPath?: true
@@ -5924,6 +5942,7 @@ export namespace Prisma {
     description: string | null
     duration: string
     difficulty: string
+    coverPic: string | null
     isActive: boolean
     contentPath: string | null
     simulationPath: string | null
@@ -5956,6 +5975,7 @@ export namespace Prisma {
     description?: boolean
     duration?: boolean
     difficulty?: boolean
+    coverPic?: boolean
     isActive?: boolean
     contentPath?: boolean
     simulationPath?: boolean
@@ -5977,6 +5997,7 @@ export namespace Prisma {
     description?: boolean
     duration?: boolean
     difficulty?: boolean
+    coverPic?: boolean
     isActive?: boolean
     contentPath?: boolean
     simulationPath?: boolean
@@ -5994,6 +6015,7 @@ export namespace Prisma {
     description?: boolean
     duration?: boolean
     difficulty?: boolean
+    coverPic?: boolean
     isActive?: boolean
     contentPath?: boolean
     simulationPath?: boolean
@@ -6031,6 +6053,7 @@ export namespace Prisma {
       description: string | null
       duration: string
       difficulty: string
+      coverPic: string | null
       isActive: boolean
       contentPath: string | null
       simulationPath: string | null
@@ -6441,6 +6464,7 @@ export namespace Prisma {
     readonly description: FieldRef<"Experiment", 'String'>
     readonly duration: FieldRef<"Experiment", 'String'>
     readonly difficulty: FieldRef<"Experiment", 'String'>
+    readonly coverPic: FieldRef<"Experiment", 'String'>
     readonly isActive: FieldRef<"Experiment", 'Boolean'>
     readonly contentPath: FieldRef<"Experiment", 'String'>
     readonly simulationPath: FieldRef<"Experiment", 'String'>
@@ -14770,6 +14794,7 @@ export namespace Prisma {
     title: 'title',
     description: 'description',
     icon: 'icon',
+    coverPic: 'coverPic',
     isActive: 'isActive',
     subjectId: 'subjectId',
     createdById: 'createdById',
@@ -14787,6 +14812,7 @@ export namespace Prisma {
     description: 'description',
     duration: 'duration',
     difficulty: 'difficulty',
+    coverPic: 'coverPic',
     isActive: 'isActive',
     contentPath: 'contentPath',
     simulationPath: 'simulationPath',
@@ -15335,6 +15361,7 @@ export namespace Prisma {
     title?: StringFilter<"Lab"> | string
     description?: StringNullableFilter<"Lab"> | string | null
     icon?: StringFilter<"Lab"> | string
+    coverPic?: StringNullableFilter<"Lab"> | string | null
     isActive?: BoolFilter<"Lab"> | boolean
     subjectId?: StringFilter<"Lab"> | string
     createdById?: StringFilter<"Lab"> | string
@@ -15352,6 +15379,7 @@ export namespace Prisma {
     title?: SortOrder
     description?: SortOrderInput | SortOrder
     icon?: SortOrder
+    coverPic?: SortOrderInput | SortOrder
     isActive?: SortOrder
     subjectId?: SortOrder
     createdById?: SortOrder
@@ -15372,6 +15400,7 @@ export namespace Prisma {
     title?: StringFilter<"Lab"> | string
     description?: StringNullableFilter<"Lab"> | string | null
     icon?: StringFilter<"Lab"> | string
+    coverPic?: StringNullableFilter<"Lab"> | string | null
     isActive?: BoolFilter<"Lab"> | boolean
     subjectId?: StringFilter<"Lab"> | string
     createdById?: StringFilter<"Lab"> | string
@@ -15389,6 +15418,7 @@ export namespace Prisma {
     title?: SortOrder
     description?: SortOrderInput | SortOrder
     icon?: SortOrder
+    coverPic?: SortOrderInput | SortOrder
     isActive?: SortOrder
     subjectId?: SortOrder
     createdById?: SortOrder
@@ -15408,6 +15438,7 @@ export namespace Prisma {
     title?: StringWithAggregatesFilter<"Lab"> | string
     description?: StringNullableWithAggregatesFilter<"Lab"> | string | null
     icon?: StringWithAggregatesFilter<"Lab"> | string
+    coverPic?: StringNullableWithAggregatesFilter<"Lab"> | string | null
     isActive?: BoolWithAggregatesFilter<"Lab"> | boolean
     subjectId?: StringWithAggregatesFilter<"Lab"> | string
     createdById?: StringWithAggregatesFilter<"Lab"> | string
@@ -15425,6 +15456,7 @@ export namespace Prisma {
     description?: StringNullableFilter<"Experiment"> | string | null
     duration?: StringFilter<"Experiment"> | string
     difficulty?: StringFilter<"Experiment"> | string
+    coverPic?: StringNullableFilter<"Experiment"> | string | null
     isActive?: BoolFilter<"Experiment"> | boolean
     contentPath?: StringNullableFilter<"Experiment"> | string | null
     simulationPath?: StringNullableFilter<"Experiment"> | string | null
@@ -15445,6 +15477,7 @@ export namespace Prisma {
     description?: SortOrderInput | SortOrder
     duration?: SortOrder
     difficulty?: SortOrder
+    coverPic?: SortOrderInput | SortOrder
     isActive?: SortOrder
     contentPath?: SortOrderInput | SortOrder
     simulationPath?: SortOrderInput | SortOrder
@@ -15468,6 +15501,7 @@ export namespace Prisma {
     description?: StringNullableFilter<"Experiment"> | string | null
     duration?: StringFilter<"Experiment"> | string
     difficulty?: StringFilter<"Experiment"> | string
+    coverPic?: StringNullableFilter<"Experiment"> | string | null
     isActive?: BoolFilter<"Experiment"> | boolean
     contentPath?: StringNullableFilter<"Experiment"> | string | null
     simulationPath?: StringNullableFilter<"Experiment"> | string | null
@@ -15488,6 +15522,7 @@ export namespace Prisma {
     description?: SortOrderInput | SortOrder
     duration?: SortOrder
     difficulty?: SortOrder
+    coverPic?: SortOrderInput | SortOrder
     isActive?: SortOrder
     contentPath?: SortOrderInput | SortOrder
     simulationPath?: SortOrderInput | SortOrder
@@ -15509,6 +15544,7 @@ export namespace Prisma {
     description?: StringNullableWithAggregatesFilter<"Experiment"> | string | null
     duration?: StringWithAggregatesFilter<"Experiment"> | string
     difficulty?: StringWithAggregatesFilter<"Experiment"> | string
+    coverPic?: StringNullableWithAggregatesFilter<"Experiment"> | string | null
     isActive?: BoolWithAggregatesFilter<"Experiment"> | boolean
     contentPath?: StringNullableWithAggregatesFilter<"Experiment"> | string | null
     simulationPath?: StringNullableWithAggregatesFilter<"Experiment"> | string | null
@@ -16419,6 +16455,7 @@ export namespace Prisma {
     title: string
     description?: string | null
     icon?: string
+    coverPic?: string | null
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -16433,6 +16470,7 @@ export namespace Prisma {
     title: string
     description?: string | null
     icon?: string
+    coverPic?: string | null
     isActive?: boolean
     subjectId: string
     createdById: string
@@ -16447,6 +16485,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     icon?: StringFieldUpdateOperationsInput | string
+    coverPic?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -16461,6 +16500,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     icon?: StringFieldUpdateOperationsInput | string
+    coverPic?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     subjectId?: StringFieldUpdateOperationsInput | string
     createdById?: StringFieldUpdateOperationsInput | string
@@ -16475,6 +16515,7 @@ export namespace Prisma {
     title: string
     description?: string | null
     icon?: string
+    coverPic?: string | null
     isActive?: boolean
     subjectId: string
     createdById: string
@@ -16488,6 +16529,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     icon?: StringFieldUpdateOperationsInput | string
+    coverPic?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -16498,6 +16540,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     icon?: StringFieldUpdateOperationsInput | string
+    coverPic?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     subjectId?: StringFieldUpdateOperationsInput | string
     createdById?: StringFieldUpdateOperationsInput | string
@@ -16512,6 +16555,7 @@ export namespace Prisma {
     description?: string | null
     duration?: string
     difficulty?: string
+    coverPic?: string | null
     isActive?: boolean
     contentPath?: string | null
     simulationPath?: string | null
@@ -16530,6 +16574,7 @@ export namespace Prisma {
     description?: string | null
     duration?: string
     difficulty?: string
+    coverPic?: string | null
     isActive?: boolean
     contentPath?: string | null
     simulationPath?: string | null
@@ -16548,6 +16593,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     duration?: StringFieldUpdateOperationsInput | string
     difficulty?: StringFieldUpdateOperationsInput | string
+    coverPic?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     contentPath?: NullableStringFieldUpdateOperationsInput | string | null
     simulationPath?: NullableStringFieldUpdateOperationsInput | string | null
@@ -16566,6 +16612,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     duration?: StringFieldUpdateOperationsInput | string
     difficulty?: StringFieldUpdateOperationsInput | string
+    coverPic?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     contentPath?: NullableStringFieldUpdateOperationsInput | string | null
     simulationPath?: NullableStringFieldUpdateOperationsInput | string | null
@@ -16584,6 +16631,7 @@ export namespace Prisma {
     description?: string | null
     duration?: string
     difficulty?: string
+    coverPic?: string | null
     isActive?: boolean
     contentPath?: string | null
     simulationPath?: string | null
@@ -16599,6 +16647,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     duration?: StringFieldUpdateOperationsInput | string
     difficulty?: StringFieldUpdateOperationsInput | string
+    coverPic?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     contentPath?: NullableStringFieldUpdateOperationsInput | string | null
     simulationPath?: NullableStringFieldUpdateOperationsInput | string | null
@@ -16612,6 +16661,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     duration?: StringFieldUpdateOperationsInput | string
     difficulty?: StringFieldUpdateOperationsInput | string
+    coverPic?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     contentPath?: NullableStringFieldUpdateOperationsInput | string | null
     simulationPath?: NullableStringFieldUpdateOperationsInput | string | null
@@ -17559,6 +17609,7 @@ export namespace Prisma {
     title?: SortOrder
     description?: SortOrder
     icon?: SortOrder
+    coverPic?: SortOrder
     isActive?: SortOrder
     subjectId?: SortOrder
     createdById?: SortOrder
@@ -17572,6 +17623,7 @@ export namespace Prisma {
     title?: SortOrder
     description?: SortOrder
     icon?: SortOrder
+    coverPic?: SortOrder
     isActive?: SortOrder
     subjectId?: SortOrder
     createdById?: SortOrder
@@ -17585,6 +17637,7 @@ export namespace Prisma {
     title?: SortOrder
     description?: SortOrder
     icon?: SortOrder
+    coverPic?: SortOrder
     isActive?: SortOrder
     subjectId?: SortOrder
     createdById?: SortOrder
@@ -17604,6 +17657,7 @@ export namespace Prisma {
     description?: SortOrder
     duration?: SortOrder
     difficulty?: SortOrder
+    coverPic?: SortOrder
     isActive?: SortOrder
     contentPath?: SortOrder
     simulationPath?: SortOrder
@@ -17619,6 +17673,7 @@ export namespace Prisma {
     description?: SortOrder
     duration?: SortOrder
     difficulty?: SortOrder
+    coverPic?: SortOrder
     isActive?: SortOrder
     contentPath?: SortOrder
     simulationPath?: SortOrder
@@ -17634,6 +17689,7 @@ export namespace Prisma {
     description?: SortOrder
     duration?: SortOrder
     difficulty?: SortOrder
+    coverPic?: SortOrder
     isActive?: SortOrder
     contentPath?: SortOrder
     simulationPath?: SortOrder
@@ -19815,6 +19871,7 @@ export namespace Prisma {
     title: string
     description?: string | null
     icon?: string
+    coverPic?: string | null
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -19828,6 +19885,7 @@ export namespace Prisma {
     title: string
     description?: string | null
     icon?: string
+    coverPic?: string | null
     isActive?: boolean
     subjectId: string
     nodalCentreId?: string | null
@@ -19851,6 +19909,7 @@ export namespace Prisma {
     title: string
     description?: string | null
     icon?: string
+    coverPic?: string | null
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -19864,6 +19923,7 @@ export namespace Prisma {
     title: string
     description?: string | null
     icon?: string
+    coverPic?: string | null
     isActive?: boolean
     subjectId: string
     createdById: string
@@ -19888,6 +19948,7 @@ export namespace Prisma {
     description?: string | null
     duration?: string
     difficulty?: string
+    coverPic?: string | null
     isActive?: boolean
     contentPath?: string | null
     simulationPath?: string | null
@@ -19905,6 +19966,7 @@ export namespace Prisma {
     description?: string | null
     duration?: string
     difficulty?: string
+    coverPic?: string | null
     isActive?: boolean
     contentPath?: string | null
     simulationPath?: string | null
@@ -20432,6 +20494,7 @@ export namespace Prisma {
     title?: StringFilter<"Lab"> | string
     description?: StringNullableFilter<"Lab"> | string | null
     icon?: StringFilter<"Lab"> | string
+    coverPic?: StringNullableFilter<"Lab"> | string | null
     isActive?: BoolFilter<"Lab"> | boolean
     subjectId?: StringFilter<"Lab"> | string
     createdById?: StringFilter<"Lab"> | string
@@ -20481,6 +20544,7 @@ export namespace Prisma {
     description?: StringNullableFilter<"Experiment"> | string | null
     duration?: StringFilter<"Experiment"> | string
     difficulty?: StringFilter<"Experiment"> | string
+    coverPic?: StringNullableFilter<"Experiment"> | string | null
     isActive?: BoolFilter<"Experiment"> | boolean
     contentPath?: StringNullableFilter<"Experiment"> | string | null
     simulationPath?: StringNullableFilter<"Experiment"> | string | null
@@ -20774,6 +20838,7 @@ export namespace Prisma {
     title: string
     description?: string | null
     icon?: string
+    coverPic?: string | null
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -20787,6 +20852,7 @@ export namespace Prisma {
     title: string
     description?: string | null
     icon?: string
+    coverPic?: string | null
     isActive?: boolean
     createdById: string
     nodalCentreId?: string | null
@@ -21141,6 +21207,7 @@ export namespace Prisma {
     description?: string | null
     duration?: string
     difficulty?: string
+    coverPic?: string | null
     isActive?: boolean
     contentPath?: string | null
     simulationPath?: string | null
@@ -21158,6 +21225,7 @@ export namespace Prisma {
     description?: string | null
     duration?: string
     difficulty?: string
+    coverPic?: string | null
     isActive?: boolean
     contentPath?: string | null
     simulationPath?: string | null
@@ -21433,6 +21501,7 @@ export namespace Prisma {
     title: string
     description?: string | null
     icon?: string
+    coverPic?: string | null
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -21446,6 +21515,7 @@ export namespace Prisma {
     title: string
     description?: string | null
     icon?: string
+    coverPic?: string | null
     isActive?: boolean
     subjectId: string
     createdById: string
@@ -21652,6 +21722,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     icon?: StringFieldUpdateOperationsInput | string
+    coverPic?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -21665,6 +21736,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     icon?: StringFieldUpdateOperationsInput | string
+    coverPic?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     subjectId?: StringFieldUpdateOperationsInput | string
     createdById?: StringFieldUpdateOperationsInput | string
@@ -21919,6 +21991,7 @@ export namespace Prisma {
     description?: string | null
     duration?: string
     difficulty?: string
+    coverPic?: string | null
     isActive?: boolean
     contentPath?: string | null
     simulationPath?: string | null
@@ -21936,6 +22009,7 @@ export namespace Prisma {
     description?: string | null
     duration?: string
     difficulty?: string
+    coverPic?: string | null
     isActive?: boolean
     contentPath?: string | null
     simulationPath?: string | null
@@ -22068,6 +22142,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     duration?: StringFieldUpdateOperationsInput | string
     difficulty?: StringFieldUpdateOperationsInput | string
+    coverPic?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     contentPath?: NullableStringFieldUpdateOperationsInput | string | null
     simulationPath?: NullableStringFieldUpdateOperationsInput | string | null
@@ -22085,6 +22160,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     duration?: StringFieldUpdateOperationsInput | string
     difficulty?: StringFieldUpdateOperationsInput | string
+    coverPic?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     contentPath?: NullableStringFieldUpdateOperationsInput | string | null
     simulationPath?: NullableStringFieldUpdateOperationsInput | string | null
@@ -22195,6 +22271,7 @@ export namespace Prisma {
     description?: string | null
     duration?: string
     difficulty?: string
+    coverPic?: string | null
     isActive?: boolean
     contentPath?: string | null
     simulationPath?: string | null
@@ -22212,6 +22289,7 @@ export namespace Prisma {
     description?: string | null
     duration?: string
     difficulty?: string
+    coverPic?: string | null
     isActive?: boolean
     contentPath?: string | null
     simulationPath?: string | null
@@ -22344,6 +22422,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     duration?: StringFieldUpdateOperationsInput | string
     difficulty?: StringFieldUpdateOperationsInput | string
+    coverPic?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     contentPath?: NullableStringFieldUpdateOperationsInput | string | null
     simulationPath?: NullableStringFieldUpdateOperationsInput | string | null
@@ -22361,6 +22440,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     duration?: StringFieldUpdateOperationsInput | string
     difficulty?: StringFieldUpdateOperationsInput | string
+    coverPic?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     contentPath?: NullableStringFieldUpdateOperationsInput | string | null
     simulationPath?: NullableStringFieldUpdateOperationsInput | string | null
@@ -22471,6 +22551,7 @@ export namespace Prisma {
     description?: string | null
     duration?: string
     difficulty?: string
+    coverPic?: string | null
     isActive?: boolean
     contentPath?: string | null
     simulationPath?: string | null
@@ -22488,6 +22569,7 @@ export namespace Prisma {
     description?: string | null
     duration?: string
     difficulty?: string
+    coverPic?: string | null
     isActive?: boolean
     contentPath?: string | null
     simulationPath?: string | null
@@ -22620,6 +22702,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     duration?: StringFieldUpdateOperationsInput | string
     difficulty?: StringFieldUpdateOperationsInput | string
+    coverPic?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     contentPath?: NullableStringFieldUpdateOperationsInput | string | null
     simulationPath?: NullableStringFieldUpdateOperationsInput | string | null
@@ -22637,6 +22720,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     duration?: StringFieldUpdateOperationsInput | string
     difficulty?: StringFieldUpdateOperationsInput | string
+    coverPic?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     contentPath?: NullableStringFieldUpdateOperationsInput | string | null
     simulationPath?: NullableStringFieldUpdateOperationsInput | string | null
@@ -23704,6 +23788,7 @@ export namespace Prisma {
     title: string
     description?: string | null
     icon?: string
+    coverPic?: string | null
     isActive?: boolean
     subjectId: string
     nodalCentreId?: string | null
@@ -23716,6 +23801,7 @@ export namespace Prisma {
     title: string
     description?: string | null
     icon?: string
+    coverPic?: string | null
     isActive?: boolean
     subjectId: string
     createdById: string
@@ -23729,6 +23815,7 @@ export namespace Prisma {
     description?: string | null
     duration?: string
     difficulty?: string
+    coverPic?: string | null
     isActive?: boolean
     contentPath?: string | null
     simulationPath?: string | null
@@ -24072,6 +24159,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     icon?: StringFieldUpdateOperationsInput | string
+    coverPic?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -24085,6 +24173,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     icon?: StringFieldUpdateOperationsInput | string
+    coverPic?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     subjectId?: StringFieldUpdateOperationsInput | string
     nodalCentreId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -24098,6 +24187,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     icon?: StringFieldUpdateOperationsInput | string
+    coverPic?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     subjectId?: StringFieldUpdateOperationsInput | string
     nodalCentreId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -24110,6 +24200,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     icon?: StringFieldUpdateOperationsInput | string
+    coverPic?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -24123,6 +24214,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     icon?: StringFieldUpdateOperationsInput | string
+    coverPic?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     subjectId?: StringFieldUpdateOperationsInput | string
     createdById?: StringFieldUpdateOperationsInput | string
@@ -24136,6 +24228,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     icon?: StringFieldUpdateOperationsInput | string
+    coverPic?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     subjectId?: StringFieldUpdateOperationsInput | string
     createdById?: StringFieldUpdateOperationsInput | string
@@ -24149,6 +24242,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     duration?: StringFieldUpdateOperationsInput | string
     difficulty?: StringFieldUpdateOperationsInput | string
+    coverPic?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     contentPath?: NullableStringFieldUpdateOperationsInput | string | null
     simulationPath?: NullableStringFieldUpdateOperationsInput | string | null
@@ -24166,6 +24260,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     duration?: StringFieldUpdateOperationsInput | string
     difficulty?: StringFieldUpdateOperationsInput | string
+    coverPic?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     contentPath?: NullableStringFieldUpdateOperationsInput | string | null
     simulationPath?: NullableStringFieldUpdateOperationsInput | string | null
@@ -24183,6 +24278,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     duration?: StringFieldUpdateOperationsInput | string
     difficulty?: StringFieldUpdateOperationsInput | string
+    coverPic?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     contentPath?: NullableStringFieldUpdateOperationsInput | string | null
     simulationPath?: NullableStringFieldUpdateOperationsInput | string | null
@@ -24369,6 +24465,7 @@ export namespace Prisma {
     title: string
     description?: string | null
     icon?: string
+    coverPic?: string | null
     isActive?: boolean
     createdById: string
     nodalCentreId?: string | null
@@ -24381,6 +24478,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     icon?: StringFieldUpdateOperationsInput | string
+    coverPic?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -24394,6 +24492,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     icon?: StringFieldUpdateOperationsInput | string
+    coverPic?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdById?: StringFieldUpdateOperationsInput | string
     nodalCentreId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -24407,6 +24506,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     icon?: StringFieldUpdateOperationsInput | string
+    coverPic?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdById?: StringFieldUpdateOperationsInput | string
     nodalCentreId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -24420,6 +24520,7 @@ export namespace Prisma {
     description?: string | null
     duration?: string
     difficulty?: string
+    coverPic?: string | null
     isActive?: boolean
     contentPath?: string | null
     simulationPath?: string | null
@@ -24434,6 +24535,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     duration?: StringFieldUpdateOperationsInput | string
     difficulty?: StringFieldUpdateOperationsInput | string
+    coverPic?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     contentPath?: NullableStringFieldUpdateOperationsInput | string | null
     simulationPath?: NullableStringFieldUpdateOperationsInput | string | null
@@ -24451,6 +24553,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     duration?: StringFieldUpdateOperationsInput | string
     difficulty?: StringFieldUpdateOperationsInput | string
+    coverPic?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     contentPath?: NullableStringFieldUpdateOperationsInput | string | null
     simulationPath?: NullableStringFieldUpdateOperationsInput | string | null
@@ -24468,6 +24571,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     duration?: StringFieldUpdateOperationsInput | string
     difficulty?: StringFieldUpdateOperationsInput | string
+    coverPic?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     contentPath?: NullableStringFieldUpdateOperationsInput | string | null
     simulationPath?: NullableStringFieldUpdateOperationsInput | string | null

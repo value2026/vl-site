@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { api } from '../../utils/api';
 import { useAuth } from '../../context/AuthContext';
+import CloudinaryUploader from '../../components/dashboard/CloudinaryUploader';
 
 // ── Color Theme Gradients ─────────────────────────────────────
 const GRADIENTS = [
@@ -225,7 +226,7 @@ function LabsTab() {
   const [modal,    setModal]    = useState(null);
   const [deleting, setDeleting] = useState(null);
   const [filter,   setFilter]   = useState('');
-  const [form,     setForm]     = useState({ title: '', icon: '🔬', description: '', subjectId: '' });
+  const [form,     setForm]     = useState({ title: '', icon: '🔬', description: '', subjectId: '', coverPic: '' });
   const [saving,   setSaving]   = useState(false);
   const [error,    setError]    = useState('');
 
@@ -240,8 +241,8 @@ function LabsTab() {
 
   const filtered = filter ? labs.filter((l) => l.subjectId === filter) : labs;
 
-  const openAdd  = () => { setForm({ title: '', icon: '🔬', description: '', subjectId: subjects[0]?.id || '' }); setError(''); setModal('add'); };
-  const openEdit = (l) => { setForm({ title: l.title, icon: l.icon, description: l.description || '', subjectId: l.subjectId }); setError(''); setModal({ edit: l }); };
+  const openAdd  = () => { setForm({ title: '', icon: '🔬', description: '', subjectId: subjects[0]?.id || '', coverPic: '' }); setError(''); setModal('add'); };
+  const openEdit = (l) => { setForm({ title: l.title, icon: l.icon, description: l.description || '', subjectId: l.subjectId, coverPic: l.coverPic || '' }); setError(''); setModal({ edit: l }); };
 
   const save = async () => {
     if (!form.title.trim() || !form.subjectId) { setError('Title and subject are required'); return; }
@@ -336,6 +337,12 @@ function LabsTab() {
           <Field label="Description">
             <Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Brief summary of lab experiments..." />
           </Field>
+          <Field label="Cover Image">
+            <CloudinaryUploader
+              value={form.coverPic || ''}
+              onChange={(url) => setForm({ ...form, coverPic: url })}
+            />
+          </Field>
           <button onClick={save} disabled={saving} className="w-full py-3 mt-2 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-bold rounded-xl transition-all shadow-lg flex items-center justify-center gap-2">
             {saving && <Loader2 className="w-4.5 h-4.5 animate-spin" />}
             {modal?.edit ? 'Save Changes' : 'Create Lab'}
@@ -359,7 +366,7 @@ function ExperimentsTab({ role }) {
   const [deleting,    setDeleting]    = useState(null);
   const [subjectFilter, setSubjectFilter] = useState('');
   const [labFilter,   setLabFilter]   = useState('');
-  const [form,        setForm]        = useState({ title: '', description: '', duration: '60 min', difficulty: 'Beginner', labId: '' });
+  const [form,        setForm]        = useState({ title: '', description: '', duration: '60 min', difficulty: 'Beginner', labId: '', coverPic: '' });
   const [saving,      setSaving]      = useState(false);
   const [error,       setError]       = useState('');
   const [uploading,   setUploading]   = useState({});
@@ -386,8 +393,8 @@ function ExperimentsTab({ role }) {
     return true;
   });
 
-  const openAdd  = () => { setForm({ title: '', description: '', duration: '60 min', difficulty: 'Beginner', labId: labs[0]?.id || '' }); setError(''); setModal('add'); };
-  const openEdit = (e) => { setForm({ title: e.title, description: e.description || '', duration: e.duration, difficulty: e.difficulty, labId: e.labId }); setError(''); setModal({ edit: e }); };
+  const openAdd  = () => { setForm({ title: '', description: '', duration: '60 min', difficulty: 'Beginner', labId: labs[0]?.id || '', coverPic: '' }); setError(''); setModal('add'); };
+  const openEdit = (e) => { setForm({ title: e.title, description: e.description || '', duration: e.duration, difficulty: e.difficulty, labId: e.labId, coverPic: e.coverPic || '' }); setError(''); setModal({ edit: e }); };
 
   const save = async () => {
     if (!form.title.trim() || !form.labId) { setError('Title and lab are required'); return; }
@@ -533,6 +540,12 @@ function ExperimentsTab({ role }) {
           </Field>
           <Field label="Description">
             <Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Provide experiment summary or instructions..." />
+          </Field>
+          <Field label="Cover Image">
+            <CloudinaryUploader
+              value={form.coverPic || ''}
+              onChange={(url) => setForm({ ...form, coverPic: url })}
+            />
           </Field>
           <div className="grid grid-cols-2 gap-3">
             <Field label="Estimated Duration">

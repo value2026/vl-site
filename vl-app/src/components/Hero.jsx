@@ -39,7 +39,7 @@ export default function Hero({ content = {} }) {
       {d.backgroundImage && (
         <div 
           className="absolute inset-0 bg-cover bg-center transition-all duration-500"
-          style={{ backgroundImage: `url(${d.backgroundImage})` }}
+          style={{ backgroundImage: `url("${d.backgroundImage}")` }}
         />
       )}
 

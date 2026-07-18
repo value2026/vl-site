@@ -1,0 +1,90 @@
+{
+  "version": 2.0,
+  "questions": [
+    {
+      "question": "What is a quantum state?",
+      "answers": {
+        "a": "A mathematical description of all possible information about a quantum system",
+        "b": "The physical location of a particle",
+        "c": "A measurement outcome",
+        "d": "The energy of a quantum system"
+      },
+      "explanations": {
+        "a": "Correct! A quantum state represents all possible information about a quantum system.",
+        "b": "Incorrect. Quantum states describe information, not just location.",
+        "c": "Incorrect. A measurement outcome is the result, not the state itself.",
+        "d": "Incorrect. While energy is part of quantum information, it's not the definition."
+      },
+      "correctAnswer": "a",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "What is superposition in quantum mechanics?",
+      "answers": {
+        "a": "When a quantum system exists in only one state",
+        "b": "When a quantum system can exist in multiple states simultaneously until measured",
+        "c": "The collapse of a quantum state",
+        "d": "The combination of two measurements"
+      },
+      "explanations": {
+        "a": "Incorrect. That describes a definite state, not superposition.",
+        "b": "Correct! Superposition is when a quantum system exists in multiple states at once.",
+        "c": "Incorrect. Collapse is what happens during measurement, not superposition.",
+        "d": "Incorrect. Superposition is a property of quantum states, not measurement combinations."
+      },
+      "correctAnswer": "b",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "What happens when you measure a quantum state in superposition?",
+      "answers": {
+        "a": "The state remains in superposition",
+        "b": "The state collapses to one of the basis states",
+        "c": "The state splits into two states",
+        "d": "The state disappears"
+      },
+      "explanations": {
+        "a": "Incorrect. Measurement causes the state to change.",
+        "b": "Correct! Measurement causes the quantum state to collapse to a definite state.",
+        "c": "Incorrect. The state collapses to one state, not splits.",
+        "d": "Incorrect. The state is merely collapsed, not destroyed."
+      },
+      "correctAnswer": "b",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "What is the Computational (Z) Basis?",
+      "answers": {
+        "a": "{|+⟩, |-⟩}",
+        "b": "{|0⟩, |1⟩}",
+        "c": "{|x⟩, |y⟩}",
+        "d": "{|a⟩, |b⟩}"
+      },
+      "explanations": {
+        "a": "Incorrect. That is the Hadamard basis.",
+        "b": "Correct! The Computational basis is {|0⟩, |1⟩}.",
+        "c": "Incorrect. These are not standard quantum basis states.",
+        "d": "Incorrect. These are generic labels, not the computational basis."
+      },
+      "correctAnswer": "b",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "What does Born's rule tell us in quantum measurement?",
+      "answers": {
+        "a": "The state always collapses to |0⟩",
+        "b": "The probability of an outcome is proportional to the squared amplitude",
+        "c": "Measurements always give the same result",
+        "d": "The measurement basis does not affect the outcome"
+      },
+      "explanations": {
+        "a": "Incorrect. The outcome depends on the state, not a fixed value.",
+        "b": "Correct! Born's rule states P(k) = |⟨k|ψ⟩|², relating amplitude to probability.",
+        "c": "Incorrect. Measurements in superposition are probabilistic.",
+        "d": "Incorrect. The measurement basis significantly affects outcomes."
+      },
+      "correctAnswer": "b",
+      "difficulty": "beginner"
+    }
+  ]
+}

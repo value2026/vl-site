@@ -54,7 +54,7 @@ const getAllLabs = async (req, res) => {
 // POST /api/labs
 const createLab = async (req, res) => {
   try {
-    const { title, description, icon, subjectId } = req.body;
+    const { title, description, icon, subjectId, coverPic } = req.body;
     if (!title || !subjectId) {
       return res.status(400).json({ message: 'Title and subject are required' });
     }
@@ -69,6 +69,7 @@ const createLab = async (req, res) => {
         title:        title.trim(),
         description:  description || null,
         icon:         icon        || '🔬',
+        coverPic:     coverPic    || null,
         subjectId,
         createdById:  req.user.id,
         nodalCentreId,
@@ -86,7 +87,7 @@ const createLab = async (req, res) => {
 const updateLab = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, description, icon, isActive } = req.body;
+    const { title, description, icon, isActive, coverPic } = req.body;
 
     if (req.user.role !== 'admin') {
       const lab = await prisma.lab.findUnique({ where: { id } });
@@ -99,6 +100,7 @@ const updateLab = async (req, res) => {
     if (title       !== undefined) data.title       = title.trim();
     if (description !== undefined) data.description = description;
     if (icon        !== undefined) data.icon        = icon;
+    if (coverPic    !== undefined) data.coverPic    = coverPic;
     if (typeof isActive === 'boolean') data.isActive = isActive;
 
     const lab = await prisma.lab.update({ where: { id }, data });

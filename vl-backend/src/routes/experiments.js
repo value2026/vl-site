@@ -5,12 +5,13 @@ const { upload } = require('../middleware/upload');
 const {
   getExperiments, getAllExperiments, getExperiment, getExperimentSection,
   createExperiment, updateExperiment, deleteExperiment,
-  uploadContent, uploadSimulation,
+  uploadContent, uploadSimulation, getExperimentDocs,
 } = require('../controllers/experimentsController');
 
 // Public
 router.get('/',                getExperiments);
 router.get('/:id',             getExperiment);
+router.get('/:id/docs',        getExperimentDocs);
 router.get('/:id/content/:section', getExperimentSection);
 
 // Staff

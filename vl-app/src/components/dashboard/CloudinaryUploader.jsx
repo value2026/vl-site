@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import { Upload, X, ImageIcon, Loader2 } from 'lucide-react';
+import { api } from '../../utils/api';
 
 /**
  * CloudinaryUploader — direct browser-to-Cloudinary upload.
@@ -25,10 +26,24 @@ export default function CloudinaryUploader({ value, onChange, label = 'Upload Im
   const handleFile = async (file) => {
     if (!file) return;
 
-    // If Cloudinary not configured, create a local object URL as fallback
+    // If Cloudinary not configured, upload directly to the backend
     if (!isConfigured) {
-      const url = URL.createObjectURL(file);
-      onChange(url);
+      setUploading(true);
+      setError('');
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const res = await api.upload('/upload', formData);
+        if (!res.ok) throw new Error('Local upload failed');
+        const data = await res.json();
+        onChange(data.url);
+      } catch (err) {
+        setError('Local upload failed. Please try again.');
+        console.error('Local media upload error:', err);
+      } finally {
+        setUploading(false);
+      }
       return;
     }
 

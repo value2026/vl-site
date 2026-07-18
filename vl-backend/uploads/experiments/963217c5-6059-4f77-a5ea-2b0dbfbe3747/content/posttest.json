@@ -1,0 +1,73 @@
+{
+  "version": 2.0,
+  "questions": [
+    {
+      "question": "Why is mapping classical data into a quantum Hilbert space computationally advantageous for some datasets?",
+      "answers": {
+        "a": "Because quantum computers operate at lower temperatures.",
+        "b": "Because the dimension of a quantum Hilbert space scales exponentially with the number of qubits, potentially making complex patterns easier to separate.",
+        "c": "Because it decreases the number of features in the dataset.",
+        "d": "Because it completely eliminates the need for training."
+      },
+      "explanations": {
+        "a": "Temperature is a hardware property, not a computational reason for the algorithmic advantage.",
+        "b": "The exponential size of the Hilbert space provides a massive feature space that might reveal patterns inaccessible or hard to compute classically.",
+        "c": "It effectively maps into a higher-dimensional feature space, not a lower one.",
+        "d": "Training (the classical optimization step) is still required to find the support vectors."
+      },
+      "correctAnswer": "b",
+      "difficulty": "intermediate"
+    },
+    {
+      "question": "Which benchmark dataset is commonly used to demonstrate the non-linear classification capabilities of a classifier like QSVM?",
+      "answers": {
+        "a": "A linearly separable dataset with two clearly distinct clusters.",
+        "b": "A uniform random noise dataset.",
+        "c": "The XOR (exclusive OR) dataset.",
+        "d": "A dataset with a single overarching class."
+      },
+      "explanations": {
+        "a": "Linearly separable datasets can be solved easily with basic linear models without using advanced kernels.",
+        "b": "Random noise cannot be classified meaningfully or reliably learned.",
+        "c": "The XOR dataset is a classic non-linear problem that requires feature mapping or a complex network to be solved.",
+        "d": "Classification inherently requires at least two classes to discriminate."
+      },
+      "correctAnswer": "c",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "In the standard hybrid QSVM architecture, what is the specific role of the classical computer?",
+      "answers": {
+        "a": "It prepares the initial superposition of quantum states.",
+        "b": "It executes the quantum data encoding circuits.",
+        "c": "It receives the estimated quantum kernel matrix and solves the SVM optimization problem to find the decision boundary.",
+        "d": "It directly measures the fidelity between states during the swap test."
+      },
+      "explanations": {
+        "a": "Quantum hardware or the simulator handles state preparation.",
+        "b": "Quantum hardware or the simulator executes the circuits.",
+        "c": "QSVM is hybrid: the quantum computer evaluates the hard-to-compute kernel, while a standard classical machine handles the convex optimization problem efficiently.",
+        "d": "Measurement happens entirely on the quantum device."
+      },
+      "correctAnswer": "c",
+      "difficulty": "intermediate"
+    },
+    {
+      "question": "What step must occur strictly prior to running the classical SVM optimization algorithm in a QSVM workflow?",
+      "answers": {
+        "a": "The support vectors must be pre-identified by the user.",
+        "b": "The quantum kernel matrix must be calculated for all pairs of training data points.",
+        "c": "The prediction accuracy must be evaluated on the test set.",
+        "d": "The final decision boundary must be plotted."
+      },
+      "explanations": {
+        "a": "Support vectors are automatically found *during* the optimization process.",
+        "b": "The optimization algorithm algebraically requires the pre-computed kernel matrix to find the separating hyperplane and solve for the model's structure.",
+        "c": "Accuracy is evaluated *after* the model is fully trained.",
+        "d": "Plotting is a post-processing visualization step to understand the learned model."
+      },
+      "correctAnswer": "b",
+      "difficulty": "advanced"
+    }
+  ]
+}

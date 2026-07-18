@@ -10,6 +10,7 @@ import {
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import CloudinaryUploader from './CloudinaryUploader';
 import { useAuth } from '../../context/AuthContext';
+import { api } from '../../utils/api';
 
 // ── Tiptap toolbar ────────────────────────────────────────────
 function ToolbarButton({ onClick, active, title, children }) {
@@ -271,6 +272,24 @@ export default function SectionEditorModal({ section, onClose, onSaved }) {
   const [title,    setTitle]    = useState(section.title    || '');
   const [subtitle, setSubtitle] = useState(section.subtitle || '');
   const [content,  setContent]  = useState(section.content  || {});
+  const [experiments, setExperiments] = useState([]);
+
+  useEffect(() => {
+    if (section.sectionKey === 'featured_simulation') {
+      const fetchExps = async () => {
+        try {
+          const res = await api.get('/experiments/all/list');
+          if (res.ok) {
+            const data = await res.json();
+            setExperiments(data);
+          }
+        } catch (err) {
+          console.error('Error fetching experiments:', err);
+        }
+      };
+      fetchExps();
+    }
+  }, [section.sectionKey]);
 
   const setContentKey = useCallback((key, val) => {
     setContent(prev => ({ ...prev, [key]: val }));
@@ -372,10 +391,50 @@ export default function SectionEditorModal({ section, onClose, onSaved }) {
           {/* ── FEATURED SIMULATION ──────────────────────── */}
           {section.sectionKey === 'featured_simulation' && (
             <>
-              <SectionDivider label="Simulation Details" />
+              <SectionDivider label="Dynamic Simulation Selector" />
+              <div className="mb-4">
+                <label className="text-sm font-medium text-slate-300 block mb-2">Choose From Current Experiments</label>
+                <select
+                  value={content.experimentId || ''}
+                  onChange={e => {
+                    const selectedId = e.target.value;
+                    const selected = experiments.find(x => x.id === selectedId);
+                    if (selected) {
+                      setContent(prev => ({
+                        ...prev,
+                        experimentId: selectedId,
+                        tag: selected.lab?.subject?.title || 'Science',
+                        category: selected.lab?.title || 'Virtual Lab',
+                        title: selected.title,
+                        description: selected.description,
+                        duration: selected.duration || '60 min',
+                        difficulty: selected.difficulty || 'Intermediate',
+                        institution: selected.lab?.subject?.title === 'Computer Science' ? 'Virtual Labs' : 'Partner IITs',
+                        experiments: 1,
+                        href: `/student/experiment/${selectedId}`,
+                        imageUrl: selected.coverPic || selected.lab?.coverPic || ''
+                      }));
+                    } else {
+                      setContentKey('experimentId', '');
+                    }
+                  }}
+                  className="w-full bg-slate-800 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-red-500/50 transition-colors"
+                >
+                  <option value="">-- Select an Experiment to Auto-fill --</option>
+                  {experiments.map(x => (
+                    <option key={x.id} value={x.id}>
+                      {x.lab?.subject?.title ? `[${x.lab.subject.title}] ` : ''}
+                      {x.lab?.title ? `[${x.lab.title}] ` : ''}
+                      {x.title}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <SectionDivider label="Customize Spotlight Content" />
               <div className="grid grid-cols-2 gap-4">
-                <TextField label="Tag" value={content.tag} onChange={v => setContentKey('tag', v)} placeholder="Physics" />
-                <TextField label="Category" value={content.category} onChange={v => setContentKey('category', v)} placeholder="Mechanics" />
+                <TextField label="Tag (e.g., Physics)" value={content.tag} onChange={v => setContentKey('tag', v)} placeholder="Physics" />
+                <TextField label="Category (e.g., Mechanics)" value={content.category} onChange={v => setContentKey('category', v)} placeholder="Mechanics" />
               </div>
               <TextField label="Simulation Title" value={content.title} onChange={v => setContentKey('title', v)} placeholder="Simple Pendulum Simulation" />
               <TextField label="Description" value={content.description} onChange={v => setContentKey('description', v)} placeholder="Describe the simulation…" multiline />
@@ -386,7 +445,7 @@ export default function SectionEditorModal({ section, onClose, onSaved }) {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <TextField label="No. of Experiments" value={content.experiments} onChange={v => setContentKey('experiments', v)} placeholder="12" />
-                <TextField label="Link URL" value={content.href} onChange={v => setContentKey('href', v)} placeholder="/simulations/pendulum" />
+                <TextField label="Link URL (href)" value={content.href} onChange={v => setContentKey('href', v)} placeholder="/student/experiments/..." />
               </div>
 
               <SectionDivider label="Preview Image" />

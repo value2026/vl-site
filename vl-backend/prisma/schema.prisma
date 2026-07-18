@@ -105,6 +105,7 @@ model Lab {
   title       String
   description String?
   icon        String  @default("🔬")
+  coverPic    String? // URL to lab cover image
   isActive    Boolean @default(true)
 
   subjectId String
@@ -131,6 +132,7 @@ model Experiment {
   description String?
   duration    String  @default("60 min")
   difficulty  String  @default("Beginner")
+  coverPic    String? // URL to experiment cover image
   isActive    Boolean @default(true)
 
   // Paths to extracted zip content (relative to uploads/)

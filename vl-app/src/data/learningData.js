@@ -63,6 +63,16 @@ export const SUBJECTS = [
     text: 'text-rose-400',
     description: 'Build circuits, understand signals, logic gates and electronic components.',
   },
+  {
+    id: 'chemical-science',
+    title: 'Chemical Science',
+    icon: '🧪',
+    gradient: 'from-teal-600 to-cyan-700',
+    border: 'border-teal-500/30',
+    bg: 'bg-teal-500/10',
+    text: 'text-teal-400',
+    description: 'Explore chemical systems, molecular reactions, and physical chemistry principles.',
+  },
 ];
 
 export const LABS = [
@@ -86,6 +96,8 @@ export const LABS = [
   // Electronics
   { id: 'basic-circuits',    subjectId: 'electronics', title: 'Basic Electronics Lab',    description: 'Build and analyse fundamental electronic circuits',          icon: '💡', experimentCount: 4 },
   { id: 'digital-circuits',  subjectId: 'electronics', title: 'Digital Electronics Lab',  description: 'Implement logic gates, flip-flops and digital systems',     icon: '🔌', experimentCount: 3 },
+  // Chemical Science
+  { id: 'physical-chemistry', subjectId: 'chemical-science', title: 'Physical Chemistry Virtual Lab', description: 'Explore spectrophotometry, cryoscopy, ebullioscopy and EMF measurement.', icon: '⚗️', experimentCount: 4 },
 ];
 
 export const EXPERIMENTS = [
@@ -121,6 +133,11 @@ export const EXPERIMENTS = [
   { id: 'wheatstone', labId: 'basic-circuits',   title: 'Wheatstone Bridge',      description: 'Measure unknown resistance using a balanced bridge circuit',             duration: '60 min', difficulty: 'Intermediate' },
   { id: 'logic-gates', labId: 'digital-circuits', title: 'Basic Logic Gates',     description: 'Implement and verify AND, OR, NOT, NAND, NOR, XOR gates',               duration: '45 min', difficulty: 'Beginner' },
   { id: 'flip-flops',  labId: 'digital-circuits', title: 'SR and D Flip-Flops',   description: 'Understand sequential logic and memory elements',                       duration: '60 min', difficulty: 'Intermediate' },
+  // Physical Chemistry
+  { id: 'spectrophotometry',   labId: 'physical-chemistry', title: 'Spectrophotometry',   description: 'Measure the absorption of light by a chemical substance as a function of wavelength.', duration: '60 min', difficulty: 'Intermediate' },
+  { id: 'cryoscopy',          labId: 'physical-chemistry', title: 'Cryoscopy',          description: 'Determine the depression of freezing point to calculate molecular mass.', duration: '60 min', difficulty: 'Intermediate' },
+  { id: 'ebullioscopy',       labId: 'physical-chemistry', title: 'Ebullioscopy',       description: 'Determine the elevation of boiling point of a solvent due to a solute.',  duration: '60 min', difficulty: 'Intermediate' },
+  { id: 'emf-measurement',    labId: 'physical-chemistry', title: 'EMF Measurement',    description: 'Measure electromotive force of galvanic cells to study thermodynamics.',  duration: '60 min', difficulty: 'Advanced' },
 ];
 
 // ── Detailed Experiment Content ────────────────────────────────
@@ -223,6 +240,117 @@ export const EXPERIMENT_CONTENT = {
     contributors: [
       { name: 'Prof. Anita Desai', role: 'Principal Investigator', institution: 'IIT Madras' },
       { name: 'Ravi Shankar', role: 'Developer', institution: 'NIT Trichy' },
+    ],
+  },
+
+  'spectrophotometry': {
+    aim: 'To verify Beer-Lambert\'s Law and determine the concentration of an unknown solution using a virtual spectrophotometer.',
+    theory: `## Spectrophotometry\n\n**Spectrophotometry** is a method to measure how much a chemical substance absorbs light by measuring the intensity of light as a beam of light passes through sample solution.\n\n## Beer-Lambert Law\n\nThe fundamental law governing spectrophotometry is the **Beer-Lambert Law**:\n\n$$A = \\epsilon \\cdot c \\cdot l$$\n\nWhere:\n- **A** = Absorbance (no units)\n- **$\\epsilon$** = Molar absorptivity (L·mol⁻¹·cm⁻¹)\n- **c** = Concentration of the solute (mol·L⁻¹)\n- **l** = Path length of the cuvette (cm)\n\n## Key Components of a Spectrophotometer\n\n1. **Light Source** — Provides light of various wavelengths.\n2. **Monochromator** — Selects a specific wavelength of light.\n3. **Sample Holder** — Holds the cuvette with solution.\n4. **Detector** — Measures the intensity of transmitted light.`,
+    pretest: [
+      { id: 1, question: 'What does Beer-Lambert\'s Law relate absorbance to?', options: ['Temperature', 'Concentration and path length', 'Pressure', 'Solubility'], correct: 1 },
+      { id: 2, question: 'Which component of a spectrophotometer selects a single wavelength of light?', options: ['Light source', 'Monochromator', 'Cuvette', 'Detector'], correct: 1 },
+    ],
+    procedure: [
+      'Turn on the virtual spectrophotometer and allow it to warm up.',
+      'Select the target wavelength ($\lambda_{max}$) for your sample.',
+      'Insert a blank cuvette containing only the solvent to calibrate the instrument to zero absorbance.',
+      'Prepare a series of standard solutions with known concentrations.',
+      'Measure the absorbance of each standard solution and record the values.',
+      'Plot absorbance vs. concentration to obtain the calibration curve.',
+      'Measure the absorbance of the unknown solution.',
+      'Use the calibration curve (or Beer-Lambert equation) to calculate the unknown concentration.',
+    ],
+    posttest: [
+      { id: 1, question: 'If the concentration of a solution is doubled, what happens to its absorbance?', options: ['Remains the same', 'It is halved', 'It is doubled', 'It increases exponentially'], correct: 2 },
+      { id: 2, question: 'Why is a blank solution used in spectrophotometry?', options: ['To clean the machine', 'To subtract any absorbance caused by the solvent/cuvette', 'To increase signal sensitivity', 'To dilute the sample'], correct: 1 },
+    ],
+    references: [
+      { title: 'Vogel\'s Textbook of Quantitative Chemical Analysis', url: '#', type: 'book' },
+      { title: 'Spectrophotometry: Principles and Applications', url: 'https://en.wikipedia.org/wiki/Spectrophotometry', type: 'web' },
+    ],
+    contributors: [
+      { name: 'Dr. Amit Patel', role: 'Subject Matter Expert', institution: 'IIT Delhi' },
+    ],
+  },
+
+  'cryoscopy': {
+    aim: 'To determine the molecular weight of a non-volatile solute by measuring the freezing point depression of a solvent.',
+    theory: `## Cryoscopy (Freezing Point Depression)\n\n**Cryoscopy** is the study of freezing point depression in liquid solvents when non-volatile solutes are dissolved. It is a **colligative property** — meaning it depends only on the number of solute particles, not their chemical identity.\n\n## Mathematical Model\n\nThe freezing point depression is given by:\n\n$$\\Delta T_f = T_f^{\\text{solvent}} - T_f^{\\text{solution}} = K_f \\cdot m \\cdot i$$\n\nWhere:\n- **$\\Delta T_f$** = Depression in freezing point\n- **$K_f$** = Cryoscopic constant (molal freezing point depression constant)\n- **$m$** = Molality of the solution (moles of solute / kg of solvent)\n- **$i$** = van 't Hoff factor (number of ions per formula unit)\n\n## Finding Molecular Mass ($M_2$)\n\n$$M_2 = \\frac{K_f \\cdot w_2 \\cdot 1000}{\\Delta T_f \\cdot w_1}$$\n\nWhere $w_2$ is mass of solute, and $w_1$ is mass of solvent.`,
+    pretest: [
+      { id: 1, question: 'Why does adding solute depress the freezing point of a solvent?', options: ['It decreases the solvent\'s chemical potential / vapor pressure', 'It raises the boiling point', 'It makes the solution colder', 'It prevents molecules from moving'], correct: 0 },
+      { id: 2, question: 'Molality is defined as:', options: ['Moles of solute per liter of solution', 'Moles of solute per kg of solvent', 'Grams of solute per liter of solution', 'Moles of solvent per kg of solute'], correct: 1 },
+    ],
+    procedure: [
+      'Weigh a precise quantity of pure solvent (e.g. benzene or water) and place it in the cryoscopic tube.',
+      'Insert the thermometer and stirrer, then place the tube into a freezing mixture.',
+      'Record the temperature of the pure solvent at regular intervals (e.g., every 30 seconds) until it freezes and the temperature stabilizes.',
+      'Melt the solvent, add a weighed amount of non-volatile solute, and stir to dissolve completely.',
+      'Repeat the cooling process, recording the temperature of the solution at regular intervals.',
+      'Determine the freezing points of both pure solvent and solution from their respective cooling curves.',
+      'Calculate $\\Delta T_f$ and use the cryoscopy formula to determine the molecular weight of the solute.',
+    ],
+    posttest: [
+      { id: 1, question: 'Which of the following is a colligative property?', options: ['Viscosity', 'Freezing point depression', 'Refractive index', 'Surface tension'], correct: 1 },
+      { id: 2, question: 'For a non-electrolyte solute, the van \'t Hoff factor (i) is:', options: ['0', '1', '2', 'Depends on concentration'], correct: 1 },
+    ],
+    references: [
+      { title: 'Physical Chemistry — Peter Atkins & Julio de Paula', url: '#', type: 'book' },
+    ],
+    contributors: [
+      { name: 'Dr. Amit Patel', role: 'Subject Matter Expert', institution: 'IIT Delhi' },
+    ],
+  },
+
+  'ebullioscopy': {
+    aim: 'To determine the molecular weight of a non-volatile solute using ebullioscopy (elevation of boiling point).',
+    theory: `## Ebullioscopy (Boiling Point Elevation)\n\n**Ebullioscopy** is the measurement of the boiling point elevation of a liquid solvent when a non-volatile solute is dissolved. This is a colligative property.\n\n## Mathematical Model\n\nThe boiling point elevation is defined as:\n\n$$\\Delta T_b = T_b^{\\text{solution}} - T_b^{\\text{solvent}} = K_b \\cdot m \\cdot i$$\n\nWhere:\n- **$\\Delta T_b$** = Elevation of boiling point\n- **$K_b$** = Ebullioscopic constant (molal boiling point elevation constant)\n- **$m$** = Molality of the solution\n- **$i$** = van \'t Hoff factor`,
+    pretest: [
+      { id: 1, question: 'What happens to the vapor pressure of a liquid when a non-volatile solute is added?', options: ['Increases', 'Decreases', 'Remains unchanged', 'Fluctuates randomly'], correct: 1 },
+    ],
+    procedure: [
+      'Pour a measured volume of pure solvent into the ebulliometer.',
+      'Heat the solvent to boiling and record its steady boiling point temperature ($T_b^{\\text{solvent}}$).',
+      'Cool the apparatus slightly, add a precisely weighed amount of solute, and stir to dissolve.',
+      'Reheat the solution and record the new steady boiling point temperature ($T_b^{\\text{solution}}$).',
+      'Calculate the elevation of boiling point $\\Delta T_b$.',
+      'Calculate the molecular weight of the solute using the ebullioscopy equation.',
+    ],
+    posttest: [
+      { id: 1, question: 'Ebullioscopic constant is also known as:', options: ['Molal depression constant', 'Molal elevation constant', 'Gas constant', 'Cryoscopic constant'], correct: 1 },
+    ],
+    references: [
+      { title: 'Physical Chemistry — Peter Atkins & Julio de Paula', url: '#', type: 'book' },
+    ],
+    contributors: [
+      { name: 'Dr. Amit Patel', role: 'Subject Matter Expert', institution: 'IIT Delhi' },
+    ],
+  },
+
+  'emf-measurement': {
+    aim: 'To measure the Electromotive Force (EMF) of a galvanic cell and evaluate the thermodynamic parameters of the cell reaction.',
+    theory: `## EMF Measurement & Thermodynamics\n\nThe **Electromotive Force (EMF)** of a electrochemical cell is the maximum potential difference between the electrodes of the cell when no current is flowing.\n\n## Nernst Equation\n\n$$E = E^\\circ - \\frac{RT}{nF} \\ln Q$$\n\nAt 298 K, this simplifies to:\n\n$$E = E^\\circ - \\frac{0.0592}{n} \\log_{10} Q$$\n\n## Thermodynamic Relations\n\n1. **Gibbs Free Energy Change ($\\Delta G$):**\n   $$\\Delta G = -nFE_{\\text{cell}}$$\n\n2. **Entropy Change ($\\Delta S$):**\n   $$\\Delta S = nF \\left( \\frac{\\partial E}{\\partial T} \\right)_P$$\n\n3. **Enthalpy Change ($\\Delta H$):**\n   $$\\Delta H = \\Delta G + T\\Delta S$$`,
+    pretest: [
+      { id: 1, question: 'An electrochemical cell convert chemical energy into:', options: ['Heat energy', 'Electrical energy', 'Nuclear energy', 'Mechanical energy'], correct: 1 },
+      { id: 2, question: 'In the Nernst equation, what does "n" represent?', options: ['Number of moles of reactants', 'Number of electrons transferred', 'Molality of solution', 'Temperature in Celsius'], correct: 1 },
+    ],
+    procedure: [
+      'Prepare two half-cells (e.g., zinc in $ZnSO_4$ and copper in $CuSO_4$) of known concentrations.',
+      'Connect the two half-cells using a salt bridge to allow ion flow.',
+      'Connect the electrodes to a high-impedance digital potentiometer / voltmeter.',
+      'Record the stable EMF reading of the cell ($E_{\\text{cell}}$) at room temperature.',
+      'Vary the concentrations of the electrolyte solutions to observe the change in EMF and verify the Nernst Equation.',
+      'Measure EMF at different temperatures using a water bath to determine the temperature coefficient $(\\partial E / \\partial T)_P$.',
+      'Calculate thermodynamic quantities: $\\Delta G$, $\\Delta S$, and $\\Delta H$.',
+    ],
+    posttest: [
+      { id: 1, question: 'What happens to the cell potential (EMF) when a cell reaches equilibrium?', options: ['It becomes maximum', 'It becomes zero', 'It remains constant at $E^\\circ$', 'It becomes negative'], correct: 1 },
+      { id: 2, question: 'The function of a salt bridge in a galvanic cell is to:', options: ['Provide electrical connection and maintain electrical neutrality', 'Increase the voltage of the cell', 'Speed up the oxidation reaction', 'Filter out impurities'], correct: 0 },
+    ],
+    references: [
+      { title: 'Modern Electrochemistry — Bockris & Reddy', url: '#', type: 'book' },
+    ],
+    contributors: [
+      { name: 'Dr. Amit Patel', role: 'Subject Matter Expert', institution: 'IIT Delhi' },
     ],
   },
 

@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { FlaskConical, Star, Bug, Menu, X, ChevronLeft, CheckCircle, Circle, Loader2 } from 'lucide-react';
+import { FlaskConical, Star, Bug, Menu, X, ChevronLeft, CheckCircle, Circle, Loader2, Maximize2, Monitor } from 'lucide-react';
 import { api, fileUrl } from '../../utils/api';
+import QuizBlock from '../../components/student/QuizBlock';
 
 // ── Sidebar sections ─────────────────────────────────────────
 const SECTIONS = [
@@ -22,93 +23,7 @@ const DIFFICULTY_STYLE = {
   Advanced:     'bg-rose-50 text-rose-700 border-rose-200',
 };
 
-function Quiz({ questions = [], type, onComplete }) {
-  const [answers,   setAnswers]   = useState({});
-  const [submitted, setSubmitted] = useState(false);
 
-  const score = submitted
-    ? questions.filter((q, idx) => answers[idx] === q.correct).length
-    : null;
-
-  const handleSubmit = () => {
-    const finalScore = questions.filter((q, idx) => answers[idx] === q.correct).length;
-    setSubmitted(true);
-    if (onComplete) onComplete(finalScore);
-  };
-
-  if (questions.length === 0) {
-    return <p className="text-gray-500 italic">No quiz questions available.</p>;
-  }
-
-  return (
-    <div>
-      <div className="mb-6 flex items-center justify-between">
-        <h3 className="text-gray-900 font-bold text-lg capitalize">{type}</h3>
-        {submitted && (
-          <span className={`text-sm font-semibold px-3 py-1 rounded-full ${score === questions.length ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
-            {score}/{questions.length} correct
-          </span>
-        )}
-      </div>
-
-      <div className="space-y-6">
-        {questions.map((q, qi) => (
-          <div key={qi} className="bg-gray-50 rounded-xl p-5 border border-gray-200">
-            <p className="text-gray-900 font-medium text-sm mb-4">
-              <span className="text-gray-400 mr-2">Q{qi + 1}.</span>{q.question}
-            </p>
-            <div className="space-y-2">
-              {q.options.map((opt, oi) => {
-                const isSelected = answers[qi] === oi;
-                const isCorrect  = submitted && oi === q.correct;
-                const isWrong    = submitted && isSelected && oi !== q.correct;
-                return (
-                  <button
-                    key={oi}
-                    onClick={() => !submitted && setAnswers({ ...answers, [qi]: oi })}
-                    disabled={submitted}
-                    className={`w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl border text-sm transition-all ${
-                      isCorrect ? 'bg-emerald-50 border-emerald-400 text-emerald-800'
-                      : isWrong ? 'bg-red-50 border-red-400 text-red-800'
-                      : isSelected ? 'bg-blue-50 border-blue-400 text-blue-800'
-                      : 'bg-white border-gray-200 text-gray-700 hover:border-blue-300 hover:bg-blue-50/50'
-                    }`}
-                  >
-                    <span className={`w-5 h-5 flex-shrink-0 rounded-full border-2 flex items-center justify-center text-xs font-bold ${
-                      isCorrect ? 'border-emerald-500 bg-emerald-500 text-white'
-                      : isWrong  ? 'border-red-500 bg-red-500 text-white'
-                      : isSelected ? 'border-blue-500 bg-blue-500 text-white'
-                      : 'border-gray-300'
-                    }`}>
-                      {isSelected || isCorrect ? String.fromCharCode(65 + oi) : ''}
-                    </span>
-                    {opt}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {!submitted ? (
-        <button
-          onClick={handleSubmit}
-          disabled={Object.keys(answers).length < questions.length}
-          className="mt-6 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-700 text-white text-sm font-semibold rounded-xl hover:from-blue-700 hover:to-indigo-800 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-md"
-        >
-          Submit Answers
-        </button>
-      ) : (
-        <div className={`mt-6 p-4 rounded-xl border ${score === questions.length ? 'bg-emerald-50 border-emerald-200' : 'bg-amber-50 border-amber-200'}`}>
-          <p className={`font-semibold text-sm ${score === questions.length ? 'text-emerald-800' : 'text-amber-800'}`}>
-            {score === questions.length ? '🎉 Perfect score! Excellent work.' : `You got ${score} out of ${questions.length}. Review the highlighted answers above.`}
-          </p>
-        </div>
-      )}
-    </div>
-  );
-}
 
 // ── Default Stack Simulation fallback ────────────────────────
 function StackSimulation() {
@@ -306,28 +221,11 @@ export default function ExperimentPage() {
           setExperiment(expData);
           
           if (expData.contentPath) {
-            const secNames = ['aim', 'theory', 'pretest', 'procedure', 'posttest', 'references', 'contributors'];
-            const results = await Promise.allSettled(
-              secNames.map(async (name) => {
-                const res = await api.get(`/experiments/${expId}/content/${name}`);
-                if (res.ok) {
-                  if (['pretest', 'posttest', 'references', 'contributors'].includes(name)) {
-                    return { name, value: await res.json() };
-                  } else {
-                    return { name, value: await res.text() };
-                  }
-                }
-                throw new Error('Not found');
-              })
-            );
-            
-            const loadedSecs = {};
-            results.forEach((r) => {
-              if (r.status === 'fulfilled') {
-                loadedSecs[r.value.name] = r.value.value;
-              }
-            });
-            setSections((prev) => ({ ...prev, ...loadedSecs }));
+            const docsRes = await api.get(`/experiments/${expId}/docs`);
+            if (docsRes.ok) {
+              const docsData = await docsRes.json();
+              setSections(docsData);
+            }
           }
         }
       } catch (err) {
@@ -357,18 +255,38 @@ export default function ExperimentPage() {
     }
   }, [experiment, expId]);
 
-  const handleQuizComplete = async (score, maxScore, type) => {
-    try {
-      await api.post('/analytics/quiz', {
-        experimentId: expId,
-        quizType: type,
-        score,
-        maxScore,
-      });
-    } catch (err) {
-      console.error(err);
+  const handleFullscreen = () => {
+    const elem = document.getElementById('simulation-frame-container');
+    if (elem) {
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen();
+      } else if (elem.webkitRequestFullscreen) {
+        elem.webkitRequestFullscreen();
+      } else if (elem.msRequestFullscreen) {
+        elem.msRequestFullscreen();
+      }
     }
   };
+
+  // Math equations rendering (KaTeX)
+  useEffect(() => {
+    if (window.renderMathInElement) {
+      const elements = document.querySelectorAll('.prose');
+      elements.forEach(elem => {
+        window.renderMathInElement(elem, {
+          delimiters: [
+            { left: '$$', right: '$$', display: true },
+            { left: '$', right: '$', display: false },
+            { left: '\\(', right: '\\)', display: false },
+            { left: '\\[', right: '\\]', display: true }
+          ],
+          throwOnError: false
+        });
+      });
+    }
+  }, [sections, active]);
+
+
 
   const handleFeedbackComplete = async (rating, comment) => {
     try {
@@ -446,7 +364,7 @@ export default function ExperimentPage() {
         return (
           <div>
             <SectionHeader title="Pretest" subtitle="Answer these questions before starting the simulation to assess your prior knowledge." />
-            <Quiz questions={sections.pretest} type="pretest" onComplete={(score) => handleQuizComplete(score, sections.pretest.length, 'pretest')} />
+            <QuizBlock experimentId={expId} quizType="pretest" questions={sections.pretest?.questions || []} />
           </div>
         );
 
@@ -467,14 +385,47 @@ export default function ExperimentPage() {
           <div>
             <SectionHeader title="Simulation" subtitle="Interact with the simulation below. Follow the procedure steps for guidance." />
             {experiment.simulationPath ? (
-              <div className="w-full h-[600px] border border-gray-200 rounded-2xl overflow-hidden bg-white shadow-sm">
-                <iframe
-                  src={fileUrl(`${experiment.simulationPath}/index.html`)}
-                  className="w-full h-full border-none"
-                  title="Simulation"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
+              <div className="w-full max-w-5xl mx-auto space-y-4">
+                {/* Desktop Window Frame Container */}
+                <div 
+                  id="simulation-frame-container" 
+                  className="flex flex-col bg-slate-900 border border-slate-700/60 rounded-2xl overflow-hidden w-full h-[650px] shadow-2xl relative animate-in fade-in zoom-in-95 duration-200"
+                >
+                  {/* Browser Header Bar */}
+                  <div className="flex items-center justify-between px-4 py-3 bg-slate-900 border-b border-slate-800 flex-shrink-0 select-none">
+                    {/* Window Controls (macOS style) */}
+                    <div className="flex items-center gap-1.5 w-24">
+                      <div className="w-3 h-3 rounded-full bg-rose-500/90" />
+                      <div className="w-3 h-3 rounded-full bg-amber-500/90" />
+                      <div className="w-3 h-3 rounded-full bg-emerald-500/90" />
+                    </div>
+
+                    {/* Address bar */}
+                    <div className="bg-slate-950 border border-white/5 px-4 py-1.5 rounded-lg text-[10px] text-slate-400 font-mono tracking-wider w-80 text-center truncate flex items-center justify-center gap-1.5">
+                      <Monitor className="w-3 h-3 text-slate-500" />
+                      <span>simulation://{experiment.title.toLowerCase().replace(/\s+/g, '-')}.local</span>
+                    </div>
+
+                    {/* Full Screen controls */}
+                    <div className="flex justify-end w-24">
+                      <button 
+                        onClick={handleFullscreen}
+                        className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-[9px] text-white font-bold transition-all border border-white/10"
+                      >
+                        <Maximize2 className="w-3 h-3" /> Full Screen
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Sandbox IFrame */}
+                  <iframe
+                    src={fileUrl(`${experiment.simulationPath}/index.html`)}
+                    className="w-full flex-1 border-none bg-[#3CA4AB]"
+                    title="Simulation"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                </div>
               </div>
             ) : (experiment.id === 'stack-ops' || expId === 'stack-ops') ? (
               <StackSimulation />
@@ -488,7 +439,7 @@ export default function ExperimentPage() {
         return (
           <div>
             <SectionHeader title="Posttest" subtitle="Test your understanding after completing the simulation." />
-            <Quiz questions={sections.posttest} type="posttest" onComplete={(score) => handleQuizComplete(score, sections.posttest.length, 'posttest')} />
+            <QuizBlock experimentId={expId} quizType="posttest" questions={sections.posttest?.questions || []} />
           </div>
         );
 
@@ -496,27 +447,8 @@ export default function ExperimentPage() {
         return (
           <div>
             <SectionHeader title="References" />
-            {sections.references && sections.references.length > 0 ? (
-              <div className="space-y-3">
-                {sections.references.map((ref, i) => (
-                  <a
-                    key={i}
-                    href={ref.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-4 bg-gray-50 border border-gray-200 rounded-xl p-4 hover:border-blue-300 hover:bg-blue-50 transition-all group"
-                  >
-                    <div className="w-10 h-10 rounded-xl bg-white border border-gray-200 flex items-center justify-center text-lg flex-shrink-0">
-                      {ref.type === 'book' ? '📖' : ref.type === 'video' ? '🎥' : '🌐'}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-gray-900 text-sm font-medium group-hover:text-blue-700 transition-colors truncate">{ref.title}</div>
-                      <div className="text-gray-400 text-xs capitalize mt-0.5">{ref.type}</div>
-                    </div>
-                    <span className="text-gray-300 group-hover:text-blue-400 transition-colors text-lg">↗</span>
-                  </a>
-                ))}
-              </div>
+            {sections.references ? (
+              <div dangerouslySetInnerHTML={{ __html: sections.references }} className="prose max-w-none text-gray-700" />
             ) : (
               <p className="text-gray-500 italic">No reference links available.</p>
             )}
@@ -527,21 +459,8 @@ export default function ExperimentPage() {
         return (
           <div>
             <SectionHeader title="Contributors" subtitle="The team who designed and developed this experiment." />
-            {sections.contributors && sections.contributors.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {sections.contributors.map((c, i) => (
-                  <div key={i} className="bg-gray-50 border border-gray-200 rounded-xl p-5 flex items-center gap-4">
-                    <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
-                      {c.name ? c.name[0] : '?'}
-                    </div>
-                    <div>
-                      <div className="text-gray-900 font-semibold text-sm">{c.name}</div>
-                      <div className="text-blue-600 text-xs font-medium">{c.role}</div>
-                      <div className="text-gray-400 text-xs mt-0.5">{c.institution}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+            {sections.contributors ? (
+              <div dangerouslySetInnerHTML={{ __html: sections.contributors }} className="prose max-w-none text-gray-700" />
             ) : (
               <p className="text-gray-500 italic">No contributor information uploaded.</p>
             )}
@@ -644,7 +563,7 @@ export default function ExperimentPage() {
 
         {/* Main content */}
         <main className="flex-1 overflow-y-auto bg-white">
-          <div className="max-w-3xl mx-auto px-6 py-8">
+          <div className={`${active === 'simulation' ? 'max-w-7xl' : 'max-w-3xl'} mx-auto px-6 py-8 transition-all duration-300`}>
             {renderContent()}
           </div>
         </main>

@@ -97,7 +97,7 @@ export default function MediaSection({ sectionTitle, sectionSubtitle, content = 
                 {vid.thumbnailUrl ? (
                   <div 
                     className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
-                    style={{ backgroundImage: `url(${vid.thumbnailUrl})` }}
+                    style={{ backgroundImage: `url("${vid.thumbnailUrl}")` }}
                   />
                 ) : (
                   <div className="absolute inset-0 opacity-20"

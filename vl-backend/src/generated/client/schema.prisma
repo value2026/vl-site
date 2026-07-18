@@ -25,6 +25,29 @@ model User {
   role     Role
   isActive Boolean @default(true)
 
+  // Additional fields requested by user
+  username     String? @unique
+  mobile       String?
+  profilePic   String?
+  org          String?
+  dept         String?
+  course       String?
+  yearSemester String?
+  country      String?
+  state        String?
+  city         String?
+  studentId    String?
+  batch        String?
+  section      String?
+  employeeId   String?
+  designation  String?
+  facultyDept  String?
+  facultyInst  String?
+
+  // Password reset fields
+  resetToken       String?
+  resetTokenExpiry DateTime?
+
   // Hierarchy: who created this user
   createdById  String?
   createdBy    User?   @relation("CreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
@@ -82,6 +105,7 @@ model Lab {
   title       String
   description String?
   icon        String  @default("🔬")
+  coverPic    String? // URL to lab cover image
   isActive    Boolean @default(true)
 
   subjectId String
@@ -108,6 +132,7 @@ model Experiment {
   description String?
   duration    String  @default("60 min")
   difficulty  String  @default("Beginner")
+  coverPic    String? // URL to experiment cover image
   isActive    Boolean @default(true)
 
   // Paths to extracted zip content (relative to uploads/)
@@ -211,4 +236,34 @@ model ScheduledCallInvitee {
 
   @@unique([scheduledCallId, userId])
   @@map("scheduled_call_invitees")
+}
+
+// ── CMS: Page Content Management ─────────────────────────────
+
+model Page {
+  id        String        @id @default(uuid())
+  slug      String        @unique // e.g. "home", "project", "workshop"
+  title     String
+  sections  PageSection[]
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@map("pages")
+}
+
+model PageSection {
+  id         String   @id @default(uuid())
+  pageId     String
+  page       Page     @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  sectionKey String // e.g. "hero", "news", "sponsors", "cta"
+  label      String // Human-readable name shown in admin UI
+  title      String?
+  subtitle   String?
+  content    Json     @default("{}") // Flexible blob for section-specific data
+  isVisible  Boolean  @default(true)
+  order      Int      @default(0)
+  updatedAt  DateTime @updatedAt
+
+  @@unique([pageId, sectionKey])
+  @@map("page_sections")
 }
