@@ -57,8 +57,8 @@ export default function QuizBlock({ experimentId, experimentName, userId, quizTy
         console.warn('Failed to record quiz attempt in analytics.');
       }
       trackEvent({
-        category: 'Experiment',
-        action: 'Quiz Completed',
+        category: 'experiment',
+        action: 'quiz_completed',
         label: `${experimentId} - ${quizType}`,
         value: Math.round((calculatedScore / questions.length) * 100),
         experiment_id: experimentId,

@@ -263,8 +263,8 @@ export default function ExperimentPage() {
     const handleMessage = (e) => {
       if (e.data && e.data.type === 'GA_EVENT') {
         trackEvent({
-          category: 'Simulation',
-          action: e.data.action,
+          category: 'simulation',
+          action: e.data.action ? e.data.action.toLowerCase().replace(/\s+/g, '_') : 'unknown_event',
           label: e.data.label || experiment?.title,
           value: e.data.value,
           experiment_id: expId,
@@ -318,8 +318,8 @@ export default function ExperimentPage() {
         comment,
       });
       trackEvent({
-        category: 'Experiment',
-        action: 'Experiment Completed',
+        category: 'experiment',
+        action: 'experiment_completed',
         label: experiment?.title,
         value: rating,
         experiment_id: expId,
@@ -597,17 +597,17 @@ export default function ExperimentPage() {
                     setSidebarOpen(false);
                     if (id === 'simulation') {
                       trackEvent({ 
-                        category: 'Experiment', action: 'Simulation Started', label: experiment?.title,
+                        category: 'experiment', action: 'simulation_started', label: experiment?.title,
                         experiment_id: expId, experiment_name: experiment?.title, user_id: user?.id 
                       });
                     } else if (id === 'posttest') {
                       trackEvent({ 
-                        category: 'Experiment', action: 'Quiz Started', label: `${experiment?.title} - Posttest`,
+                        category: 'experiment', action: 'quiz_started', label: `${experiment?.title} - Posttest`,
                         experiment_id: expId, experiment_name: experiment?.title, quiz_type: 'posttest', user_id: user?.id 
                       });
                     } else if (id === 'pretest') {
                       trackEvent({ 
-                        category: 'Experiment', action: 'Quiz Started', label: `${experiment?.title} - Pretest`,
+                        category: 'experiment', action: 'quiz_started', label: `${experiment?.title} - Pretest`,
                         experiment_id: expId, experiment_name: experiment?.title, quiz_type: 'pretest', user_id: user?.id 
                       });
                     }
