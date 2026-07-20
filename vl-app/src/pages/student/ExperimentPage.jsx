@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { FlaskConical, Star, Bug, Menu, X, ChevronLeft, CheckCircle, Circle, Loader2, Maximize2, Monitor } from 'lucide-react';
 import { api, fileUrl } from '../../utils/api';
-import { trackEvent } from '../../utils/analytics';
+import { trackEvent, trackError, EVENTS } from '../../utils/analytics';
 import QuizBlock from '../../components/student/QuizBlock';
 import { useAuth } from '../../context/AuthContext';
 
@@ -201,6 +201,7 @@ export default function ExperimentPage() {
   const { user }   = useAuth();
   const [active, setActive]         = useState('aim');
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [trackedEvents, setTrackedEvents] = useState({ simulation: false, pretest: false, posttest: false });
 
   const [experiment, setExperiment] = useState(null);
   const [loading, setLoading]       = useState(true);
@@ -217,6 +218,7 @@ export default function ExperimentPage() {
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
+      const perfStart = performance.now();
       try {
         const expRes = await api.get(`/experiments/${expId}`);
         if (expRes.ok) {
@@ -230,9 +232,21 @@ export default function ExperimentPage() {
               setSections(docsData);
             }
           }
+          
+          const loadMs = Math.round(performance.now() - perfStart);
+          trackEvent({
+            category: 'performance',
+            action: EVENTS.PERFORMANCE_METRIC,
+            metric_name: 'api_load_time_ms',
+            value: loadMs,
+            experiment_id: expId,
+            experiment_name: expData?.title,
+            user_id: user?.id
+          });
         }
       } catch (err) {
         console.error('Failed to load experiment', err);
+        trackError('api_error', 'Failed to load experiment data', { experiment_id: expId });
       } finally {
         setLoading(false);
       }
@@ -269,7 +283,8 @@ export default function ExperimentPage() {
           value: e.data.value,
           experiment_id: expId,
           experiment_name: experiment?.title,
-          user_id: user?.id
+          user_id: user?.id,
+          ...(e.data.params || {})
         });
       }
     };
@@ -308,6 +323,28 @@ export default function ExperimentPage() {
     }
   }, [sections, active]);
 
+  // Track simulation exit and duration
+  useEffect(() => {
+    let startTime;
+    if (active === 'simulation') {
+      startTime = Date.now();
+    }
+    return () => {
+      if (active === 'simulation' && startTime) {
+        const durationSeconds = Math.round((Date.now() - startTime) / 1000);
+        trackEvent({
+          category: 'experiment',
+          action: EVENTS.SIMULATION_EXITED,
+          label: experiment?.title,
+          duration: durationSeconds,
+          experiment_id: expId,
+          experiment_name: experiment?.title,
+          user_id: user?.id
+        });
+      }
+    };
+  }, [active, experiment, expId, user]);
+
 
 
   const handleFeedbackComplete = async (rating, comment) => {
@@ -319,7 +356,7 @@ export default function ExperimentPage() {
       });
       trackEvent({
         category: 'experiment',
-        action: 'experiment_completed',
+        action: EVENTS.EXPERIMENT_COMPLETED,
         label: experiment?.title,
         value: rating,
         experiment_id: expId,
@@ -328,6 +365,7 @@ export default function ExperimentPage() {
       });
     } catch (err) {
       console.error(err);
+      trackError('api_error', 'Failed to submit feedback', { experiment_id: expId });
     }
   };
 
@@ -463,7 +501,12 @@ export default function ExperimentPage() {
                     onLoad={(e) => {
                       const measurementId = import.meta.env.VITE_GA_MEASUREMENT_ID;
                       if (measurementId) {
-                        e.target.contentWindow.postMessage({ type: 'INIT_GA', measurementId }, '*');
+                        e.target.contentWindow.postMessage({ 
+                          type: 'INIT_GA', 
+                          measurementId,
+                          userId: user?.id,
+                          experimentId: expId
+                        }, '*');
                       }
                     }}
                   />
@@ -593,21 +636,38 @@ export default function ExperimentPage() {
                 <button
                   key={id}
                   onClick={() => { 
+                    const previousTab = active;
                     setActive(id); 
                     setSidebarOpen(false);
-                    if (id === 'simulation') {
+                    
+                    if (previousTab !== id) {
+                      trackEvent({
+                        category: 'experiment',
+                        action: EVENTS.NAVIGATION_CHANGED,
+                        from_tab: previousTab,
+                        to_tab: id,
+                        experiment_id: expId,
+                        experiment_name: experiment?.title,
+                        user_id: user?.id
+                      });
+                    }
+
+                    if (id === 'simulation' && !trackedEvents.simulation) {
+                      setTrackedEvents(prev => ({ ...prev, simulation: true }));
                       trackEvent({ 
-                        category: 'experiment', action: 'simulation_started', label: experiment?.title,
+                        category: 'experiment', action: EVENTS.SIMULATION_STARTED, label: experiment?.title,
                         experiment_id: expId, experiment_name: experiment?.title, user_id: user?.id 
                       });
-                    } else if (id === 'posttest') {
+                    } else if (id === 'posttest' && !trackedEvents.posttest) {
+                      setTrackedEvents(prev => ({ ...prev, posttest: true }));
                       trackEvent({ 
-                        category: 'experiment', action: 'quiz_started', label: `${experiment?.title} - Posttest`,
+                        category: 'experiment', action: EVENTS.QUIZ_STARTED, label: `${experiment?.title} - Posttest`,
                         experiment_id: expId, experiment_name: experiment?.title, quiz_type: 'posttest', user_id: user?.id 
                       });
-                    } else if (id === 'pretest') {
+                    } else if (id === 'pretest' && !trackedEvents.pretest) {
+                      setTrackedEvents(prev => ({ ...prev, pretest: true }));
                       trackEvent({ 
-                        category: 'experiment', action: 'quiz_started', label: `${experiment?.title} - Pretest`,
+                        category: 'experiment', action: EVENTS.QUIZ_STARTED, label: `${experiment?.title} - Pretest`,
                         experiment_id: expId, experiment_name: experiment?.title, quiz_type: 'pretest', user_id: user?.id 
                       });
                     }
