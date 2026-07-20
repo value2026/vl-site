@@ -137,11 +137,12 @@ function SortableSection({ section, onEdit, onToggle, isSaving }) {
 export default function ManagePages() {
   const { token, API_URL } = useAuth();
   const queryClient        = useQueryClient();
+  const [pageSlug, setPageSlug] = useState('home');
   const [editingSection, setEditingSection] = useState(null);
   const [savingId,       setSavingId]       = useState(null);
   const [savedId,        setSavedId]        = useState(null);
 
-  const { data: sections = [], isLoading, isError, refetch } = usePageSections('home', token, API_URL);
+  const { data: sections = [], isLoading, isError, refetch } = usePageSections(pageSlug, token, API_URL);
 
   // Local ordering state (optimistic UI)
   const [localOrder, setLocalOrder] = useState(null);
@@ -164,11 +165,12 @@ export default function ManagePages() {
       return res.json();
     },
     onSuccess: (updated) => {
-      queryClient.setQueryData(['admin-page-sections', 'home'], (old) =>
+      queryClient.setQueryData(['admin-page-sections', pageSlug], (old) =>
         old?.map(s => s.id === updated.id ? updated : s)
       );
-      // Also invalidate the public home sections cache
-      queryClient.invalidateQueries(['home-sections']);
+      setLocalOrder(prev => prev ? prev.map(s => s.id === updated.id ? { ...s, isVisible: updated.isVisible } : s) : null);
+      // Also invalidate the public cache
+      queryClient.invalidateQueries([`${pageSlug}-sections`]);
       setSavedId(updated.id);
       setTimeout(() => setSavedId(null), 2000);
     },
@@ -237,18 +239,18 @@ export default function ManagePages() {
 
   return (
     <div className="max-w-3xl mx-auto">
-      {/* Header */}
-      <div className="flex items-start justify-between mb-8">
+      {/* Header and Actions */}
+      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6">
         <div>
           <h2 className="text-white text-2xl font-bold flex items-center gap-3">
             <Globe className="w-6 h-6 text-red-400" />
-            Home Page
+            Manage Pages
           </h2>
           <p className="text-slate-400 text-sm mt-1.5">
             Drag to reorder sections · Toggle visibility · Click Edit to change content
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <button
             onClick={() => refetch()}
             className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 transition-all"
@@ -265,6 +267,50 @@ export default function ManagePages() {
             View Live
           </a>
         </div>
+      </div>
+
+      {/* Page Tabs */}
+      <div className="flex flex-wrap items-center gap-2 mb-6 border-b border-white/10 pb-4">
+        <button
+          onClick={() => { setPageSlug('home'); setLocalOrder(null); }}
+          className={`px-5 py-2.5 rounded-lg text-sm font-semibold transition-all ${
+            pageSlug === 'home'
+              ? 'bg-red-500/10 text-red-400 border border-red-500/20'
+              : 'text-slate-400 hover:text-white hover:bg-white/5 border border-transparent'
+          }`}
+        >
+          Home Page
+        </button>
+        <button
+          onClick={() => { setPageSlug('publications'); setLocalOrder(null); }}
+          className={`px-5 py-2.5 rounded-lg text-sm font-semibold transition-all ${
+            pageSlug === 'publications'
+              ? 'bg-red-500/10 text-red-400 border border-red-500/20'
+              : 'text-slate-400 hover:text-white hover:bg-white/5 border border-transparent'
+          }`}
+        >
+          Publications
+        </button>
+        <button
+          onClick={() => { setPageSlug('project'); setLocalOrder(null); }}
+          className={`px-5 py-2.5 rounded-lg text-sm font-semibold transition-all ${
+            pageSlug === 'project'
+              ? 'bg-red-500/10 text-red-400 border border-red-500/20'
+              : 'text-slate-400 hover:text-white hover:bg-white/5 border border-transparent'
+          }`}
+        >
+          Project
+        </button>
+        <button
+          onClick={() => { setPageSlug('nodal-centres'); setLocalOrder(null); }}
+          className={`px-5 py-2.5 rounded-lg text-sm font-semibold transition-all ${
+            pageSlug === 'nodal-centres'
+              ? 'bg-red-500/10 text-red-400 border border-red-500/20'
+              : 'text-slate-400 hover:text-white hover:bg-white/5 border border-transparent'
+          }`}
+        >
+          Nodal Centres
+        </button>
       </div>
 
       {/* Info banner */}

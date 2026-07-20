@@ -1,27 +1,30 @@
 import { Link } from 'react-router-dom';
-import { MapPin, CheckCircle2, ArrowRight, Building } from 'lucide-react';
+import { MapPin, CheckCircle2, ArrowRight, Building, Loader2 } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 
-const centres = [
-  { id: 1, name: 'BITS Pilani', location: 'Pilani, Rajasthan', category: 'Engineering', active: true },
-  { id: 2, name: 'VIT University', location: 'Vellore, Tamil Nadu', category: 'Engineering', active: true },
-  { id: 3, name: 'Amrita University', location: 'Coimbatore, Tamil Nadu', category: 'Science', active: true },
-  { id: 4, name: 'Jadavpur University', location: 'Kolkata, West Bengal', category: 'Engineering', active: true },
-  { id: 5, name: 'SRM Institute', location: 'Chennai, Tamil Nadu', category: 'Engineering', active: true },
-  { id: 6, name: 'Manipal Institute of Technology', location: 'Manipal, Karnataka', category: 'Engineering', active: true },
-  { id: 7, name: 'Thapar Institute', location: 'Patiala, Punjab', category: 'Engineering', active: true },
-  { id: 8, name: 'PSG College of Technology', location: 'Coimbatore, Tamil Nadu', category: 'Science', active: false },
-];
-
-const benefits = [
-  'Free access to all 700+ virtual labs for your institution',
-  'Priority support and technical assistance',
-  'Dedicated workshops and faculty training sessions',
-  'Certificate of recognition from Ministry of Education',
-  'Usage analytics and progress tracking dashboard',
-  'Promotion on Virtual Labs official website',
-];
+async function fetchNodalCentresSections() {
+  const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/pages/nodal-centres/sections`);
+  if (!res.ok) throw new Error('Failed to fetch nodal centres sections');
+  return res.json();
+}
 
 export default function NodalCentres() {
+  const { data: sections, isLoading } = useQuery({
+    queryKey: ['nodal-centres-sections'],
+    queryFn: fetchNodalCentresSections,
+    staleTime: 60_000,
+    retry: 1,
+  });
+
+  let benefits = [];
+  let centres = [];
+
+  if (sections) {
+    const benSec = sections.find(s => s.sectionKey === 'nc_benefits');
+    const listSec = sections.find(s => s.sectionKey === 'nc_list');
+    if (benSec?.content?.items) benefits = benSec.content.items;
+    if (listSec?.content?.items) centres = listSec.content.items;
+  }
   return (
     <main className="pt-20">
       {/* Hero */}
@@ -55,12 +58,20 @@ export default function NodalCentres() {
             <h2 className="section-title mt-4">Benefits of Becoming a Nodal Centre</h2>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-5xl mx-auto">
-            {benefits.map((b, i) => (
-              <div key={i} className="card p-6 border border-gray-100 flex gap-3">
-                <CheckCircle2 className="w-5 h-5 text-primary-700 flex-shrink-0 mt-0.5" />
-                <p className="text-gray-700 text-sm leading-relaxed">{b}</p>
+            {isLoading ? (
+              <div className="col-span-full flex justify-center py-10">
+                <Loader2 className="w-8 h-8 animate-spin text-primary-500" />
               </div>
-            ))}
+            ) : benefits.length === 0 ? (
+              <div className="col-span-full text-center text-gray-400 py-10">No benefits configured.</div>
+            ) : (
+              benefits.map((b, i) => (
+                <div key={i} className="card p-6 border border-gray-100 flex gap-3">
+                  <CheckCircle2 className="w-5 h-5 text-primary-700 flex-shrink-0 mt-0.5" />
+                  <p className="text-gray-700 text-sm leading-relaxed">{b.text}</p>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </section>
@@ -76,26 +87,39 @@ export default function NodalCentres() {
             <span className="text-sm text-gray-400">{centres.length} centres listed</span>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {centres.map((c) => (
-              <div key={c.id} className="card p-6 border border-gray-100">
-                <div className="flex items-start justify-between mb-3">
-                  <div className="w-10 h-10 bg-primary-50 rounded-xl flex items-center justify-center">
-                    <Building className="w-5 h-5 text-primary-700" />
-                  </div>
-                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${c.active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
-                    {c.active ? 'Active' : 'Inactive'}
-                  </span>
-                </div>
-                <h3 className="font-semibold text-gray-900 text-sm mb-1">{c.name}</h3>
-                <div className="flex items-center gap-1 text-xs text-gray-400">
-                  <MapPin className="w-3 h-3" />
-                  {c.location}
-                </div>
-                <span className="mt-3 inline-block text-xs bg-primary-50 text-primary-700 px-2 py-0.5 rounded-full">
-                  {c.category}
-                </span>
+            {isLoading ? (
+              <div className="col-span-full flex justify-center py-10">
+                <Loader2 className="w-8 h-8 animate-spin text-primary-500" />
               </div>
-            ))}
+            ) : centres.length === 0 ? (
+              <div className="col-span-full text-center text-gray-400 py-10">No nodal centres registered yet.</div>
+            ) : (
+              centres.map((c, i) => {
+                // Ensure active is parsed as a boolean since HTML inputs sometimes store as strings
+                const isActive = c.active === true || c.active === 'true';
+                
+                return (
+                  <div key={c.id || i} className="card p-6 border border-gray-100">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="w-10 h-10 bg-primary-50 rounded-xl flex items-center justify-center">
+                        <Building className="w-5 h-5 text-primary-700" />
+                      </div>
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
+                        {isActive ? 'Active' : 'Inactive'}
+                      </span>
+                    </div>
+                    <h3 className="font-semibold text-gray-900 text-sm mb-1">{c.name}</h3>
+                    <div className="flex items-center gap-1 text-xs text-gray-400">
+                      <MapPin className="w-3 h-3 flex-shrink-0" />
+                      {c.location}
+                    </div>
+                    <span className="mt-3 inline-block text-xs bg-primary-50 text-primary-700 px-2 py-0.5 rounded-full">
+                      {c.category}
+                    </span>
+                  </div>
+                );
+              })
+            )}
           </div>
         </div>
       </section>

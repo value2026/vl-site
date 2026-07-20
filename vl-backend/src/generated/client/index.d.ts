@@ -15964,8 +15964,18 @@ export namespace Prisma {
 
   export type AggregateWorkshop = {
     _count: WorkshopCountAggregateOutputType | null
+    _avg: WorkshopAvgAggregateOutputType | null
+    _sum: WorkshopSumAggregateOutputType | null
     _min: WorkshopMinAggregateOutputType | null
     _max: WorkshopMaxAggregateOutputType | null
+  }
+
+  export type WorkshopAvgAggregateOutputType = {
+    seats: number | null
+  }
+
+  export type WorkshopSumAggregateOutputType = {
+    seats: number | null
   }
 
   export type WorkshopMinAggregateOutputType = {
@@ -15973,6 +15983,9 @@ export namespace Prisma {
     title: string | null
     description: string | null
     date: Date | null
+    location: string | null
+    mode: string | null
+    seats: number | null
     status: string | null
     createdById: string | null
     createdAt: Date | null
@@ -15984,6 +15997,9 @@ export namespace Prisma {
     title: string | null
     description: string | null
     date: Date | null
+    location: string | null
+    mode: string | null
+    seats: number | null
     status: string | null
     createdById: string | null
     createdAt: Date | null
@@ -15995,6 +16011,9 @@ export namespace Prisma {
     title: number
     description: number
     date: number
+    location: number
+    mode: number
+    seats: number
     status: number
     createdById: number
     createdAt: number
@@ -16003,11 +16022,22 @@ export namespace Prisma {
   }
 
 
+  export type WorkshopAvgAggregateInputType = {
+    seats?: true
+  }
+
+  export type WorkshopSumAggregateInputType = {
+    seats?: true
+  }
+
   export type WorkshopMinAggregateInputType = {
     id?: true
     title?: true
     description?: true
     date?: true
+    location?: true
+    mode?: true
+    seats?: true
     status?: true
     createdById?: true
     createdAt?: true
@@ -16019,6 +16049,9 @@ export namespace Prisma {
     title?: true
     description?: true
     date?: true
+    location?: true
+    mode?: true
+    seats?: true
     status?: true
     createdById?: true
     createdAt?: true
@@ -16030,6 +16063,9 @@ export namespace Prisma {
     title?: true
     description?: true
     date?: true
+    location?: true
+    mode?: true
+    seats?: true
     status?: true
     createdById?: true
     createdAt?: true
@@ -16075,6 +16111,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: WorkshopAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: WorkshopSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: WorkshopMinAggregateInputType
@@ -16105,6 +16153,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: WorkshopCountAggregateInputType | true
+    _avg?: WorkshopAvgAggregateInputType
+    _sum?: WorkshopSumAggregateInputType
     _min?: WorkshopMinAggregateInputType
     _max?: WorkshopMaxAggregateInputType
   }
@@ -16114,11 +16164,16 @@ export namespace Prisma {
     title: string
     description: string | null
     date: Date
+    location: string | null
+    mode: string | null
+    seats: number | null
     status: string
     createdById: string
     createdAt: Date
     updatedAt: Date
     _count: WorkshopCountAggregateOutputType | null
+    _avg: WorkshopAvgAggregateOutputType | null
+    _sum: WorkshopSumAggregateOutputType | null
     _min: WorkshopMinAggregateOutputType | null
     _max: WorkshopMaxAggregateOutputType | null
   }
@@ -16142,6 +16197,9 @@ export namespace Prisma {
     title?: boolean
     description?: boolean
     date?: boolean
+    location?: boolean
+    mode?: boolean
+    seats?: boolean
     status?: boolean
     createdById?: boolean
     createdAt?: boolean
@@ -16154,6 +16212,9 @@ export namespace Prisma {
     title?: boolean
     description?: boolean
     date?: boolean
+    location?: boolean
+    mode?: boolean
+    seats?: boolean
     status?: boolean
     createdById?: boolean
     createdAt?: boolean
@@ -16166,6 +16227,9 @@ export namespace Prisma {
     title?: boolean
     description?: boolean
     date?: boolean
+    location?: boolean
+    mode?: boolean
+    seats?: boolean
     status?: boolean
     createdById?: boolean
     createdAt?: boolean
@@ -16189,6 +16253,9 @@ export namespace Prisma {
       title: string
       description: string | null
       date: Date
+      location: string | null
+      mode: string | null
+      seats: number | null
       status: string
       createdById: string
       createdAt: Date
@@ -16591,6 +16658,9 @@ export namespace Prisma {
     readonly title: FieldRef<"Workshop", 'String'>
     readonly description: FieldRef<"Workshop", 'String'>
     readonly date: FieldRef<"Workshop", 'DateTime'>
+    readonly location: FieldRef<"Workshop", 'String'>
+    readonly mode: FieldRef<"Workshop", 'String'>
+    readonly seats: FieldRef<"Workshop", 'Int'>
     readonly status: FieldRef<"Workshop", 'String'>
     readonly createdById: FieldRef<"Workshop", 'String'>
     readonly createdAt: FieldRef<"Workshop", 'DateTime'>
@@ -17146,6 +17216,9 @@ export namespace Prisma {
     title: 'title',
     description: 'description',
     date: 'date',
+    location: 'location',
+    mode: 'mode',
+    seats: 'seats',
     status: 'status',
     createdById: 'createdById',
     createdAt: 'createdAt',
@@ -18397,6 +18470,9 @@ export namespace Prisma {
     title?: StringFilter<"Workshop"> | string
     description?: StringNullableFilter<"Workshop"> | string | null
     date?: DateTimeFilter<"Workshop"> | Date | string
+    location?: StringNullableFilter<"Workshop"> | string | null
+    mode?: StringNullableFilter<"Workshop"> | string | null
+    seats?: IntNullableFilter<"Workshop"> | number | null
     status?: StringFilter<"Workshop"> | string
     createdById?: StringFilter<"Workshop"> | string
     createdAt?: DateTimeFilter<"Workshop"> | Date | string
@@ -18409,6 +18485,9 @@ export namespace Prisma {
     title?: SortOrder
     description?: SortOrderInput | SortOrder
     date?: SortOrder
+    location?: SortOrderInput | SortOrder
+    mode?: SortOrderInput | SortOrder
+    seats?: SortOrderInput | SortOrder
     status?: SortOrder
     createdById?: SortOrder
     createdAt?: SortOrder
@@ -18424,6 +18503,9 @@ export namespace Prisma {
     title?: StringFilter<"Workshop"> | string
     description?: StringNullableFilter<"Workshop"> | string | null
     date?: DateTimeFilter<"Workshop"> | Date | string
+    location?: StringNullableFilter<"Workshop"> | string | null
+    mode?: StringNullableFilter<"Workshop"> | string | null
+    seats?: IntNullableFilter<"Workshop"> | number | null
     status?: StringFilter<"Workshop"> | string
     createdById?: StringFilter<"Workshop"> | string
     createdAt?: DateTimeFilter<"Workshop"> | Date | string
@@ -18436,13 +18518,18 @@ export namespace Prisma {
     title?: SortOrder
     description?: SortOrderInput | SortOrder
     date?: SortOrder
+    location?: SortOrderInput | SortOrder
+    mode?: SortOrderInput | SortOrder
+    seats?: SortOrderInput | SortOrder
     status?: SortOrder
     createdById?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: WorkshopCountOrderByAggregateInput
+    _avg?: WorkshopAvgOrderByAggregateInput
     _max?: WorkshopMaxOrderByAggregateInput
     _min?: WorkshopMinOrderByAggregateInput
+    _sum?: WorkshopSumOrderByAggregateInput
   }
 
   export type WorkshopScalarWhereWithAggregatesInput = {
@@ -18453,6 +18540,9 @@ export namespace Prisma {
     title?: StringWithAggregatesFilter<"Workshop"> | string
     description?: StringNullableWithAggregatesFilter<"Workshop"> | string | null
     date?: DateTimeWithAggregatesFilter<"Workshop"> | Date | string
+    location?: StringNullableWithAggregatesFilter<"Workshop"> | string | null
+    mode?: StringNullableWithAggregatesFilter<"Workshop"> | string | null
+    seats?: IntNullableWithAggregatesFilter<"Workshop"> | number | null
     status?: StringWithAggregatesFilter<"Workshop"> | string
     createdById?: StringWithAggregatesFilter<"Workshop"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Workshop"> | Date | string
@@ -19658,6 +19748,9 @@ export namespace Prisma {
     title: string
     description?: string | null
     date: Date | string
+    location?: string | null
+    mode?: string | null
+    seats?: number | null
     status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -19669,6 +19762,9 @@ export namespace Prisma {
     title: string
     description?: string | null
     date: Date | string
+    location?: string | null
+    mode?: string | null
+    seats?: number | null
     status?: string
     createdById: string
     createdAt?: Date | string
@@ -19680,6 +19776,9 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     date?: DateTimeFieldUpdateOperationsInput | Date | string
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    mode?: NullableStringFieldUpdateOperationsInput | string | null
+    seats?: NullableIntFieldUpdateOperationsInput | number | null
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -19691,6 +19790,9 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     date?: DateTimeFieldUpdateOperationsInput | Date | string
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    mode?: NullableStringFieldUpdateOperationsInput | string | null
+    seats?: NullableIntFieldUpdateOperationsInput | number | null
     status?: StringFieldUpdateOperationsInput | string
     createdById?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -19702,6 +19804,9 @@ export namespace Prisma {
     title: string
     description?: string | null
     date: Date | string
+    location?: string | null
+    mode?: string | null
+    seats?: number | null
     status?: string
     createdById: string
     createdAt?: Date | string
@@ -19713,6 +19818,9 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     date?: DateTimeFieldUpdateOperationsInput | Date | string
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    mode?: NullableStringFieldUpdateOperationsInput | string | null
+    seats?: NullableIntFieldUpdateOperationsInput | number | null
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -19723,6 +19831,9 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     date?: DateTimeFieldUpdateOperationsInput | Date | string
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    mode?: NullableStringFieldUpdateOperationsInput | string | null
+    seats?: NullableIntFieldUpdateOperationsInput | number | null
     status?: StringFieldUpdateOperationsInput | string
     createdById?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -20663,15 +20774,33 @@ export namespace Prisma {
     updatedAt?: SortOrder
   }
 
+  export type IntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
   export type WorkshopCountOrderByAggregateInput = {
     id?: SortOrder
     title?: SortOrder
     description?: SortOrder
     date?: SortOrder
+    location?: SortOrder
+    mode?: SortOrder
+    seats?: SortOrder
     status?: SortOrder
     createdById?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+  }
+
+  export type WorkshopAvgOrderByAggregateInput = {
+    seats?: SortOrder
   }
 
   export type WorkshopMaxOrderByAggregateInput = {
@@ -20679,6 +20808,9 @@ export namespace Prisma {
     title?: SortOrder
     description?: SortOrder
     date?: SortOrder
+    location?: SortOrder
+    mode?: SortOrder
+    seats?: SortOrder
     status?: SortOrder
     createdById?: SortOrder
     createdAt?: SortOrder
@@ -20690,10 +20822,33 @@ export namespace Prisma {
     title?: SortOrder
     description?: SortOrder
     date?: SortOrder
+    location?: SortOrder
+    mode?: SortOrder
+    seats?: SortOrder
     status?: SortOrder
     createdById?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+  }
+
+  export type WorkshopSumOrderByAggregateInput = {
+    seats?: SortOrder
+  }
+
+  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
   }
 
   export type UserCreatecustomPermissionsInput = {
@@ -21969,6 +22124,14 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
   }
 
+  export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
   export type UserUpdateOneRequiredWithoutWorkshopsCreatedNestedInput = {
     create?: XOR<UserCreateWithoutWorkshopsCreatedInput, UserUncheckedCreateWithoutWorkshopsCreatedInput>
     connectOrCreate?: UserCreateOrConnectWithoutWorkshopsCreatedInput
@@ -22188,6 +22351,33 @@ export namespace Prisma {
     gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
     gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
+  export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type NestedFloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
   }
 
   export type UserCreateWithoutCreatedUsersInput = {
@@ -22563,6 +22753,9 @@ export namespace Prisma {
     title: string
     description?: string | null
     date: Date | string
+    location?: string | null
+    mode?: string | null
+    seats?: number | null
     status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -22573,6 +22766,9 @@ export namespace Prisma {
     title: string
     description?: string | null
     date: Date | string
+    location?: string | null
+    mode?: string | null
+    seats?: number | null
     status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -23109,6 +23305,9 @@ export namespace Prisma {
     title?: StringFilter<"Workshop"> | string
     description?: StringNullableFilter<"Workshop"> | string | null
     date?: DateTimeFilter<"Workshop"> | Date | string
+    location?: StringNullableFilter<"Workshop"> | string | null
+    mode?: StringNullableFilter<"Workshop"> | string | null
+    seats?: IntNullableFilter<"Workshop"> | number | null
     status?: StringFilter<"Workshop"> | string
     createdById?: StringFilter<"Workshop"> | string
     createdAt?: DateTimeFilter<"Workshop"> | Date | string
@@ -26821,6 +27020,9 @@ export namespace Prisma {
     title: string
     description?: string | null
     date: Date | string
+    location?: string | null
+    mode?: string | null
+    seats?: number | null
     status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -27165,6 +27367,9 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     date?: DateTimeFieldUpdateOperationsInput | Date | string
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    mode?: NullableStringFieldUpdateOperationsInput | string | null
+    seats?: NullableIntFieldUpdateOperationsInput | number | null
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -27175,6 +27380,9 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     date?: DateTimeFieldUpdateOperationsInput | Date | string
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    mode?: NullableStringFieldUpdateOperationsInput | string | null
+    seats?: NullableIntFieldUpdateOperationsInput | number | null
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -27185,6 +27393,9 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     date?: DateTimeFieldUpdateOperationsInput | Date | string
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    mode?: NullableStringFieldUpdateOperationsInput | string | null
+    seats?: NullableIntFieldUpdateOperationsInput | number | null
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string

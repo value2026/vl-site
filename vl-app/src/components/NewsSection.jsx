@@ -45,7 +45,7 @@ const CATEGORY_COLORS = {
 };
 
 export default function NewsSection({ sectionTitle, sectionSubtitle, content = {} }) {
-  const items      = content.items?.length ? content.items : DEFAULT_ITEMS;
+  const items = content.items?.length ? [...content.items].reverse() : DEFAULT_ITEMS;
   const heading    = sectionTitle || 'News & Events';
   const tag        = content.sectionTag || 'Latest Updates';
   const viewAllHref = content.viewAllHref || '/news';

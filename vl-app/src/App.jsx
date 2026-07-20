@@ -12,6 +12,7 @@ import Project       from './pages/Project';
 import Workshop      from './pages/Workshop';
 import NodalCentres  from './pages/NodalCentres';
 import Publications  from './pages/Publications';
+import News          from './pages/News';
 import Contact       from './pages/Contact';
 import Login         from './pages/Login';
 import ForgotPassword from './pages/ForgotPassword';
@@ -283,7 +284,7 @@ function AppLayout() {
           <Route path="/nodal-centres/apply" element={<ComingSoon page="Apply as Nodal Centre" />} />
           <Route path="/nodal-centres/list"  element={<NodalCentres />} />
           <Route path="/nodal-centres/demo"  element={<ComingSoon page="Request a Demo" />} />
-          <Route path="/news"                element={<ComingSoon page="News & Events" />} />
+          <Route path="/news"                element={<News />} />
           <Route path="/publications"        element={<Publications />} />
           <Route path="/survey"              element={<ComingSoon page="Survey" />} />
           <Route path="/survey/faculty"      element={<ComingSoon page="Faculty Survey" />} />

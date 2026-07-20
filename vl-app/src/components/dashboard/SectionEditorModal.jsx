@@ -93,7 +93,13 @@ function TiptapEditor({ content, onChange, placeholder = 'Start writing…' }) {
 function RepeatableList({ label, items = [], onChange, fields }) {
   const add = () => {
     const blank = {};
-    fields.forEach(f => { blank[f.key] = ''; });
+    fields.forEach(f => {
+      blank[f.key] = '';
+      if (f.key === 'date') {
+        const today = new Date();
+        blank[f.key] = today.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+      }
+    });
     onChange([...items, blank]);
   };
   const remove = (i) => onChange(items.filter((_, idx) => idx !== i));
@@ -233,6 +239,69 @@ const REPEATABLE_CONFIGS = {
         { key: 'title',        label: 'Video Title',             placeholder: 'Amrita VALUE Virtual Labs Introduction' },
         { key: 'duration',     label: 'Duration / Subtitle',     placeholder: '3:05 · Official Overview' },
         { key: 'videoUrl',     label: 'YouTube Video URL',       placeholder: 'https://www.youtube.com/watch?v=...' },
+      ],
+    },
+  },
+  publications_list: {
+    items: {
+      label: 'Publication Items',
+      fields: [
+        { key: 'year',     label: 'Year',    placeholder: 'e.g., 2024' },
+        { key: 'title',    label: 'Title',   placeholder: 'Paper Title', type: 'textarea' },
+        { key: 'authors',  label: 'Authors', placeholder: 'Sharma, R., Verma, A.' },
+        { key: 'journal',  label: 'Journal', placeholder: 'Journal of Engineering Education...' },
+        { key: 'doi',      label: 'DOI/URL', placeholder: 'https://doi.org/...' },
+      ],
+    },
+  },
+  project_timeline: {
+    items: {
+      label: 'Timeline Items',
+      fields: [
+        { key: 'year',  label: 'Year',  placeholder: '2024' },
+        { key: 'title', label: 'Title', placeholder: 'Major Milestone' },
+        { key: 'desc',  label: 'Description', placeholder: 'Description of the milestone', type: 'textarea' },
+      ],
+    },
+  },
+  project_objectives: {
+    items: {
+      label: 'Objective Items',
+      fields: [
+        { key: 'text', label: 'Objective', placeholder: 'Provide remote access to labs...', type: 'textarea' },
+      ],
+    },
+  },
+  workshop_list: {
+    items: {
+      label: 'Workshops',
+      fields: [
+        { key: 'title',       label: 'Title',       placeholder: 'Faculty Development...' },
+        { key: 'date',        label: 'Date',        placeholder: 'August 12–13, 2025' },
+        { key: 'location',    label: 'Location',    placeholder: 'IIT Bombay, Mumbai' },
+        { key: 'mode',        label: 'Mode',        placeholder: 'Hybrid, In-person, Online' },
+        { key: 'seats',       label: 'Seats',       placeholder: '60' },
+        { key: 'description', label: 'Description', placeholder: 'Short description...', type: 'textarea' },
+        { key: 'color',       label: 'Color Theme', placeholder: 'from-blue-600 to-blue-800' },
+      ],
+    },
+  },
+  nc_benefits: {
+    items: {
+      label: 'Benefits',
+      fields: [
+        { key: 'text', label: 'Benefit', placeholder: 'Free access to all 700+ virtual labs...', type: 'textarea' },
+      ],
+    },
+  },
+  nc_list: {
+    items: {
+      label: 'Centres',
+      fields: [
+        { key: 'name',     label: 'Name',     placeholder: 'BITS Pilani' },
+        { key: 'location', label: 'Location', placeholder: 'Pilani, Rajasthan' },
+        { key: 'category', label: 'Category', placeholder: 'Engineering / Science' },
+        { key: 'active',   label: 'Active (true/false)', placeholder: 'true' },
       ],
     },
   },
@@ -567,6 +636,141 @@ export default function SectionEditorModal({ section, onClose, onSaved }) {
                 items={content.videos || []}
                 onChange={v => setContentKey('videos', v)}
                 fields={REPEATABLE_CONFIGS.media.videos.fields}
+              />
+            </>
+          )}
+
+          {/* ── PUBLICATIONS ────────────────────────────────── */}
+          {section.sectionKey === 'publications_list' && (
+            <>
+              <SectionDivider label="Publication Settings" />
+              <div className="flex gap-4">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (window.confirm('Are you sure you want to delete all publications? This cannot be undone.')) {
+                      setContentKey('items', []);
+                    }
+                  }}
+                  className="px-4 py-2 rounded-lg text-sm font-medium text-red-400 bg-red-400/10 hover:bg-red-400/20 transition-all border border-red-500/20"
+                >
+                  Delete All Publications
+                </button>
+              </div>
+
+              <SectionDivider label="Research Publications (Ordered by Year)" />
+              <p className="text-slate-500 text-xs -mt-2">
+                💡 Add papers here. The frontend will group them automatically by year.
+              </p>
+              <RepeatableList
+                label="Publications Items"
+                items={content.items || []}
+                onChange={v => setContentKey('items', v)}
+                fields={REPEATABLE_CONFIGS.publications_list.items.fields}
+              />
+            </>
+          )}
+
+          {/* ── PROJECT ─────────────────────────────────────── */}
+          {section.sectionKey === 'project_timeline' && (
+            <>
+              <SectionDivider label="Timeline Entries" />
+              <div className="flex gap-4 mb-4">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (window.confirm('Are you sure you want to delete all timeline entries?')) {
+                      setContentKey('items', []);
+                    }
+                  }}
+                  className="px-4 py-2 rounded-lg text-sm font-medium text-red-400 bg-red-400/10 hover:bg-red-400/20 transition-all border border-red-500/20"
+                >
+                  Delete All Timeline Entries
+                </button>
+              </div>
+              <RepeatableList
+                label="Timeline Items"
+                items={content.items || []}
+                onChange={v => setContentKey('items', v)}
+                fields={REPEATABLE_CONFIGS.project_timeline.items.fields}
+              />
+            </>
+          )}
+
+          {section.sectionKey === 'project_objectives' && (
+            <>
+              <SectionDivider label="Mission Objectives" />
+              <div className="flex gap-4 mb-4">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (window.confirm('Are you sure you want to delete all objectives?')) {
+                      setContentKey('items', []);
+                    }
+                  }}
+                  className="px-4 py-2 rounded-lg text-sm font-medium text-red-400 bg-red-400/10 hover:bg-red-400/20 transition-all border border-red-500/20"
+                >
+                  Delete All Objectives
+                </button>
+              </div>
+              <RepeatableList
+                label="Objective Items"
+                items={content.items || []}
+                onChange={v => setContentKey('items', v)}
+                fields={REPEATABLE_CONFIGS.project_objectives.items.fields}
+              />
+            </>
+          )}
+
+
+
+          {/* ── NODAL CENTRES ───────────────────────────────── */}
+          {section.sectionKey === 'nc_benefits' && (
+            <>
+              <SectionDivider label="Nodal Centre Benefits" />
+              <div className="flex gap-4 mb-4">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (window.confirm('Are you sure you want to delete all benefits?')) {
+                      setContentKey('items', []);
+                    }
+                  }}
+                  className="px-4 py-2 rounded-lg text-sm font-medium text-red-400 bg-red-400/10 hover:bg-red-400/20 transition-all border border-red-500/20"
+                >
+                  Delete All Benefits
+                </button>
+              </div>
+              <RepeatableList
+                label="Benefits List"
+                items={content.items || []}
+                onChange={v => setContentKey('items', v)}
+                fields={REPEATABLE_CONFIGS.nc_benefits.items.fields}
+              />
+            </>
+          )}
+
+          {section.sectionKey === 'nc_list' && (
+            <>
+              <SectionDivider label="Registered Nodal Centres" />
+              <div className="flex gap-4 mb-4">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (window.confirm('Are you sure you want to delete all registered centres?')) {
+                      setContentKey('items', []);
+                    }
+                  }}
+                  className="px-4 py-2 rounded-lg text-sm font-medium text-red-400 bg-red-400/10 hover:bg-red-400/20 transition-all border border-red-500/20"
+                >
+                  Delete All Centres
+                </button>
+              </div>
+              <RepeatableList
+                label="Centres List"
+                items={content.items || []}
+                onChange={v => setContentKey('items', v)}
+                fields={REPEATABLE_CONFIGS.nc_list.items.fields}
               />
             </>
           )}

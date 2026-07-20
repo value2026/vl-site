@@ -10,7 +10,7 @@ export default function WorkshopsManagement() {
   
   // Modal state
   const [showModal, setShowModal] = useState(false);
-  const [form, setForm] = useState({ title: '', description: '', date: '' });
+  const [form, setForm] = useState({ title: '', description: '', date: '', location: '', mode: 'Online', seats: '' });
   const [submitting, setSubmitting] = useState(false);
 
   const fetchWorkshops = useCallback(async () => {
@@ -51,7 +51,7 @@ export default function WorkshopsManagement() {
         throw new Error(d.message || 'Failed to create workshop');
       }
       setShowModal(false);
-      setForm({ title: '', description: '', date: '' });
+      setForm({ title: '', description: '', date: '', location: '', mode: 'Online', seats: '' });
       fetchWorkshops();
     } catch (err) {
       alert(err.message);
@@ -141,7 +141,11 @@ export default function WorkshopsManagement() {
                   <tr key={w.id} className="hover:bg-white/5 transition-colors">
                     <td className="px-4 py-3">
                       <div className="font-medium text-white">{w.title}</div>
-                      {w.description && <div className="text-xs text-slate-400 mt-1 truncate max-w-xs">{w.description}</div>}
+                      <div className="flex gap-2 items-center mt-1">
+                        <span className="text-[10px] bg-white/10 text-white/70 px-1.5 rounded">{w.mode || 'Online'}</span>
+                        {w.location && <span className="text-xs text-slate-400 truncate max-w-[150px]">{w.location}</span>}
+                      </div>
+                      {w.description && <div className="text-xs text-slate-500 mt-1 truncate max-w-xs">{w.description}</div>}
                     </td>
                     <td className="px-4 py-3 text-sm text-slate-300">
                       {new Date(w.date).toLocaleDateString()}
@@ -218,6 +222,46 @@ export default function WorkshopsManagement() {
                   className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50"
                 />
               </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Location</label>
+                  <input
+                    type="text"
+                    value={form.location}
+                    onChange={e => setForm({ ...form, location: e.target.value })}
+                    placeholder="e.g. IIT Bombay / Virtual Labs"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Mode</label>
+                  <select
+                    value={form.mode}
+                    onChange={e => setForm({ ...form, mode: e.target.value })}
+                    className="w-full bg-slate-800 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+                  >
+                    <option value="Online">Online</option>
+                    <option value="Hybrid">Hybrid</option>
+                    <option value="In-person">In-person</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Available Seats</label>
+                  <input
+                    type="number"
+                    value={form.seats}
+                    onChange={e => setForm({ ...form, seats: e.target.value })}
+                    placeholder="e.g. 100"
+                    min="1"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+                  />
+                </div>
+              </div>
+
               <div>
                 <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Description</label>
                 <textarea

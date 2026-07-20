@@ -295,6 +295,9 @@ model Workshop {
   title       String
   description String?
   date        DateTime
+  location    String?
+  mode        String?  @default("Online") // Online, Hybrid, In-person
+  seats       Int?
   status      String   @default("pending") // pending, approved, rejected
   
   createdById String

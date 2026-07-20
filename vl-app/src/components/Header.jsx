@@ -2,6 +2,13 @@ import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, ChevronDown, FlaskConical } from 'lucide-react';
 import { navLinks } from '../data/navLinks';
+import { useQuery } from '@tanstack/react-query';
+
+async function fetchHomeSections() {
+  const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/pages/home/sections`);
+  if (!res.ok) throw new Error('Failed to fetch home sections');
+  return res.json();
+}
 
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -9,6 +16,22 @@ export default function Header() {
   const [openDropdown, setOpenDropdown] = useState(null);
   const location = useLocation();
   const headerRef = useRef(null);
+
+  const { data: sections } = useQuery({
+    queryKey: ['home-sections'],
+    queryFn: fetchHomeSections,
+    staleTime: 60_000,
+  });
+
+  const displayNavLinks = navLinks.filter(link => {
+    if (link.label === 'News & Events') {
+      if (sections) {
+        const newsSection = sections.find(s => s.sectionKey === 'news');
+        if (newsSection && !newsSection.isVisible) return false;
+      }
+    }
+    return true;
+  });
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -67,7 +90,7 @@ export default function Header() {
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center gap-1" aria-label="Main navigation">
-            {navLinks.map((link) =>
+            {displayNavLinks.map((link) =>
               link.children ? (
                 <div key={link.label} className="relative">
                   <button
@@ -142,7 +165,7 @@ export default function Header() {
       {mobileOpen && (
         <div className="lg:hidden bg-white border-t border-gray-100 shadow-lg animate-slide-down">
           <nav className="container-custom py-3 space-y-0.5" aria-label="Mobile navigation">
-            {navLinks.map((link) =>
+            {displayNavLinks.map((link) =>
               link.children ? (
                 <div key={link.label}>
                   <button

@@ -217,6 +217,12 @@ async function getSections(req, res) {
     if (!page) {
       if (slug === 'home') {
         page = await seedHomePage();
+      } else if (slug === 'publications') {
+        page = await seedPublicationsPage();
+      } else if (slug === 'project') {
+        page = await seedProjectPage();
+      } else if (slug === 'nodal-centres') {
+        page = await seedNodalCentresPage();
       } else {
         return res.status(404).json({ message: 'Page not found' });
       }
@@ -303,9 +309,16 @@ async function reorderSections(req, res) {
 async function seedPage(req, res) {
   try {
     const { slug } = req.params;
-    if (slug !== 'home') return res.status(400).json({ message: 'Only home page seeding is supported' });
+    if (!['home', 'publications', 'project', 'nodal-centres'].includes(slug)) {
+      return res.status(400).json({ message: 'Page seeding is not supported for this slug' });
+    }
 
-    const page = await seedHomePage();
+    let page;
+    if (slug === 'home') page = await seedHomePage();
+    else if (slug === 'publications') page = await seedPublicationsPage();
+    else if (slug === 'project') page = await seedProjectPage();
+    else if (slug === 'nodal-centres') page = await seedNodalCentresPage();
+    
     res.json(page.sections);
   } catch (err) {
     console.error('seedPage error:', err);
@@ -342,6 +355,188 @@ async function seedHomePage() {
 
   return prisma.page.findUnique({
     where: { slug: 'home' },
+    include: { sections: { orderBy: { order: 'asc' } } },
+  });
+}
+
+async function seedPublicationsPage() {
+  const page = await prisma.page.upsert({
+    where: { slug: 'publications' },
+    update: { title: 'Publications' },
+    create: { slug: 'publications', title: 'Publications' },
+  });
+
+  const pubsSection = {
+    sectionKey: 'publications_list',
+    label: 'Publications List',
+    order: 0,
+    title: 'Research Publications',
+    subtitle: 'Academic papers and research findings from the Virtual Labs initiative.',
+    content: {
+      items: [
+        {
+          id: 'p1',
+          year: '2024',
+          title: 'Impact of Virtual Labs on Student Learning Outcomes in Engineering Education',
+          authors: 'Sharma, R., Verma, A., & Kumar, S.',
+          journal: 'Journal of Engineering Education, Vol. 113(2)',
+          doi: '#',
+        },
+        {
+          id: 'p2',
+          year: '2023',
+          title: 'Remote Laboratory Access for Developing Nations: A Case Study',
+          authors: 'Nair, P., Iyer, M., & Singh, D.',
+          journal: 'IEEE Transactions on Education, Vol. 66(4)',
+          doi: '#',
+        }
+      ]
+    }
+  };
+
+  await prisma.pageSection.upsert({
+    where: { pageId_sectionKey: { pageId: page.id, sectionKey: pubsSection.sectionKey } },
+    update: {},
+    create: {
+      pageId: page.id,
+      sectionKey: pubsSection.sectionKey,
+      label: pubsSection.label,
+      title: pubsSection.title,
+      subtitle: pubsSection.subtitle,
+      content: pubsSection.content,
+      isVisible: true,
+      order: pubsSection.order,
+    },
+  });
+
+  return prisma.page.findUnique({
+    where: { slug: 'publications' },
+    include: { sections: { orderBy: { order: 'asc' } } },
+  });
+}
+
+async function seedProjectPage() {
+  const page = await prisma.page.upsert({
+    where: { slug: 'project' },
+    update: { title: 'Project' },
+    create: { slug: 'project', title: 'Project' },
+  });
+
+  const timelineSection = {
+    sectionKey: 'project_timeline',
+    label: 'Project Timeline',
+    order: 0,
+    title: 'Project Timeline',
+    content: {
+      items: [
+        { year: '2009', title: 'Project Inception', desc: 'Virtual Labs launched under NMEICT Phase I with 5 partner institutions.' },
+        { year: '2011', title: 'First 100 Labs', desc: 'Milestone of 100 virtual labs across engineering and science disciplines.' },
+        { year: '2014', title: 'Phase II Expansion', desc: 'Expanded to 14 IITs and NITs; introduced remote-triggered labs.' },
+        { year: '2017', title: 'Nodal Centre Network', desc: 'Over 800 nodal centres established across India.' },
+        { year: '2021', title: 'New Platform Launch', desc: 'Revamped platform with improved UX, accessibility, and mobile support.' },
+        { year: '2025', title: '5 Million Students', desc: 'Crossed 5 million experiment completions and 1,800+ experiments.' },
+      ]
+    }
+  };
+
+  const objectivesSection = {
+    sectionKey: 'project_objectives',
+    label: 'Project Objectives',
+    order: 1,
+    title: 'Project Objectives',
+    content: {
+      items: [
+        { text: 'Provide remote access to labs in science and engineering disciplines' },
+        { text: 'Develop a complete learning management system for virtual labs' },
+        { text: 'Train students, researchers, and educators on the platform' },
+        { text: 'Create a repository of open-access lab content' },
+        { text: 'Foster collaboration between top institutions' },
+        { text: 'Democratize quality STEM education for Tier-2 and Tier-3 cities' },
+      ]
+    }
+  };
+
+  for (const sec of [timelineSection, objectivesSection]) {
+    await prisma.pageSection.upsert({
+      where: { pageId_sectionKey: { pageId: page.id, sectionKey: sec.sectionKey } },
+      update: {},
+      create: {
+        pageId: page.id,
+        sectionKey: sec.sectionKey,
+        label: sec.label,
+        title: sec.title,
+        content: sec.content,
+        isVisible: true,
+        order: sec.order,
+      },
+    });
+  }
+
+  return prisma.page.findUnique({
+    where: { slug: 'project' },
+    include: { sections: { orderBy: { order: 'asc' } } },
+  });
+}
+
+
+
+async function seedNodalCentresPage() {
+  const page = await prisma.page.upsert({
+    where: { slug: 'nodal-centres' },
+    update: { title: 'Nodal Centres' },
+    create: { slug: 'nodal-centres', title: 'Nodal Centres' },
+  });
+
+  const benefitsSection = {
+    sectionKey: 'nc_benefits',
+    label: 'Nodal Centre Benefits',
+    order: 0,
+    title: 'Benefits of Becoming a Nodal Centre',
+    content: {
+      items: [
+        { text: 'Free access to all 700+ virtual labs for your institution' },
+        { text: 'Priority support and technical assistance' },
+        { text: 'Dedicated workshops and faculty training sessions' },
+        { text: 'Certificate of recognition from Ministry of Education' },
+        { text: 'Usage analytics and progress tracking dashboard' },
+        { text: 'Promotion on Virtual Labs official website' },
+      ]
+    }
+  };
+
+  const listSection = {
+    sectionKey: 'nc_list',
+    label: 'Registered Nodal Centres',
+    order: 1,
+    title: 'Registered Nodal Centres',
+    content: {
+      items: [
+        { name: 'BITS Pilani', location: 'Pilani, Rajasthan', category: 'Engineering', active: true },
+        { name: 'VIT University', location: 'Vellore, Tamil Nadu', category: 'Engineering', active: true },
+        { name: 'Amrita University', location: 'Coimbatore, Tamil Nadu', category: 'Science', active: true },
+        { name: 'Jadavpur University', location: 'Kolkata, West Bengal', category: 'Engineering', active: true },
+      ]
+    }
+  };
+
+  for (const sec of [benefitsSection, listSection]) {
+    await prisma.pageSection.upsert({
+      where: { pageId_sectionKey: { pageId: page.id, sectionKey: sec.sectionKey } },
+      update: {},
+      create: {
+        pageId: page.id,
+        sectionKey: sec.sectionKey,
+        label: sec.label,
+        title: sec.title,
+        content: sec.content,
+        isVisible: true,
+        order: sec.order,
+      },
+    });
+  }
+
+  return prisma.page.findUnique({
+    where: { slug: 'nodal-centres' },
     include: { sections: { orderBy: { order: 'asc' } } },
   });
 }

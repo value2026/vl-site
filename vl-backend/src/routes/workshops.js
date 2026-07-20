@@ -7,10 +7,10 @@ const {
   updateWorkshop
 } = require('../controllers/workshopsController');
 
-router.use(verifyToken);
-
-// All logged in users can view workshops
+// Public endpoint for the frontend Workshop landing page
 router.get('/', getWorkshops);
+
+router.use(verifyToken);
 
 // Only admins and vl_managers can create workshops
 router.post('/', requireRole('admin', 'vl_manager'), createWorkshop);
