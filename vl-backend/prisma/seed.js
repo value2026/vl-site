@@ -107,12 +107,14 @@ async function main() {
   // 3. Define Seed Data
   const subjectsData = [
     {
+      id: '11111111-1111-1111-1111-111111111111',
       title: 'Computer Science',
       icon: '💻',
       description: 'Explore programming, algorithms, data structures, and computer networking.',
       gradient: 'from-blue-600 to-indigo-700',
       labs: [
         {
+          id: '55555555-5555-5555-5555-555555555555',
           title: 'Quantum Computing Lab',
           icon: '⚛️',
           description: 'Hands-on simulations covering quantum state preparation, Shor\'s algorithm, VQE optimization, QSVM, and quantum machine learning.',
@@ -170,6 +172,7 @@ async function main() {
       ]
     },
     {
+      id: '22222222-2222-2222-2222-222222222222',
       title: 'Chemistry',
       icon: '🧪',
       description: 'Interact with virtual retorts, acids, bases, and examine organic reactions.',
@@ -177,6 +180,7 @@ async function main() {
       labs: []
     },
     {
+      id: '33333333-3333-3333-3333-333333333333',
       title: 'Physics',
       icon: '⚛️',
       description: 'Explore kinematic forces, optics, thermodynamics, and electromagnetism.',
@@ -184,12 +188,14 @@ async function main() {
       labs: []
     },
     {
+      id: '44444444-4444-4444-4444-444444444444',
       title: 'Chemical Science',
       icon: '🧪',
       description: 'Explore chemical systems, molecular reactions, and physical chemistry principles.',
       gradient: 'from-teal-500 to-cyan-600',
       labs: [
         {
+          id: '66666666-6666-6666-6666-666666666666',
           title: 'Physical Chemistry Virtual Lab',
           icon: '⚗️',
           description: 'Explore spectrophotometry, cryoscopy, ebullioscopy and EMF measurement.',
@@ -226,8 +232,16 @@ async function main() {
 
   // 4. Insert Seed Data
   for (const sData of subjectsData) {
-    const subject = await prisma.subject.create({
-      data: {
+    const subject = await prisma.subject.upsert({
+      where: { id: sData.id },
+      update: {
+        title: sData.title,
+        icon: sData.icon,
+        description: sData.description,
+        gradient: sData.gradient,
+      },
+      create: {
+        id: sData.id,
         title: sData.title,
         icon: sData.icon,
         description: sData.description,
@@ -235,11 +249,18 @@ async function main() {
         createdById: admin.id,
       }
     });
-    console.log(`📚 Created Subject: ${subject.title}`);
+    console.log(`📚 Upserted Subject: ${subject.title}`);
 
     for (const lData of sData.labs) {
-      const lab = await prisma.lab.create({
-        data: {
+      const lab = await prisma.lab.upsert({
+        where: { id: lData.id },
+        update: {
+          title: lData.title,
+          icon: lData.icon,
+          description: lData.description,
+        },
+        create: {
+          id: lData.id,
           title: lData.title,
           icon: lData.icon,
           description: lData.description,
@@ -247,12 +268,43 @@ async function main() {
           createdById: admin.id,
         }
       });
-      console.log(`   🔬 Created Lab: ${lab.title}`);
+      console.log(`   🔬 Upserted Lab: ${lab.title}`);
 
       for (const eData of lData.experiments) {
+<<<<<<< HEAD
         // Automatically make Stack Operations dynamic on default simulation fallback
         const exp = await prisma.experiment.create({
           data: {
+=======
+        const expId = eData.id || undefined;
+        let contentPath = null;
+        let simulationPath = null;
+
+        if (expId) {
+          const fs = require('fs');
+          const path = require('path');
+          const uploadsDir = path.join(__dirname, '../uploads/experiments', expId);
+          if (fs.existsSync(path.join(uploadsDir, 'content'))) {
+            contentPath = `experiments/${expId}/content`;
+          }
+          if (fs.existsSync(path.join(uploadsDir, 'simulation'))) {
+            simulationPath = `experiments/${expId}/simulation`;
+          }
+        }
+
+        const exp = await prisma.experiment.upsert({
+          where: { id: eData.id },
+          update: {
+            title: eData.title,
+            description: eData.description,
+            duration: eData.duration,
+            difficulty: eData.difficulty,
+            contentPath,
+            simulationPath: simulationPath || (eData.title === 'Stack Operations' ? null : null),
+          },
+          create: {
+            id: expId,
+>>>>>>> eb013ae3526c10d1d5db237a9ccd26c6e0c3119e
             title: eData.title,
             description: eData.description,
             duration: eData.duration,
@@ -263,7 +315,11 @@ async function main() {
             simulationPath: eData.title === 'Stack Operations' ? null : null,
           }
         });
+<<<<<<< HEAD
         console.log(`      ⚗️ Created Experiment: ${exp.title}`);
+=======
+        console.log(`      ⚗️ Upserted Experiment: ${exp.title} (${exp.id})`);
+>>>>>>> eb013ae3526c10d1d5db237a9ccd26c6e0c3119e
       }
     }
   }
