@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { CheckCircle2, AlertCircle, HelpCircle, Loader2, RefreshCw } from 'lucide-react';
 import { api } from '../../utils/api';
-import { trackEvent } from '../../utils/analytics';
+import { trackEvent, trackError, EVENTS } from '../../utils/analytics';
+import { useEffect } from 'react';
 
 export default function QuizBlock({ experimentId, experimentName, userId, quizType, questions = [] }) {
   const [answers, setAnswers] = useState({}); // { [questionIndex]: 'a' | 'b' ... }
@@ -58,21 +59,43 @@ export default function QuizBlock({ experimentId, experimentName, userId, quizTy
       }
       trackEvent({
         category: 'experiment',
-        action: 'quiz_completed',
+        action: EVENTS.QUIZ_COMPLETED,
         label: `${experimentId} - ${quizType}`,
         value: Math.round((calculatedScore / questions.length) * 100),
         experiment_id: experimentId,
         experiment_name: experimentName,
         quiz_type: quizType,
         score: calculatedScore,
+        maxScore: questions.length,
         user_id: userId
       });
     } catch (err) {
       console.error('Quiz record error:', err);
+      trackError('api_error', 'Failed to record quiz analytics', { experiment_id: experimentId, quiz_type: quizType });
     } finally {
       setLoading(false);
     }
   };
+
+  // Track quiz duration when unmounted
+  useEffect(() => {
+    const startTime = Date.now();
+    return () => {
+      const durationSeconds = Math.round((Date.now() - startTime) / 1000);
+      // We log duration even if not submitted to see how long they spent before leaving
+      trackEvent({
+        category: 'experiment',
+        action: EVENTS.QUIZ_EXITED,
+        label: `${experimentId} - ${quizType}`,
+        duration: durationSeconds,
+        experiment_id: experimentId,
+        experiment_name: experimentName,
+        quiz_type: quizType,
+        user_id: userId,
+        completed: submitted
+      });
+    };
+  }, [experimentId, experimentName, quizType, userId, submitted]);
 
   const handleReset = () => {
     setAnswers({});

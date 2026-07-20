@@ -1,14 +1,6 @@
-<!doctype html>
-<html lang="en">
-  
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Quantum Measurement Simulation</title>
-    <script type="module" crossorigin src="js/index-DZqDXIuy.js"></script>
-    <link rel="stylesheet" crossorigin href="css/index-CyAuISp2.css">
-  <script>
+const fs = require('fs');
+const path = require('path');
+const oldSnippet = `<script>
   window.addEventListener('message', function(event) {
     if (event.data && event.data.type === 'INIT_GA') {
       var measurementId = event.data.measurementId;
@@ -28,9 +20,18 @@
       });
     }
   });
-</script>
-  </head>
-  <body>
-    <div id="root"></div>
-  </body>
-</html>
+</script>`;
+
+const exps = fs.readdirSync('./uploads/experiments');
+exps.forEach(exp => {
+  const idxPath = path.join('./uploads/experiments', exp, 'simulation/index.html');
+  if(fs.existsSync(idxPath)) {
+    let content = fs.readFileSync(idxPath, 'utf8');
+    const targetRegex = /<script>\s*window\.addEventListener\('message', function\(event\) \{\s*if \(event\.data && event\.data\.type === 'INIT_GA'\)[\s\S]*?<\/script>/;
+    if (content.match(targetRegex)) {
+      content = content.replace(targetRegex, oldSnippet);
+      fs.writeFileSync(idxPath, content);
+      console.log('Reverted ' + exp);
+    }
+  }
+});

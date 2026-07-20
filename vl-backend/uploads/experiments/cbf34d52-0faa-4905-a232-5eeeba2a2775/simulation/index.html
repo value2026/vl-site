@@ -22,7 +22,11 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', measurementId, { debug_mode: true });
+      gtag('config', measurementId, { 
+        debug_mode: true,
+        user_id: event.data.userId,
+        experiment_id: event.data.experimentId
+      });
     }
   });
 </script>
