@@ -129,6 +129,7 @@ exports.Prisma.UserScalarFieldEnum = {
   password: 'password',
   role: 'role',
   isActive: 'isActive',
+  customPermissions: 'customPermissions',
   username: 'username',
   mobile: 'mobile',
   profilePic: 'profilePic',
@@ -273,6 +274,26 @@ exports.Prisma.PageSectionScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.InstitutionScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  isActive: 'isActive',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.WorkshopScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  description: 'description',
+  date: 'date',
+  status: 'status',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -301,7 +322,10 @@ exports.Role = exports.$Enums.Role = {
   admin: 'admin',
   nodal_centre: 'nodal_centre',
   teacher: 'teacher',
-  student: 'student'
+  student: 'student',
+  content_admin: 'content_admin',
+  sim_admin: 'sim_admin',
+  vl_manager: 'vl_manager'
 };
 
 exports.Prisma.ModelName = {
@@ -316,7 +340,9 @@ exports.Prisma.ModelName = {
   ScheduledCall: 'ScheduledCall',
   ScheduledCallInvitee: 'ScheduledCallInvitee',
   Page: 'Page',
-  PageSection: 'PageSection'
+  PageSection: 'PageSection',
+  Institution: 'Institution',
+  Workshop: 'Workshop'
 };
 
 /**

@@ -26,10 +26,34 @@ const verifyToken = (req, res, next) => {
  * Example: requireRole('admin', 'nodal_centre')
  */
 const requireRole = (...roles) => (req, res, next) => {
-  if (!req.user || !roles.includes(req.user.role)) {
+  if (!req.user) return res.status(403).json({ message: 'Insufficient permissions' });
+
+  // Admin has all access
+  if (req.user.role === 'admin') return next();
+
+  // VL Manager implicitly has sim_admin privileges
+  if (req.user.role === 'vl_manager' && roles.includes('sim_admin')) return next();
+
+  if (!roles.includes(req.user.role)) {
     return res.status(403).json({ message: 'Insufficient permissions' });
   }
   next();
 };
 
-module.exports = { verifyToken, requireRole };
+/**
+ * Permission guard — checks if user has a specific customPermission string.
+ */
+const requirePermission = (permissionStr) => (req, res, next) => {
+  if (!req.user) return res.status(403).json({ message: 'Insufficient permissions' });
+  
+  // Admin has all access
+  if (req.user.role === 'admin') return next();
+  
+  const perms = req.user.customPermissions || [];
+  if (!perms.includes(permissionStr)) {
+    return res.status(403).json({ message: 'Insufficient permissions' });
+  }
+  next();
+};
+
+module.exports = { verifyToken, requireRole, requirePermission };

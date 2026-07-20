@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('🌱 Starting database seed...');
 
-  // 1. Create or Find default users
+  // 1. Create or Find default users and institutions
   const adminEmail = 'admin@virtuallabs.in';
   let admin = await prisma.user.findUnique({ where: { email: adminEmail } });
 
@@ -25,85 +25,73 @@ async function main() {
     console.log('ℹ️ Admin user already exists.');
   }
 
+  // Create 4 Default Institutions
+  const institutionNames = [
+    'Amrita Vishwa Vidyapeetham',
+    'IIT Bombay',
+    'NIT Warangal',
+    'IIIT Hyderabad'
+  ];
+  
+  let primaryInstitution = null;
+  
+  for (const name of institutionNames) {
+    let inst = await prisma.institution.findUnique({ where: { name } });
+    if (!inst) {
+      inst = await prisma.institution.create({
+        data: { name, createdById: admin.id }
+      });
+      console.log(`✅ Institution created: ${name}`);
+    }
+    if (name === 'Amrita Vishwa Vidyapeetham') {
+      primaryInstitution = inst;
+    }
+  }
+
+  // Create default nodal admin (Nodal Centre role)
+  const nodalEmail = 'nodal@amrita.edu';
+  let nodalAdmin = await prisma.user.findUnique({ where: { email: nodalEmail } });
+  if (!nodalAdmin && primaryInstitution) {
+    const hashed = await bcrypt.hash('VLNodal@2024', 12);
+    nodalAdmin = await prisma.user.create({
+      data: {
+        name: 'Amrita Nodal Admin',
+        email: nodalEmail,
+        password: hashed,
+        role: 'nodal_centre',
+        nodalCentreId: primaryInstitution.id, // Linking to Institution
+        createdById: admin.id,
+      },
+    });
+    console.log('✅ Nodal Admin user created!');
+  }
+
   // Create default student if not exists
   const studentEmail = 'student@virtuallabs.in';
-  const studentExists = await prisma.user.findUnique({ where: { email: studentEmail } });
-  if (!studentExists) {
+  let studentExists = await prisma.user.findUnique({ where: { email: studentEmail } });
+  if (!studentExists && primaryInstitution) {
     const hashed = await bcrypt.hash('VLStudent@2024', 12);
-    await prisma.user.create({
+    studentExists = await prisma.user.create({
       data: {
         name: 'John Student',
         email: studentEmail,
         password: hashed,
         role: 'student',
+        nodalCentreId: primaryInstitution.id, // Linking to Institution
       },
     });
     console.log('✅ Student user created!');
   }
 
-  // Create default teacher if not exists
-  const teacherEmail = 'teacher@virtuallabs.in';
-  const teacherExists = await prisma.user.findUnique({ where: { email: teacherEmail } });
-  if (!teacherExists) {
-    const hashed = await bcrypt.hash('VLTeacher@2024', 12);
-    await prisma.user.create({
-      data: {
-        name: 'Dr. Jane Smith',
-        email: teacherEmail,
-        password: hashed,
-        role: 'teacher',
-      },
-    });
-    console.log('✅ Teacher user created!');
-  }
-
-  // Get teacher record (needed for linking)
-  const teacher = await prisma.user.findUnique({ where: { email: teacherEmail } });
-
-  // Create default nodal centre if not exists
-  const nodalEmail = 'nodal@virtuallabs.in';
-  let nodalCentre = await prisma.user.findUnique({ where: { email: nodalEmail } });
-  if (!nodalCentre) {
-    const hashed = await bcrypt.hash('VLNodal@2024', 12);
-    nodalCentre = await prisma.user.create({
-      data: {
-        name: 'Nodal Centre',
-        email: nodalEmail,
-        password: hashed,
-        role: 'nodal_centre',
-        createdById: admin.id,
-      },
-    });
-    console.log('✅ Nodal Centre user created!');
-  }
-
-  // Link teacher to nodal centre (if not already linked)
-  if (teacher && !teacher.nodalCentreId) {
-    await prisma.user.update({
-      where: { id: teacher.id },
-      data: { nodalCentreId: nodalCentre.id, createdById: nodalCentre.id }
-    });
-  }
-
-  // Link default student to teacher + nodal centre (so they appear in contacts)
-  const defaultStudent = await prisma.user.findUnique({ where: { email: 'student@virtuallabs.in' } });
-  if (defaultStudent && !defaultStudent.createdById && teacher) {
-    await prisma.user.update({
-      where: { id: defaultStudent.id },
-      data: { createdById: teacher.id, nodalCentreId: nodalCentre.id }
-    });
-  }
-
-  // Link extra students (alice, bob, charlie) to teacher + nodal centre
+  // Ensure extra students (alice, bob, charlie) if they exist are linked to the primary institution
   const extraStudentEmails = ['alice@virtuallabs.in', 'bob@virtuallabs.in', 'charlie@virtuallabs.in'];
   for (const email of extraStudentEmails) {
     const s = await prisma.user.findUnique({ where: { email } });
-    if (s) {
+    if (s && primaryInstitution) {
       await prisma.user.update({
         where: { id: s.id },
         data: {
-          createdById: teacher?.id || null,
-          nodalCentreId: nodalCentre.id
+          nodalCentreId: primaryInstitution.id
         }
       });
     }
@@ -130,56 +118,48 @@ async function main() {
           description: 'Hands-on simulations covering quantum state preparation, Shor\'s algorithm, VQE optimization, QSVM, and quantum machine learning.',
           experiments: [
             {
-              id: 'cbf34d52-0faa-4905-a232-5eeeba2a2775',
               title: 'Expectation Value Calculation in Quantum Systems',
               description: 'Calculate expectation values of observables for various parameterized quantum state vectors.',
               duration: '60 min',
               difficulty: 'Intermediate',
             },
             {
-              id: '29682e5b-0b22-44cc-b2de-b8539d5d732c',
               title: 'Factorization Using Shor\'s Algorithm',
               description: 'Simulate Shor\'s period-finding quantum circuits to factor prime products.',
               duration: '90 min',
               difficulty: 'Advanced',
             },
             {
-              id: '90eb30b9-88e7-4168-a352-6411714ae3dc',
               title: 'Variational Quantum Eigensolver (VQE) Optimization',
               description: 'Solve for the ground state energy of molecular Hamiltonians using parameterized ansatz circuits.',
               duration: '75 min',
               difficulty: 'Advanced',
             },
             {
-              id: '906ca3d5-f1b1-4754-a459-db045046702b',
               title: 'Quantum Measurement and Result Interpretation',
               description: 'Observe quantum measurement collapse, state tomography, and evaluate probability distributions.',
               duration: '45 min',
               difficulty: 'Beginner',
             },
             {
-              id: '265ae76d-5ee7-45ea-ba3c-3c2494a2228a',
               title: 'Quantum Linear Algebra – Matrix and Vector Operations',
               description: 'Explore quantum algorithms for systems of linear equations and state vector operations.',
               duration: '60 min',
               difficulty: 'Intermediate',
             },
             {
-              id: 'd2528cd1-d1cc-4088-aadb-aa4cac1aadac',
               title: 'Applied Linear Algebra – Quantum Gates in Action',
               description: 'Apply Hadamard, Pauli, CNOT, and phase gates in quantum circuits to observe state rotations.',
               duration: '60 min',
               difficulty: 'Intermediate',
             },
             {
-              id: '6f6e8a5f-8143-4a28-935a-85f96a3fe0d3',
               title: 'Quantum Kernel Alignment in Machine Learning',
               description: 'Optimize quantum kernel parameters to increase data separability in high-dimensional feature spaces.',
               duration: '90 min',
               difficulty: 'Advanced',
             },
             {
-              id: '963217c5-6059-4f77-a5ea-2b0dbfbe3747',
               title: 'Quantum Support Vector Machines (QSVM)',
               description: 'Classify complex data distributions using quantum-enhanced kernels and support vectors.',
               duration: '90 min',
@@ -215,28 +195,24 @@ async function main() {
           description: 'Explore spectrophotometry, cryoscopy, ebullioscopy and EMF measurement.',
           experiments: [
             {
-              id: '83c0fc70-8367-4598-93ed-09cb565c06f4',
               title: 'Spectrophotometry',
               description: 'Measure the absorption of light by a chemical substance as a function of wavelength.',
               duration: '60 min',
               difficulty: 'Intermediate',
             },
             {
-              id: 'fb645967-38e2-4244-8204-bda3b83e8587',
               title: 'Cryoscopy',
               description: 'Determine the depression of freezing point to calculate molecular mass.',
               duration: '60 min',
               difficulty: 'Intermediate',
             },
             {
-              id: 'da92a101-b214-41d1-817a-24adff0bf12b',
               title: 'Ebullioscopy',
               description: 'Determine the elevation of boiling point of a solvent due to a solute.',
               duration: '60 min',
               difficulty: 'Intermediate',
             },
             {
-              id: 'd9e0499b-4322-42f5-8d5f-4279ba8588dc',
               title: 'EMF Measurement',
               description: 'Measure electromotive force of galvanic cells to study thermodynamics.',
               duration: '60 min',
@@ -274,36 +250,20 @@ async function main() {
       console.log(`   🔬 Created Lab: ${lab.title}`);
 
       for (const eData of lData.experiments) {
-        const expId = eData.id || undefined;
-        let contentPath = null;
-        let simulationPath = null;
-
-        if (expId) {
-          const fs = require('fs');
-          const path = require('path');
-          const uploadsDir = path.join(__dirname, '../uploads/experiments', expId);
-          if (fs.existsSync(path.join(uploadsDir, 'content'))) {
-            contentPath = `experiments/${expId}/content`;
-          }
-          if (fs.existsSync(path.join(uploadsDir, 'simulation'))) {
-            simulationPath = `experiments/${expId}/simulation`;
-          }
-        }
-
+        // Automatically make Stack Operations dynamic on default simulation fallback
         const exp = await prisma.experiment.create({
           data: {
-            id: expId,
             title: eData.title,
             description: eData.description,
             duration: eData.duration,
             difficulty: eData.difficulty,
             labId: lab.id,
             createdById: admin.id,
-            contentPath,
-            simulationPath: simulationPath || (eData.title === 'Stack Operations' ? null : null),
+            // Stack Operations will use the fallback react simulation
+            simulationPath: eData.title === 'Stack Operations' ? null : null,
           }
         });
-        console.log(`      ⚗️ Created Experiment: ${exp.title} (${exp.id})`);
+        console.log(`      ⚗️ Created Experiment: ${exp.title}`);
       }
     }
   }
@@ -335,7 +295,7 @@ async function main() {
             email: est.email,
             password: hashed,
             role: 'student',
-            nodalCentreId: teacherForAnalytics?.nodalCentreId || null, // Group them to make report work
+            nodalCentreId: student?.nodalCentreId || null, // Group them to make report work
           },
         });
       }

@@ -73,6 +73,16 @@ export type Page = $Result.DefaultSelection<Prisma.$PagePayload>
  * 
  */
 export type PageSection = $Result.DefaultSelection<Prisma.$PageSectionPayload>
+/**
+ * Model Institution
+ * 
+ */
+export type Institution = $Result.DefaultSelection<Prisma.$InstitutionPayload>
+/**
+ * Model Workshop
+ * 
+ */
+export type Workshop = $Result.DefaultSelection<Prisma.$WorkshopPayload>
 
 /**
  * Enums
@@ -82,7 +92,10 @@ export namespace $Enums {
   admin: 'admin',
   nodal_centre: 'nodal_centre',
   teacher: 'teacher',
-  student: 'student'
+  student: 'student',
+  content_admin: 'content_admin',
+  sim_admin: 'sim_admin',
+  vl_manager: 'vl_manager'
 };
 
 export type Role = (typeof Role)[keyof typeof Role]
@@ -335,6 +348,26 @@ export class PrismaClient<
     * ```
     */
   get pageSection(): Prisma.PageSectionDelegate<ExtArgs>;
+
+  /**
+   * `prisma.institution`: Exposes CRUD operations for the **Institution** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Institutions
+    * const institutions = await prisma.institution.findMany()
+    * ```
+    */
+  get institution(): Prisma.InstitutionDelegate<ExtArgs>;
+
+  /**
+   * `prisma.workshop`: Exposes CRUD operations for the **Workshop** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Workshops
+    * const workshops = await prisma.workshop.findMany()
+    * ```
+    */
+  get workshop(): Prisma.WorkshopDelegate<ExtArgs>;
 }
 
 export namespace Prisma {
@@ -787,7 +820,9 @@ export namespace Prisma {
     ScheduledCall: 'ScheduledCall',
     ScheduledCallInvitee: 'ScheduledCallInvitee',
     Page: 'Page',
-    PageSection: 'PageSection'
+    PageSection: 'PageSection',
+    Institution: 'Institution',
+    Workshop: 'Workshop'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -803,7 +838,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "user" | "subject" | "lab" | "experiment" | "quizAttempt" | "experimentVisit" | "feedback" | "chatMessage" | "scheduledCall" | "scheduledCallInvitee" | "page" | "pageSection"
+      modelProps: "user" | "subject" | "lab" | "experiment" | "quizAttempt" | "experimentVisit" | "feedback" | "chatMessage" | "scheduledCall" | "scheduledCallInvitee" | "page" | "pageSection" | "institution" | "workshop"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1647,6 +1682,146 @@ export namespace Prisma {
           }
         }
       }
+      Institution: {
+        payload: Prisma.$InstitutionPayload<ExtArgs>
+        fields: Prisma.InstitutionFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.InstitutionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InstitutionPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.InstitutionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InstitutionPayload>
+          }
+          findFirst: {
+            args: Prisma.InstitutionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InstitutionPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.InstitutionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InstitutionPayload>
+          }
+          findMany: {
+            args: Prisma.InstitutionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InstitutionPayload>[]
+          }
+          create: {
+            args: Prisma.InstitutionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InstitutionPayload>
+          }
+          createMany: {
+            args: Prisma.InstitutionCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.InstitutionCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InstitutionPayload>[]
+          }
+          delete: {
+            args: Prisma.InstitutionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InstitutionPayload>
+          }
+          update: {
+            args: Prisma.InstitutionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InstitutionPayload>
+          }
+          deleteMany: {
+            args: Prisma.InstitutionDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.InstitutionUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.InstitutionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InstitutionPayload>
+          }
+          aggregate: {
+            args: Prisma.InstitutionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateInstitution>
+          }
+          groupBy: {
+            args: Prisma.InstitutionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<InstitutionGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.InstitutionCountArgs<ExtArgs>
+            result: $Utils.Optional<InstitutionCountAggregateOutputType> | number
+          }
+        }
+      }
+      Workshop: {
+        payload: Prisma.$WorkshopPayload<ExtArgs>
+        fields: Prisma.WorkshopFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.WorkshopFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WorkshopPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.WorkshopFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WorkshopPayload>
+          }
+          findFirst: {
+            args: Prisma.WorkshopFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WorkshopPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.WorkshopFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WorkshopPayload>
+          }
+          findMany: {
+            args: Prisma.WorkshopFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WorkshopPayload>[]
+          }
+          create: {
+            args: Prisma.WorkshopCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WorkshopPayload>
+          }
+          createMany: {
+            args: Prisma.WorkshopCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.WorkshopCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WorkshopPayload>[]
+          }
+          delete: {
+            args: Prisma.WorkshopDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WorkshopPayload>
+          }
+          update: {
+            args: Prisma.WorkshopUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WorkshopPayload>
+          }
+          deleteMany: {
+            args: Prisma.WorkshopDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.WorkshopUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.WorkshopUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WorkshopPayload>
+          }
+          aggregate: {
+            args: Prisma.WorkshopAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateWorkshop>
+          }
+          groupBy: {
+            args: Prisma.WorkshopGroupByArgs<ExtArgs>
+            result: $Utils.Optional<WorkshopGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.WorkshopCountArgs<ExtArgs>
+            result: $Utils.Optional<WorkshopCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1809,11 +1984,11 @@ export namespace Prisma {
 
   export type UserCountOutputType = {
     createdUsers: number
-    centreMembers: number
     subjectsCreated: number
     labsCreated: number
-    labsAsNodalCentre: number
     experimentsCreated: number
+    institutionsCreated: number
+    workshopsCreated: number
     quizAttempts: number
     experimentVisits: number
     feedbacks: number
@@ -1825,11 +2000,11 @@ export namespace Prisma {
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     createdUsers?: boolean | UserCountOutputTypeCountCreatedUsersArgs
-    centreMembers?: boolean | UserCountOutputTypeCountCentreMembersArgs
     subjectsCreated?: boolean | UserCountOutputTypeCountSubjectsCreatedArgs
     labsCreated?: boolean | UserCountOutputTypeCountLabsCreatedArgs
-    labsAsNodalCentre?: boolean | UserCountOutputTypeCountLabsAsNodalCentreArgs
     experimentsCreated?: boolean | UserCountOutputTypeCountExperimentsCreatedArgs
+    institutionsCreated?: boolean | UserCountOutputTypeCountInstitutionsCreatedArgs
+    workshopsCreated?: boolean | UserCountOutputTypeCountWorkshopsCreatedArgs
     quizAttempts?: boolean | UserCountOutputTypeCountQuizAttemptsArgs
     experimentVisits?: boolean | UserCountOutputTypeCountExperimentVisitsArgs
     feedbacks?: boolean | UserCountOutputTypeCountFeedbacksArgs
@@ -1860,13 +2035,6 @@ export namespace Prisma {
   /**
    * UserCountOutputType without action
    */
-  export type UserCountOutputTypeCountCentreMembersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: UserWhereInput
-  }
-
-  /**
-   * UserCountOutputType without action
-   */
   export type UserCountOutputTypeCountSubjectsCreatedArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: SubjectWhereInput
   }
@@ -1881,15 +2049,22 @@ export namespace Prisma {
   /**
    * UserCountOutputType without action
    */
-  export type UserCountOutputTypeCountLabsAsNodalCentreArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: LabWhereInput
+  export type UserCountOutputTypeCountExperimentsCreatedArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ExperimentWhereInput
   }
 
   /**
    * UserCountOutputType without action
    */
-  export type UserCountOutputTypeCountExperimentsCreatedArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: ExperimentWhereInput
+  export type UserCountOutputTypeCountInstitutionsCreatedArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: InstitutionWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountWorkshopsCreatedArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: WorkshopWhereInput
   }
 
   /**
@@ -2116,6 +2291,46 @@ export namespace Prisma {
 
 
   /**
+   * Count Type InstitutionCountOutputType
+   */
+
+  export type InstitutionCountOutputType = {
+    users: number
+    labs: number
+  }
+
+  export type InstitutionCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    users?: boolean | InstitutionCountOutputTypeCountUsersArgs
+    labs?: boolean | InstitutionCountOutputTypeCountLabsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * InstitutionCountOutputType without action
+   */
+  export type InstitutionCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InstitutionCountOutputType
+     */
+    select?: InstitutionCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * InstitutionCountOutputType without action
+   */
+  export type InstitutionCountOutputTypeCountUsersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: UserWhereInput
+  }
+
+  /**
+   * InstitutionCountOutputType without action
+   */
+  export type InstitutionCountOutputTypeCountLabsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: LabWhereInput
+  }
+
+
+  /**
    * Models
    */
 
@@ -2200,6 +2415,7 @@ export namespace Prisma {
     password: number
     role: number
     isActive: number
+    customPermissions: number
     username: number
     mobile: number
     profilePic: number
@@ -2298,6 +2514,7 @@ export namespace Prisma {
     password?: true
     role?: true
     isActive?: true
+    customPermissions?: true
     username?: true
     mobile?: true
     profilePic?: true
@@ -2403,6 +2620,7 @@ export namespace Prisma {
     password: string
     role: $Enums.Role
     isActive: boolean
+    customPermissions: string[]
     username: string | null
     mobile: string | null
     profilePic: string | null
@@ -2452,6 +2670,7 @@ export namespace Prisma {
     password?: boolean
     role?: boolean
     isActive?: boolean
+    customPermissions?: boolean
     username?: boolean
     mobile?: boolean
     profilePic?: boolean
@@ -2478,11 +2697,11 @@ export namespace Prisma {
     createdBy?: boolean | User$createdByArgs<ExtArgs>
     createdUsers?: boolean | User$createdUsersArgs<ExtArgs>
     nodalCentre?: boolean | User$nodalCentreArgs<ExtArgs>
-    centreMembers?: boolean | User$centreMembersArgs<ExtArgs>
     subjectsCreated?: boolean | User$subjectsCreatedArgs<ExtArgs>
     labsCreated?: boolean | User$labsCreatedArgs<ExtArgs>
-    labsAsNodalCentre?: boolean | User$labsAsNodalCentreArgs<ExtArgs>
     experimentsCreated?: boolean | User$experimentsCreatedArgs<ExtArgs>
+    institutionsCreated?: boolean | User$institutionsCreatedArgs<ExtArgs>
+    workshopsCreated?: boolean | User$workshopsCreatedArgs<ExtArgs>
     quizAttempts?: boolean | User$quizAttemptsArgs<ExtArgs>
     experimentVisits?: boolean | User$experimentVisitsArgs<ExtArgs>
     feedbacks?: boolean | User$feedbacksArgs<ExtArgs>
@@ -2500,6 +2719,7 @@ export namespace Prisma {
     password?: boolean
     role?: boolean
     isActive?: boolean
+    customPermissions?: boolean
     username?: boolean
     mobile?: boolean
     profilePic?: boolean
@@ -2534,6 +2754,7 @@ export namespace Prisma {
     password?: boolean
     role?: boolean
     isActive?: boolean
+    customPermissions?: boolean
     username?: boolean
     mobile?: boolean
     profilePic?: boolean
@@ -2563,11 +2784,11 @@ export namespace Prisma {
     createdBy?: boolean | User$createdByArgs<ExtArgs>
     createdUsers?: boolean | User$createdUsersArgs<ExtArgs>
     nodalCentre?: boolean | User$nodalCentreArgs<ExtArgs>
-    centreMembers?: boolean | User$centreMembersArgs<ExtArgs>
     subjectsCreated?: boolean | User$subjectsCreatedArgs<ExtArgs>
     labsCreated?: boolean | User$labsCreatedArgs<ExtArgs>
-    labsAsNodalCentre?: boolean | User$labsAsNodalCentreArgs<ExtArgs>
     experimentsCreated?: boolean | User$experimentsCreatedArgs<ExtArgs>
+    institutionsCreated?: boolean | User$institutionsCreatedArgs<ExtArgs>
+    workshopsCreated?: boolean | User$workshopsCreatedArgs<ExtArgs>
     quizAttempts?: boolean | User$quizAttemptsArgs<ExtArgs>
     experimentVisits?: boolean | User$experimentVisitsArgs<ExtArgs>
     feedbacks?: boolean | User$feedbacksArgs<ExtArgs>
@@ -2587,12 +2808,12 @@ export namespace Prisma {
     objects: {
       createdBy: Prisma.$UserPayload<ExtArgs> | null
       createdUsers: Prisma.$UserPayload<ExtArgs>[]
-      nodalCentre: Prisma.$UserPayload<ExtArgs> | null
-      centreMembers: Prisma.$UserPayload<ExtArgs>[]
+      nodalCentre: Prisma.$InstitutionPayload<ExtArgs> | null
       subjectsCreated: Prisma.$SubjectPayload<ExtArgs>[]
       labsCreated: Prisma.$LabPayload<ExtArgs>[]
-      labsAsNodalCentre: Prisma.$LabPayload<ExtArgs>[]
       experimentsCreated: Prisma.$ExperimentPayload<ExtArgs>[]
+      institutionsCreated: Prisma.$InstitutionPayload<ExtArgs>[]
+      workshopsCreated: Prisma.$WorkshopPayload<ExtArgs>[]
       quizAttempts: Prisma.$QuizAttemptPayload<ExtArgs>[]
       experimentVisits: Prisma.$ExperimentVisitPayload<ExtArgs>[]
       feedbacks: Prisma.$FeedbackPayload<ExtArgs>[]
@@ -2608,6 +2829,7 @@ export namespace Prisma {
       password: string
       role: $Enums.Role
       isActive: boolean
+      customPermissions: string[]
       username: string | null
       mobile: string | null
       profilePic: string | null
@@ -2997,12 +3219,12 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     createdBy<T extends User$createdByArgs<ExtArgs> = {}>(args?: Subset<T, User$createdByArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     createdUsers<T extends User$createdUsersArgs<ExtArgs> = {}>(args?: Subset<T, User$createdUsersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany"> | Null>
-    nodalCentre<T extends User$nodalCentreArgs<ExtArgs> = {}>(args?: Subset<T, User$nodalCentreArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
-    centreMembers<T extends User$centreMembersArgs<ExtArgs> = {}>(args?: Subset<T, User$centreMembersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany"> | Null>
+    nodalCentre<T extends User$nodalCentreArgs<ExtArgs> = {}>(args?: Subset<T, User$nodalCentreArgs<ExtArgs>>): Prisma__InstitutionClient<$Result.GetResult<Prisma.$InstitutionPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     subjectsCreated<T extends User$subjectsCreatedArgs<ExtArgs> = {}>(args?: Subset<T, User$subjectsCreatedArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SubjectPayload<ExtArgs>, T, "findMany"> | Null>
     labsCreated<T extends User$labsCreatedArgs<ExtArgs> = {}>(args?: Subset<T, User$labsCreatedArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LabPayload<ExtArgs>, T, "findMany"> | Null>
-    labsAsNodalCentre<T extends User$labsAsNodalCentreArgs<ExtArgs> = {}>(args?: Subset<T, User$labsAsNodalCentreArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LabPayload<ExtArgs>, T, "findMany"> | Null>
     experimentsCreated<T extends User$experimentsCreatedArgs<ExtArgs> = {}>(args?: Subset<T, User$experimentsCreatedArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExperimentPayload<ExtArgs>, T, "findMany"> | Null>
+    institutionsCreated<T extends User$institutionsCreatedArgs<ExtArgs> = {}>(args?: Subset<T, User$institutionsCreatedArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InstitutionPayload<ExtArgs>, T, "findMany"> | Null>
+    workshopsCreated<T extends User$workshopsCreatedArgs<ExtArgs> = {}>(args?: Subset<T, User$workshopsCreatedArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WorkshopPayload<ExtArgs>, T, "findMany"> | Null>
     quizAttempts<T extends User$quizAttemptsArgs<ExtArgs> = {}>(args?: Subset<T, User$quizAttemptsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$QuizAttemptPayload<ExtArgs>, T, "findMany"> | Null>
     experimentVisits<T extends User$experimentVisitsArgs<ExtArgs> = {}>(args?: Subset<T, User$experimentVisitsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExperimentVisitPayload<ExtArgs>, T, "findMany"> | Null>
     feedbacks<T extends User$feedbacksArgs<ExtArgs> = {}>(args?: Subset<T, User$feedbacksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FeedbackPayload<ExtArgs>, T, "findMany"> | Null>
@@ -3045,6 +3267,7 @@ export namespace Prisma {
     readonly password: FieldRef<"User", 'String'>
     readonly role: FieldRef<"User", 'Role'>
     readonly isActive: FieldRef<"User", 'Boolean'>
+    readonly customPermissions: FieldRef<"User", 'String[]'>
     readonly username: FieldRef<"User", 'String'>
     readonly mobile: FieldRef<"User", 'String'>
     readonly profilePic: FieldRef<"User", 'String'>
@@ -3425,34 +3648,14 @@ export namespace Prisma {
    */
   export type User$nodalCentreArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the User
+     * Select specific fields to fetch from the Institution
      */
-    select?: UserSelect<ExtArgs> | null
+    select?: InstitutionSelect<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: UserInclude<ExtArgs> | null
-    where?: UserWhereInput
-  }
-
-  /**
-   * User.centreMembers
-   */
-  export type User$centreMembersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the User
-     */
-    select?: UserSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: UserInclude<ExtArgs> | null
-    where?: UserWhereInput
-    orderBy?: UserOrderByWithRelationInput | UserOrderByWithRelationInput[]
-    cursor?: UserWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: UserScalarFieldEnum | UserScalarFieldEnum[]
+    include?: InstitutionInclude<ExtArgs> | null
+    where?: InstitutionWhereInput
   }
 
   /**
@@ -3496,26 +3699,6 @@ export namespace Prisma {
   }
 
   /**
-   * User.labsAsNodalCentre
-   */
-  export type User$labsAsNodalCentreArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Lab
-     */
-    select?: LabSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: LabInclude<ExtArgs> | null
-    where?: LabWhereInput
-    orderBy?: LabOrderByWithRelationInput | LabOrderByWithRelationInput[]
-    cursor?: LabWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: LabScalarFieldEnum | LabScalarFieldEnum[]
-  }
-
-  /**
    * User.experimentsCreated
    */
   export type User$experimentsCreatedArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3533,6 +3716,46 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ExperimentScalarFieldEnum | ExperimentScalarFieldEnum[]
+  }
+
+  /**
+   * User.institutionsCreated
+   */
+  export type User$institutionsCreatedArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Institution
+     */
+    select?: InstitutionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InstitutionInclude<ExtArgs> | null
+    where?: InstitutionWhereInput
+    orderBy?: InstitutionOrderByWithRelationInput | InstitutionOrderByWithRelationInput[]
+    cursor?: InstitutionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: InstitutionScalarFieldEnum | InstitutionScalarFieldEnum[]
+  }
+
+  /**
+   * User.workshopsCreated
+   */
+  export type User$workshopsCreatedArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Workshop
+     */
+    select?: WorkshopSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WorkshopInclude<ExtArgs> | null
+    where?: WorkshopWhereInput
+    orderBy?: WorkshopOrderByWithRelationInput | WorkshopOrderByWithRelationInput[]
+    cursor?: WorkshopWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: WorkshopScalarFieldEnum | WorkshopScalarFieldEnum[]
   }
 
   /**
@@ -4965,7 +5188,7 @@ export namespace Prisma {
     objects: {
       subject: Prisma.$SubjectPayload<ExtArgs>
       createdBy: Prisma.$UserPayload<ExtArgs>
-      nodalCentre: Prisma.$UserPayload<ExtArgs> | null
+      nodalCentre: Prisma.$InstitutionPayload<ExtArgs> | null
       experiments: Prisma.$ExperimentPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -5346,7 +5569,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     subject<T extends SubjectDefaultArgs<ExtArgs> = {}>(args?: Subset<T, SubjectDefaultArgs<ExtArgs>>): Prisma__SubjectClient<$Result.GetResult<Prisma.$SubjectPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
     createdBy<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
-    nodalCentre<T extends Lab$nodalCentreArgs<ExtArgs> = {}>(args?: Subset<T, Lab$nodalCentreArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    nodalCentre<T extends Lab$nodalCentreArgs<ExtArgs> = {}>(args?: Subset<T, Lab$nodalCentreArgs<ExtArgs>>): Prisma__InstitutionClient<$Result.GetResult<Prisma.$InstitutionPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     experiments<T extends Lab$experimentsArgs<ExtArgs> = {}>(args?: Subset<T, Lab$experimentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExperimentPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -5710,14 +5933,14 @@ export namespace Prisma {
    */
   export type Lab$nodalCentreArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the User
+     * Select specific fields to fetch from the Institution
      */
-    select?: UserSelect<ExtArgs> | null
+    select?: InstitutionSelect<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: UserInclude<ExtArgs> | null
-    where?: UserWhereInput
+    include?: InstitutionInclude<ExtArgs> | null
+    where?: InstitutionWhereInput
   }
 
   /**
@@ -14726,6 +14949,1985 @@ export namespace Prisma {
 
 
   /**
+   * Model Institution
+   */
+
+  export type AggregateInstitution = {
+    _count: InstitutionCountAggregateOutputType | null
+    _min: InstitutionMinAggregateOutputType | null
+    _max: InstitutionMaxAggregateOutputType | null
+  }
+
+  export type InstitutionMinAggregateOutputType = {
+    id: string | null
+    name: string | null
+    isActive: boolean | null
+    createdById: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type InstitutionMaxAggregateOutputType = {
+    id: string | null
+    name: string | null
+    isActive: boolean | null
+    createdById: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type InstitutionCountAggregateOutputType = {
+    id: number
+    name: number
+    isActive: number
+    createdById: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type InstitutionMinAggregateInputType = {
+    id?: true
+    name?: true
+    isActive?: true
+    createdById?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type InstitutionMaxAggregateInputType = {
+    id?: true
+    name?: true
+    isActive?: true
+    createdById?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type InstitutionCountAggregateInputType = {
+    id?: true
+    name?: true
+    isActive?: true
+    createdById?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type InstitutionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Institution to aggregate.
+     */
+    where?: InstitutionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Institutions to fetch.
+     */
+    orderBy?: InstitutionOrderByWithRelationInput | InstitutionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: InstitutionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Institutions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Institutions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Institutions
+    **/
+    _count?: true | InstitutionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: InstitutionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: InstitutionMaxAggregateInputType
+  }
+
+  export type GetInstitutionAggregateType<T extends InstitutionAggregateArgs> = {
+        [P in keyof T & keyof AggregateInstitution]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateInstitution[P]>
+      : GetScalarType<T[P], AggregateInstitution[P]>
+  }
+
+
+
+
+  export type InstitutionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: InstitutionWhereInput
+    orderBy?: InstitutionOrderByWithAggregationInput | InstitutionOrderByWithAggregationInput[]
+    by: InstitutionScalarFieldEnum[] | InstitutionScalarFieldEnum
+    having?: InstitutionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: InstitutionCountAggregateInputType | true
+    _min?: InstitutionMinAggregateInputType
+    _max?: InstitutionMaxAggregateInputType
+  }
+
+  export type InstitutionGroupByOutputType = {
+    id: string
+    name: string
+    isActive: boolean
+    createdById: string | null
+    createdAt: Date
+    updatedAt: Date
+    _count: InstitutionCountAggregateOutputType | null
+    _min: InstitutionMinAggregateOutputType | null
+    _max: InstitutionMaxAggregateOutputType | null
+  }
+
+  type GetInstitutionGroupByPayload<T extends InstitutionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<InstitutionGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof InstitutionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], InstitutionGroupByOutputType[P]>
+            : GetScalarType<T[P], InstitutionGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type InstitutionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    isActive?: boolean
+    createdById?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    users?: boolean | Institution$usersArgs<ExtArgs>
+    labs?: boolean | Institution$labsArgs<ExtArgs>
+    createdBy?: boolean | Institution$createdByArgs<ExtArgs>
+    _count?: boolean | InstitutionCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["institution"]>
+
+  export type InstitutionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    isActive?: boolean
+    createdById?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    createdBy?: boolean | Institution$createdByArgs<ExtArgs>
+  }, ExtArgs["result"]["institution"]>
+
+  export type InstitutionSelectScalar = {
+    id?: boolean
+    name?: boolean
+    isActive?: boolean
+    createdById?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type InstitutionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    users?: boolean | Institution$usersArgs<ExtArgs>
+    labs?: boolean | Institution$labsArgs<ExtArgs>
+    createdBy?: boolean | Institution$createdByArgs<ExtArgs>
+    _count?: boolean | InstitutionCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type InstitutionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    createdBy?: boolean | Institution$createdByArgs<ExtArgs>
+  }
+
+  export type $InstitutionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Institution"
+    objects: {
+      users: Prisma.$UserPayload<ExtArgs>[]
+      labs: Prisma.$LabPayload<ExtArgs>[]
+      createdBy: Prisma.$UserPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      name: string
+      isActive: boolean
+      createdById: string | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["institution"]>
+    composites: {}
+  }
+
+  type InstitutionGetPayload<S extends boolean | null | undefined | InstitutionDefaultArgs> = $Result.GetResult<Prisma.$InstitutionPayload, S>
+
+  type InstitutionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<InstitutionFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: InstitutionCountAggregateInputType | true
+    }
+
+  export interface InstitutionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Institution'], meta: { name: 'Institution' } }
+    /**
+     * Find zero or one Institution that matches the filter.
+     * @param {InstitutionFindUniqueArgs} args - Arguments to find a Institution
+     * @example
+     * // Get one Institution
+     * const institution = await prisma.institution.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends InstitutionFindUniqueArgs>(args: SelectSubset<T, InstitutionFindUniqueArgs<ExtArgs>>): Prisma__InstitutionClient<$Result.GetResult<Prisma.$InstitutionPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one Institution that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {InstitutionFindUniqueOrThrowArgs} args - Arguments to find a Institution
+     * @example
+     * // Get one Institution
+     * const institution = await prisma.institution.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends InstitutionFindUniqueOrThrowArgs>(args: SelectSubset<T, InstitutionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__InstitutionClient<$Result.GetResult<Prisma.$InstitutionPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first Institution that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InstitutionFindFirstArgs} args - Arguments to find a Institution
+     * @example
+     * // Get one Institution
+     * const institution = await prisma.institution.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends InstitutionFindFirstArgs>(args?: SelectSubset<T, InstitutionFindFirstArgs<ExtArgs>>): Prisma__InstitutionClient<$Result.GetResult<Prisma.$InstitutionPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first Institution that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InstitutionFindFirstOrThrowArgs} args - Arguments to find a Institution
+     * @example
+     * // Get one Institution
+     * const institution = await prisma.institution.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends InstitutionFindFirstOrThrowArgs>(args?: SelectSubset<T, InstitutionFindFirstOrThrowArgs<ExtArgs>>): Prisma__InstitutionClient<$Result.GetResult<Prisma.$InstitutionPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more Institutions that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InstitutionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Institutions
+     * const institutions = await prisma.institution.findMany()
+     * 
+     * // Get first 10 Institutions
+     * const institutions = await prisma.institution.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const institutionWithIdOnly = await prisma.institution.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends InstitutionFindManyArgs>(args?: SelectSubset<T, InstitutionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InstitutionPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a Institution.
+     * @param {InstitutionCreateArgs} args - Arguments to create a Institution.
+     * @example
+     * // Create one Institution
+     * const Institution = await prisma.institution.create({
+     *   data: {
+     *     // ... data to create a Institution
+     *   }
+     * })
+     * 
+     */
+    create<T extends InstitutionCreateArgs>(args: SelectSubset<T, InstitutionCreateArgs<ExtArgs>>): Prisma__InstitutionClient<$Result.GetResult<Prisma.$InstitutionPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many Institutions.
+     * @param {InstitutionCreateManyArgs} args - Arguments to create many Institutions.
+     * @example
+     * // Create many Institutions
+     * const institution = await prisma.institution.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends InstitutionCreateManyArgs>(args?: SelectSubset<T, InstitutionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Institutions and returns the data saved in the database.
+     * @param {InstitutionCreateManyAndReturnArgs} args - Arguments to create many Institutions.
+     * @example
+     * // Create many Institutions
+     * const institution = await prisma.institution.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Institutions and only return the `id`
+     * const institutionWithIdOnly = await prisma.institution.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends InstitutionCreateManyAndReturnArgs>(args?: SelectSubset<T, InstitutionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InstitutionPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a Institution.
+     * @param {InstitutionDeleteArgs} args - Arguments to delete one Institution.
+     * @example
+     * // Delete one Institution
+     * const Institution = await prisma.institution.delete({
+     *   where: {
+     *     // ... filter to delete one Institution
+     *   }
+     * })
+     * 
+     */
+    delete<T extends InstitutionDeleteArgs>(args: SelectSubset<T, InstitutionDeleteArgs<ExtArgs>>): Prisma__InstitutionClient<$Result.GetResult<Prisma.$InstitutionPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one Institution.
+     * @param {InstitutionUpdateArgs} args - Arguments to update one Institution.
+     * @example
+     * // Update one Institution
+     * const institution = await prisma.institution.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends InstitutionUpdateArgs>(args: SelectSubset<T, InstitutionUpdateArgs<ExtArgs>>): Prisma__InstitutionClient<$Result.GetResult<Prisma.$InstitutionPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more Institutions.
+     * @param {InstitutionDeleteManyArgs} args - Arguments to filter Institutions to delete.
+     * @example
+     * // Delete a few Institutions
+     * const { count } = await prisma.institution.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends InstitutionDeleteManyArgs>(args?: SelectSubset<T, InstitutionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Institutions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InstitutionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Institutions
+     * const institution = await prisma.institution.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends InstitutionUpdateManyArgs>(args: SelectSubset<T, InstitutionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Institution.
+     * @param {InstitutionUpsertArgs} args - Arguments to update or create a Institution.
+     * @example
+     * // Update or create a Institution
+     * const institution = await prisma.institution.upsert({
+     *   create: {
+     *     // ... data to create a Institution
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Institution we want to update
+     *   }
+     * })
+     */
+    upsert<T extends InstitutionUpsertArgs>(args: SelectSubset<T, InstitutionUpsertArgs<ExtArgs>>): Prisma__InstitutionClient<$Result.GetResult<Prisma.$InstitutionPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of Institutions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InstitutionCountArgs} args - Arguments to filter Institutions to count.
+     * @example
+     * // Count the number of Institutions
+     * const count = await prisma.institution.count({
+     *   where: {
+     *     // ... the filter for the Institutions we want to count
+     *   }
+     * })
+    **/
+    count<T extends InstitutionCountArgs>(
+      args?: Subset<T, InstitutionCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], InstitutionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Institution.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InstitutionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends InstitutionAggregateArgs>(args: Subset<T, InstitutionAggregateArgs>): Prisma.PrismaPromise<GetInstitutionAggregateType<T>>
+
+    /**
+     * Group by Institution.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InstitutionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends InstitutionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: InstitutionGroupByArgs['orderBy'] }
+        : { orderBy?: InstitutionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, InstitutionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetInstitutionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Institution model
+   */
+  readonly fields: InstitutionFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Institution.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__InstitutionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    users<T extends Institution$usersArgs<ExtArgs> = {}>(args?: Subset<T, Institution$usersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany"> | Null>
+    labs<T extends Institution$labsArgs<ExtArgs> = {}>(args?: Subset<T, Institution$labsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LabPayload<ExtArgs>, T, "findMany"> | Null>
+    createdBy<T extends Institution$createdByArgs<ExtArgs> = {}>(args?: Subset<T, Institution$createdByArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Institution model
+   */ 
+  interface InstitutionFieldRefs {
+    readonly id: FieldRef<"Institution", 'String'>
+    readonly name: FieldRef<"Institution", 'String'>
+    readonly isActive: FieldRef<"Institution", 'Boolean'>
+    readonly createdById: FieldRef<"Institution", 'String'>
+    readonly createdAt: FieldRef<"Institution", 'DateTime'>
+    readonly updatedAt: FieldRef<"Institution", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Institution findUnique
+   */
+  export type InstitutionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Institution
+     */
+    select?: InstitutionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InstitutionInclude<ExtArgs> | null
+    /**
+     * Filter, which Institution to fetch.
+     */
+    where: InstitutionWhereUniqueInput
+  }
+
+  /**
+   * Institution findUniqueOrThrow
+   */
+  export type InstitutionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Institution
+     */
+    select?: InstitutionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InstitutionInclude<ExtArgs> | null
+    /**
+     * Filter, which Institution to fetch.
+     */
+    where: InstitutionWhereUniqueInput
+  }
+
+  /**
+   * Institution findFirst
+   */
+  export type InstitutionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Institution
+     */
+    select?: InstitutionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InstitutionInclude<ExtArgs> | null
+    /**
+     * Filter, which Institution to fetch.
+     */
+    where?: InstitutionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Institutions to fetch.
+     */
+    orderBy?: InstitutionOrderByWithRelationInput | InstitutionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Institutions.
+     */
+    cursor?: InstitutionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Institutions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Institutions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Institutions.
+     */
+    distinct?: InstitutionScalarFieldEnum | InstitutionScalarFieldEnum[]
+  }
+
+  /**
+   * Institution findFirstOrThrow
+   */
+  export type InstitutionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Institution
+     */
+    select?: InstitutionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InstitutionInclude<ExtArgs> | null
+    /**
+     * Filter, which Institution to fetch.
+     */
+    where?: InstitutionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Institutions to fetch.
+     */
+    orderBy?: InstitutionOrderByWithRelationInput | InstitutionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Institutions.
+     */
+    cursor?: InstitutionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Institutions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Institutions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Institutions.
+     */
+    distinct?: InstitutionScalarFieldEnum | InstitutionScalarFieldEnum[]
+  }
+
+  /**
+   * Institution findMany
+   */
+  export type InstitutionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Institution
+     */
+    select?: InstitutionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InstitutionInclude<ExtArgs> | null
+    /**
+     * Filter, which Institutions to fetch.
+     */
+    where?: InstitutionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Institutions to fetch.
+     */
+    orderBy?: InstitutionOrderByWithRelationInput | InstitutionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Institutions.
+     */
+    cursor?: InstitutionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Institutions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Institutions.
+     */
+    skip?: number
+    distinct?: InstitutionScalarFieldEnum | InstitutionScalarFieldEnum[]
+  }
+
+  /**
+   * Institution create
+   */
+  export type InstitutionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Institution
+     */
+    select?: InstitutionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InstitutionInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Institution.
+     */
+    data: XOR<InstitutionCreateInput, InstitutionUncheckedCreateInput>
+  }
+
+  /**
+   * Institution createMany
+   */
+  export type InstitutionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Institutions.
+     */
+    data: InstitutionCreateManyInput | InstitutionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Institution createManyAndReturn
+   */
+  export type InstitutionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Institution
+     */
+    select?: InstitutionSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many Institutions.
+     */
+    data: InstitutionCreateManyInput | InstitutionCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InstitutionIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Institution update
+   */
+  export type InstitutionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Institution
+     */
+    select?: InstitutionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InstitutionInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Institution.
+     */
+    data: XOR<InstitutionUpdateInput, InstitutionUncheckedUpdateInput>
+    /**
+     * Choose, which Institution to update.
+     */
+    where: InstitutionWhereUniqueInput
+  }
+
+  /**
+   * Institution updateMany
+   */
+  export type InstitutionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Institutions.
+     */
+    data: XOR<InstitutionUpdateManyMutationInput, InstitutionUncheckedUpdateManyInput>
+    /**
+     * Filter which Institutions to update
+     */
+    where?: InstitutionWhereInput
+  }
+
+  /**
+   * Institution upsert
+   */
+  export type InstitutionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Institution
+     */
+    select?: InstitutionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InstitutionInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Institution to update in case it exists.
+     */
+    where: InstitutionWhereUniqueInput
+    /**
+     * In case the Institution found by the `where` argument doesn't exist, create a new Institution with this data.
+     */
+    create: XOR<InstitutionCreateInput, InstitutionUncheckedCreateInput>
+    /**
+     * In case the Institution was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<InstitutionUpdateInput, InstitutionUncheckedUpdateInput>
+  }
+
+  /**
+   * Institution delete
+   */
+  export type InstitutionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Institution
+     */
+    select?: InstitutionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InstitutionInclude<ExtArgs> | null
+    /**
+     * Filter which Institution to delete.
+     */
+    where: InstitutionWhereUniqueInput
+  }
+
+  /**
+   * Institution deleteMany
+   */
+  export type InstitutionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Institutions to delete
+     */
+    where?: InstitutionWhereInput
+  }
+
+  /**
+   * Institution.users
+   */
+  export type Institution$usersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+    orderBy?: UserOrderByWithRelationInput | UserOrderByWithRelationInput[]
+    cursor?: UserWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: UserScalarFieldEnum | UserScalarFieldEnum[]
+  }
+
+  /**
+   * Institution.labs
+   */
+  export type Institution$labsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Lab
+     */
+    select?: LabSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LabInclude<ExtArgs> | null
+    where?: LabWhereInput
+    orderBy?: LabOrderByWithRelationInput | LabOrderByWithRelationInput[]
+    cursor?: LabWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: LabScalarFieldEnum | LabScalarFieldEnum[]
+  }
+
+  /**
+   * Institution.createdBy
+   */
+  export type Institution$createdByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+  }
+
+  /**
+   * Institution without action
+   */
+  export type InstitutionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Institution
+     */
+    select?: InstitutionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InstitutionInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model Workshop
+   */
+
+  export type AggregateWorkshop = {
+    _count: WorkshopCountAggregateOutputType | null
+    _min: WorkshopMinAggregateOutputType | null
+    _max: WorkshopMaxAggregateOutputType | null
+  }
+
+  export type WorkshopMinAggregateOutputType = {
+    id: string | null
+    title: string | null
+    description: string | null
+    date: Date | null
+    status: string | null
+    createdById: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type WorkshopMaxAggregateOutputType = {
+    id: string | null
+    title: string | null
+    description: string | null
+    date: Date | null
+    status: string | null
+    createdById: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type WorkshopCountAggregateOutputType = {
+    id: number
+    title: number
+    description: number
+    date: number
+    status: number
+    createdById: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type WorkshopMinAggregateInputType = {
+    id?: true
+    title?: true
+    description?: true
+    date?: true
+    status?: true
+    createdById?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type WorkshopMaxAggregateInputType = {
+    id?: true
+    title?: true
+    description?: true
+    date?: true
+    status?: true
+    createdById?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type WorkshopCountAggregateInputType = {
+    id?: true
+    title?: true
+    description?: true
+    date?: true
+    status?: true
+    createdById?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type WorkshopAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Workshop to aggregate.
+     */
+    where?: WorkshopWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Workshops to fetch.
+     */
+    orderBy?: WorkshopOrderByWithRelationInput | WorkshopOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: WorkshopWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Workshops from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Workshops.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Workshops
+    **/
+    _count?: true | WorkshopCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: WorkshopMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: WorkshopMaxAggregateInputType
+  }
+
+  export type GetWorkshopAggregateType<T extends WorkshopAggregateArgs> = {
+        [P in keyof T & keyof AggregateWorkshop]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateWorkshop[P]>
+      : GetScalarType<T[P], AggregateWorkshop[P]>
+  }
+
+
+
+
+  export type WorkshopGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: WorkshopWhereInput
+    orderBy?: WorkshopOrderByWithAggregationInput | WorkshopOrderByWithAggregationInput[]
+    by: WorkshopScalarFieldEnum[] | WorkshopScalarFieldEnum
+    having?: WorkshopScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: WorkshopCountAggregateInputType | true
+    _min?: WorkshopMinAggregateInputType
+    _max?: WorkshopMaxAggregateInputType
+  }
+
+  export type WorkshopGroupByOutputType = {
+    id: string
+    title: string
+    description: string | null
+    date: Date
+    status: string
+    createdById: string
+    createdAt: Date
+    updatedAt: Date
+    _count: WorkshopCountAggregateOutputType | null
+    _min: WorkshopMinAggregateOutputType | null
+    _max: WorkshopMaxAggregateOutputType | null
+  }
+
+  type GetWorkshopGroupByPayload<T extends WorkshopGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<WorkshopGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof WorkshopGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], WorkshopGroupByOutputType[P]>
+            : GetScalarType<T[P], WorkshopGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type WorkshopSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    title?: boolean
+    description?: boolean
+    date?: boolean
+    status?: boolean
+    createdById?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    createdBy?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["workshop"]>
+
+  export type WorkshopSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    title?: boolean
+    description?: boolean
+    date?: boolean
+    status?: boolean
+    createdById?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    createdBy?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["workshop"]>
+
+  export type WorkshopSelectScalar = {
+    id?: boolean
+    title?: boolean
+    description?: boolean
+    date?: boolean
+    status?: boolean
+    createdById?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type WorkshopInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    createdBy?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type WorkshopIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    createdBy?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $WorkshopPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Workshop"
+    objects: {
+      createdBy: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      title: string
+      description: string | null
+      date: Date
+      status: string
+      createdById: string
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["workshop"]>
+    composites: {}
+  }
+
+  type WorkshopGetPayload<S extends boolean | null | undefined | WorkshopDefaultArgs> = $Result.GetResult<Prisma.$WorkshopPayload, S>
+
+  type WorkshopCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<WorkshopFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: WorkshopCountAggregateInputType | true
+    }
+
+  export interface WorkshopDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Workshop'], meta: { name: 'Workshop' } }
+    /**
+     * Find zero or one Workshop that matches the filter.
+     * @param {WorkshopFindUniqueArgs} args - Arguments to find a Workshop
+     * @example
+     * // Get one Workshop
+     * const workshop = await prisma.workshop.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends WorkshopFindUniqueArgs>(args: SelectSubset<T, WorkshopFindUniqueArgs<ExtArgs>>): Prisma__WorkshopClient<$Result.GetResult<Prisma.$WorkshopPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one Workshop that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {WorkshopFindUniqueOrThrowArgs} args - Arguments to find a Workshop
+     * @example
+     * // Get one Workshop
+     * const workshop = await prisma.workshop.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends WorkshopFindUniqueOrThrowArgs>(args: SelectSubset<T, WorkshopFindUniqueOrThrowArgs<ExtArgs>>): Prisma__WorkshopClient<$Result.GetResult<Prisma.$WorkshopPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first Workshop that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WorkshopFindFirstArgs} args - Arguments to find a Workshop
+     * @example
+     * // Get one Workshop
+     * const workshop = await prisma.workshop.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends WorkshopFindFirstArgs>(args?: SelectSubset<T, WorkshopFindFirstArgs<ExtArgs>>): Prisma__WorkshopClient<$Result.GetResult<Prisma.$WorkshopPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first Workshop that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WorkshopFindFirstOrThrowArgs} args - Arguments to find a Workshop
+     * @example
+     * // Get one Workshop
+     * const workshop = await prisma.workshop.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends WorkshopFindFirstOrThrowArgs>(args?: SelectSubset<T, WorkshopFindFirstOrThrowArgs<ExtArgs>>): Prisma__WorkshopClient<$Result.GetResult<Prisma.$WorkshopPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more Workshops that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WorkshopFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Workshops
+     * const workshops = await prisma.workshop.findMany()
+     * 
+     * // Get first 10 Workshops
+     * const workshops = await prisma.workshop.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const workshopWithIdOnly = await prisma.workshop.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends WorkshopFindManyArgs>(args?: SelectSubset<T, WorkshopFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WorkshopPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a Workshop.
+     * @param {WorkshopCreateArgs} args - Arguments to create a Workshop.
+     * @example
+     * // Create one Workshop
+     * const Workshop = await prisma.workshop.create({
+     *   data: {
+     *     // ... data to create a Workshop
+     *   }
+     * })
+     * 
+     */
+    create<T extends WorkshopCreateArgs>(args: SelectSubset<T, WorkshopCreateArgs<ExtArgs>>): Prisma__WorkshopClient<$Result.GetResult<Prisma.$WorkshopPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many Workshops.
+     * @param {WorkshopCreateManyArgs} args - Arguments to create many Workshops.
+     * @example
+     * // Create many Workshops
+     * const workshop = await prisma.workshop.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends WorkshopCreateManyArgs>(args?: SelectSubset<T, WorkshopCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Workshops and returns the data saved in the database.
+     * @param {WorkshopCreateManyAndReturnArgs} args - Arguments to create many Workshops.
+     * @example
+     * // Create many Workshops
+     * const workshop = await prisma.workshop.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Workshops and only return the `id`
+     * const workshopWithIdOnly = await prisma.workshop.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends WorkshopCreateManyAndReturnArgs>(args?: SelectSubset<T, WorkshopCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WorkshopPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a Workshop.
+     * @param {WorkshopDeleteArgs} args - Arguments to delete one Workshop.
+     * @example
+     * // Delete one Workshop
+     * const Workshop = await prisma.workshop.delete({
+     *   where: {
+     *     // ... filter to delete one Workshop
+     *   }
+     * })
+     * 
+     */
+    delete<T extends WorkshopDeleteArgs>(args: SelectSubset<T, WorkshopDeleteArgs<ExtArgs>>): Prisma__WorkshopClient<$Result.GetResult<Prisma.$WorkshopPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one Workshop.
+     * @param {WorkshopUpdateArgs} args - Arguments to update one Workshop.
+     * @example
+     * // Update one Workshop
+     * const workshop = await prisma.workshop.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends WorkshopUpdateArgs>(args: SelectSubset<T, WorkshopUpdateArgs<ExtArgs>>): Prisma__WorkshopClient<$Result.GetResult<Prisma.$WorkshopPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more Workshops.
+     * @param {WorkshopDeleteManyArgs} args - Arguments to filter Workshops to delete.
+     * @example
+     * // Delete a few Workshops
+     * const { count } = await prisma.workshop.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends WorkshopDeleteManyArgs>(args?: SelectSubset<T, WorkshopDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Workshops.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WorkshopUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Workshops
+     * const workshop = await prisma.workshop.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends WorkshopUpdateManyArgs>(args: SelectSubset<T, WorkshopUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Workshop.
+     * @param {WorkshopUpsertArgs} args - Arguments to update or create a Workshop.
+     * @example
+     * // Update or create a Workshop
+     * const workshop = await prisma.workshop.upsert({
+     *   create: {
+     *     // ... data to create a Workshop
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Workshop we want to update
+     *   }
+     * })
+     */
+    upsert<T extends WorkshopUpsertArgs>(args: SelectSubset<T, WorkshopUpsertArgs<ExtArgs>>): Prisma__WorkshopClient<$Result.GetResult<Prisma.$WorkshopPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of Workshops.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WorkshopCountArgs} args - Arguments to filter Workshops to count.
+     * @example
+     * // Count the number of Workshops
+     * const count = await prisma.workshop.count({
+     *   where: {
+     *     // ... the filter for the Workshops we want to count
+     *   }
+     * })
+    **/
+    count<T extends WorkshopCountArgs>(
+      args?: Subset<T, WorkshopCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], WorkshopCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Workshop.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WorkshopAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends WorkshopAggregateArgs>(args: Subset<T, WorkshopAggregateArgs>): Prisma.PrismaPromise<GetWorkshopAggregateType<T>>
+
+    /**
+     * Group by Workshop.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WorkshopGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends WorkshopGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: WorkshopGroupByArgs['orderBy'] }
+        : { orderBy?: WorkshopGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, WorkshopGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetWorkshopGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Workshop model
+   */
+  readonly fields: WorkshopFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Workshop.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__WorkshopClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    createdBy<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Workshop model
+   */ 
+  interface WorkshopFieldRefs {
+    readonly id: FieldRef<"Workshop", 'String'>
+    readonly title: FieldRef<"Workshop", 'String'>
+    readonly description: FieldRef<"Workshop", 'String'>
+    readonly date: FieldRef<"Workshop", 'DateTime'>
+    readonly status: FieldRef<"Workshop", 'String'>
+    readonly createdById: FieldRef<"Workshop", 'String'>
+    readonly createdAt: FieldRef<"Workshop", 'DateTime'>
+    readonly updatedAt: FieldRef<"Workshop", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Workshop findUnique
+   */
+  export type WorkshopFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Workshop
+     */
+    select?: WorkshopSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WorkshopInclude<ExtArgs> | null
+    /**
+     * Filter, which Workshop to fetch.
+     */
+    where: WorkshopWhereUniqueInput
+  }
+
+  /**
+   * Workshop findUniqueOrThrow
+   */
+  export type WorkshopFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Workshop
+     */
+    select?: WorkshopSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WorkshopInclude<ExtArgs> | null
+    /**
+     * Filter, which Workshop to fetch.
+     */
+    where: WorkshopWhereUniqueInput
+  }
+
+  /**
+   * Workshop findFirst
+   */
+  export type WorkshopFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Workshop
+     */
+    select?: WorkshopSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WorkshopInclude<ExtArgs> | null
+    /**
+     * Filter, which Workshop to fetch.
+     */
+    where?: WorkshopWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Workshops to fetch.
+     */
+    orderBy?: WorkshopOrderByWithRelationInput | WorkshopOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Workshops.
+     */
+    cursor?: WorkshopWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Workshops from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Workshops.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Workshops.
+     */
+    distinct?: WorkshopScalarFieldEnum | WorkshopScalarFieldEnum[]
+  }
+
+  /**
+   * Workshop findFirstOrThrow
+   */
+  export type WorkshopFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Workshop
+     */
+    select?: WorkshopSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WorkshopInclude<ExtArgs> | null
+    /**
+     * Filter, which Workshop to fetch.
+     */
+    where?: WorkshopWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Workshops to fetch.
+     */
+    orderBy?: WorkshopOrderByWithRelationInput | WorkshopOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Workshops.
+     */
+    cursor?: WorkshopWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Workshops from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Workshops.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Workshops.
+     */
+    distinct?: WorkshopScalarFieldEnum | WorkshopScalarFieldEnum[]
+  }
+
+  /**
+   * Workshop findMany
+   */
+  export type WorkshopFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Workshop
+     */
+    select?: WorkshopSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WorkshopInclude<ExtArgs> | null
+    /**
+     * Filter, which Workshops to fetch.
+     */
+    where?: WorkshopWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Workshops to fetch.
+     */
+    orderBy?: WorkshopOrderByWithRelationInput | WorkshopOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Workshops.
+     */
+    cursor?: WorkshopWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Workshops from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Workshops.
+     */
+    skip?: number
+    distinct?: WorkshopScalarFieldEnum | WorkshopScalarFieldEnum[]
+  }
+
+  /**
+   * Workshop create
+   */
+  export type WorkshopCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Workshop
+     */
+    select?: WorkshopSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WorkshopInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Workshop.
+     */
+    data: XOR<WorkshopCreateInput, WorkshopUncheckedCreateInput>
+  }
+
+  /**
+   * Workshop createMany
+   */
+  export type WorkshopCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Workshops.
+     */
+    data: WorkshopCreateManyInput | WorkshopCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Workshop createManyAndReturn
+   */
+  export type WorkshopCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Workshop
+     */
+    select?: WorkshopSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many Workshops.
+     */
+    data: WorkshopCreateManyInput | WorkshopCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WorkshopIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Workshop update
+   */
+  export type WorkshopUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Workshop
+     */
+    select?: WorkshopSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WorkshopInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Workshop.
+     */
+    data: XOR<WorkshopUpdateInput, WorkshopUncheckedUpdateInput>
+    /**
+     * Choose, which Workshop to update.
+     */
+    where: WorkshopWhereUniqueInput
+  }
+
+  /**
+   * Workshop updateMany
+   */
+  export type WorkshopUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Workshops.
+     */
+    data: XOR<WorkshopUpdateManyMutationInput, WorkshopUncheckedUpdateManyInput>
+    /**
+     * Filter which Workshops to update
+     */
+    where?: WorkshopWhereInput
+  }
+
+  /**
+   * Workshop upsert
+   */
+  export type WorkshopUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Workshop
+     */
+    select?: WorkshopSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WorkshopInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Workshop to update in case it exists.
+     */
+    where: WorkshopWhereUniqueInput
+    /**
+     * In case the Workshop found by the `where` argument doesn't exist, create a new Workshop with this data.
+     */
+    create: XOR<WorkshopCreateInput, WorkshopUncheckedCreateInput>
+    /**
+     * In case the Workshop was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<WorkshopUpdateInput, WorkshopUncheckedUpdateInput>
+  }
+
+  /**
+   * Workshop delete
+   */
+  export type WorkshopDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Workshop
+     */
+    select?: WorkshopSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WorkshopInclude<ExtArgs> | null
+    /**
+     * Filter which Workshop to delete.
+     */
+    where: WorkshopWhereUniqueInput
+  }
+
+  /**
+   * Workshop deleteMany
+   */
+  export type WorkshopDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Workshops to delete
+     */
+    where?: WorkshopWhereInput
+  }
+
+  /**
+   * Workshop without action
+   */
+  export type WorkshopDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Workshop
+     */
+    select?: WorkshopSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WorkshopInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -14746,6 +16948,7 @@ export namespace Prisma {
     password: 'password',
     role: 'role',
     isActive: 'isActive',
+    customPermissions: 'customPermissions',
     username: 'username',
     mobile: 'mobile',
     profilePic: 'profilePic',
@@ -14926,6 +17129,32 @@ export namespace Prisma {
   export type PageSectionScalarFieldEnum = (typeof PageSectionScalarFieldEnum)[keyof typeof PageSectionScalarFieldEnum]
 
 
+  export const InstitutionScalarFieldEnum: {
+    id: 'id',
+    name: 'name',
+    isActive: 'isActive',
+    createdById: 'createdById',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type InstitutionScalarFieldEnum = (typeof InstitutionScalarFieldEnum)[keyof typeof InstitutionScalarFieldEnum]
+
+
+  export const WorkshopScalarFieldEnum: {
+    id: 'id',
+    title: 'title',
+    description: 'description',
+    date: 'date',
+    status: 'status',
+    createdById: 'createdById',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type WorkshopScalarFieldEnum = (typeof WorkshopScalarFieldEnum)[keyof typeof WorkshopScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -15068,6 +17297,7 @@ export namespace Prisma {
     password?: StringFilter<"User"> | string
     role?: EnumRoleFilter<"User"> | $Enums.Role
     isActive?: BoolFilter<"User"> | boolean
+    customPermissions?: StringNullableListFilter<"User">
     username?: StringNullableFilter<"User"> | string | null
     mobile?: StringNullableFilter<"User"> | string | null
     profilePic?: StringNullableFilter<"User"> | string | null
@@ -15093,12 +17323,12 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"User"> | Date | string
     createdBy?: XOR<UserNullableRelationFilter, UserWhereInput> | null
     createdUsers?: UserListRelationFilter
-    nodalCentre?: XOR<UserNullableRelationFilter, UserWhereInput> | null
-    centreMembers?: UserListRelationFilter
+    nodalCentre?: XOR<InstitutionNullableRelationFilter, InstitutionWhereInput> | null
     subjectsCreated?: SubjectListRelationFilter
     labsCreated?: LabListRelationFilter
-    labsAsNodalCentre?: LabListRelationFilter
     experimentsCreated?: ExperimentListRelationFilter
+    institutionsCreated?: InstitutionListRelationFilter
+    workshopsCreated?: WorkshopListRelationFilter
     quizAttempts?: QuizAttemptListRelationFilter
     experimentVisits?: ExperimentVisitListRelationFilter
     feedbacks?: FeedbackListRelationFilter
@@ -15115,6 +17345,7 @@ export namespace Prisma {
     password?: SortOrder
     role?: SortOrder
     isActive?: SortOrder
+    customPermissions?: SortOrder
     username?: SortOrderInput | SortOrder
     mobile?: SortOrderInput | SortOrder
     profilePic?: SortOrderInput | SortOrder
@@ -15140,12 +17371,12 @@ export namespace Prisma {
     updatedAt?: SortOrder
     createdBy?: UserOrderByWithRelationInput
     createdUsers?: UserOrderByRelationAggregateInput
-    nodalCentre?: UserOrderByWithRelationInput
-    centreMembers?: UserOrderByRelationAggregateInput
+    nodalCentre?: InstitutionOrderByWithRelationInput
     subjectsCreated?: SubjectOrderByRelationAggregateInput
     labsCreated?: LabOrderByRelationAggregateInput
-    labsAsNodalCentre?: LabOrderByRelationAggregateInput
     experimentsCreated?: ExperimentOrderByRelationAggregateInput
+    institutionsCreated?: InstitutionOrderByRelationAggregateInput
+    workshopsCreated?: WorkshopOrderByRelationAggregateInput
     quizAttempts?: QuizAttemptOrderByRelationAggregateInput
     experimentVisits?: ExperimentVisitOrderByRelationAggregateInput
     feedbacks?: FeedbackOrderByRelationAggregateInput
@@ -15166,6 +17397,7 @@ export namespace Prisma {
     password?: StringFilter<"User"> | string
     role?: EnumRoleFilter<"User"> | $Enums.Role
     isActive?: BoolFilter<"User"> | boolean
+    customPermissions?: StringNullableListFilter<"User">
     mobile?: StringNullableFilter<"User"> | string | null
     profilePic?: StringNullableFilter<"User"> | string | null
     org?: StringNullableFilter<"User"> | string | null
@@ -15190,12 +17422,12 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"User"> | Date | string
     createdBy?: XOR<UserNullableRelationFilter, UserWhereInput> | null
     createdUsers?: UserListRelationFilter
-    nodalCentre?: XOR<UserNullableRelationFilter, UserWhereInput> | null
-    centreMembers?: UserListRelationFilter
+    nodalCentre?: XOR<InstitutionNullableRelationFilter, InstitutionWhereInput> | null
     subjectsCreated?: SubjectListRelationFilter
     labsCreated?: LabListRelationFilter
-    labsAsNodalCentre?: LabListRelationFilter
     experimentsCreated?: ExperimentListRelationFilter
+    institutionsCreated?: InstitutionListRelationFilter
+    workshopsCreated?: WorkshopListRelationFilter
     quizAttempts?: QuizAttemptListRelationFilter
     experimentVisits?: ExperimentVisitListRelationFilter
     feedbacks?: FeedbackListRelationFilter
@@ -15212,6 +17444,7 @@ export namespace Prisma {
     password?: SortOrder
     role?: SortOrder
     isActive?: SortOrder
+    customPermissions?: SortOrder
     username?: SortOrderInput | SortOrder
     mobile?: SortOrderInput | SortOrder
     profilePic?: SortOrderInput | SortOrder
@@ -15250,6 +17483,7 @@ export namespace Prisma {
     password?: StringWithAggregatesFilter<"User"> | string
     role?: EnumRoleWithAggregatesFilter<"User"> | $Enums.Role
     isActive?: BoolWithAggregatesFilter<"User"> | boolean
+    customPermissions?: StringNullableListFilter<"User">
     username?: StringNullableWithAggregatesFilter<"User"> | string | null
     mobile?: StringNullableWithAggregatesFilter<"User"> | string | null
     profilePic?: StringNullableWithAggregatesFilter<"User"> | string | null
@@ -15370,7 +17604,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Lab"> | Date | string
     subject?: XOR<SubjectRelationFilter, SubjectWhereInput>
     createdBy?: XOR<UserRelationFilter, UserWhereInput>
-    nodalCentre?: XOR<UserNullableRelationFilter, UserWhereInput> | null
+    nodalCentre?: XOR<InstitutionNullableRelationFilter, InstitutionWhereInput> | null
     experiments?: ExperimentListRelationFilter
   }
 
@@ -15388,7 +17622,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     subject?: SubjectOrderByWithRelationInput
     createdBy?: UserOrderByWithRelationInput
-    nodalCentre?: UserOrderByWithRelationInput
+    nodalCentre?: InstitutionOrderByWithRelationInput
     experiments?: ExperimentOrderByRelationAggregateInput
   }
 
@@ -15409,7 +17643,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Lab"> | Date | string
     subject?: XOR<SubjectRelationFilter, SubjectWhereInput>
     createdBy?: XOR<UserRelationFilter, UserWhereInput>
-    nodalCentre?: XOR<UserNullableRelationFilter, UserWhereInput> | null
+    nodalCentre?: XOR<InstitutionNullableRelationFilter, InstitutionWhereInput> | null
     experiments?: ExperimentListRelationFilter
   }, "id">
 
@@ -16089,6 +18323,142 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"PageSection"> | Date | string
   }
 
+  export type InstitutionWhereInput = {
+    AND?: InstitutionWhereInput | InstitutionWhereInput[]
+    OR?: InstitutionWhereInput[]
+    NOT?: InstitutionWhereInput | InstitutionWhereInput[]
+    id?: StringFilter<"Institution"> | string
+    name?: StringFilter<"Institution"> | string
+    isActive?: BoolFilter<"Institution"> | boolean
+    createdById?: StringNullableFilter<"Institution"> | string | null
+    createdAt?: DateTimeFilter<"Institution"> | Date | string
+    updatedAt?: DateTimeFilter<"Institution"> | Date | string
+    users?: UserListRelationFilter
+    labs?: LabListRelationFilter
+    createdBy?: XOR<UserNullableRelationFilter, UserWhereInput> | null
+  }
+
+  export type InstitutionOrderByWithRelationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    isActive?: SortOrder
+    createdById?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    users?: UserOrderByRelationAggregateInput
+    labs?: LabOrderByRelationAggregateInput
+    createdBy?: UserOrderByWithRelationInput
+  }
+
+  export type InstitutionWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    name?: string
+    AND?: InstitutionWhereInput | InstitutionWhereInput[]
+    OR?: InstitutionWhereInput[]
+    NOT?: InstitutionWhereInput | InstitutionWhereInput[]
+    isActive?: BoolFilter<"Institution"> | boolean
+    createdById?: StringNullableFilter<"Institution"> | string | null
+    createdAt?: DateTimeFilter<"Institution"> | Date | string
+    updatedAt?: DateTimeFilter<"Institution"> | Date | string
+    users?: UserListRelationFilter
+    labs?: LabListRelationFilter
+    createdBy?: XOR<UserNullableRelationFilter, UserWhereInput> | null
+  }, "id" | "name">
+
+  export type InstitutionOrderByWithAggregationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    isActive?: SortOrder
+    createdById?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: InstitutionCountOrderByAggregateInput
+    _max?: InstitutionMaxOrderByAggregateInput
+    _min?: InstitutionMinOrderByAggregateInput
+  }
+
+  export type InstitutionScalarWhereWithAggregatesInput = {
+    AND?: InstitutionScalarWhereWithAggregatesInput | InstitutionScalarWhereWithAggregatesInput[]
+    OR?: InstitutionScalarWhereWithAggregatesInput[]
+    NOT?: InstitutionScalarWhereWithAggregatesInput | InstitutionScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Institution"> | string
+    name?: StringWithAggregatesFilter<"Institution"> | string
+    isActive?: BoolWithAggregatesFilter<"Institution"> | boolean
+    createdById?: StringNullableWithAggregatesFilter<"Institution"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"Institution"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Institution"> | Date | string
+  }
+
+  export type WorkshopWhereInput = {
+    AND?: WorkshopWhereInput | WorkshopWhereInput[]
+    OR?: WorkshopWhereInput[]
+    NOT?: WorkshopWhereInput | WorkshopWhereInput[]
+    id?: StringFilter<"Workshop"> | string
+    title?: StringFilter<"Workshop"> | string
+    description?: StringNullableFilter<"Workshop"> | string | null
+    date?: DateTimeFilter<"Workshop"> | Date | string
+    status?: StringFilter<"Workshop"> | string
+    createdById?: StringFilter<"Workshop"> | string
+    createdAt?: DateTimeFilter<"Workshop"> | Date | string
+    updatedAt?: DateTimeFilter<"Workshop"> | Date | string
+    createdBy?: XOR<UserRelationFilter, UserWhereInput>
+  }
+
+  export type WorkshopOrderByWithRelationInput = {
+    id?: SortOrder
+    title?: SortOrder
+    description?: SortOrderInput | SortOrder
+    date?: SortOrder
+    status?: SortOrder
+    createdById?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    createdBy?: UserOrderByWithRelationInput
+  }
+
+  export type WorkshopWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: WorkshopWhereInput | WorkshopWhereInput[]
+    OR?: WorkshopWhereInput[]
+    NOT?: WorkshopWhereInput | WorkshopWhereInput[]
+    title?: StringFilter<"Workshop"> | string
+    description?: StringNullableFilter<"Workshop"> | string | null
+    date?: DateTimeFilter<"Workshop"> | Date | string
+    status?: StringFilter<"Workshop"> | string
+    createdById?: StringFilter<"Workshop"> | string
+    createdAt?: DateTimeFilter<"Workshop"> | Date | string
+    updatedAt?: DateTimeFilter<"Workshop"> | Date | string
+    createdBy?: XOR<UserRelationFilter, UserWhereInput>
+  }, "id">
+
+  export type WorkshopOrderByWithAggregationInput = {
+    id?: SortOrder
+    title?: SortOrder
+    description?: SortOrderInput | SortOrder
+    date?: SortOrder
+    status?: SortOrder
+    createdById?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: WorkshopCountOrderByAggregateInput
+    _max?: WorkshopMaxOrderByAggregateInput
+    _min?: WorkshopMinOrderByAggregateInput
+  }
+
+  export type WorkshopScalarWhereWithAggregatesInput = {
+    AND?: WorkshopScalarWhereWithAggregatesInput | WorkshopScalarWhereWithAggregatesInput[]
+    OR?: WorkshopScalarWhereWithAggregatesInput[]
+    NOT?: WorkshopScalarWhereWithAggregatesInput | WorkshopScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Workshop"> | string
+    title?: StringWithAggregatesFilter<"Workshop"> | string
+    description?: StringNullableWithAggregatesFilter<"Workshop"> | string | null
+    date?: DateTimeWithAggregatesFilter<"Workshop"> | Date | string
+    status?: StringWithAggregatesFilter<"Workshop"> | string
+    createdById?: StringWithAggregatesFilter<"Workshop"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"Workshop"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Workshop"> | Date | string
+  }
+
   export type UserCreateInput = {
     id?: string
     name: string
@@ -16096,6 +18466,7 @@ export namespace Prisma {
     password: string
     role: $Enums.Role
     isActive?: boolean
+    customPermissions?: UserCreatecustomPermissionsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -16119,12 +18490,12 @@ export namespace Prisma {
     updatedAt?: Date | string
     createdBy?: UserCreateNestedOneWithoutCreatedUsersInput
     createdUsers?: UserCreateNestedManyWithoutCreatedByInput
-    nodalCentre?: UserCreateNestedOneWithoutCentreMembersInput
-    centreMembers?: UserCreateNestedManyWithoutNodalCentreInput
+    nodalCentre?: InstitutionCreateNestedOneWithoutUsersInput
     subjectsCreated?: SubjectCreateNestedManyWithoutCreatedByInput
     labsCreated?: LabCreateNestedManyWithoutCreatedByInput
-    labsAsNodalCentre?: LabCreateNestedManyWithoutNodalCentreInput
     experimentsCreated?: ExperimentCreateNestedManyWithoutCreatedByInput
+    institutionsCreated?: InstitutionCreateNestedManyWithoutCreatedByInput
+    workshopsCreated?: WorkshopCreateNestedManyWithoutCreatedByInput
     quizAttempts?: QuizAttemptCreateNestedManyWithoutUserInput
     experimentVisits?: ExperimentVisitCreateNestedManyWithoutUserInput
     feedbacks?: FeedbackCreateNestedManyWithoutUserInput
@@ -16141,6 +18512,7 @@ export namespace Prisma {
     password: string
     role: $Enums.Role
     isActive?: boolean
+    customPermissions?: UserCreatecustomPermissionsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -16165,11 +18537,11 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     createdUsers?: UserUncheckedCreateNestedManyWithoutCreatedByInput
-    centreMembers?: UserUncheckedCreateNestedManyWithoutNodalCentreInput
     subjectsCreated?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
     labsCreated?: LabUncheckedCreateNestedManyWithoutCreatedByInput
-    labsAsNodalCentre?: LabUncheckedCreateNestedManyWithoutNodalCentreInput
     experimentsCreated?: ExperimentUncheckedCreateNestedManyWithoutCreatedByInput
+    institutionsCreated?: InstitutionUncheckedCreateNestedManyWithoutCreatedByInput
+    workshopsCreated?: WorkshopUncheckedCreateNestedManyWithoutCreatedByInput
     quizAttempts?: QuizAttemptUncheckedCreateNestedManyWithoutUserInput
     experimentVisits?: ExperimentVisitUncheckedCreateNestedManyWithoutUserInput
     feedbacks?: FeedbackUncheckedCreateNestedManyWithoutUserInput
@@ -16186,6 +18558,7 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    customPermissions?: UserUpdatecustomPermissionsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -16209,12 +18582,12 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: UserUpdateOneWithoutCreatedUsersNestedInput
     createdUsers?: UserUpdateManyWithoutCreatedByNestedInput
-    nodalCentre?: UserUpdateOneWithoutCentreMembersNestedInput
-    centreMembers?: UserUpdateManyWithoutNodalCentreNestedInput
+    nodalCentre?: InstitutionUpdateOneWithoutUsersNestedInput
     subjectsCreated?: SubjectUpdateManyWithoutCreatedByNestedInput
     labsCreated?: LabUpdateManyWithoutCreatedByNestedInput
-    labsAsNodalCentre?: LabUpdateManyWithoutNodalCentreNestedInput
     experimentsCreated?: ExperimentUpdateManyWithoutCreatedByNestedInput
+    institutionsCreated?: InstitutionUpdateManyWithoutCreatedByNestedInput
+    workshopsCreated?: WorkshopUpdateManyWithoutCreatedByNestedInput
     quizAttempts?: QuizAttemptUpdateManyWithoutUserNestedInput
     experimentVisits?: ExperimentVisitUpdateManyWithoutUserNestedInput
     feedbacks?: FeedbackUpdateManyWithoutUserNestedInput
@@ -16231,6 +18604,7 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    customPermissions?: UserUpdatecustomPermissionsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -16255,11 +18629,11 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdUsers?: UserUncheckedUpdateManyWithoutCreatedByNestedInput
-    centreMembers?: UserUncheckedUpdateManyWithoutNodalCentreNestedInput
     subjectsCreated?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
     labsCreated?: LabUncheckedUpdateManyWithoutCreatedByNestedInput
-    labsAsNodalCentre?: LabUncheckedUpdateManyWithoutNodalCentreNestedInput
     experimentsCreated?: ExperimentUncheckedUpdateManyWithoutCreatedByNestedInput
+    institutionsCreated?: InstitutionUncheckedUpdateManyWithoutCreatedByNestedInput
+    workshopsCreated?: WorkshopUncheckedUpdateManyWithoutCreatedByNestedInput
     quizAttempts?: QuizAttemptUncheckedUpdateManyWithoutUserNestedInput
     experimentVisits?: ExperimentVisitUncheckedUpdateManyWithoutUserNestedInput
     feedbacks?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
@@ -16276,6 +18650,7 @@ export namespace Prisma {
     password: string
     role: $Enums.Role
     isActive?: boolean
+    customPermissions?: UserCreatecustomPermissionsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -16308,6 +18683,7 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    customPermissions?: UserUpdatecustomPermissionsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -16338,6 +18714,7 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    customPermissions?: UserUpdatecustomPermissionsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -16461,7 +18838,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     subject: SubjectCreateNestedOneWithoutLabsInput
     createdBy: UserCreateNestedOneWithoutLabsCreatedInput
-    nodalCentre?: UserCreateNestedOneWithoutLabsAsNodalCentreInput
+    nodalCentre?: InstitutionCreateNestedOneWithoutLabsInput
     experiments?: ExperimentCreateNestedManyWithoutLabInput
   }
 
@@ -16491,7 +18868,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     subject?: SubjectUpdateOneRequiredWithoutLabsNestedInput
     createdBy?: UserUpdateOneRequiredWithoutLabsCreatedNestedInput
-    nodalCentre?: UserUpdateOneWithoutLabsAsNodalCentreNestedInput
+    nodalCentre?: InstitutionUpdateOneWithoutLabsNestedInput
     experiments?: ExperimentUpdateManyWithoutLabNestedInput
   }
 
@@ -17206,6 +19583,152 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type InstitutionCreateInput = {
+    id?: string
+    name: string
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    users?: UserCreateNestedManyWithoutNodalCentreInput
+    labs?: LabCreateNestedManyWithoutNodalCentreInput
+    createdBy?: UserCreateNestedOneWithoutInstitutionsCreatedInput
+  }
+
+  export type InstitutionUncheckedCreateInput = {
+    id?: string
+    name: string
+    isActive?: boolean
+    createdById?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    users?: UserUncheckedCreateNestedManyWithoutNodalCentreInput
+    labs?: LabUncheckedCreateNestedManyWithoutNodalCentreInput
+  }
+
+  export type InstitutionUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: UserUpdateManyWithoutNodalCentreNestedInput
+    labs?: LabUpdateManyWithoutNodalCentreNestedInput
+    createdBy?: UserUpdateOneWithoutInstitutionsCreatedNestedInput
+  }
+
+  export type InstitutionUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: UserUncheckedUpdateManyWithoutNodalCentreNestedInput
+    labs?: LabUncheckedUpdateManyWithoutNodalCentreNestedInput
+  }
+
+  export type InstitutionCreateManyInput = {
+    id?: string
+    name: string
+    isActive?: boolean
+    createdById?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type InstitutionUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type InstitutionUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WorkshopCreateInput = {
+    id?: string
+    title: string
+    description?: string | null
+    date: Date | string
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdBy: UserCreateNestedOneWithoutWorkshopsCreatedInput
+  }
+
+  export type WorkshopUncheckedCreateInput = {
+    id?: string
+    title: string
+    description?: string | null
+    date: Date | string
+    status?: string
+    createdById: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type WorkshopUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: UserUpdateOneRequiredWithoutWorkshopsCreatedNestedInput
+  }
+
+  export type WorkshopUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdById?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WorkshopCreateManyInput = {
+    id?: string
+    title: string
+    description?: string | null
+    date: Date | string
+    status?: string
+    createdById: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type WorkshopUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WorkshopUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdById?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -17231,6 +19754,14 @@ export namespace Prisma {
   export type BoolFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel>
     not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
+  export type StringNullableListFilter<$PrismaModel = never> = {
+    equals?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    has?: string | StringFieldRefInput<$PrismaModel> | null
+    hasEvery?: string[] | ListStringFieldRefInput<$PrismaModel>
+    hasSome?: string[] | ListStringFieldRefInput<$PrismaModel>
+    isEmpty?: boolean
   }
 
   export type StringNullableFilter<$PrismaModel = never> = {
@@ -17281,6 +19812,11 @@ export namespace Prisma {
     none?: UserWhereInput
   }
 
+  export type InstitutionNullableRelationFilter = {
+    is?: InstitutionWhereInput | null
+    isNot?: InstitutionWhereInput | null
+  }
+
   export type SubjectListRelationFilter = {
     every?: SubjectWhereInput
     some?: SubjectWhereInput
@@ -17297,6 +19833,18 @@ export namespace Prisma {
     every?: ExperimentWhereInput
     some?: ExperimentWhereInput
     none?: ExperimentWhereInput
+  }
+
+  export type InstitutionListRelationFilter = {
+    every?: InstitutionWhereInput
+    some?: InstitutionWhereInput
+    none?: InstitutionWhereInput
+  }
+
+  export type WorkshopListRelationFilter = {
+    every?: WorkshopWhereInput
+    some?: WorkshopWhereInput
+    none?: WorkshopWhereInput
   }
 
   export type QuizAttemptListRelationFilter = {
@@ -17356,6 +19904,14 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
+  export type InstitutionOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type WorkshopOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type QuizAttemptOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -17387,6 +19943,7 @@ export namespace Prisma {
     password?: SortOrder
     role?: SortOrder
     isActive?: SortOrder
+    customPermissions?: SortOrder
     username?: SortOrder
     mobile?: SortOrder
     profilePic?: SortOrder
@@ -18079,6 +20636,70 @@ export namespace Prisma {
     _max?: NestedJsonFilter<$PrismaModel>
   }
 
+  export type InstitutionCountOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    isActive?: SortOrder
+    createdById?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type InstitutionMaxOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    isActive?: SortOrder
+    createdById?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type InstitutionMinOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    isActive?: SortOrder
+    createdById?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type WorkshopCountOrderByAggregateInput = {
+    id?: SortOrder
+    title?: SortOrder
+    description?: SortOrder
+    date?: SortOrder
+    status?: SortOrder
+    createdById?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type WorkshopMaxOrderByAggregateInput = {
+    id?: SortOrder
+    title?: SortOrder
+    description?: SortOrder
+    date?: SortOrder
+    status?: SortOrder
+    createdById?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type WorkshopMinOrderByAggregateInput = {
+    id?: SortOrder
+    title?: SortOrder
+    description?: SortOrder
+    date?: SortOrder
+    status?: SortOrder
+    createdById?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type UserCreatecustomPermissionsInput = {
+    set: string[]
+  }
+
   export type UserCreateNestedOneWithoutCreatedUsersInput = {
     create?: XOR<UserCreateWithoutCreatedUsersInput, UserUncheckedCreateWithoutCreatedUsersInput>
     connectOrCreate?: UserCreateOrConnectWithoutCreatedUsersInput
@@ -18092,17 +20713,10 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
   }
 
-  export type UserCreateNestedOneWithoutCentreMembersInput = {
-    create?: XOR<UserCreateWithoutCentreMembersInput, UserUncheckedCreateWithoutCentreMembersInput>
-    connectOrCreate?: UserCreateOrConnectWithoutCentreMembersInput
-    connect?: UserWhereUniqueInput
-  }
-
-  export type UserCreateNestedManyWithoutNodalCentreInput = {
-    create?: XOR<UserCreateWithoutNodalCentreInput, UserUncheckedCreateWithoutNodalCentreInput> | UserCreateWithoutNodalCentreInput[] | UserUncheckedCreateWithoutNodalCentreInput[]
-    connectOrCreate?: UserCreateOrConnectWithoutNodalCentreInput | UserCreateOrConnectWithoutNodalCentreInput[]
-    createMany?: UserCreateManyNodalCentreInputEnvelope
-    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+  export type InstitutionCreateNestedOneWithoutUsersInput = {
+    create?: XOR<InstitutionCreateWithoutUsersInput, InstitutionUncheckedCreateWithoutUsersInput>
+    connectOrCreate?: InstitutionCreateOrConnectWithoutUsersInput
+    connect?: InstitutionWhereUniqueInput
   }
 
   export type SubjectCreateNestedManyWithoutCreatedByInput = {
@@ -18119,18 +20733,25 @@ export namespace Prisma {
     connect?: LabWhereUniqueInput | LabWhereUniqueInput[]
   }
 
-  export type LabCreateNestedManyWithoutNodalCentreInput = {
-    create?: XOR<LabCreateWithoutNodalCentreInput, LabUncheckedCreateWithoutNodalCentreInput> | LabCreateWithoutNodalCentreInput[] | LabUncheckedCreateWithoutNodalCentreInput[]
-    connectOrCreate?: LabCreateOrConnectWithoutNodalCentreInput | LabCreateOrConnectWithoutNodalCentreInput[]
-    createMany?: LabCreateManyNodalCentreInputEnvelope
-    connect?: LabWhereUniqueInput | LabWhereUniqueInput[]
-  }
-
   export type ExperimentCreateNestedManyWithoutCreatedByInput = {
     create?: XOR<ExperimentCreateWithoutCreatedByInput, ExperimentUncheckedCreateWithoutCreatedByInput> | ExperimentCreateWithoutCreatedByInput[] | ExperimentUncheckedCreateWithoutCreatedByInput[]
     connectOrCreate?: ExperimentCreateOrConnectWithoutCreatedByInput | ExperimentCreateOrConnectWithoutCreatedByInput[]
     createMany?: ExperimentCreateManyCreatedByInputEnvelope
     connect?: ExperimentWhereUniqueInput | ExperimentWhereUniqueInput[]
+  }
+
+  export type InstitutionCreateNestedManyWithoutCreatedByInput = {
+    create?: XOR<InstitutionCreateWithoutCreatedByInput, InstitutionUncheckedCreateWithoutCreatedByInput> | InstitutionCreateWithoutCreatedByInput[] | InstitutionUncheckedCreateWithoutCreatedByInput[]
+    connectOrCreate?: InstitutionCreateOrConnectWithoutCreatedByInput | InstitutionCreateOrConnectWithoutCreatedByInput[]
+    createMany?: InstitutionCreateManyCreatedByInputEnvelope
+    connect?: InstitutionWhereUniqueInput | InstitutionWhereUniqueInput[]
+  }
+
+  export type WorkshopCreateNestedManyWithoutCreatedByInput = {
+    create?: XOR<WorkshopCreateWithoutCreatedByInput, WorkshopUncheckedCreateWithoutCreatedByInput> | WorkshopCreateWithoutCreatedByInput[] | WorkshopUncheckedCreateWithoutCreatedByInput[]
+    connectOrCreate?: WorkshopCreateOrConnectWithoutCreatedByInput | WorkshopCreateOrConnectWithoutCreatedByInput[]
+    createMany?: WorkshopCreateManyCreatedByInputEnvelope
+    connect?: WorkshopWhereUniqueInput | WorkshopWhereUniqueInput[]
   }
 
   export type QuizAttemptCreateNestedManyWithoutUserInput = {
@@ -18189,13 +20810,6 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
   }
 
-  export type UserUncheckedCreateNestedManyWithoutNodalCentreInput = {
-    create?: XOR<UserCreateWithoutNodalCentreInput, UserUncheckedCreateWithoutNodalCentreInput> | UserCreateWithoutNodalCentreInput[] | UserUncheckedCreateWithoutNodalCentreInput[]
-    connectOrCreate?: UserCreateOrConnectWithoutNodalCentreInput | UserCreateOrConnectWithoutNodalCentreInput[]
-    createMany?: UserCreateManyNodalCentreInputEnvelope
-    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
-  }
-
   export type SubjectUncheckedCreateNestedManyWithoutCreatedByInput = {
     create?: XOR<SubjectCreateWithoutCreatedByInput, SubjectUncheckedCreateWithoutCreatedByInput> | SubjectCreateWithoutCreatedByInput[] | SubjectUncheckedCreateWithoutCreatedByInput[]
     connectOrCreate?: SubjectCreateOrConnectWithoutCreatedByInput | SubjectCreateOrConnectWithoutCreatedByInput[]
@@ -18210,18 +20824,25 @@ export namespace Prisma {
     connect?: LabWhereUniqueInput | LabWhereUniqueInput[]
   }
 
-  export type LabUncheckedCreateNestedManyWithoutNodalCentreInput = {
-    create?: XOR<LabCreateWithoutNodalCentreInput, LabUncheckedCreateWithoutNodalCentreInput> | LabCreateWithoutNodalCentreInput[] | LabUncheckedCreateWithoutNodalCentreInput[]
-    connectOrCreate?: LabCreateOrConnectWithoutNodalCentreInput | LabCreateOrConnectWithoutNodalCentreInput[]
-    createMany?: LabCreateManyNodalCentreInputEnvelope
-    connect?: LabWhereUniqueInput | LabWhereUniqueInput[]
-  }
-
   export type ExperimentUncheckedCreateNestedManyWithoutCreatedByInput = {
     create?: XOR<ExperimentCreateWithoutCreatedByInput, ExperimentUncheckedCreateWithoutCreatedByInput> | ExperimentCreateWithoutCreatedByInput[] | ExperimentUncheckedCreateWithoutCreatedByInput[]
     connectOrCreate?: ExperimentCreateOrConnectWithoutCreatedByInput | ExperimentCreateOrConnectWithoutCreatedByInput[]
     createMany?: ExperimentCreateManyCreatedByInputEnvelope
     connect?: ExperimentWhereUniqueInput | ExperimentWhereUniqueInput[]
+  }
+
+  export type InstitutionUncheckedCreateNestedManyWithoutCreatedByInput = {
+    create?: XOR<InstitutionCreateWithoutCreatedByInput, InstitutionUncheckedCreateWithoutCreatedByInput> | InstitutionCreateWithoutCreatedByInput[] | InstitutionUncheckedCreateWithoutCreatedByInput[]
+    connectOrCreate?: InstitutionCreateOrConnectWithoutCreatedByInput | InstitutionCreateOrConnectWithoutCreatedByInput[]
+    createMany?: InstitutionCreateManyCreatedByInputEnvelope
+    connect?: InstitutionWhereUniqueInput | InstitutionWhereUniqueInput[]
+  }
+
+  export type WorkshopUncheckedCreateNestedManyWithoutCreatedByInput = {
+    create?: XOR<WorkshopCreateWithoutCreatedByInput, WorkshopUncheckedCreateWithoutCreatedByInput> | WorkshopCreateWithoutCreatedByInput[] | WorkshopUncheckedCreateWithoutCreatedByInput[]
+    connectOrCreate?: WorkshopCreateOrConnectWithoutCreatedByInput | WorkshopCreateOrConnectWithoutCreatedByInput[]
+    createMany?: WorkshopCreateManyCreatedByInputEnvelope
+    connect?: WorkshopWhereUniqueInput | WorkshopWhereUniqueInput[]
   }
 
   export type QuizAttemptUncheckedCreateNestedManyWithoutUserInput = {
@@ -18285,6 +20906,11 @@ export namespace Prisma {
     set?: boolean
   }
 
+  export type UserUpdatecustomPermissionsInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
   export type NullableStringFieldUpdateOperationsInput = {
     set?: string | null
   }
@@ -18321,28 +20947,14 @@ export namespace Prisma {
     deleteMany?: UserScalarWhereInput | UserScalarWhereInput[]
   }
 
-  export type UserUpdateOneWithoutCentreMembersNestedInput = {
-    create?: XOR<UserCreateWithoutCentreMembersInput, UserUncheckedCreateWithoutCentreMembersInput>
-    connectOrCreate?: UserCreateOrConnectWithoutCentreMembersInput
-    upsert?: UserUpsertWithoutCentreMembersInput
-    disconnect?: UserWhereInput | boolean
-    delete?: UserWhereInput | boolean
-    connect?: UserWhereUniqueInput
-    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutCentreMembersInput, UserUpdateWithoutCentreMembersInput>, UserUncheckedUpdateWithoutCentreMembersInput>
-  }
-
-  export type UserUpdateManyWithoutNodalCentreNestedInput = {
-    create?: XOR<UserCreateWithoutNodalCentreInput, UserUncheckedCreateWithoutNodalCentreInput> | UserCreateWithoutNodalCentreInput[] | UserUncheckedCreateWithoutNodalCentreInput[]
-    connectOrCreate?: UserCreateOrConnectWithoutNodalCentreInput | UserCreateOrConnectWithoutNodalCentreInput[]
-    upsert?: UserUpsertWithWhereUniqueWithoutNodalCentreInput | UserUpsertWithWhereUniqueWithoutNodalCentreInput[]
-    createMany?: UserCreateManyNodalCentreInputEnvelope
-    set?: UserWhereUniqueInput | UserWhereUniqueInput[]
-    disconnect?: UserWhereUniqueInput | UserWhereUniqueInput[]
-    delete?: UserWhereUniqueInput | UserWhereUniqueInput[]
-    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
-    update?: UserUpdateWithWhereUniqueWithoutNodalCentreInput | UserUpdateWithWhereUniqueWithoutNodalCentreInput[]
-    updateMany?: UserUpdateManyWithWhereWithoutNodalCentreInput | UserUpdateManyWithWhereWithoutNodalCentreInput[]
-    deleteMany?: UserScalarWhereInput | UserScalarWhereInput[]
+  export type InstitutionUpdateOneWithoutUsersNestedInput = {
+    create?: XOR<InstitutionCreateWithoutUsersInput, InstitutionUncheckedCreateWithoutUsersInput>
+    connectOrCreate?: InstitutionCreateOrConnectWithoutUsersInput
+    upsert?: InstitutionUpsertWithoutUsersInput
+    disconnect?: InstitutionWhereInput | boolean
+    delete?: InstitutionWhereInput | boolean
+    connect?: InstitutionWhereUniqueInput
+    update?: XOR<XOR<InstitutionUpdateToOneWithWhereWithoutUsersInput, InstitutionUpdateWithoutUsersInput>, InstitutionUncheckedUpdateWithoutUsersInput>
   }
 
   export type SubjectUpdateManyWithoutCreatedByNestedInput = {
@@ -18373,20 +20985,6 @@ export namespace Prisma {
     deleteMany?: LabScalarWhereInput | LabScalarWhereInput[]
   }
 
-  export type LabUpdateManyWithoutNodalCentreNestedInput = {
-    create?: XOR<LabCreateWithoutNodalCentreInput, LabUncheckedCreateWithoutNodalCentreInput> | LabCreateWithoutNodalCentreInput[] | LabUncheckedCreateWithoutNodalCentreInput[]
-    connectOrCreate?: LabCreateOrConnectWithoutNodalCentreInput | LabCreateOrConnectWithoutNodalCentreInput[]
-    upsert?: LabUpsertWithWhereUniqueWithoutNodalCentreInput | LabUpsertWithWhereUniqueWithoutNodalCentreInput[]
-    createMany?: LabCreateManyNodalCentreInputEnvelope
-    set?: LabWhereUniqueInput | LabWhereUniqueInput[]
-    disconnect?: LabWhereUniqueInput | LabWhereUniqueInput[]
-    delete?: LabWhereUniqueInput | LabWhereUniqueInput[]
-    connect?: LabWhereUniqueInput | LabWhereUniqueInput[]
-    update?: LabUpdateWithWhereUniqueWithoutNodalCentreInput | LabUpdateWithWhereUniqueWithoutNodalCentreInput[]
-    updateMany?: LabUpdateManyWithWhereWithoutNodalCentreInput | LabUpdateManyWithWhereWithoutNodalCentreInput[]
-    deleteMany?: LabScalarWhereInput | LabScalarWhereInput[]
-  }
-
   export type ExperimentUpdateManyWithoutCreatedByNestedInput = {
     create?: XOR<ExperimentCreateWithoutCreatedByInput, ExperimentUncheckedCreateWithoutCreatedByInput> | ExperimentCreateWithoutCreatedByInput[] | ExperimentUncheckedCreateWithoutCreatedByInput[]
     connectOrCreate?: ExperimentCreateOrConnectWithoutCreatedByInput | ExperimentCreateOrConnectWithoutCreatedByInput[]
@@ -18399,6 +20997,34 @@ export namespace Prisma {
     update?: ExperimentUpdateWithWhereUniqueWithoutCreatedByInput | ExperimentUpdateWithWhereUniqueWithoutCreatedByInput[]
     updateMany?: ExperimentUpdateManyWithWhereWithoutCreatedByInput | ExperimentUpdateManyWithWhereWithoutCreatedByInput[]
     deleteMany?: ExperimentScalarWhereInput | ExperimentScalarWhereInput[]
+  }
+
+  export type InstitutionUpdateManyWithoutCreatedByNestedInput = {
+    create?: XOR<InstitutionCreateWithoutCreatedByInput, InstitutionUncheckedCreateWithoutCreatedByInput> | InstitutionCreateWithoutCreatedByInput[] | InstitutionUncheckedCreateWithoutCreatedByInput[]
+    connectOrCreate?: InstitutionCreateOrConnectWithoutCreatedByInput | InstitutionCreateOrConnectWithoutCreatedByInput[]
+    upsert?: InstitutionUpsertWithWhereUniqueWithoutCreatedByInput | InstitutionUpsertWithWhereUniqueWithoutCreatedByInput[]
+    createMany?: InstitutionCreateManyCreatedByInputEnvelope
+    set?: InstitutionWhereUniqueInput | InstitutionWhereUniqueInput[]
+    disconnect?: InstitutionWhereUniqueInput | InstitutionWhereUniqueInput[]
+    delete?: InstitutionWhereUniqueInput | InstitutionWhereUniqueInput[]
+    connect?: InstitutionWhereUniqueInput | InstitutionWhereUniqueInput[]
+    update?: InstitutionUpdateWithWhereUniqueWithoutCreatedByInput | InstitutionUpdateWithWhereUniqueWithoutCreatedByInput[]
+    updateMany?: InstitutionUpdateManyWithWhereWithoutCreatedByInput | InstitutionUpdateManyWithWhereWithoutCreatedByInput[]
+    deleteMany?: InstitutionScalarWhereInput | InstitutionScalarWhereInput[]
+  }
+
+  export type WorkshopUpdateManyWithoutCreatedByNestedInput = {
+    create?: XOR<WorkshopCreateWithoutCreatedByInput, WorkshopUncheckedCreateWithoutCreatedByInput> | WorkshopCreateWithoutCreatedByInput[] | WorkshopUncheckedCreateWithoutCreatedByInput[]
+    connectOrCreate?: WorkshopCreateOrConnectWithoutCreatedByInput | WorkshopCreateOrConnectWithoutCreatedByInput[]
+    upsert?: WorkshopUpsertWithWhereUniqueWithoutCreatedByInput | WorkshopUpsertWithWhereUniqueWithoutCreatedByInput[]
+    createMany?: WorkshopCreateManyCreatedByInputEnvelope
+    set?: WorkshopWhereUniqueInput | WorkshopWhereUniqueInput[]
+    disconnect?: WorkshopWhereUniqueInput | WorkshopWhereUniqueInput[]
+    delete?: WorkshopWhereUniqueInput | WorkshopWhereUniqueInput[]
+    connect?: WorkshopWhereUniqueInput | WorkshopWhereUniqueInput[]
+    update?: WorkshopUpdateWithWhereUniqueWithoutCreatedByInput | WorkshopUpdateWithWhereUniqueWithoutCreatedByInput[]
+    updateMany?: WorkshopUpdateManyWithWhereWithoutCreatedByInput | WorkshopUpdateManyWithWhereWithoutCreatedByInput[]
+    deleteMany?: WorkshopScalarWhereInput | WorkshopScalarWhereInput[]
   }
 
   export type QuizAttemptUpdateManyWithoutUserNestedInput = {
@@ -18513,20 +21139,6 @@ export namespace Prisma {
     deleteMany?: UserScalarWhereInput | UserScalarWhereInput[]
   }
 
-  export type UserUncheckedUpdateManyWithoutNodalCentreNestedInput = {
-    create?: XOR<UserCreateWithoutNodalCentreInput, UserUncheckedCreateWithoutNodalCentreInput> | UserCreateWithoutNodalCentreInput[] | UserUncheckedCreateWithoutNodalCentreInput[]
-    connectOrCreate?: UserCreateOrConnectWithoutNodalCentreInput | UserCreateOrConnectWithoutNodalCentreInput[]
-    upsert?: UserUpsertWithWhereUniqueWithoutNodalCentreInput | UserUpsertWithWhereUniqueWithoutNodalCentreInput[]
-    createMany?: UserCreateManyNodalCentreInputEnvelope
-    set?: UserWhereUniqueInput | UserWhereUniqueInput[]
-    disconnect?: UserWhereUniqueInput | UserWhereUniqueInput[]
-    delete?: UserWhereUniqueInput | UserWhereUniqueInput[]
-    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
-    update?: UserUpdateWithWhereUniqueWithoutNodalCentreInput | UserUpdateWithWhereUniqueWithoutNodalCentreInput[]
-    updateMany?: UserUpdateManyWithWhereWithoutNodalCentreInput | UserUpdateManyWithWhereWithoutNodalCentreInput[]
-    deleteMany?: UserScalarWhereInput | UserScalarWhereInput[]
-  }
-
   export type SubjectUncheckedUpdateManyWithoutCreatedByNestedInput = {
     create?: XOR<SubjectCreateWithoutCreatedByInput, SubjectUncheckedCreateWithoutCreatedByInput> | SubjectCreateWithoutCreatedByInput[] | SubjectUncheckedCreateWithoutCreatedByInput[]
     connectOrCreate?: SubjectCreateOrConnectWithoutCreatedByInput | SubjectCreateOrConnectWithoutCreatedByInput[]
@@ -18555,20 +21167,6 @@ export namespace Prisma {
     deleteMany?: LabScalarWhereInput | LabScalarWhereInput[]
   }
 
-  export type LabUncheckedUpdateManyWithoutNodalCentreNestedInput = {
-    create?: XOR<LabCreateWithoutNodalCentreInput, LabUncheckedCreateWithoutNodalCentreInput> | LabCreateWithoutNodalCentreInput[] | LabUncheckedCreateWithoutNodalCentreInput[]
-    connectOrCreate?: LabCreateOrConnectWithoutNodalCentreInput | LabCreateOrConnectWithoutNodalCentreInput[]
-    upsert?: LabUpsertWithWhereUniqueWithoutNodalCentreInput | LabUpsertWithWhereUniqueWithoutNodalCentreInput[]
-    createMany?: LabCreateManyNodalCentreInputEnvelope
-    set?: LabWhereUniqueInput | LabWhereUniqueInput[]
-    disconnect?: LabWhereUniqueInput | LabWhereUniqueInput[]
-    delete?: LabWhereUniqueInput | LabWhereUniqueInput[]
-    connect?: LabWhereUniqueInput | LabWhereUniqueInput[]
-    update?: LabUpdateWithWhereUniqueWithoutNodalCentreInput | LabUpdateWithWhereUniqueWithoutNodalCentreInput[]
-    updateMany?: LabUpdateManyWithWhereWithoutNodalCentreInput | LabUpdateManyWithWhereWithoutNodalCentreInput[]
-    deleteMany?: LabScalarWhereInput | LabScalarWhereInput[]
-  }
-
   export type ExperimentUncheckedUpdateManyWithoutCreatedByNestedInput = {
     create?: XOR<ExperimentCreateWithoutCreatedByInput, ExperimentUncheckedCreateWithoutCreatedByInput> | ExperimentCreateWithoutCreatedByInput[] | ExperimentUncheckedCreateWithoutCreatedByInput[]
     connectOrCreate?: ExperimentCreateOrConnectWithoutCreatedByInput | ExperimentCreateOrConnectWithoutCreatedByInput[]
@@ -18581,6 +21179,34 @@ export namespace Prisma {
     update?: ExperimentUpdateWithWhereUniqueWithoutCreatedByInput | ExperimentUpdateWithWhereUniqueWithoutCreatedByInput[]
     updateMany?: ExperimentUpdateManyWithWhereWithoutCreatedByInput | ExperimentUpdateManyWithWhereWithoutCreatedByInput[]
     deleteMany?: ExperimentScalarWhereInput | ExperimentScalarWhereInput[]
+  }
+
+  export type InstitutionUncheckedUpdateManyWithoutCreatedByNestedInput = {
+    create?: XOR<InstitutionCreateWithoutCreatedByInput, InstitutionUncheckedCreateWithoutCreatedByInput> | InstitutionCreateWithoutCreatedByInput[] | InstitutionUncheckedCreateWithoutCreatedByInput[]
+    connectOrCreate?: InstitutionCreateOrConnectWithoutCreatedByInput | InstitutionCreateOrConnectWithoutCreatedByInput[]
+    upsert?: InstitutionUpsertWithWhereUniqueWithoutCreatedByInput | InstitutionUpsertWithWhereUniqueWithoutCreatedByInput[]
+    createMany?: InstitutionCreateManyCreatedByInputEnvelope
+    set?: InstitutionWhereUniqueInput | InstitutionWhereUniqueInput[]
+    disconnect?: InstitutionWhereUniqueInput | InstitutionWhereUniqueInput[]
+    delete?: InstitutionWhereUniqueInput | InstitutionWhereUniqueInput[]
+    connect?: InstitutionWhereUniqueInput | InstitutionWhereUniqueInput[]
+    update?: InstitutionUpdateWithWhereUniqueWithoutCreatedByInput | InstitutionUpdateWithWhereUniqueWithoutCreatedByInput[]
+    updateMany?: InstitutionUpdateManyWithWhereWithoutCreatedByInput | InstitutionUpdateManyWithWhereWithoutCreatedByInput[]
+    deleteMany?: InstitutionScalarWhereInput | InstitutionScalarWhereInput[]
+  }
+
+  export type WorkshopUncheckedUpdateManyWithoutCreatedByNestedInput = {
+    create?: XOR<WorkshopCreateWithoutCreatedByInput, WorkshopUncheckedCreateWithoutCreatedByInput> | WorkshopCreateWithoutCreatedByInput[] | WorkshopUncheckedCreateWithoutCreatedByInput[]
+    connectOrCreate?: WorkshopCreateOrConnectWithoutCreatedByInput | WorkshopCreateOrConnectWithoutCreatedByInput[]
+    upsert?: WorkshopUpsertWithWhereUniqueWithoutCreatedByInput | WorkshopUpsertWithWhereUniqueWithoutCreatedByInput[]
+    createMany?: WorkshopCreateManyCreatedByInputEnvelope
+    set?: WorkshopWhereUniqueInput | WorkshopWhereUniqueInput[]
+    disconnect?: WorkshopWhereUniqueInput | WorkshopWhereUniqueInput[]
+    delete?: WorkshopWhereUniqueInput | WorkshopWhereUniqueInput[]
+    connect?: WorkshopWhereUniqueInput | WorkshopWhereUniqueInput[]
+    update?: WorkshopUpdateWithWhereUniqueWithoutCreatedByInput | WorkshopUpdateWithWhereUniqueWithoutCreatedByInput[]
+    updateMany?: WorkshopUpdateManyWithWhereWithoutCreatedByInput | WorkshopUpdateManyWithWhereWithoutCreatedByInput[]
+    deleteMany?: WorkshopScalarWhereInput | WorkshopScalarWhereInput[]
   }
 
   export type QuizAttemptUncheckedUpdateManyWithoutUserNestedInput = {
@@ -18749,10 +21375,10 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
   }
 
-  export type UserCreateNestedOneWithoutLabsAsNodalCentreInput = {
-    create?: XOR<UserCreateWithoutLabsAsNodalCentreInput, UserUncheckedCreateWithoutLabsAsNodalCentreInput>
-    connectOrCreate?: UserCreateOrConnectWithoutLabsAsNodalCentreInput
-    connect?: UserWhereUniqueInput
+  export type InstitutionCreateNestedOneWithoutLabsInput = {
+    create?: XOR<InstitutionCreateWithoutLabsInput, InstitutionUncheckedCreateWithoutLabsInput>
+    connectOrCreate?: InstitutionCreateOrConnectWithoutLabsInput
+    connect?: InstitutionWhereUniqueInput
   }
 
   export type ExperimentCreateNestedManyWithoutLabInput = {
@@ -18785,14 +21411,14 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutLabsCreatedInput, UserUpdateWithoutLabsCreatedInput>, UserUncheckedUpdateWithoutLabsCreatedInput>
   }
 
-  export type UserUpdateOneWithoutLabsAsNodalCentreNestedInput = {
-    create?: XOR<UserCreateWithoutLabsAsNodalCentreInput, UserUncheckedCreateWithoutLabsAsNodalCentreInput>
-    connectOrCreate?: UserCreateOrConnectWithoutLabsAsNodalCentreInput
-    upsert?: UserUpsertWithoutLabsAsNodalCentreInput
-    disconnect?: UserWhereInput | boolean
-    delete?: UserWhereInput | boolean
-    connect?: UserWhereUniqueInput
-    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutLabsAsNodalCentreInput, UserUpdateWithoutLabsAsNodalCentreInput>, UserUncheckedUpdateWithoutLabsAsNodalCentreInput>
+  export type InstitutionUpdateOneWithoutLabsNestedInput = {
+    create?: XOR<InstitutionCreateWithoutLabsInput, InstitutionUncheckedCreateWithoutLabsInput>
+    connectOrCreate?: InstitutionCreateOrConnectWithoutLabsInput
+    upsert?: InstitutionUpsertWithoutLabsInput
+    disconnect?: InstitutionWhereInput | boolean
+    delete?: InstitutionWhereInput | boolean
+    connect?: InstitutionWhereUniqueInput
+    update?: XOR<XOR<InstitutionUpdateToOneWithWhereWithoutLabsInput, InstitutionUpdateWithoutLabsInput>, InstitutionUncheckedUpdateWithoutLabsInput>
   }
 
   export type ExperimentUpdateManyWithoutLabNestedInput = {
@@ -19237,6 +21863,120 @@ export namespace Prisma {
     update?: XOR<XOR<PageUpdateToOneWithWhereWithoutSectionsInput, PageUpdateWithoutSectionsInput>, PageUncheckedUpdateWithoutSectionsInput>
   }
 
+  export type UserCreateNestedManyWithoutNodalCentreInput = {
+    create?: XOR<UserCreateWithoutNodalCentreInput, UserUncheckedCreateWithoutNodalCentreInput> | UserCreateWithoutNodalCentreInput[] | UserUncheckedCreateWithoutNodalCentreInput[]
+    connectOrCreate?: UserCreateOrConnectWithoutNodalCentreInput | UserCreateOrConnectWithoutNodalCentreInput[]
+    createMany?: UserCreateManyNodalCentreInputEnvelope
+    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+  }
+
+  export type LabCreateNestedManyWithoutNodalCentreInput = {
+    create?: XOR<LabCreateWithoutNodalCentreInput, LabUncheckedCreateWithoutNodalCentreInput> | LabCreateWithoutNodalCentreInput[] | LabUncheckedCreateWithoutNodalCentreInput[]
+    connectOrCreate?: LabCreateOrConnectWithoutNodalCentreInput | LabCreateOrConnectWithoutNodalCentreInput[]
+    createMany?: LabCreateManyNodalCentreInputEnvelope
+    connect?: LabWhereUniqueInput | LabWhereUniqueInput[]
+  }
+
+  export type UserCreateNestedOneWithoutInstitutionsCreatedInput = {
+    create?: XOR<UserCreateWithoutInstitutionsCreatedInput, UserUncheckedCreateWithoutInstitutionsCreatedInput>
+    connectOrCreate?: UserCreateOrConnectWithoutInstitutionsCreatedInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserUncheckedCreateNestedManyWithoutNodalCentreInput = {
+    create?: XOR<UserCreateWithoutNodalCentreInput, UserUncheckedCreateWithoutNodalCentreInput> | UserCreateWithoutNodalCentreInput[] | UserUncheckedCreateWithoutNodalCentreInput[]
+    connectOrCreate?: UserCreateOrConnectWithoutNodalCentreInput | UserCreateOrConnectWithoutNodalCentreInput[]
+    createMany?: UserCreateManyNodalCentreInputEnvelope
+    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+  }
+
+  export type LabUncheckedCreateNestedManyWithoutNodalCentreInput = {
+    create?: XOR<LabCreateWithoutNodalCentreInput, LabUncheckedCreateWithoutNodalCentreInput> | LabCreateWithoutNodalCentreInput[] | LabUncheckedCreateWithoutNodalCentreInput[]
+    connectOrCreate?: LabCreateOrConnectWithoutNodalCentreInput | LabCreateOrConnectWithoutNodalCentreInput[]
+    createMany?: LabCreateManyNodalCentreInputEnvelope
+    connect?: LabWhereUniqueInput | LabWhereUniqueInput[]
+  }
+
+  export type UserUpdateManyWithoutNodalCentreNestedInput = {
+    create?: XOR<UserCreateWithoutNodalCentreInput, UserUncheckedCreateWithoutNodalCentreInput> | UserCreateWithoutNodalCentreInput[] | UserUncheckedCreateWithoutNodalCentreInput[]
+    connectOrCreate?: UserCreateOrConnectWithoutNodalCentreInput | UserCreateOrConnectWithoutNodalCentreInput[]
+    upsert?: UserUpsertWithWhereUniqueWithoutNodalCentreInput | UserUpsertWithWhereUniqueWithoutNodalCentreInput[]
+    createMany?: UserCreateManyNodalCentreInputEnvelope
+    set?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    disconnect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    delete?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    update?: UserUpdateWithWhereUniqueWithoutNodalCentreInput | UserUpdateWithWhereUniqueWithoutNodalCentreInput[]
+    updateMany?: UserUpdateManyWithWhereWithoutNodalCentreInput | UserUpdateManyWithWhereWithoutNodalCentreInput[]
+    deleteMany?: UserScalarWhereInput | UserScalarWhereInput[]
+  }
+
+  export type LabUpdateManyWithoutNodalCentreNestedInput = {
+    create?: XOR<LabCreateWithoutNodalCentreInput, LabUncheckedCreateWithoutNodalCentreInput> | LabCreateWithoutNodalCentreInput[] | LabUncheckedCreateWithoutNodalCentreInput[]
+    connectOrCreate?: LabCreateOrConnectWithoutNodalCentreInput | LabCreateOrConnectWithoutNodalCentreInput[]
+    upsert?: LabUpsertWithWhereUniqueWithoutNodalCentreInput | LabUpsertWithWhereUniqueWithoutNodalCentreInput[]
+    createMany?: LabCreateManyNodalCentreInputEnvelope
+    set?: LabWhereUniqueInput | LabWhereUniqueInput[]
+    disconnect?: LabWhereUniqueInput | LabWhereUniqueInput[]
+    delete?: LabWhereUniqueInput | LabWhereUniqueInput[]
+    connect?: LabWhereUniqueInput | LabWhereUniqueInput[]
+    update?: LabUpdateWithWhereUniqueWithoutNodalCentreInput | LabUpdateWithWhereUniqueWithoutNodalCentreInput[]
+    updateMany?: LabUpdateManyWithWhereWithoutNodalCentreInput | LabUpdateManyWithWhereWithoutNodalCentreInput[]
+    deleteMany?: LabScalarWhereInput | LabScalarWhereInput[]
+  }
+
+  export type UserUpdateOneWithoutInstitutionsCreatedNestedInput = {
+    create?: XOR<UserCreateWithoutInstitutionsCreatedInput, UserUncheckedCreateWithoutInstitutionsCreatedInput>
+    connectOrCreate?: UserCreateOrConnectWithoutInstitutionsCreatedInput
+    upsert?: UserUpsertWithoutInstitutionsCreatedInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutInstitutionsCreatedInput, UserUpdateWithoutInstitutionsCreatedInput>, UserUncheckedUpdateWithoutInstitutionsCreatedInput>
+  }
+
+  export type UserUncheckedUpdateManyWithoutNodalCentreNestedInput = {
+    create?: XOR<UserCreateWithoutNodalCentreInput, UserUncheckedCreateWithoutNodalCentreInput> | UserCreateWithoutNodalCentreInput[] | UserUncheckedCreateWithoutNodalCentreInput[]
+    connectOrCreate?: UserCreateOrConnectWithoutNodalCentreInput | UserCreateOrConnectWithoutNodalCentreInput[]
+    upsert?: UserUpsertWithWhereUniqueWithoutNodalCentreInput | UserUpsertWithWhereUniqueWithoutNodalCentreInput[]
+    createMany?: UserCreateManyNodalCentreInputEnvelope
+    set?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    disconnect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    delete?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    update?: UserUpdateWithWhereUniqueWithoutNodalCentreInput | UserUpdateWithWhereUniqueWithoutNodalCentreInput[]
+    updateMany?: UserUpdateManyWithWhereWithoutNodalCentreInput | UserUpdateManyWithWhereWithoutNodalCentreInput[]
+    deleteMany?: UserScalarWhereInput | UserScalarWhereInput[]
+  }
+
+  export type LabUncheckedUpdateManyWithoutNodalCentreNestedInput = {
+    create?: XOR<LabCreateWithoutNodalCentreInput, LabUncheckedCreateWithoutNodalCentreInput> | LabCreateWithoutNodalCentreInput[] | LabUncheckedCreateWithoutNodalCentreInput[]
+    connectOrCreate?: LabCreateOrConnectWithoutNodalCentreInput | LabCreateOrConnectWithoutNodalCentreInput[]
+    upsert?: LabUpsertWithWhereUniqueWithoutNodalCentreInput | LabUpsertWithWhereUniqueWithoutNodalCentreInput[]
+    createMany?: LabCreateManyNodalCentreInputEnvelope
+    set?: LabWhereUniqueInput | LabWhereUniqueInput[]
+    disconnect?: LabWhereUniqueInput | LabWhereUniqueInput[]
+    delete?: LabWhereUniqueInput | LabWhereUniqueInput[]
+    connect?: LabWhereUniqueInput | LabWhereUniqueInput[]
+    update?: LabUpdateWithWhereUniqueWithoutNodalCentreInput | LabUpdateWithWhereUniqueWithoutNodalCentreInput[]
+    updateMany?: LabUpdateManyWithWhereWithoutNodalCentreInput | LabUpdateManyWithWhereWithoutNodalCentreInput[]
+    deleteMany?: LabScalarWhereInput | LabScalarWhereInput[]
+  }
+
+  export type UserCreateNestedOneWithoutWorkshopsCreatedInput = {
+    create?: XOR<UserCreateWithoutWorkshopsCreatedInput, UserUncheckedCreateWithoutWorkshopsCreatedInput>
+    connectOrCreate?: UserCreateOrConnectWithoutWorkshopsCreatedInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutWorkshopsCreatedNestedInput = {
+    create?: XOR<UserCreateWithoutWorkshopsCreatedInput, UserUncheckedCreateWithoutWorkshopsCreatedInput>
+    connectOrCreate?: UserCreateOrConnectWithoutWorkshopsCreatedInput
+    upsert?: UserUpsertWithoutWorkshopsCreatedInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutWorkshopsCreatedInput, UserUpdateWithoutWorkshopsCreatedInput>, UserUncheckedUpdateWithoutWorkshopsCreatedInput>
+  }
+
   export type NestedStringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -19457,6 +22197,7 @@ export namespace Prisma {
     password: string
     role: $Enums.Role
     isActive?: boolean
+    customPermissions?: UserCreatecustomPermissionsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -19479,12 +22220,12 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     createdBy?: UserCreateNestedOneWithoutCreatedUsersInput
-    nodalCentre?: UserCreateNestedOneWithoutCentreMembersInput
-    centreMembers?: UserCreateNestedManyWithoutNodalCentreInput
+    nodalCentre?: InstitutionCreateNestedOneWithoutUsersInput
     subjectsCreated?: SubjectCreateNestedManyWithoutCreatedByInput
     labsCreated?: LabCreateNestedManyWithoutCreatedByInput
-    labsAsNodalCentre?: LabCreateNestedManyWithoutNodalCentreInput
     experimentsCreated?: ExperimentCreateNestedManyWithoutCreatedByInput
+    institutionsCreated?: InstitutionCreateNestedManyWithoutCreatedByInput
+    workshopsCreated?: WorkshopCreateNestedManyWithoutCreatedByInput
     quizAttempts?: QuizAttemptCreateNestedManyWithoutUserInput
     experimentVisits?: ExperimentVisitCreateNestedManyWithoutUserInput
     feedbacks?: FeedbackCreateNestedManyWithoutUserInput
@@ -19501,6 +22242,7 @@ export namespace Prisma {
     password: string
     role: $Enums.Role
     isActive?: boolean
+    customPermissions?: UserCreatecustomPermissionsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -19524,11 +22266,11 @@ export namespace Prisma {
     nodalCentreId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    centreMembers?: UserUncheckedCreateNestedManyWithoutNodalCentreInput
     subjectsCreated?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
     labsCreated?: LabUncheckedCreateNestedManyWithoutCreatedByInput
-    labsAsNodalCentre?: LabUncheckedCreateNestedManyWithoutNodalCentreInput
     experimentsCreated?: ExperimentUncheckedCreateNestedManyWithoutCreatedByInput
+    institutionsCreated?: InstitutionUncheckedCreateNestedManyWithoutCreatedByInput
+    workshopsCreated?: WorkshopUncheckedCreateNestedManyWithoutCreatedByInput
     quizAttempts?: QuizAttemptUncheckedCreateNestedManyWithoutUserInput
     experimentVisits?: ExperimentVisitUncheckedCreateNestedManyWithoutUserInput
     feedbacks?: FeedbackUncheckedCreateNestedManyWithoutUserInput
@@ -19550,6 +22292,7 @@ export namespace Prisma {
     password: string
     role: $Enums.Role
     isActive?: boolean
+    customPermissions?: UserCreatecustomPermissionsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -19572,12 +22315,12 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     createdUsers?: UserCreateNestedManyWithoutCreatedByInput
-    nodalCentre?: UserCreateNestedOneWithoutCentreMembersInput
-    centreMembers?: UserCreateNestedManyWithoutNodalCentreInput
+    nodalCentre?: InstitutionCreateNestedOneWithoutUsersInput
     subjectsCreated?: SubjectCreateNestedManyWithoutCreatedByInput
     labsCreated?: LabCreateNestedManyWithoutCreatedByInput
-    labsAsNodalCentre?: LabCreateNestedManyWithoutNodalCentreInput
     experimentsCreated?: ExperimentCreateNestedManyWithoutCreatedByInput
+    institutionsCreated?: InstitutionCreateNestedManyWithoutCreatedByInput
+    workshopsCreated?: WorkshopCreateNestedManyWithoutCreatedByInput
     quizAttempts?: QuizAttemptCreateNestedManyWithoutUserInput
     experimentVisits?: ExperimentVisitCreateNestedManyWithoutUserInput
     feedbacks?: FeedbackCreateNestedManyWithoutUserInput
@@ -19594,6 +22337,7 @@ export namespace Prisma {
     password: string
     role: $Enums.Role
     isActive?: boolean
+    customPermissions?: UserCreatecustomPermissionsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -19617,11 +22361,11 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     createdUsers?: UserUncheckedCreateNestedManyWithoutCreatedByInput
-    centreMembers?: UserUncheckedCreateNestedManyWithoutNodalCentreInput
     subjectsCreated?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
     labsCreated?: LabUncheckedCreateNestedManyWithoutCreatedByInput
-    labsAsNodalCentre?: LabUncheckedCreateNestedManyWithoutNodalCentreInput
     experimentsCreated?: ExperimentUncheckedCreateNestedManyWithoutCreatedByInput
+    institutionsCreated?: InstitutionUncheckedCreateNestedManyWithoutCreatedByInput
+    workshopsCreated?: WorkshopUncheckedCreateNestedManyWithoutCreatedByInput
     quizAttempts?: QuizAttemptUncheckedCreateNestedManyWithoutUserInput
     experimentVisits?: ExperimentVisitUncheckedCreateNestedManyWithoutUserInput
     feedbacks?: FeedbackUncheckedCreateNestedManyWithoutUserInput
@@ -19641,195 +22385,29 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type UserCreateWithoutCentreMembersInput = {
+  export type InstitutionCreateWithoutUsersInput = {
     id?: string
     name: string
-    email: string
-    password: string
-    role: $Enums.Role
     isActive?: boolean
-    username?: string | null
-    mobile?: string | null
-    profilePic?: string | null
-    org?: string | null
-    dept?: string | null
-    course?: string | null
-    yearSemester?: string | null
-    country?: string | null
-    state?: string | null
-    city?: string | null
-    studentId?: string | null
-    batch?: string | null
-    section?: string | null
-    employeeId?: string | null
-    designation?: string | null
-    facultyDept?: string | null
-    facultyInst?: string | null
-    resetToken?: string | null
-    resetTokenExpiry?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    createdBy?: UserCreateNestedOneWithoutCreatedUsersInput
-    createdUsers?: UserCreateNestedManyWithoutCreatedByInput
-    nodalCentre?: UserCreateNestedOneWithoutCentreMembersInput
-    subjectsCreated?: SubjectCreateNestedManyWithoutCreatedByInput
-    labsCreated?: LabCreateNestedManyWithoutCreatedByInput
-    labsAsNodalCentre?: LabCreateNestedManyWithoutNodalCentreInput
-    experimentsCreated?: ExperimentCreateNestedManyWithoutCreatedByInput
-    quizAttempts?: QuizAttemptCreateNestedManyWithoutUserInput
-    experimentVisits?: ExperimentVisitCreateNestedManyWithoutUserInput
-    feedbacks?: FeedbackCreateNestedManyWithoutUserInput
-    chatSent?: ChatMessageCreateNestedManyWithoutSenderInput
-    chatReceived?: ChatMessageCreateNestedManyWithoutReceiverInput
-    hostedCalls?: ScheduledCallCreateNestedManyWithoutHostInput
-    inviteeRecords?: ScheduledCallInviteeCreateNestedManyWithoutUserInput
+    labs?: LabCreateNestedManyWithoutNodalCentreInput
+    createdBy?: UserCreateNestedOneWithoutInstitutionsCreatedInput
   }
 
-  export type UserUncheckedCreateWithoutCentreMembersInput = {
+  export type InstitutionUncheckedCreateWithoutUsersInput = {
     id?: string
     name: string
-    email: string
-    password: string
-    role: $Enums.Role
     isActive?: boolean
-    username?: string | null
-    mobile?: string | null
-    profilePic?: string | null
-    org?: string | null
-    dept?: string | null
-    course?: string | null
-    yearSemester?: string | null
-    country?: string | null
-    state?: string | null
-    city?: string | null
-    studentId?: string | null
-    batch?: string | null
-    section?: string | null
-    employeeId?: string | null
-    designation?: string | null
-    facultyDept?: string | null
-    facultyInst?: string | null
-    resetToken?: string | null
-    resetTokenExpiry?: Date | string | null
-    createdById?: string | null
-    nodalCentreId?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    createdUsers?: UserUncheckedCreateNestedManyWithoutCreatedByInput
-    subjectsCreated?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
-    labsCreated?: LabUncheckedCreateNestedManyWithoutCreatedByInput
-    labsAsNodalCentre?: LabUncheckedCreateNestedManyWithoutNodalCentreInput
-    experimentsCreated?: ExperimentUncheckedCreateNestedManyWithoutCreatedByInput
-    quizAttempts?: QuizAttemptUncheckedCreateNestedManyWithoutUserInput
-    experimentVisits?: ExperimentVisitUncheckedCreateNestedManyWithoutUserInput
-    feedbacks?: FeedbackUncheckedCreateNestedManyWithoutUserInput
-    chatSent?: ChatMessageUncheckedCreateNestedManyWithoutSenderInput
-    chatReceived?: ChatMessageUncheckedCreateNestedManyWithoutReceiverInput
-    hostedCalls?: ScheduledCallUncheckedCreateNestedManyWithoutHostInput
-    inviteeRecords?: ScheduledCallInviteeUncheckedCreateNestedManyWithoutUserInput
-  }
-
-  export type UserCreateOrConnectWithoutCentreMembersInput = {
-    where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutCentreMembersInput, UserUncheckedCreateWithoutCentreMembersInput>
-  }
-
-  export type UserCreateWithoutNodalCentreInput = {
-    id?: string
-    name: string
-    email: string
-    password: string
-    role: $Enums.Role
-    isActive?: boolean
-    username?: string | null
-    mobile?: string | null
-    profilePic?: string | null
-    org?: string | null
-    dept?: string | null
-    course?: string | null
-    yearSemester?: string | null
-    country?: string | null
-    state?: string | null
-    city?: string | null
-    studentId?: string | null
-    batch?: string | null
-    section?: string | null
-    employeeId?: string | null
-    designation?: string | null
-    facultyDept?: string | null
-    facultyInst?: string | null
-    resetToken?: string | null
-    resetTokenExpiry?: Date | string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    createdBy?: UserCreateNestedOneWithoutCreatedUsersInput
-    createdUsers?: UserCreateNestedManyWithoutCreatedByInput
-    centreMembers?: UserCreateNestedManyWithoutNodalCentreInput
-    subjectsCreated?: SubjectCreateNestedManyWithoutCreatedByInput
-    labsCreated?: LabCreateNestedManyWithoutCreatedByInput
-    labsAsNodalCentre?: LabCreateNestedManyWithoutNodalCentreInput
-    experimentsCreated?: ExperimentCreateNestedManyWithoutCreatedByInput
-    quizAttempts?: QuizAttemptCreateNestedManyWithoutUserInput
-    experimentVisits?: ExperimentVisitCreateNestedManyWithoutUserInput
-    feedbacks?: FeedbackCreateNestedManyWithoutUserInput
-    chatSent?: ChatMessageCreateNestedManyWithoutSenderInput
-    chatReceived?: ChatMessageCreateNestedManyWithoutReceiverInput
-    hostedCalls?: ScheduledCallCreateNestedManyWithoutHostInput
-    inviteeRecords?: ScheduledCallInviteeCreateNestedManyWithoutUserInput
-  }
-
-  export type UserUncheckedCreateWithoutNodalCentreInput = {
-    id?: string
-    name: string
-    email: string
-    password: string
-    role: $Enums.Role
-    isActive?: boolean
-    username?: string | null
-    mobile?: string | null
-    profilePic?: string | null
-    org?: string | null
-    dept?: string | null
-    course?: string | null
-    yearSemester?: string | null
-    country?: string | null
-    state?: string | null
-    city?: string | null
-    studentId?: string | null
-    batch?: string | null
-    section?: string | null
-    employeeId?: string | null
-    designation?: string | null
-    facultyDept?: string | null
-    facultyInst?: string | null
-    resetToken?: string | null
-    resetTokenExpiry?: Date | string | null
     createdById?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    createdUsers?: UserUncheckedCreateNestedManyWithoutCreatedByInput
-    centreMembers?: UserUncheckedCreateNestedManyWithoutNodalCentreInput
-    subjectsCreated?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
-    labsCreated?: LabUncheckedCreateNestedManyWithoutCreatedByInput
-    labsAsNodalCentre?: LabUncheckedCreateNestedManyWithoutNodalCentreInput
-    experimentsCreated?: ExperimentUncheckedCreateNestedManyWithoutCreatedByInput
-    quizAttempts?: QuizAttemptUncheckedCreateNestedManyWithoutUserInput
-    experimentVisits?: ExperimentVisitUncheckedCreateNestedManyWithoutUserInput
-    feedbacks?: FeedbackUncheckedCreateNestedManyWithoutUserInput
-    chatSent?: ChatMessageUncheckedCreateNestedManyWithoutSenderInput
-    chatReceived?: ChatMessageUncheckedCreateNestedManyWithoutReceiverInput
-    hostedCalls?: ScheduledCallUncheckedCreateNestedManyWithoutHostInput
-    inviteeRecords?: ScheduledCallInviteeUncheckedCreateNestedManyWithoutUserInput
+    labs?: LabUncheckedCreateNestedManyWithoutNodalCentreInput
   }
 
-  export type UserCreateOrConnectWithoutNodalCentreInput = {
-    where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutNodalCentreInput, UserUncheckedCreateWithoutNodalCentreInput>
-  }
-
-  export type UserCreateManyNodalCentreInputEnvelope = {
-    data: UserCreateManyNodalCentreInput | UserCreateManyNodalCentreInput[]
-    skipDuplicates?: boolean
+  export type InstitutionCreateOrConnectWithoutUsersInput = {
+    where: InstitutionWhereUniqueInput
+    create: XOR<InstitutionCreateWithoutUsersInput, InstitutionUncheckedCreateWithoutUsersInput>
   }
 
   export type SubjectCreateWithoutCreatedByInput = {
@@ -19876,7 +22454,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     subject: SubjectCreateNestedOneWithoutLabsInput
-    nodalCentre?: UserCreateNestedOneWithoutLabsAsNodalCentreInput
+    nodalCentre?: InstitutionCreateNestedOneWithoutLabsInput
     experiments?: ExperimentCreateNestedManyWithoutLabInput
   }
 
@@ -19901,44 +22479,6 @@ export namespace Prisma {
 
   export type LabCreateManyCreatedByInputEnvelope = {
     data: LabCreateManyCreatedByInput | LabCreateManyCreatedByInput[]
-    skipDuplicates?: boolean
-  }
-
-  export type LabCreateWithoutNodalCentreInput = {
-    id?: string
-    title: string
-    description?: string | null
-    icon?: string
-    coverPic?: string | null
-    isActive?: boolean
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    subject: SubjectCreateNestedOneWithoutLabsInput
-    createdBy: UserCreateNestedOneWithoutLabsCreatedInput
-    experiments?: ExperimentCreateNestedManyWithoutLabInput
-  }
-
-  export type LabUncheckedCreateWithoutNodalCentreInput = {
-    id?: string
-    title: string
-    description?: string | null
-    icon?: string
-    coverPic?: string | null
-    isActive?: boolean
-    subjectId: string
-    createdById: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    experiments?: ExperimentUncheckedCreateNestedManyWithoutLabInput
-  }
-
-  export type LabCreateOrConnectWithoutNodalCentreInput = {
-    where: LabWhereUniqueInput
-    create: XOR<LabCreateWithoutNodalCentreInput, LabUncheckedCreateWithoutNodalCentreInput>
-  }
-
-  export type LabCreateManyNodalCentreInputEnvelope = {
-    data: LabCreateManyNodalCentreInput | LabCreateManyNodalCentreInput[]
     skipDuplicates?: boolean
   }
 
@@ -19985,6 +22525,66 @@ export namespace Prisma {
 
   export type ExperimentCreateManyCreatedByInputEnvelope = {
     data: ExperimentCreateManyCreatedByInput | ExperimentCreateManyCreatedByInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type InstitutionCreateWithoutCreatedByInput = {
+    id?: string
+    name: string
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    users?: UserCreateNestedManyWithoutNodalCentreInput
+    labs?: LabCreateNestedManyWithoutNodalCentreInput
+  }
+
+  export type InstitutionUncheckedCreateWithoutCreatedByInput = {
+    id?: string
+    name: string
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    users?: UserUncheckedCreateNestedManyWithoutNodalCentreInput
+    labs?: LabUncheckedCreateNestedManyWithoutNodalCentreInput
+  }
+
+  export type InstitutionCreateOrConnectWithoutCreatedByInput = {
+    where: InstitutionWhereUniqueInput
+    create: XOR<InstitutionCreateWithoutCreatedByInput, InstitutionUncheckedCreateWithoutCreatedByInput>
+  }
+
+  export type InstitutionCreateManyCreatedByInputEnvelope = {
+    data: InstitutionCreateManyCreatedByInput | InstitutionCreateManyCreatedByInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type WorkshopCreateWithoutCreatedByInput = {
+    id?: string
+    title: string
+    description?: string | null
+    date: Date | string
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type WorkshopUncheckedCreateWithoutCreatedByInput = {
+    id?: string
+    title: string
+    description?: string | null
+    date: Date | string
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type WorkshopCreateOrConnectWithoutCreatedByInput = {
+    where: WorkshopWhereUniqueInput
+    create: XOR<WorkshopCreateWithoutCreatedByInput, WorkshopUncheckedCreateWithoutCreatedByInput>
+  }
+
+  export type WorkshopCreateManyCreatedByInputEnvelope = {
+    data: WorkshopCreateManyCreatedByInput | WorkshopCreateManyCreatedByInput[]
     skipDuplicates?: boolean
   }
 
@@ -20192,6 +22792,7 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    customPermissions?: UserUpdatecustomPermissionsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -20214,12 +22815,12 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: UserUpdateOneWithoutCreatedUsersNestedInput
-    nodalCentre?: UserUpdateOneWithoutCentreMembersNestedInput
-    centreMembers?: UserUpdateManyWithoutNodalCentreNestedInput
+    nodalCentre?: InstitutionUpdateOneWithoutUsersNestedInput
     subjectsCreated?: SubjectUpdateManyWithoutCreatedByNestedInput
     labsCreated?: LabUpdateManyWithoutCreatedByNestedInput
-    labsAsNodalCentre?: LabUpdateManyWithoutNodalCentreNestedInput
     experimentsCreated?: ExperimentUpdateManyWithoutCreatedByNestedInput
+    institutionsCreated?: InstitutionUpdateManyWithoutCreatedByNestedInput
+    workshopsCreated?: WorkshopUpdateManyWithoutCreatedByNestedInput
     quizAttempts?: QuizAttemptUpdateManyWithoutUserNestedInput
     experimentVisits?: ExperimentVisitUpdateManyWithoutUserNestedInput
     feedbacks?: FeedbackUpdateManyWithoutUserNestedInput
@@ -20236,6 +22837,7 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    customPermissions?: UserUpdatecustomPermissionsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -20259,11 +22861,11 @@ export namespace Prisma {
     nodalCentreId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    centreMembers?: UserUncheckedUpdateManyWithoutNodalCentreNestedInput
     subjectsCreated?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
     labsCreated?: LabUncheckedUpdateManyWithoutCreatedByNestedInput
-    labsAsNodalCentre?: LabUncheckedUpdateManyWithoutNodalCentreNestedInput
     experimentsCreated?: ExperimentUncheckedUpdateManyWithoutCreatedByNestedInput
+    institutionsCreated?: InstitutionUncheckedUpdateManyWithoutCreatedByNestedInput
+    workshopsCreated?: WorkshopUncheckedUpdateManyWithoutCreatedByNestedInput
     quizAttempts?: QuizAttemptUncheckedUpdateManyWithoutUserNestedInput
     experimentVisits?: ExperimentVisitUncheckedUpdateManyWithoutUserNestedInput
     feedbacks?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
@@ -20299,6 +22901,7 @@ export namespace Prisma {
     password?: StringFilter<"User"> | string
     role?: EnumRoleFilter<"User"> | $Enums.Role
     isActive?: BoolFilter<"User"> | boolean
+    customPermissions?: StringNullableListFilter<"User">
     username?: StringNullableFilter<"User"> | string | null
     mobile?: StringNullableFilter<"User"> | string | null
     profilePic?: StringNullableFilter<"User"> | string | null
@@ -20324,119 +22927,35 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"User"> | Date | string
   }
 
-  export type UserUpsertWithoutCentreMembersInput = {
-    update: XOR<UserUpdateWithoutCentreMembersInput, UserUncheckedUpdateWithoutCentreMembersInput>
-    create: XOR<UserCreateWithoutCentreMembersInput, UserUncheckedCreateWithoutCentreMembersInput>
-    where?: UserWhereInput
+  export type InstitutionUpsertWithoutUsersInput = {
+    update: XOR<InstitutionUpdateWithoutUsersInput, InstitutionUncheckedUpdateWithoutUsersInput>
+    create: XOR<InstitutionCreateWithoutUsersInput, InstitutionUncheckedCreateWithoutUsersInput>
+    where?: InstitutionWhereInput
   }
 
-  export type UserUpdateToOneWithWhereWithoutCentreMembersInput = {
-    where?: UserWhereInput
-    data: XOR<UserUpdateWithoutCentreMembersInput, UserUncheckedUpdateWithoutCentreMembersInput>
+  export type InstitutionUpdateToOneWithWhereWithoutUsersInput = {
+    where?: InstitutionWhereInput
+    data: XOR<InstitutionUpdateWithoutUsersInput, InstitutionUncheckedUpdateWithoutUsersInput>
   }
 
-  export type UserUpdateWithoutCentreMembersInput = {
+  export type InstitutionUpdateWithoutUsersInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    password?: StringFieldUpdateOperationsInput | string
-    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
-    username?: NullableStringFieldUpdateOperationsInput | string | null
-    mobile?: NullableStringFieldUpdateOperationsInput | string | null
-    profilePic?: NullableStringFieldUpdateOperationsInput | string | null
-    org?: NullableStringFieldUpdateOperationsInput | string | null
-    dept?: NullableStringFieldUpdateOperationsInput | string | null
-    course?: NullableStringFieldUpdateOperationsInput | string | null
-    yearSemester?: NullableStringFieldUpdateOperationsInput | string | null
-    country?: NullableStringFieldUpdateOperationsInput | string | null
-    state?: NullableStringFieldUpdateOperationsInput | string | null
-    city?: NullableStringFieldUpdateOperationsInput | string | null
-    studentId?: NullableStringFieldUpdateOperationsInput | string | null
-    batch?: NullableStringFieldUpdateOperationsInput | string | null
-    section?: NullableStringFieldUpdateOperationsInput | string | null
-    employeeId?: NullableStringFieldUpdateOperationsInput | string | null
-    designation?: NullableStringFieldUpdateOperationsInput | string | null
-    facultyDept?: NullableStringFieldUpdateOperationsInput | string | null
-    facultyInst?: NullableStringFieldUpdateOperationsInput | string | null
-    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
-    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdBy?: UserUpdateOneWithoutCreatedUsersNestedInput
-    createdUsers?: UserUpdateManyWithoutCreatedByNestedInput
-    nodalCentre?: UserUpdateOneWithoutCentreMembersNestedInput
-    subjectsCreated?: SubjectUpdateManyWithoutCreatedByNestedInput
-    labsCreated?: LabUpdateManyWithoutCreatedByNestedInput
-    labsAsNodalCentre?: LabUpdateManyWithoutNodalCentreNestedInput
-    experimentsCreated?: ExperimentUpdateManyWithoutCreatedByNestedInput
-    quizAttempts?: QuizAttemptUpdateManyWithoutUserNestedInput
-    experimentVisits?: ExperimentVisitUpdateManyWithoutUserNestedInput
-    feedbacks?: FeedbackUpdateManyWithoutUserNestedInput
-    chatSent?: ChatMessageUpdateManyWithoutSenderNestedInput
-    chatReceived?: ChatMessageUpdateManyWithoutReceiverNestedInput
-    hostedCalls?: ScheduledCallUpdateManyWithoutHostNestedInput
-    inviteeRecords?: ScheduledCallInviteeUpdateManyWithoutUserNestedInput
+    labs?: LabUpdateManyWithoutNodalCentreNestedInput
+    createdBy?: UserUpdateOneWithoutInstitutionsCreatedNestedInput
   }
 
-  export type UserUncheckedUpdateWithoutCentreMembersInput = {
+  export type InstitutionUncheckedUpdateWithoutUsersInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    password?: StringFieldUpdateOperationsInput | string
-    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
-    username?: NullableStringFieldUpdateOperationsInput | string | null
-    mobile?: NullableStringFieldUpdateOperationsInput | string | null
-    profilePic?: NullableStringFieldUpdateOperationsInput | string | null
-    org?: NullableStringFieldUpdateOperationsInput | string | null
-    dept?: NullableStringFieldUpdateOperationsInput | string | null
-    course?: NullableStringFieldUpdateOperationsInput | string | null
-    yearSemester?: NullableStringFieldUpdateOperationsInput | string | null
-    country?: NullableStringFieldUpdateOperationsInput | string | null
-    state?: NullableStringFieldUpdateOperationsInput | string | null
-    city?: NullableStringFieldUpdateOperationsInput | string | null
-    studentId?: NullableStringFieldUpdateOperationsInput | string | null
-    batch?: NullableStringFieldUpdateOperationsInput | string | null
-    section?: NullableStringFieldUpdateOperationsInput | string | null
-    employeeId?: NullableStringFieldUpdateOperationsInput | string | null
-    designation?: NullableStringFieldUpdateOperationsInput | string | null
-    facultyDept?: NullableStringFieldUpdateOperationsInput | string | null
-    facultyInst?: NullableStringFieldUpdateOperationsInput | string | null
-    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
-    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
-    nodalCentreId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdUsers?: UserUncheckedUpdateManyWithoutCreatedByNestedInput
-    subjectsCreated?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
-    labsCreated?: LabUncheckedUpdateManyWithoutCreatedByNestedInput
-    labsAsNodalCentre?: LabUncheckedUpdateManyWithoutNodalCentreNestedInput
-    experimentsCreated?: ExperimentUncheckedUpdateManyWithoutCreatedByNestedInput
-    quizAttempts?: QuizAttemptUncheckedUpdateManyWithoutUserNestedInput
-    experimentVisits?: ExperimentVisitUncheckedUpdateManyWithoutUserNestedInput
-    feedbacks?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
-    chatSent?: ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
-    chatReceived?: ChatMessageUncheckedUpdateManyWithoutReceiverNestedInput
-    hostedCalls?: ScheduledCallUncheckedUpdateManyWithoutHostNestedInput
-    inviteeRecords?: ScheduledCallInviteeUncheckedUpdateManyWithoutUserNestedInput
-  }
-
-  export type UserUpsertWithWhereUniqueWithoutNodalCentreInput = {
-    where: UserWhereUniqueInput
-    update: XOR<UserUpdateWithoutNodalCentreInput, UserUncheckedUpdateWithoutNodalCentreInput>
-    create: XOR<UserCreateWithoutNodalCentreInput, UserUncheckedCreateWithoutNodalCentreInput>
-  }
-
-  export type UserUpdateWithWhereUniqueWithoutNodalCentreInput = {
-    where: UserWhereUniqueInput
-    data: XOR<UserUpdateWithoutNodalCentreInput, UserUncheckedUpdateWithoutNodalCentreInput>
-  }
-
-  export type UserUpdateManyWithWhereWithoutNodalCentreInput = {
-    where: UserScalarWhereInput
-    data: XOR<UserUpdateManyMutationInput, UserUncheckedUpdateManyWithoutNodalCentreInput>
+    labs?: LabUncheckedUpdateManyWithoutNodalCentreNestedInput
   }
 
   export type SubjectUpsertWithWhereUniqueWithoutCreatedByInput = {
@@ -20503,22 +23022,6 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Lab"> | Date | string
   }
 
-  export type LabUpsertWithWhereUniqueWithoutNodalCentreInput = {
-    where: LabWhereUniqueInput
-    update: XOR<LabUpdateWithoutNodalCentreInput, LabUncheckedUpdateWithoutNodalCentreInput>
-    create: XOR<LabCreateWithoutNodalCentreInput, LabUncheckedCreateWithoutNodalCentreInput>
-  }
-
-  export type LabUpdateWithWhereUniqueWithoutNodalCentreInput = {
-    where: LabWhereUniqueInput
-    data: XOR<LabUpdateWithoutNodalCentreInput, LabUncheckedUpdateWithoutNodalCentreInput>
-  }
-
-  export type LabUpdateManyWithWhereWithoutNodalCentreInput = {
-    where: LabScalarWhereInput
-    data: XOR<LabUpdateManyMutationInput, LabUncheckedUpdateManyWithoutNodalCentreInput>
-  }
-
   export type ExperimentUpsertWithWhereUniqueWithoutCreatedByInput = {
     where: ExperimentWhereUniqueInput
     update: XOR<ExperimentUpdateWithoutCreatedByInput, ExperimentUncheckedUpdateWithoutCreatedByInput>
@@ -20552,6 +23055,64 @@ export namespace Prisma {
     createdById?: StringFilter<"Experiment"> | string
     createdAt?: DateTimeFilter<"Experiment"> | Date | string
     updatedAt?: DateTimeFilter<"Experiment"> | Date | string
+  }
+
+  export type InstitutionUpsertWithWhereUniqueWithoutCreatedByInput = {
+    where: InstitutionWhereUniqueInput
+    update: XOR<InstitutionUpdateWithoutCreatedByInput, InstitutionUncheckedUpdateWithoutCreatedByInput>
+    create: XOR<InstitutionCreateWithoutCreatedByInput, InstitutionUncheckedCreateWithoutCreatedByInput>
+  }
+
+  export type InstitutionUpdateWithWhereUniqueWithoutCreatedByInput = {
+    where: InstitutionWhereUniqueInput
+    data: XOR<InstitutionUpdateWithoutCreatedByInput, InstitutionUncheckedUpdateWithoutCreatedByInput>
+  }
+
+  export type InstitutionUpdateManyWithWhereWithoutCreatedByInput = {
+    where: InstitutionScalarWhereInput
+    data: XOR<InstitutionUpdateManyMutationInput, InstitutionUncheckedUpdateManyWithoutCreatedByInput>
+  }
+
+  export type InstitutionScalarWhereInput = {
+    AND?: InstitutionScalarWhereInput | InstitutionScalarWhereInput[]
+    OR?: InstitutionScalarWhereInput[]
+    NOT?: InstitutionScalarWhereInput | InstitutionScalarWhereInput[]
+    id?: StringFilter<"Institution"> | string
+    name?: StringFilter<"Institution"> | string
+    isActive?: BoolFilter<"Institution"> | boolean
+    createdById?: StringNullableFilter<"Institution"> | string | null
+    createdAt?: DateTimeFilter<"Institution"> | Date | string
+    updatedAt?: DateTimeFilter<"Institution"> | Date | string
+  }
+
+  export type WorkshopUpsertWithWhereUniqueWithoutCreatedByInput = {
+    where: WorkshopWhereUniqueInput
+    update: XOR<WorkshopUpdateWithoutCreatedByInput, WorkshopUncheckedUpdateWithoutCreatedByInput>
+    create: XOR<WorkshopCreateWithoutCreatedByInput, WorkshopUncheckedCreateWithoutCreatedByInput>
+  }
+
+  export type WorkshopUpdateWithWhereUniqueWithoutCreatedByInput = {
+    where: WorkshopWhereUniqueInput
+    data: XOR<WorkshopUpdateWithoutCreatedByInput, WorkshopUncheckedUpdateWithoutCreatedByInput>
+  }
+
+  export type WorkshopUpdateManyWithWhereWithoutCreatedByInput = {
+    where: WorkshopScalarWhereInput
+    data: XOR<WorkshopUpdateManyMutationInput, WorkshopUncheckedUpdateManyWithoutCreatedByInput>
+  }
+
+  export type WorkshopScalarWhereInput = {
+    AND?: WorkshopScalarWhereInput | WorkshopScalarWhereInput[]
+    OR?: WorkshopScalarWhereInput[]
+    NOT?: WorkshopScalarWhereInput | WorkshopScalarWhereInput[]
+    id?: StringFilter<"Workshop"> | string
+    title?: StringFilter<"Workshop"> | string
+    description?: StringNullableFilter<"Workshop"> | string | null
+    date?: DateTimeFilter<"Workshop"> | Date | string
+    status?: StringFilter<"Workshop"> | string
+    createdById?: StringFilter<"Workshop"> | string
+    createdAt?: DateTimeFilter<"Workshop"> | Date | string
+    updatedAt?: DateTimeFilter<"Workshop"> | Date | string
   }
 
   export type QuizAttemptUpsertWithWhereUniqueWithoutUserInput = {
@@ -20747,6 +23308,7 @@ export namespace Prisma {
     password: string
     role: $Enums.Role
     isActive?: boolean
+    customPermissions?: UserCreatecustomPermissionsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -20770,11 +23332,11 @@ export namespace Prisma {
     updatedAt?: Date | string
     createdBy?: UserCreateNestedOneWithoutCreatedUsersInput
     createdUsers?: UserCreateNestedManyWithoutCreatedByInput
-    nodalCentre?: UserCreateNestedOneWithoutCentreMembersInput
-    centreMembers?: UserCreateNestedManyWithoutNodalCentreInput
+    nodalCentre?: InstitutionCreateNestedOneWithoutUsersInput
     labsCreated?: LabCreateNestedManyWithoutCreatedByInput
-    labsAsNodalCentre?: LabCreateNestedManyWithoutNodalCentreInput
     experimentsCreated?: ExperimentCreateNestedManyWithoutCreatedByInput
+    institutionsCreated?: InstitutionCreateNestedManyWithoutCreatedByInput
+    workshopsCreated?: WorkshopCreateNestedManyWithoutCreatedByInput
     quizAttempts?: QuizAttemptCreateNestedManyWithoutUserInput
     experimentVisits?: ExperimentVisitCreateNestedManyWithoutUserInput
     feedbacks?: FeedbackCreateNestedManyWithoutUserInput
@@ -20791,6 +23353,7 @@ export namespace Prisma {
     password: string
     role: $Enums.Role
     isActive?: boolean
+    customPermissions?: UserCreatecustomPermissionsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -20815,10 +23378,10 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     createdUsers?: UserUncheckedCreateNestedManyWithoutCreatedByInput
-    centreMembers?: UserUncheckedCreateNestedManyWithoutNodalCentreInput
     labsCreated?: LabUncheckedCreateNestedManyWithoutCreatedByInput
-    labsAsNodalCentre?: LabUncheckedCreateNestedManyWithoutNodalCentreInput
     experimentsCreated?: ExperimentUncheckedCreateNestedManyWithoutCreatedByInput
+    institutionsCreated?: InstitutionUncheckedCreateNestedManyWithoutCreatedByInput
+    workshopsCreated?: WorkshopUncheckedCreateNestedManyWithoutCreatedByInput
     quizAttempts?: QuizAttemptUncheckedCreateNestedManyWithoutUserInput
     experimentVisits?: ExperimentVisitUncheckedCreateNestedManyWithoutUserInput
     feedbacks?: FeedbackUncheckedCreateNestedManyWithoutUserInput
@@ -20843,7 +23406,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     createdBy: UserCreateNestedOneWithoutLabsCreatedInput
-    nodalCentre?: UserCreateNestedOneWithoutLabsAsNodalCentreInput
+    nodalCentre?: InstitutionCreateNestedOneWithoutLabsInput
     experiments?: ExperimentCreateNestedManyWithoutLabInput
   }
 
@@ -20889,6 +23452,7 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    customPermissions?: UserUpdatecustomPermissionsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -20912,11 +23476,11 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: UserUpdateOneWithoutCreatedUsersNestedInput
     createdUsers?: UserUpdateManyWithoutCreatedByNestedInput
-    nodalCentre?: UserUpdateOneWithoutCentreMembersNestedInput
-    centreMembers?: UserUpdateManyWithoutNodalCentreNestedInput
+    nodalCentre?: InstitutionUpdateOneWithoutUsersNestedInput
     labsCreated?: LabUpdateManyWithoutCreatedByNestedInput
-    labsAsNodalCentre?: LabUpdateManyWithoutNodalCentreNestedInput
     experimentsCreated?: ExperimentUpdateManyWithoutCreatedByNestedInput
+    institutionsCreated?: InstitutionUpdateManyWithoutCreatedByNestedInput
+    workshopsCreated?: WorkshopUpdateManyWithoutCreatedByNestedInput
     quizAttempts?: QuizAttemptUpdateManyWithoutUserNestedInput
     experimentVisits?: ExperimentVisitUpdateManyWithoutUserNestedInput
     feedbacks?: FeedbackUpdateManyWithoutUserNestedInput
@@ -20933,6 +23497,7 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    customPermissions?: UserUpdatecustomPermissionsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -20957,10 +23522,10 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdUsers?: UserUncheckedUpdateManyWithoutCreatedByNestedInput
-    centreMembers?: UserUncheckedUpdateManyWithoutNodalCentreNestedInput
     labsCreated?: LabUncheckedUpdateManyWithoutCreatedByNestedInput
-    labsAsNodalCentre?: LabUncheckedUpdateManyWithoutNodalCentreNestedInput
     experimentsCreated?: ExperimentUncheckedUpdateManyWithoutCreatedByNestedInput
+    institutionsCreated?: InstitutionUncheckedUpdateManyWithoutCreatedByNestedInput
+    workshopsCreated?: WorkshopUncheckedUpdateManyWithoutCreatedByNestedInput
     quizAttempts?: QuizAttemptUncheckedUpdateManyWithoutUserNestedInput
     experimentVisits?: ExperimentVisitUncheckedUpdateManyWithoutUserNestedInput
     feedbacks?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
@@ -21022,6 +23587,7 @@ export namespace Prisma {
     password: string
     role: $Enums.Role
     isActive?: boolean
+    customPermissions?: UserCreatecustomPermissionsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -21045,11 +23611,11 @@ export namespace Prisma {
     updatedAt?: Date | string
     createdBy?: UserCreateNestedOneWithoutCreatedUsersInput
     createdUsers?: UserCreateNestedManyWithoutCreatedByInput
-    nodalCentre?: UserCreateNestedOneWithoutCentreMembersInput
-    centreMembers?: UserCreateNestedManyWithoutNodalCentreInput
+    nodalCentre?: InstitutionCreateNestedOneWithoutUsersInput
     subjectsCreated?: SubjectCreateNestedManyWithoutCreatedByInput
-    labsAsNodalCentre?: LabCreateNestedManyWithoutNodalCentreInput
     experimentsCreated?: ExperimentCreateNestedManyWithoutCreatedByInput
+    institutionsCreated?: InstitutionCreateNestedManyWithoutCreatedByInput
+    workshopsCreated?: WorkshopCreateNestedManyWithoutCreatedByInput
     quizAttempts?: QuizAttemptCreateNestedManyWithoutUserInput
     experimentVisits?: ExperimentVisitCreateNestedManyWithoutUserInput
     feedbacks?: FeedbackCreateNestedManyWithoutUserInput
@@ -21066,6 +23632,7 @@ export namespace Prisma {
     password: string
     role: $Enums.Role
     isActive?: boolean
+    customPermissions?: UserCreatecustomPermissionsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -21090,10 +23657,10 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     createdUsers?: UserUncheckedCreateNestedManyWithoutCreatedByInput
-    centreMembers?: UserUncheckedCreateNestedManyWithoutNodalCentreInput
     subjectsCreated?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
-    labsAsNodalCentre?: LabUncheckedCreateNestedManyWithoutNodalCentreInput
     experimentsCreated?: ExperimentUncheckedCreateNestedManyWithoutCreatedByInput
+    institutionsCreated?: InstitutionUncheckedCreateNestedManyWithoutCreatedByInput
+    workshopsCreated?: WorkshopUncheckedCreateNestedManyWithoutCreatedByInput
     quizAttempts?: QuizAttemptUncheckedCreateNestedManyWithoutUserInput
     experimentVisits?: ExperimentVisitUncheckedCreateNestedManyWithoutUserInput
     feedbacks?: FeedbackUncheckedCreateNestedManyWithoutUserInput
@@ -21108,97 +23675,29 @@ export namespace Prisma {
     create: XOR<UserCreateWithoutLabsCreatedInput, UserUncheckedCreateWithoutLabsCreatedInput>
   }
 
-  export type UserCreateWithoutLabsAsNodalCentreInput = {
+  export type InstitutionCreateWithoutLabsInput = {
     id?: string
     name: string
-    email: string
-    password: string
-    role: $Enums.Role
     isActive?: boolean
-    username?: string | null
-    mobile?: string | null
-    profilePic?: string | null
-    org?: string | null
-    dept?: string | null
-    course?: string | null
-    yearSemester?: string | null
-    country?: string | null
-    state?: string | null
-    city?: string | null
-    studentId?: string | null
-    batch?: string | null
-    section?: string | null
-    employeeId?: string | null
-    designation?: string | null
-    facultyDept?: string | null
-    facultyInst?: string | null
-    resetToken?: string | null
-    resetTokenExpiry?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    createdBy?: UserCreateNestedOneWithoutCreatedUsersInput
-    createdUsers?: UserCreateNestedManyWithoutCreatedByInput
-    nodalCentre?: UserCreateNestedOneWithoutCentreMembersInput
-    centreMembers?: UserCreateNestedManyWithoutNodalCentreInput
-    subjectsCreated?: SubjectCreateNestedManyWithoutCreatedByInput
-    labsCreated?: LabCreateNestedManyWithoutCreatedByInput
-    experimentsCreated?: ExperimentCreateNestedManyWithoutCreatedByInput
-    quizAttempts?: QuizAttemptCreateNestedManyWithoutUserInput
-    experimentVisits?: ExperimentVisitCreateNestedManyWithoutUserInput
-    feedbacks?: FeedbackCreateNestedManyWithoutUserInput
-    chatSent?: ChatMessageCreateNestedManyWithoutSenderInput
-    chatReceived?: ChatMessageCreateNestedManyWithoutReceiverInput
-    hostedCalls?: ScheduledCallCreateNestedManyWithoutHostInput
-    inviteeRecords?: ScheduledCallInviteeCreateNestedManyWithoutUserInput
+    users?: UserCreateNestedManyWithoutNodalCentreInput
+    createdBy?: UserCreateNestedOneWithoutInstitutionsCreatedInput
   }
 
-  export type UserUncheckedCreateWithoutLabsAsNodalCentreInput = {
+  export type InstitutionUncheckedCreateWithoutLabsInput = {
     id?: string
     name: string
-    email: string
-    password: string
-    role: $Enums.Role
     isActive?: boolean
-    username?: string | null
-    mobile?: string | null
-    profilePic?: string | null
-    org?: string | null
-    dept?: string | null
-    course?: string | null
-    yearSemester?: string | null
-    country?: string | null
-    state?: string | null
-    city?: string | null
-    studentId?: string | null
-    batch?: string | null
-    section?: string | null
-    employeeId?: string | null
-    designation?: string | null
-    facultyDept?: string | null
-    facultyInst?: string | null
-    resetToken?: string | null
-    resetTokenExpiry?: Date | string | null
     createdById?: string | null
-    nodalCentreId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    createdUsers?: UserUncheckedCreateNestedManyWithoutCreatedByInput
-    centreMembers?: UserUncheckedCreateNestedManyWithoutNodalCentreInput
-    subjectsCreated?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
-    labsCreated?: LabUncheckedCreateNestedManyWithoutCreatedByInput
-    experimentsCreated?: ExperimentUncheckedCreateNestedManyWithoutCreatedByInput
-    quizAttempts?: QuizAttemptUncheckedCreateNestedManyWithoutUserInput
-    experimentVisits?: ExperimentVisitUncheckedCreateNestedManyWithoutUserInput
-    feedbacks?: FeedbackUncheckedCreateNestedManyWithoutUserInput
-    chatSent?: ChatMessageUncheckedCreateNestedManyWithoutSenderInput
-    chatReceived?: ChatMessageUncheckedCreateNestedManyWithoutReceiverInput
-    hostedCalls?: ScheduledCallUncheckedCreateNestedManyWithoutHostInput
-    inviteeRecords?: ScheduledCallInviteeUncheckedCreateNestedManyWithoutUserInput
+    users?: UserUncheckedCreateNestedManyWithoutNodalCentreInput
   }
 
-  export type UserCreateOrConnectWithoutLabsAsNodalCentreInput = {
-    where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutLabsAsNodalCentreInput, UserUncheckedCreateWithoutLabsAsNodalCentreInput>
+  export type InstitutionCreateOrConnectWithoutLabsInput = {
+    where: InstitutionWhereUniqueInput
+    create: XOR<InstitutionCreateWithoutLabsInput, InstitutionUncheckedCreateWithoutLabsInput>
   }
 
   export type ExperimentCreateWithoutLabInput = {
@@ -21300,6 +23799,7 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    customPermissions?: UserUpdatecustomPermissionsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -21323,11 +23823,11 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: UserUpdateOneWithoutCreatedUsersNestedInput
     createdUsers?: UserUpdateManyWithoutCreatedByNestedInput
-    nodalCentre?: UserUpdateOneWithoutCentreMembersNestedInput
-    centreMembers?: UserUpdateManyWithoutNodalCentreNestedInput
+    nodalCentre?: InstitutionUpdateOneWithoutUsersNestedInput
     subjectsCreated?: SubjectUpdateManyWithoutCreatedByNestedInput
-    labsAsNodalCentre?: LabUpdateManyWithoutNodalCentreNestedInput
     experimentsCreated?: ExperimentUpdateManyWithoutCreatedByNestedInput
+    institutionsCreated?: InstitutionUpdateManyWithoutCreatedByNestedInput
+    workshopsCreated?: WorkshopUpdateManyWithoutCreatedByNestedInput
     quizAttempts?: QuizAttemptUpdateManyWithoutUserNestedInput
     experimentVisits?: ExperimentVisitUpdateManyWithoutUserNestedInput
     feedbacks?: FeedbackUpdateManyWithoutUserNestedInput
@@ -21344,6 +23844,7 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    customPermissions?: UserUpdatecustomPermissionsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -21368,10 +23869,10 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdUsers?: UserUncheckedUpdateManyWithoutCreatedByNestedInput
-    centreMembers?: UserUncheckedUpdateManyWithoutNodalCentreNestedInput
     subjectsCreated?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
-    labsAsNodalCentre?: LabUncheckedUpdateManyWithoutNodalCentreNestedInput
     experimentsCreated?: ExperimentUncheckedUpdateManyWithoutCreatedByNestedInput
+    institutionsCreated?: InstitutionUncheckedUpdateManyWithoutCreatedByNestedInput
+    workshopsCreated?: WorkshopUncheckedUpdateManyWithoutCreatedByNestedInput
     quizAttempts?: QuizAttemptUncheckedUpdateManyWithoutUserNestedInput
     experimentVisits?: ExperimentVisitUncheckedUpdateManyWithoutUserNestedInput
     feedbacks?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
@@ -21381,103 +23882,35 @@ export namespace Prisma {
     inviteeRecords?: ScheduledCallInviteeUncheckedUpdateManyWithoutUserNestedInput
   }
 
-  export type UserUpsertWithoutLabsAsNodalCentreInput = {
-    update: XOR<UserUpdateWithoutLabsAsNodalCentreInput, UserUncheckedUpdateWithoutLabsAsNodalCentreInput>
-    create: XOR<UserCreateWithoutLabsAsNodalCentreInput, UserUncheckedCreateWithoutLabsAsNodalCentreInput>
-    where?: UserWhereInput
+  export type InstitutionUpsertWithoutLabsInput = {
+    update: XOR<InstitutionUpdateWithoutLabsInput, InstitutionUncheckedUpdateWithoutLabsInput>
+    create: XOR<InstitutionCreateWithoutLabsInput, InstitutionUncheckedCreateWithoutLabsInput>
+    where?: InstitutionWhereInput
   }
 
-  export type UserUpdateToOneWithWhereWithoutLabsAsNodalCentreInput = {
-    where?: UserWhereInput
-    data: XOR<UserUpdateWithoutLabsAsNodalCentreInput, UserUncheckedUpdateWithoutLabsAsNodalCentreInput>
+  export type InstitutionUpdateToOneWithWhereWithoutLabsInput = {
+    where?: InstitutionWhereInput
+    data: XOR<InstitutionUpdateWithoutLabsInput, InstitutionUncheckedUpdateWithoutLabsInput>
   }
 
-  export type UserUpdateWithoutLabsAsNodalCentreInput = {
+  export type InstitutionUpdateWithoutLabsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    password?: StringFieldUpdateOperationsInput | string
-    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
-    username?: NullableStringFieldUpdateOperationsInput | string | null
-    mobile?: NullableStringFieldUpdateOperationsInput | string | null
-    profilePic?: NullableStringFieldUpdateOperationsInput | string | null
-    org?: NullableStringFieldUpdateOperationsInput | string | null
-    dept?: NullableStringFieldUpdateOperationsInput | string | null
-    course?: NullableStringFieldUpdateOperationsInput | string | null
-    yearSemester?: NullableStringFieldUpdateOperationsInput | string | null
-    country?: NullableStringFieldUpdateOperationsInput | string | null
-    state?: NullableStringFieldUpdateOperationsInput | string | null
-    city?: NullableStringFieldUpdateOperationsInput | string | null
-    studentId?: NullableStringFieldUpdateOperationsInput | string | null
-    batch?: NullableStringFieldUpdateOperationsInput | string | null
-    section?: NullableStringFieldUpdateOperationsInput | string | null
-    employeeId?: NullableStringFieldUpdateOperationsInput | string | null
-    designation?: NullableStringFieldUpdateOperationsInput | string | null
-    facultyDept?: NullableStringFieldUpdateOperationsInput | string | null
-    facultyInst?: NullableStringFieldUpdateOperationsInput | string | null
-    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
-    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdBy?: UserUpdateOneWithoutCreatedUsersNestedInput
-    createdUsers?: UserUpdateManyWithoutCreatedByNestedInput
-    nodalCentre?: UserUpdateOneWithoutCentreMembersNestedInput
-    centreMembers?: UserUpdateManyWithoutNodalCentreNestedInput
-    subjectsCreated?: SubjectUpdateManyWithoutCreatedByNestedInput
-    labsCreated?: LabUpdateManyWithoutCreatedByNestedInput
-    experimentsCreated?: ExperimentUpdateManyWithoutCreatedByNestedInput
-    quizAttempts?: QuizAttemptUpdateManyWithoutUserNestedInput
-    experimentVisits?: ExperimentVisitUpdateManyWithoutUserNestedInput
-    feedbacks?: FeedbackUpdateManyWithoutUserNestedInput
-    chatSent?: ChatMessageUpdateManyWithoutSenderNestedInput
-    chatReceived?: ChatMessageUpdateManyWithoutReceiverNestedInput
-    hostedCalls?: ScheduledCallUpdateManyWithoutHostNestedInput
-    inviteeRecords?: ScheduledCallInviteeUpdateManyWithoutUserNestedInput
+    users?: UserUpdateManyWithoutNodalCentreNestedInput
+    createdBy?: UserUpdateOneWithoutInstitutionsCreatedNestedInput
   }
 
-  export type UserUncheckedUpdateWithoutLabsAsNodalCentreInput = {
+  export type InstitutionUncheckedUpdateWithoutLabsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    password?: StringFieldUpdateOperationsInput | string
-    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
-    username?: NullableStringFieldUpdateOperationsInput | string | null
-    mobile?: NullableStringFieldUpdateOperationsInput | string | null
-    profilePic?: NullableStringFieldUpdateOperationsInput | string | null
-    org?: NullableStringFieldUpdateOperationsInput | string | null
-    dept?: NullableStringFieldUpdateOperationsInput | string | null
-    course?: NullableStringFieldUpdateOperationsInput | string | null
-    yearSemester?: NullableStringFieldUpdateOperationsInput | string | null
-    country?: NullableStringFieldUpdateOperationsInput | string | null
-    state?: NullableStringFieldUpdateOperationsInput | string | null
-    city?: NullableStringFieldUpdateOperationsInput | string | null
-    studentId?: NullableStringFieldUpdateOperationsInput | string | null
-    batch?: NullableStringFieldUpdateOperationsInput | string | null
-    section?: NullableStringFieldUpdateOperationsInput | string | null
-    employeeId?: NullableStringFieldUpdateOperationsInput | string | null
-    designation?: NullableStringFieldUpdateOperationsInput | string | null
-    facultyDept?: NullableStringFieldUpdateOperationsInput | string | null
-    facultyInst?: NullableStringFieldUpdateOperationsInput | string | null
-    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
-    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
-    nodalCentreId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdUsers?: UserUncheckedUpdateManyWithoutCreatedByNestedInput
-    centreMembers?: UserUncheckedUpdateManyWithoutNodalCentreNestedInput
-    subjectsCreated?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
-    labsCreated?: LabUncheckedUpdateManyWithoutCreatedByNestedInput
-    experimentsCreated?: ExperimentUncheckedUpdateManyWithoutCreatedByNestedInput
-    quizAttempts?: QuizAttemptUncheckedUpdateManyWithoutUserNestedInput
-    experimentVisits?: ExperimentVisitUncheckedUpdateManyWithoutUserNestedInput
-    feedbacks?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
-    chatSent?: ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
-    chatReceived?: ChatMessageUncheckedUpdateManyWithoutReceiverNestedInput
-    hostedCalls?: ScheduledCallUncheckedUpdateManyWithoutHostNestedInput
-    inviteeRecords?: ScheduledCallInviteeUncheckedUpdateManyWithoutUserNestedInput
+    users?: UserUncheckedUpdateManyWithoutNodalCentreNestedInput
   }
 
   export type ExperimentUpsertWithWhereUniqueWithoutLabInput = {
@@ -21507,7 +23940,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     subject: SubjectCreateNestedOneWithoutLabsInput
     createdBy: UserCreateNestedOneWithoutLabsCreatedInput
-    nodalCentre?: UserCreateNestedOneWithoutLabsAsNodalCentreInput
+    nodalCentre?: InstitutionCreateNestedOneWithoutLabsInput
   }
 
   export type LabUncheckedCreateWithoutExperimentsInput = {
@@ -21536,6 +23969,7 @@ export namespace Prisma {
     password: string
     role: $Enums.Role
     isActive?: boolean
+    customPermissions?: UserCreatecustomPermissionsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -21559,11 +23993,11 @@ export namespace Prisma {
     updatedAt?: Date | string
     createdBy?: UserCreateNestedOneWithoutCreatedUsersInput
     createdUsers?: UserCreateNestedManyWithoutCreatedByInput
-    nodalCentre?: UserCreateNestedOneWithoutCentreMembersInput
-    centreMembers?: UserCreateNestedManyWithoutNodalCentreInput
+    nodalCentre?: InstitutionCreateNestedOneWithoutUsersInput
     subjectsCreated?: SubjectCreateNestedManyWithoutCreatedByInput
     labsCreated?: LabCreateNestedManyWithoutCreatedByInput
-    labsAsNodalCentre?: LabCreateNestedManyWithoutNodalCentreInput
+    institutionsCreated?: InstitutionCreateNestedManyWithoutCreatedByInput
+    workshopsCreated?: WorkshopCreateNestedManyWithoutCreatedByInput
     quizAttempts?: QuizAttemptCreateNestedManyWithoutUserInput
     experimentVisits?: ExperimentVisitCreateNestedManyWithoutUserInput
     feedbacks?: FeedbackCreateNestedManyWithoutUserInput
@@ -21580,6 +24014,7 @@ export namespace Prisma {
     password: string
     role: $Enums.Role
     isActive?: boolean
+    customPermissions?: UserCreatecustomPermissionsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -21604,10 +24039,10 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     createdUsers?: UserUncheckedCreateNestedManyWithoutCreatedByInput
-    centreMembers?: UserUncheckedCreateNestedManyWithoutNodalCentreInput
     subjectsCreated?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
     labsCreated?: LabUncheckedCreateNestedManyWithoutCreatedByInput
-    labsAsNodalCentre?: LabUncheckedCreateNestedManyWithoutNodalCentreInput
+    institutionsCreated?: InstitutionUncheckedCreateNestedManyWithoutCreatedByInput
+    workshopsCreated?: WorkshopUncheckedCreateNestedManyWithoutCreatedByInput
     quizAttempts?: QuizAttemptUncheckedCreateNestedManyWithoutUserInput
     experimentVisits?: ExperimentVisitUncheckedCreateNestedManyWithoutUserInput
     feedbacks?: FeedbackUncheckedCreateNestedManyWithoutUserInput
@@ -21728,7 +24163,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     subject?: SubjectUpdateOneRequiredWithoutLabsNestedInput
     createdBy?: UserUpdateOneRequiredWithoutLabsCreatedNestedInput
-    nodalCentre?: UserUpdateOneWithoutLabsAsNodalCentreNestedInput
+    nodalCentre?: InstitutionUpdateOneWithoutLabsNestedInput
   }
 
   export type LabUncheckedUpdateWithoutExperimentsInput = {
@@ -21763,6 +24198,7 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    customPermissions?: UserUpdatecustomPermissionsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -21786,11 +24222,11 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: UserUpdateOneWithoutCreatedUsersNestedInput
     createdUsers?: UserUpdateManyWithoutCreatedByNestedInput
-    nodalCentre?: UserUpdateOneWithoutCentreMembersNestedInput
-    centreMembers?: UserUpdateManyWithoutNodalCentreNestedInput
+    nodalCentre?: InstitutionUpdateOneWithoutUsersNestedInput
     subjectsCreated?: SubjectUpdateManyWithoutCreatedByNestedInput
     labsCreated?: LabUpdateManyWithoutCreatedByNestedInput
-    labsAsNodalCentre?: LabUpdateManyWithoutNodalCentreNestedInput
+    institutionsCreated?: InstitutionUpdateManyWithoutCreatedByNestedInput
+    workshopsCreated?: WorkshopUpdateManyWithoutCreatedByNestedInput
     quizAttempts?: QuizAttemptUpdateManyWithoutUserNestedInput
     experimentVisits?: ExperimentVisitUpdateManyWithoutUserNestedInput
     feedbacks?: FeedbackUpdateManyWithoutUserNestedInput
@@ -21807,6 +24243,7 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    customPermissions?: UserUpdatecustomPermissionsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -21831,10 +24268,10 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdUsers?: UserUncheckedUpdateManyWithoutCreatedByNestedInput
-    centreMembers?: UserUncheckedUpdateManyWithoutNodalCentreNestedInput
     subjectsCreated?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
     labsCreated?: LabUncheckedUpdateManyWithoutCreatedByNestedInput
-    labsAsNodalCentre?: LabUncheckedUpdateManyWithoutNodalCentreNestedInput
+    institutionsCreated?: InstitutionUncheckedUpdateManyWithoutCreatedByNestedInput
+    workshopsCreated?: WorkshopUncheckedUpdateManyWithoutCreatedByNestedInput
     quizAttempts?: QuizAttemptUncheckedUpdateManyWithoutUserNestedInput
     experimentVisits?: ExperimentVisitUncheckedUpdateManyWithoutUserNestedInput
     feedbacks?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
@@ -21899,6 +24336,7 @@ export namespace Prisma {
     password: string
     role: $Enums.Role
     isActive?: boolean
+    customPermissions?: UserCreatecustomPermissionsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -21922,12 +24360,12 @@ export namespace Prisma {
     updatedAt?: Date | string
     createdBy?: UserCreateNestedOneWithoutCreatedUsersInput
     createdUsers?: UserCreateNestedManyWithoutCreatedByInput
-    nodalCentre?: UserCreateNestedOneWithoutCentreMembersInput
-    centreMembers?: UserCreateNestedManyWithoutNodalCentreInput
+    nodalCentre?: InstitutionCreateNestedOneWithoutUsersInput
     subjectsCreated?: SubjectCreateNestedManyWithoutCreatedByInput
     labsCreated?: LabCreateNestedManyWithoutCreatedByInput
-    labsAsNodalCentre?: LabCreateNestedManyWithoutNodalCentreInput
     experimentsCreated?: ExperimentCreateNestedManyWithoutCreatedByInput
+    institutionsCreated?: InstitutionCreateNestedManyWithoutCreatedByInput
+    workshopsCreated?: WorkshopCreateNestedManyWithoutCreatedByInput
     experimentVisits?: ExperimentVisitCreateNestedManyWithoutUserInput
     feedbacks?: FeedbackCreateNestedManyWithoutUserInput
     chatSent?: ChatMessageCreateNestedManyWithoutSenderInput
@@ -21943,6 +24381,7 @@ export namespace Prisma {
     password: string
     role: $Enums.Role
     isActive?: boolean
+    customPermissions?: UserCreatecustomPermissionsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -21967,11 +24406,11 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     createdUsers?: UserUncheckedCreateNestedManyWithoutCreatedByInput
-    centreMembers?: UserUncheckedCreateNestedManyWithoutNodalCentreInput
     subjectsCreated?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
     labsCreated?: LabUncheckedCreateNestedManyWithoutCreatedByInput
-    labsAsNodalCentre?: LabUncheckedCreateNestedManyWithoutNodalCentreInput
     experimentsCreated?: ExperimentUncheckedCreateNestedManyWithoutCreatedByInput
+    institutionsCreated?: InstitutionUncheckedCreateNestedManyWithoutCreatedByInput
+    workshopsCreated?: WorkshopUncheckedCreateNestedManyWithoutCreatedByInput
     experimentVisits?: ExperimentVisitUncheckedCreateNestedManyWithoutUserInput
     feedbacks?: FeedbackUncheckedCreateNestedManyWithoutUserInput
     chatSent?: ChatMessageUncheckedCreateNestedManyWithoutSenderInput
@@ -22044,6 +24483,7 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    customPermissions?: UserUpdatecustomPermissionsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -22067,12 +24507,12 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: UserUpdateOneWithoutCreatedUsersNestedInput
     createdUsers?: UserUpdateManyWithoutCreatedByNestedInput
-    nodalCentre?: UserUpdateOneWithoutCentreMembersNestedInput
-    centreMembers?: UserUpdateManyWithoutNodalCentreNestedInput
+    nodalCentre?: InstitutionUpdateOneWithoutUsersNestedInput
     subjectsCreated?: SubjectUpdateManyWithoutCreatedByNestedInput
     labsCreated?: LabUpdateManyWithoutCreatedByNestedInput
-    labsAsNodalCentre?: LabUpdateManyWithoutNodalCentreNestedInput
     experimentsCreated?: ExperimentUpdateManyWithoutCreatedByNestedInput
+    institutionsCreated?: InstitutionUpdateManyWithoutCreatedByNestedInput
+    workshopsCreated?: WorkshopUpdateManyWithoutCreatedByNestedInput
     experimentVisits?: ExperimentVisitUpdateManyWithoutUserNestedInput
     feedbacks?: FeedbackUpdateManyWithoutUserNestedInput
     chatSent?: ChatMessageUpdateManyWithoutSenderNestedInput
@@ -22088,6 +24528,7 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    customPermissions?: UserUpdatecustomPermissionsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -22112,11 +24553,11 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdUsers?: UserUncheckedUpdateManyWithoutCreatedByNestedInput
-    centreMembers?: UserUncheckedUpdateManyWithoutNodalCentreNestedInput
     subjectsCreated?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
     labsCreated?: LabUncheckedUpdateManyWithoutCreatedByNestedInput
-    labsAsNodalCentre?: LabUncheckedUpdateManyWithoutNodalCentreNestedInput
     experimentsCreated?: ExperimentUncheckedUpdateManyWithoutCreatedByNestedInput
+    institutionsCreated?: InstitutionUncheckedUpdateManyWithoutCreatedByNestedInput
+    workshopsCreated?: WorkshopUncheckedUpdateManyWithoutCreatedByNestedInput
     experimentVisits?: ExperimentVisitUncheckedUpdateManyWithoutUserNestedInput
     feedbacks?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
     chatSent?: ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
@@ -22179,6 +24620,7 @@ export namespace Prisma {
     password: string
     role: $Enums.Role
     isActive?: boolean
+    customPermissions?: UserCreatecustomPermissionsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -22202,12 +24644,12 @@ export namespace Prisma {
     updatedAt?: Date | string
     createdBy?: UserCreateNestedOneWithoutCreatedUsersInput
     createdUsers?: UserCreateNestedManyWithoutCreatedByInput
-    nodalCentre?: UserCreateNestedOneWithoutCentreMembersInput
-    centreMembers?: UserCreateNestedManyWithoutNodalCentreInput
+    nodalCentre?: InstitutionCreateNestedOneWithoutUsersInput
     subjectsCreated?: SubjectCreateNestedManyWithoutCreatedByInput
     labsCreated?: LabCreateNestedManyWithoutCreatedByInput
-    labsAsNodalCentre?: LabCreateNestedManyWithoutNodalCentreInput
     experimentsCreated?: ExperimentCreateNestedManyWithoutCreatedByInput
+    institutionsCreated?: InstitutionCreateNestedManyWithoutCreatedByInput
+    workshopsCreated?: WorkshopCreateNestedManyWithoutCreatedByInput
     quizAttempts?: QuizAttemptCreateNestedManyWithoutUserInput
     feedbacks?: FeedbackCreateNestedManyWithoutUserInput
     chatSent?: ChatMessageCreateNestedManyWithoutSenderInput
@@ -22223,6 +24665,7 @@ export namespace Prisma {
     password: string
     role: $Enums.Role
     isActive?: boolean
+    customPermissions?: UserCreatecustomPermissionsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -22247,11 +24690,11 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     createdUsers?: UserUncheckedCreateNestedManyWithoutCreatedByInput
-    centreMembers?: UserUncheckedCreateNestedManyWithoutNodalCentreInput
     subjectsCreated?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
     labsCreated?: LabUncheckedCreateNestedManyWithoutCreatedByInput
-    labsAsNodalCentre?: LabUncheckedCreateNestedManyWithoutNodalCentreInput
     experimentsCreated?: ExperimentUncheckedCreateNestedManyWithoutCreatedByInput
+    institutionsCreated?: InstitutionUncheckedCreateNestedManyWithoutCreatedByInput
+    workshopsCreated?: WorkshopUncheckedCreateNestedManyWithoutCreatedByInput
     quizAttempts?: QuizAttemptUncheckedCreateNestedManyWithoutUserInput
     feedbacks?: FeedbackUncheckedCreateNestedManyWithoutUserInput
     chatSent?: ChatMessageUncheckedCreateNestedManyWithoutSenderInput
@@ -22324,6 +24767,7 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    customPermissions?: UserUpdatecustomPermissionsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -22347,12 +24791,12 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: UserUpdateOneWithoutCreatedUsersNestedInput
     createdUsers?: UserUpdateManyWithoutCreatedByNestedInput
-    nodalCentre?: UserUpdateOneWithoutCentreMembersNestedInput
-    centreMembers?: UserUpdateManyWithoutNodalCentreNestedInput
+    nodalCentre?: InstitutionUpdateOneWithoutUsersNestedInput
     subjectsCreated?: SubjectUpdateManyWithoutCreatedByNestedInput
     labsCreated?: LabUpdateManyWithoutCreatedByNestedInput
-    labsAsNodalCentre?: LabUpdateManyWithoutNodalCentreNestedInput
     experimentsCreated?: ExperimentUpdateManyWithoutCreatedByNestedInput
+    institutionsCreated?: InstitutionUpdateManyWithoutCreatedByNestedInput
+    workshopsCreated?: WorkshopUpdateManyWithoutCreatedByNestedInput
     quizAttempts?: QuizAttemptUpdateManyWithoutUserNestedInput
     feedbacks?: FeedbackUpdateManyWithoutUserNestedInput
     chatSent?: ChatMessageUpdateManyWithoutSenderNestedInput
@@ -22368,6 +24812,7 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    customPermissions?: UserUpdatecustomPermissionsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -22392,11 +24837,11 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdUsers?: UserUncheckedUpdateManyWithoutCreatedByNestedInput
-    centreMembers?: UserUncheckedUpdateManyWithoutNodalCentreNestedInput
     subjectsCreated?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
     labsCreated?: LabUncheckedUpdateManyWithoutCreatedByNestedInput
-    labsAsNodalCentre?: LabUncheckedUpdateManyWithoutNodalCentreNestedInput
     experimentsCreated?: ExperimentUncheckedUpdateManyWithoutCreatedByNestedInput
+    institutionsCreated?: InstitutionUncheckedUpdateManyWithoutCreatedByNestedInput
+    workshopsCreated?: WorkshopUncheckedUpdateManyWithoutCreatedByNestedInput
     quizAttempts?: QuizAttemptUncheckedUpdateManyWithoutUserNestedInput
     feedbacks?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
     chatSent?: ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
@@ -22459,6 +24904,7 @@ export namespace Prisma {
     password: string
     role: $Enums.Role
     isActive?: boolean
+    customPermissions?: UserCreatecustomPermissionsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -22482,12 +24928,12 @@ export namespace Prisma {
     updatedAt?: Date | string
     createdBy?: UserCreateNestedOneWithoutCreatedUsersInput
     createdUsers?: UserCreateNestedManyWithoutCreatedByInput
-    nodalCentre?: UserCreateNestedOneWithoutCentreMembersInput
-    centreMembers?: UserCreateNestedManyWithoutNodalCentreInput
+    nodalCentre?: InstitutionCreateNestedOneWithoutUsersInput
     subjectsCreated?: SubjectCreateNestedManyWithoutCreatedByInput
     labsCreated?: LabCreateNestedManyWithoutCreatedByInput
-    labsAsNodalCentre?: LabCreateNestedManyWithoutNodalCentreInput
     experimentsCreated?: ExperimentCreateNestedManyWithoutCreatedByInput
+    institutionsCreated?: InstitutionCreateNestedManyWithoutCreatedByInput
+    workshopsCreated?: WorkshopCreateNestedManyWithoutCreatedByInput
     quizAttempts?: QuizAttemptCreateNestedManyWithoutUserInput
     experimentVisits?: ExperimentVisitCreateNestedManyWithoutUserInput
     chatSent?: ChatMessageCreateNestedManyWithoutSenderInput
@@ -22503,6 +24949,7 @@ export namespace Prisma {
     password: string
     role: $Enums.Role
     isActive?: boolean
+    customPermissions?: UserCreatecustomPermissionsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -22527,11 +24974,11 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     createdUsers?: UserUncheckedCreateNestedManyWithoutCreatedByInput
-    centreMembers?: UserUncheckedCreateNestedManyWithoutNodalCentreInput
     subjectsCreated?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
     labsCreated?: LabUncheckedCreateNestedManyWithoutCreatedByInput
-    labsAsNodalCentre?: LabUncheckedCreateNestedManyWithoutNodalCentreInput
     experimentsCreated?: ExperimentUncheckedCreateNestedManyWithoutCreatedByInput
+    institutionsCreated?: InstitutionUncheckedCreateNestedManyWithoutCreatedByInput
+    workshopsCreated?: WorkshopUncheckedCreateNestedManyWithoutCreatedByInput
     quizAttempts?: QuizAttemptUncheckedCreateNestedManyWithoutUserInput
     experimentVisits?: ExperimentVisitUncheckedCreateNestedManyWithoutUserInput
     chatSent?: ChatMessageUncheckedCreateNestedManyWithoutSenderInput
@@ -22604,6 +25051,7 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    customPermissions?: UserUpdatecustomPermissionsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -22627,12 +25075,12 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: UserUpdateOneWithoutCreatedUsersNestedInput
     createdUsers?: UserUpdateManyWithoutCreatedByNestedInput
-    nodalCentre?: UserUpdateOneWithoutCentreMembersNestedInput
-    centreMembers?: UserUpdateManyWithoutNodalCentreNestedInput
+    nodalCentre?: InstitutionUpdateOneWithoutUsersNestedInput
     subjectsCreated?: SubjectUpdateManyWithoutCreatedByNestedInput
     labsCreated?: LabUpdateManyWithoutCreatedByNestedInput
-    labsAsNodalCentre?: LabUpdateManyWithoutNodalCentreNestedInput
     experimentsCreated?: ExperimentUpdateManyWithoutCreatedByNestedInput
+    institutionsCreated?: InstitutionUpdateManyWithoutCreatedByNestedInput
+    workshopsCreated?: WorkshopUpdateManyWithoutCreatedByNestedInput
     quizAttempts?: QuizAttemptUpdateManyWithoutUserNestedInput
     experimentVisits?: ExperimentVisitUpdateManyWithoutUserNestedInput
     chatSent?: ChatMessageUpdateManyWithoutSenderNestedInput
@@ -22648,6 +25096,7 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    customPermissions?: UserUpdatecustomPermissionsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -22672,11 +25121,11 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdUsers?: UserUncheckedUpdateManyWithoutCreatedByNestedInput
-    centreMembers?: UserUncheckedUpdateManyWithoutNodalCentreNestedInput
     subjectsCreated?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
     labsCreated?: LabUncheckedUpdateManyWithoutCreatedByNestedInput
-    labsAsNodalCentre?: LabUncheckedUpdateManyWithoutNodalCentreNestedInput
     experimentsCreated?: ExperimentUncheckedUpdateManyWithoutCreatedByNestedInput
+    institutionsCreated?: InstitutionUncheckedUpdateManyWithoutCreatedByNestedInput
+    workshopsCreated?: WorkshopUncheckedUpdateManyWithoutCreatedByNestedInput
     quizAttempts?: QuizAttemptUncheckedUpdateManyWithoutUserNestedInput
     experimentVisits?: ExperimentVisitUncheckedUpdateManyWithoutUserNestedInput
     chatSent?: ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
@@ -22739,6 +25188,7 @@ export namespace Prisma {
     password: string
     role: $Enums.Role
     isActive?: boolean
+    customPermissions?: UserCreatecustomPermissionsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -22762,12 +25212,12 @@ export namespace Prisma {
     updatedAt?: Date | string
     createdBy?: UserCreateNestedOneWithoutCreatedUsersInput
     createdUsers?: UserCreateNestedManyWithoutCreatedByInput
-    nodalCentre?: UserCreateNestedOneWithoutCentreMembersInput
-    centreMembers?: UserCreateNestedManyWithoutNodalCentreInput
+    nodalCentre?: InstitutionCreateNestedOneWithoutUsersInput
     subjectsCreated?: SubjectCreateNestedManyWithoutCreatedByInput
     labsCreated?: LabCreateNestedManyWithoutCreatedByInput
-    labsAsNodalCentre?: LabCreateNestedManyWithoutNodalCentreInput
     experimentsCreated?: ExperimentCreateNestedManyWithoutCreatedByInput
+    institutionsCreated?: InstitutionCreateNestedManyWithoutCreatedByInput
+    workshopsCreated?: WorkshopCreateNestedManyWithoutCreatedByInput
     quizAttempts?: QuizAttemptCreateNestedManyWithoutUserInput
     experimentVisits?: ExperimentVisitCreateNestedManyWithoutUserInput
     feedbacks?: FeedbackCreateNestedManyWithoutUserInput
@@ -22783,6 +25233,7 @@ export namespace Prisma {
     password: string
     role: $Enums.Role
     isActive?: boolean
+    customPermissions?: UserCreatecustomPermissionsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -22807,11 +25258,11 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     createdUsers?: UserUncheckedCreateNestedManyWithoutCreatedByInput
-    centreMembers?: UserUncheckedCreateNestedManyWithoutNodalCentreInput
     subjectsCreated?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
     labsCreated?: LabUncheckedCreateNestedManyWithoutCreatedByInput
-    labsAsNodalCentre?: LabUncheckedCreateNestedManyWithoutNodalCentreInput
     experimentsCreated?: ExperimentUncheckedCreateNestedManyWithoutCreatedByInput
+    institutionsCreated?: InstitutionUncheckedCreateNestedManyWithoutCreatedByInput
+    workshopsCreated?: WorkshopUncheckedCreateNestedManyWithoutCreatedByInput
     quizAttempts?: QuizAttemptUncheckedCreateNestedManyWithoutUserInput
     experimentVisits?: ExperimentVisitUncheckedCreateNestedManyWithoutUserInput
     feedbacks?: FeedbackUncheckedCreateNestedManyWithoutUserInput
@@ -22832,6 +25283,7 @@ export namespace Prisma {
     password: string
     role: $Enums.Role
     isActive?: boolean
+    customPermissions?: UserCreatecustomPermissionsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -22855,12 +25307,12 @@ export namespace Prisma {
     updatedAt?: Date | string
     createdBy?: UserCreateNestedOneWithoutCreatedUsersInput
     createdUsers?: UserCreateNestedManyWithoutCreatedByInput
-    nodalCentre?: UserCreateNestedOneWithoutCentreMembersInput
-    centreMembers?: UserCreateNestedManyWithoutNodalCentreInput
+    nodalCentre?: InstitutionCreateNestedOneWithoutUsersInput
     subjectsCreated?: SubjectCreateNestedManyWithoutCreatedByInput
     labsCreated?: LabCreateNestedManyWithoutCreatedByInput
-    labsAsNodalCentre?: LabCreateNestedManyWithoutNodalCentreInput
     experimentsCreated?: ExperimentCreateNestedManyWithoutCreatedByInput
+    institutionsCreated?: InstitutionCreateNestedManyWithoutCreatedByInput
+    workshopsCreated?: WorkshopCreateNestedManyWithoutCreatedByInput
     quizAttempts?: QuizAttemptCreateNestedManyWithoutUserInput
     experimentVisits?: ExperimentVisitCreateNestedManyWithoutUserInput
     feedbacks?: FeedbackCreateNestedManyWithoutUserInput
@@ -22876,6 +25328,7 @@ export namespace Prisma {
     password: string
     role: $Enums.Role
     isActive?: boolean
+    customPermissions?: UserCreatecustomPermissionsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -22900,11 +25353,11 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     createdUsers?: UserUncheckedCreateNestedManyWithoutCreatedByInput
-    centreMembers?: UserUncheckedCreateNestedManyWithoutNodalCentreInput
     subjectsCreated?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
     labsCreated?: LabUncheckedCreateNestedManyWithoutCreatedByInput
-    labsAsNodalCentre?: LabUncheckedCreateNestedManyWithoutNodalCentreInput
     experimentsCreated?: ExperimentUncheckedCreateNestedManyWithoutCreatedByInput
+    institutionsCreated?: InstitutionUncheckedCreateNestedManyWithoutCreatedByInput
+    workshopsCreated?: WorkshopUncheckedCreateNestedManyWithoutCreatedByInput
     quizAttempts?: QuizAttemptUncheckedCreateNestedManyWithoutUserInput
     experimentVisits?: ExperimentVisitUncheckedCreateNestedManyWithoutUserInput
     feedbacks?: FeedbackUncheckedCreateNestedManyWithoutUserInput
@@ -22936,6 +25389,7 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    customPermissions?: UserUpdatecustomPermissionsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -22959,12 +25413,12 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: UserUpdateOneWithoutCreatedUsersNestedInput
     createdUsers?: UserUpdateManyWithoutCreatedByNestedInput
-    nodalCentre?: UserUpdateOneWithoutCentreMembersNestedInput
-    centreMembers?: UserUpdateManyWithoutNodalCentreNestedInput
+    nodalCentre?: InstitutionUpdateOneWithoutUsersNestedInput
     subjectsCreated?: SubjectUpdateManyWithoutCreatedByNestedInput
     labsCreated?: LabUpdateManyWithoutCreatedByNestedInput
-    labsAsNodalCentre?: LabUpdateManyWithoutNodalCentreNestedInput
     experimentsCreated?: ExperimentUpdateManyWithoutCreatedByNestedInput
+    institutionsCreated?: InstitutionUpdateManyWithoutCreatedByNestedInput
+    workshopsCreated?: WorkshopUpdateManyWithoutCreatedByNestedInput
     quizAttempts?: QuizAttemptUpdateManyWithoutUserNestedInput
     experimentVisits?: ExperimentVisitUpdateManyWithoutUserNestedInput
     feedbacks?: FeedbackUpdateManyWithoutUserNestedInput
@@ -22980,6 +25434,7 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    customPermissions?: UserUpdatecustomPermissionsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -23004,11 +25459,11 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdUsers?: UserUncheckedUpdateManyWithoutCreatedByNestedInput
-    centreMembers?: UserUncheckedUpdateManyWithoutNodalCentreNestedInput
     subjectsCreated?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
     labsCreated?: LabUncheckedUpdateManyWithoutCreatedByNestedInput
-    labsAsNodalCentre?: LabUncheckedUpdateManyWithoutNodalCentreNestedInput
     experimentsCreated?: ExperimentUncheckedUpdateManyWithoutCreatedByNestedInput
+    institutionsCreated?: InstitutionUncheckedUpdateManyWithoutCreatedByNestedInput
+    workshopsCreated?: WorkshopUncheckedUpdateManyWithoutCreatedByNestedInput
     quizAttempts?: QuizAttemptUncheckedUpdateManyWithoutUserNestedInput
     experimentVisits?: ExperimentVisitUncheckedUpdateManyWithoutUserNestedInput
     feedbacks?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
@@ -23035,6 +25490,7 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    customPermissions?: UserUpdatecustomPermissionsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -23058,12 +25514,12 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: UserUpdateOneWithoutCreatedUsersNestedInput
     createdUsers?: UserUpdateManyWithoutCreatedByNestedInput
-    nodalCentre?: UserUpdateOneWithoutCentreMembersNestedInput
-    centreMembers?: UserUpdateManyWithoutNodalCentreNestedInput
+    nodalCentre?: InstitutionUpdateOneWithoutUsersNestedInput
     subjectsCreated?: SubjectUpdateManyWithoutCreatedByNestedInput
     labsCreated?: LabUpdateManyWithoutCreatedByNestedInput
-    labsAsNodalCentre?: LabUpdateManyWithoutNodalCentreNestedInput
     experimentsCreated?: ExperimentUpdateManyWithoutCreatedByNestedInput
+    institutionsCreated?: InstitutionUpdateManyWithoutCreatedByNestedInput
+    workshopsCreated?: WorkshopUpdateManyWithoutCreatedByNestedInput
     quizAttempts?: QuizAttemptUpdateManyWithoutUserNestedInput
     experimentVisits?: ExperimentVisitUpdateManyWithoutUserNestedInput
     feedbacks?: FeedbackUpdateManyWithoutUserNestedInput
@@ -23079,6 +25535,7 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    customPermissions?: UserUpdatecustomPermissionsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -23103,11 +25560,11 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdUsers?: UserUncheckedUpdateManyWithoutCreatedByNestedInput
-    centreMembers?: UserUncheckedUpdateManyWithoutNodalCentreNestedInput
     subjectsCreated?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
     labsCreated?: LabUncheckedUpdateManyWithoutCreatedByNestedInput
-    labsAsNodalCentre?: LabUncheckedUpdateManyWithoutNodalCentreNestedInput
     experimentsCreated?: ExperimentUncheckedUpdateManyWithoutCreatedByNestedInput
+    institutionsCreated?: InstitutionUncheckedUpdateManyWithoutCreatedByNestedInput
+    workshopsCreated?: WorkshopUncheckedUpdateManyWithoutCreatedByNestedInput
     quizAttempts?: QuizAttemptUncheckedUpdateManyWithoutUserNestedInput
     experimentVisits?: ExperimentVisitUncheckedUpdateManyWithoutUserNestedInput
     feedbacks?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
@@ -23123,6 +25580,7 @@ export namespace Prisma {
     password: string
     role: $Enums.Role
     isActive?: boolean
+    customPermissions?: UserCreatecustomPermissionsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -23146,12 +25604,12 @@ export namespace Prisma {
     updatedAt?: Date | string
     createdBy?: UserCreateNestedOneWithoutCreatedUsersInput
     createdUsers?: UserCreateNestedManyWithoutCreatedByInput
-    nodalCentre?: UserCreateNestedOneWithoutCentreMembersInput
-    centreMembers?: UserCreateNestedManyWithoutNodalCentreInput
+    nodalCentre?: InstitutionCreateNestedOneWithoutUsersInput
     subjectsCreated?: SubjectCreateNestedManyWithoutCreatedByInput
     labsCreated?: LabCreateNestedManyWithoutCreatedByInput
-    labsAsNodalCentre?: LabCreateNestedManyWithoutNodalCentreInput
     experimentsCreated?: ExperimentCreateNestedManyWithoutCreatedByInput
+    institutionsCreated?: InstitutionCreateNestedManyWithoutCreatedByInput
+    workshopsCreated?: WorkshopCreateNestedManyWithoutCreatedByInput
     quizAttempts?: QuizAttemptCreateNestedManyWithoutUserInput
     experimentVisits?: ExperimentVisitCreateNestedManyWithoutUserInput
     feedbacks?: FeedbackCreateNestedManyWithoutUserInput
@@ -23167,6 +25625,7 @@ export namespace Prisma {
     password: string
     role: $Enums.Role
     isActive?: boolean
+    customPermissions?: UserCreatecustomPermissionsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -23191,11 +25650,11 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     createdUsers?: UserUncheckedCreateNestedManyWithoutCreatedByInput
-    centreMembers?: UserUncheckedCreateNestedManyWithoutNodalCentreInput
     subjectsCreated?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
     labsCreated?: LabUncheckedCreateNestedManyWithoutCreatedByInput
-    labsAsNodalCentre?: LabUncheckedCreateNestedManyWithoutNodalCentreInput
     experimentsCreated?: ExperimentUncheckedCreateNestedManyWithoutCreatedByInput
+    institutionsCreated?: InstitutionUncheckedCreateNestedManyWithoutCreatedByInput
+    workshopsCreated?: WorkshopUncheckedCreateNestedManyWithoutCreatedByInput
     quizAttempts?: QuizAttemptUncheckedCreateNestedManyWithoutUserInput
     experimentVisits?: ExperimentVisitUncheckedCreateNestedManyWithoutUserInput
     feedbacks?: FeedbackUncheckedCreateNestedManyWithoutUserInput
@@ -23251,6 +25710,7 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    customPermissions?: UserUpdatecustomPermissionsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -23274,12 +25734,12 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: UserUpdateOneWithoutCreatedUsersNestedInput
     createdUsers?: UserUpdateManyWithoutCreatedByNestedInput
-    nodalCentre?: UserUpdateOneWithoutCentreMembersNestedInput
-    centreMembers?: UserUpdateManyWithoutNodalCentreNestedInput
+    nodalCentre?: InstitutionUpdateOneWithoutUsersNestedInput
     subjectsCreated?: SubjectUpdateManyWithoutCreatedByNestedInput
     labsCreated?: LabUpdateManyWithoutCreatedByNestedInput
-    labsAsNodalCentre?: LabUpdateManyWithoutNodalCentreNestedInput
     experimentsCreated?: ExperimentUpdateManyWithoutCreatedByNestedInput
+    institutionsCreated?: InstitutionUpdateManyWithoutCreatedByNestedInput
+    workshopsCreated?: WorkshopUpdateManyWithoutCreatedByNestedInput
     quizAttempts?: QuizAttemptUpdateManyWithoutUserNestedInput
     experimentVisits?: ExperimentVisitUpdateManyWithoutUserNestedInput
     feedbacks?: FeedbackUpdateManyWithoutUserNestedInput
@@ -23295,6 +25755,7 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    customPermissions?: UserUpdatecustomPermissionsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -23319,11 +25780,11 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdUsers?: UserUncheckedUpdateManyWithoutCreatedByNestedInput
-    centreMembers?: UserUncheckedUpdateManyWithoutNodalCentreNestedInput
     subjectsCreated?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
     labsCreated?: LabUncheckedUpdateManyWithoutCreatedByNestedInput
-    labsAsNodalCentre?: LabUncheckedUpdateManyWithoutNodalCentreNestedInput
     experimentsCreated?: ExperimentUncheckedUpdateManyWithoutCreatedByNestedInput
+    institutionsCreated?: InstitutionUncheckedUpdateManyWithoutCreatedByNestedInput
+    workshopsCreated?: WorkshopUncheckedUpdateManyWithoutCreatedByNestedInput
     quizAttempts?: QuizAttemptUncheckedUpdateManyWithoutUserNestedInput
     experimentVisits?: ExperimentVisitUncheckedUpdateManyWithoutUserNestedInput
     feedbacks?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
@@ -23380,6 +25841,7 @@ export namespace Prisma {
     password: string
     role: $Enums.Role
     isActive?: boolean
+    customPermissions?: UserCreatecustomPermissionsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -23403,12 +25865,12 @@ export namespace Prisma {
     updatedAt?: Date | string
     createdBy?: UserCreateNestedOneWithoutCreatedUsersInput
     createdUsers?: UserCreateNestedManyWithoutCreatedByInput
-    nodalCentre?: UserCreateNestedOneWithoutCentreMembersInput
-    centreMembers?: UserCreateNestedManyWithoutNodalCentreInput
+    nodalCentre?: InstitutionCreateNestedOneWithoutUsersInput
     subjectsCreated?: SubjectCreateNestedManyWithoutCreatedByInput
     labsCreated?: LabCreateNestedManyWithoutCreatedByInput
-    labsAsNodalCentre?: LabCreateNestedManyWithoutNodalCentreInput
     experimentsCreated?: ExperimentCreateNestedManyWithoutCreatedByInput
+    institutionsCreated?: InstitutionCreateNestedManyWithoutCreatedByInput
+    workshopsCreated?: WorkshopCreateNestedManyWithoutCreatedByInput
     quizAttempts?: QuizAttemptCreateNestedManyWithoutUserInput
     experimentVisits?: ExperimentVisitCreateNestedManyWithoutUserInput
     feedbacks?: FeedbackCreateNestedManyWithoutUserInput
@@ -23424,6 +25886,7 @@ export namespace Prisma {
     password: string
     role: $Enums.Role
     isActive?: boolean
+    customPermissions?: UserCreatecustomPermissionsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -23448,11 +25911,11 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     createdUsers?: UserUncheckedCreateNestedManyWithoutCreatedByInput
-    centreMembers?: UserUncheckedCreateNestedManyWithoutNodalCentreInput
     subjectsCreated?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
     labsCreated?: LabUncheckedCreateNestedManyWithoutCreatedByInput
-    labsAsNodalCentre?: LabUncheckedCreateNestedManyWithoutNodalCentreInput
     experimentsCreated?: ExperimentUncheckedCreateNestedManyWithoutCreatedByInput
+    institutionsCreated?: InstitutionUncheckedCreateNestedManyWithoutCreatedByInput
+    workshopsCreated?: WorkshopUncheckedCreateNestedManyWithoutCreatedByInput
     quizAttempts?: QuizAttemptUncheckedCreateNestedManyWithoutUserInput
     experimentVisits?: ExperimentVisitUncheckedCreateNestedManyWithoutUserInput
     feedbacks?: FeedbackUncheckedCreateNestedManyWithoutUserInput
@@ -23515,6 +25978,7 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    customPermissions?: UserUpdatecustomPermissionsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -23538,12 +26002,12 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: UserUpdateOneWithoutCreatedUsersNestedInput
     createdUsers?: UserUpdateManyWithoutCreatedByNestedInput
-    nodalCentre?: UserUpdateOneWithoutCentreMembersNestedInput
-    centreMembers?: UserUpdateManyWithoutNodalCentreNestedInput
+    nodalCentre?: InstitutionUpdateOneWithoutUsersNestedInput
     subjectsCreated?: SubjectUpdateManyWithoutCreatedByNestedInput
     labsCreated?: LabUpdateManyWithoutCreatedByNestedInput
-    labsAsNodalCentre?: LabUpdateManyWithoutNodalCentreNestedInput
     experimentsCreated?: ExperimentUpdateManyWithoutCreatedByNestedInput
+    institutionsCreated?: InstitutionUpdateManyWithoutCreatedByNestedInput
+    workshopsCreated?: WorkshopUpdateManyWithoutCreatedByNestedInput
     quizAttempts?: QuizAttemptUpdateManyWithoutUserNestedInput
     experimentVisits?: ExperimentVisitUpdateManyWithoutUserNestedInput
     feedbacks?: FeedbackUpdateManyWithoutUserNestedInput
@@ -23559,6 +26023,7 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    customPermissions?: UserUpdatecustomPermissionsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -23583,11 +26048,11 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdUsers?: UserUncheckedUpdateManyWithoutCreatedByNestedInput
-    centreMembers?: UserUncheckedUpdateManyWithoutNodalCentreNestedInput
     subjectsCreated?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
     labsCreated?: LabUncheckedUpdateManyWithoutCreatedByNestedInput
-    labsAsNodalCentre?: LabUncheckedUpdateManyWithoutNodalCentreNestedInput
     experimentsCreated?: ExperimentUncheckedUpdateManyWithoutCreatedByNestedInput
+    institutionsCreated?: InstitutionUncheckedUpdateManyWithoutCreatedByNestedInput
+    workshopsCreated?: WorkshopUncheckedUpdateManyWithoutCreatedByNestedInput
     quizAttempts?: QuizAttemptUncheckedUpdateManyWithoutUserNestedInput
     experimentVisits?: ExperimentVisitUncheckedUpdateManyWithoutUserNestedInput
     feedbacks?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
@@ -23710,13 +26175,14 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type UserCreateManyCreatedByInput = {
+  export type UserCreateWithoutNodalCentreInput = {
     id?: string
     name: string
     email: string
     password: string
     role: $Enums.Role
     isActive?: boolean
+    customPermissions?: UserCreatecustomPermissionsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -23736,18 +26202,32 @@ export namespace Prisma {
     facultyInst?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
-    nodalCentreId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    createdBy?: UserCreateNestedOneWithoutCreatedUsersInput
+    createdUsers?: UserCreateNestedManyWithoutCreatedByInput
+    subjectsCreated?: SubjectCreateNestedManyWithoutCreatedByInput
+    labsCreated?: LabCreateNestedManyWithoutCreatedByInput
+    experimentsCreated?: ExperimentCreateNestedManyWithoutCreatedByInput
+    institutionsCreated?: InstitutionCreateNestedManyWithoutCreatedByInput
+    workshopsCreated?: WorkshopCreateNestedManyWithoutCreatedByInput
+    quizAttempts?: QuizAttemptCreateNestedManyWithoutUserInput
+    experimentVisits?: ExperimentVisitCreateNestedManyWithoutUserInput
+    feedbacks?: FeedbackCreateNestedManyWithoutUserInput
+    chatSent?: ChatMessageCreateNestedManyWithoutSenderInput
+    chatReceived?: ChatMessageCreateNestedManyWithoutReceiverInput
+    hostedCalls?: ScheduledCallCreateNestedManyWithoutHostInput
+    inviteeRecords?: ScheduledCallInviteeCreateNestedManyWithoutUserInput
   }
 
-  export type UserCreateManyNodalCentreInput = {
+  export type UserUncheckedCreateWithoutNodalCentreInput = {
     id?: string
     name: string
     email: string
     password: string
     role: $Enums.Role
     isActive?: boolean
+    customPermissions?: UserCreatecustomPermissionsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -23768,6 +26248,523 @@ export namespace Prisma {
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
     createdById?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdUsers?: UserUncheckedCreateNestedManyWithoutCreatedByInput
+    subjectsCreated?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
+    labsCreated?: LabUncheckedCreateNestedManyWithoutCreatedByInput
+    experimentsCreated?: ExperimentUncheckedCreateNestedManyWithoutCreatedByInput
+    institutionsCreated?: InstitutionUncheckedCreateNestedManyWithoutCreatedByInput
+    workshopsCreated?: WorkshopUncheckedCreateNestedManyWithoutCreatedByInput
+    quizAttempts?: QuizAttemptUncheckedCreateNestedManyWithoutUserInput
+    experimentVisits?: ExperimentVisitUncheckedCreateNestedManyWithoutUserInput
+    feedbacks?: FeedbackUncheckedCreateNestedManyWithoutUserInput
+    chatSent?: ChatMessageUncheckedCreateNestedManyWithoutSenderInput
+    chatReceived?: ChatMessageUncheckedCreateNestedManyWithoutReceiverInput
+    hostedCalls?: ScheduledCallUncheckedCreateNestedManyWithoutHostInput
+    inviteeRecords?: ScheduledCallInviteeUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutNodalCentreInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutNodalCentreInput, UserUncheckedCreateWithoutNodalCentreInput>
+  }
+
+  export type UserCreateManyNodalCentreInputEnvelope = {
+    data: UserCreateManyNodalCentreInput | UserCreateManyNodalCentreInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type LabCreateWithoutNodalCentreInput = {
+    id?: string
+    title: string
+    description?: string | null
+    icon?: string
+    coverPic?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    subject: SubjectCreateNestedOneWithoutLabsInput
+    createdBy: UserCreateNestedOneWithoutLabsCreatedInput
+    experiments?: ExperimentCreateNestedManyWithoutLabInput
+  }
+
+  export type LabUncheckedCreateWithoutNodalCentreInput = {
+    id?: string
+    title: string
+    description?: string | null
+    icon?: string
+    coverPic?: string | null
+    isActive?: boolean
+    subjectId: string
+    createdById: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    experiments?: ExperimentUncheckedCreateNestedManyWithoutLabInput
+  }
+
+  export type LabCreateOrConnectWithoutNodalCentreInput = {
+    where: LabWhereUniqueInput
+    create: XOR<LabCreateWithoutNodalCentreInput, LabUncheckedCreateWithoutNodalCentreInput>
+  }
+
+  export type LabCreateManyNodalCentreInputEnvelope = {
+    data: LabCreateManyNodalCentreInput | LabCreateManyNodalCentreInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type UserCreateWithoutInstitutionsCreatedInput = {
+    id?: string
+    name: string
+    email: string
+    password: string
+    role: $Enums.Role
+    isActive?: boolean
+    customPermissions?: UserCreatecustomPermissionsInput | string[]
+    username?: string | null
+    mobile?: string | null
+    profilePic?: string | null
+    org?: string | null
+    dept?: string | null
+    course?: string | null
+    yearSemester?: string | null
+    country?: string | null
+    state?: string | null
+    city?: string | null
+    studentId?: string | null
+    batch?: string | null
+    section?: string | null
+    employeeId?: string | null
+    designation?: string | null
+    facultyDept?: string | null
+    facultyInst?: string | null
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdBy?: UserCreateNestedOneWithoutCreatedUsersInput
+    createdUsers?: UserCreateNestedManyWithoutCreatedByInput
+    nodalCentre?: InstitutionCreateNestedOneWithoutUsersInput
+    subjectsCreated?: SubjectCreateNestedManyWithoutCreatedByInput
+    labsCreated?: LabCreateNestedManyWithoutCreatedByInput
+    experimentsCreated?: ExperimentCreateNestedManyWithoutCreatedByInput
+    workshopsCreated?: WorkshopCreateNestedManyWithoutCreatedByInput
+    quizAttempts?: QuizAttemptCreateNestedManyWithoutUserInput
+    experimentVisits?: ExperimentVisitCreateNestedManyWithoutUserInput
+    feedbacks?: FeedbackCreateNestedManyWithoutUserInput
+    chatSent?: ChatMessageCreateNestedManyWithoutSenderInput
+    chatReceived?: ChatMessageCreateNestedManyWithoutReceiverInput
+    hostedCalls?: ScheduledCallCreateNestedManyWithoutHostInput
+    inviteeRecords?: ScheduledCallInviteeCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutInstitutionsCreatedInput = {
+    id?: string
+    name: string
+    email: string
+    password: string
+    role: $Enums.Role
+    isActive?: boolean
+    customPermissions?: UserCreatecustomPermissionsInput | string[]
+    username?: string | null
+    mobile?: string | null
+    profilePic?: string | null
+    org?: string | null
+    dept?: string | null
+    course?: string | null
+    yearSemester?: string | null
+    country?: string | null
+    state?: string | null
+    city?: string | null
+    studentId?: string | null
+    batch?: string | null
+    section?: string | null
+    employeeId?: string | null
+    designation?: string | null
+    facultyDept?: string | null
+    facultyInst?: string | null
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
+    createdById?: string | null
+    nodalCentreId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdUsers?: UserUncheckedCreateNestedManyWithoutCreatedByInput
+    subjectsCreated?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
+    labsCreated?: LabUncheckedCreateNestedManyWithoutCreatedByInput
+    experimentsCreated?: ExperimentUncheckedCreateNestedManyWithoutCreatedByInput
+    workshopsCreated?: WorkshopUncheckedCreateNestedManyWithoutCreatedByInput
+    quizAttempts?: QuizAttemptUncheckedCreateNestedManyWithoutUserInput
+    experimentVisits?: ExperimentVisitUncheckedCreateNestedManyWithoutUserInput
+    feedbacks?: FeedbackUncheckedCreateNestedManyWithoutUserInput
+    chatSent?: ChatMessageUncheckedCreateNestedManyWithoutSenderInput
+    chatReceived?: ChatMessageUncheckedCreateNestedManyWithoutReceiverInput
+    hostedCalls?: ScheduledCallUncheckedCreateNestedManyWithoutHostInput
+    inviteeRecords?: ScheduledCallInviteeUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutInstitutionsCreatedInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutInstitutionsCreatedInput, UserUncheckedCreateWithoutInstitutionsCreatedInput>
+  }
+
+  export type UserUpsertWithWhereUniqueWithoutNodalCentreInput = {
+    where: UserWhereUniqueInput
+    update: XOR<UserUpdateWithoutNodalCentreInput, UserUncheckedUpdateWithoutNodalCentreInput>
+    create: XOR<UserCreateWithoutNodalCentreInput, UserUncheckedCreateWithoutNodalCentreInput>
+  }
+
+  export type UserUpdateWithWhereUniqueWithoutNodalCentreInput = {
+    where: UserWhereUniqueInput
+    data: XOR<UserUpdateWithoutNodalCentreInput, UserUncheckedUpdateWithoutNodalCentreInput>
+  }
+
+  export type UserUpdateManyWithWhereWithoutNodalCentreInput = {
+    where: UserScalarWhereInput
+    data: XOR<UserUpdateManyMutationInput, UserUncheckedUpdateManyWithoutNodalCentreInput>
+  }
+
+  export type LabUpsertWithWhereUniqueWithoutNodalCentreInput = {
+    where: LabWhereUniqueInput
+    update: XOR<LabUpdateWithoutNodalCentreInput, LabUncheckedUpdateWithoutNodalCentreInput>
+    create: XOR<LabCreateWithoutNodalCentreInput, LabUncheckedCreateWithoutNodalCentreInput>
+  }
+
+  export type LabUpdateWithWhereUniqueWithoutNodalCentreInput = {
+    where: LabWhereUniqueInput
+    data: XOR<LabUpdateWithoutNodalCentreInput, LabUncheckedUpdateWithoutNodalCentreInput>
+  }
+
+  export type LabUpdateManyWithWhereWithoutNodalCentreInput = {
+    where: LabScalarWhereInput
+    data: XOR<LabUpdateManyMutationInput, LabUncheckedUpdateManyWithoutNodalCentreInput>
+  }
+
+  export type UserUpsertWithoutInstitutionsCreatedInput = {
+    update: XOR<UserUpdateWithoutInstitutionsCreatedInput, UserUncheckedUpdateWithoutInstitutionsCreatedInput>
+    create: XOR<UserCreateWithoutInstitutionsCreatedInput, UserUncheckedCreateWithoutInstitutionsCreatedInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutInstitutionsCreatedInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutInstitutionsCreatedInput, UserUncheckedUpdateWithoutInstitutionsCreatedInput>
+  }
+
+  export type UserUpdateWithoutInstitutionsCreatedInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    customPermissions?: UserUpdatecustomPermissionsInput | string[]
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    mobile?: NullableStringFieldUpdateOperationsInput | string | null
+    profilePic?: NullableStringFieldUpdateOperationsInput | string | null
+    org?: NullableStringFieldUpdateOperationsInput | string | null
+    dept?: NullableStringFieldUpdateOperationsInput | string | null
+    course?: NullableStringFieldUpdateOperationsInput | string | null
+    yearSemester?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    state?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    studentId?: NullableStringFieldUpdateOperationsInput | string | null
+    batch?: NullableStringFieldUpdateOperationsInput | string | null
+    section?: NullableStringFieldUpdateOperationsInput | string | null
+    employeeId?: NullableStringFieldUpdateOperationsInput | string | null
+    designation?: NullableStringFieldUpdateOperationsInput | string | null
+    facultyDept?: NullableStringFieldUpdateOperationsInput | string | null
+    facultyInst?: NullableStringFieldUpdateOperationsInput | string | null
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: UserUpdateOneWithoutCreatedUsersNestedInput
+    createdUsers?: UserUpdateManyWithoutCreatedByNestedInput
+    nodalCentre?: InstitutionUpdateOneWithoutUsersNestedInput
+    subjectsCreated?: SubjectUpdateManyWithoutCreatedByNestedInput
+    labsCreated?: LabUpdateManyWithoutCreatedByNestedInput
+    experimentsCreated?: ExperimentUpdateManyWithoutCreatedByNestedInput
+    workshopsCreated?: WorkshopUpdateManyWithoutCreatedByNestedInput
+    quizAttempts?: QuizAttemptUpdateManyWithoutUserNestedInput
+    experimentVisits?: ExperimentVisitUpdateManyWithoutUserNestedInput
+    feedbacks?: FeedbackUpdateManyWithoutUserNestedInput
+    chatSent?: ChatMessageUpdateManyWithoutSenderNestedInput
+    chatReceived?: ChatMessageUpdateManyWithoutReceiverNestedInput
+    hostedCalls?: ScheduledCallUpdateManyWithoutHostNestedInput
+    inviteeRecords?: ScheduledCallInviteeUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutInstitutionsCreatedInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    customPermissions?: UserUpdatecustomPermissionsInput | string[]
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    mobile?: NullableStringFieldUpdateOperationsInput | string | null
+    profilePic?: NullableStringFieldUpdateOperationsInput | string | null
+    org?: NullableStringFieldUpdateOperationsInput | string | null
+    dept?: NullableStringFieldUpdateOperationsInput | string | null
+    course?: NullableStringFieldUpdateOperationsInput | string | null
+    yearSemester?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    state?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    studentId?: NullableStringFieldUpdateOperationsInput | string | null
+    batch?: NullableStringFieldUpdateOperationsInput | string | null
+    section?: NullableStringFieldUpdateOperationsInput | string | null
+    employeeId?: NullableStringFieldUpdateOperationsInput | string | null
+    designation?: NullableStringFieldUpdateOperationsInput | string | null
+    facultyDept?: NullableStringFieldUpdateOperationsInput | string | null
+    facultyInst?: NullableStringFieldUpdateOperationsInput | string | null
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    nodalCentreId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdUsers?: UserUncheckedUpdateManyWithoutCreatedByNestedInput
+    subjectsCreated?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    labsCreated?: LabUncheckedUpdateManyWithoutCreatedByNestedInput
+    experimentsCreated?: ExperimentUncheckedUpdateManyWithoutCreatedByNestedInput
+    workshopsCreated?: WorkshopUncheckedUpdateManyWithoutCreatedByNestedInput
+    quizAttempts?: QuizAttemptUncheckedUpdateManyWithoutUserNestedInput
+    experimentVisits?: ExperimentVisitUncheckedUpdateManyWithoutUserNestedInput
+    feedbacks?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
+    chatSent?: ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
+    chatReceived?: ChatMessageUncheckedUpdateManyWithoutReceiverNestedInput
+    hostedCalls?: ScheduledCallUncheckedUpdateManyWithoutHostNestedInput
+    inviteeRecords?: ScheduledCallInviteeUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserCreateWithoutWorkshopsCreatedInput = {
+    id?: string
+    name: string
+    email: string
+    password: string
+    role: $Enums.Role
+    isActive?: boolean
+    customPermissions?: UserCreatecustomPermissionsInput | string[]
+    username?: string | null
+    mobile?: string | null
+    profilePic?: string | null
+    org?: string | null
+    dept?: string | null
+    course?: string | null
+    yearSemester?: string | null
+    country?: string | null
+    state?: string | null
+    city?: string | null
+    studentId?: string | null
+    batch?: string | null
+    section?: string | null
+    employeeId?: string | null
+    designation?: string | null
+    facultyDept?: string | null
+    facultyInst?: string | null
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdBy?: UserCreateNestedOneWithoutCreatedUsersInput
+    createdUsers?: UserCreateNestedManyWithoutCreatedByInput
+    nodalCentre?: InstitutionCreateNestedOneWithoutUsersInput
+    subjectsCreated?: SubjectCreateNestedManyWithoutCreatedByInput
+    labsCreated?: LabCreateNestedManyWithoutCreatedByInput
+    experimentsCreated?: ExperimentCreateNestedManyWithoutCreatedByInput
+    institutionsCreated?: InstitutionCreateNestedManyWithoutCreatedByInput
+    quizAttempts?: QuizAttemptCreateNestedManyWithoutUserInput
+    experimentVisits?: ExperimentVisitCreateNestedManyWithoutUserInput
+    feedbacks?: FeedbackCreateNestedManyWithoutUserInput
+    chatSent?: ChatMessageCreateNestedManyWithoutSenderInput
+    chatReceived?: ChatMessageCreateNestedManyWithoutReceiverInput
+    hostedCalls?: ScheduledCallCreateNestedManyWithoutHostInput
+    inviteeRecords?: ScheduledCallInviteeCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutWorkshopsCreatedInput = {
+    id?: string
+    name: string
+    email: string
+    password: string
+    role: $Enums.Role
+    isActive?: boolean
+    customPermissions?: UserCreatecustomPermissionsInput | string[]
+    username?: string | null
+    mobile?: string | null
+    profilePic?: string | null
+    org?: string | null
+    dept?: string | null
+    course?: string | null
+    yearSemester?: string | null
+    country?: string | null
+    state?: string | null
+    city?: string | null
+    studentId?: string | null
+    batch?: string | null
+    section?: string | null
+    employeeId?: string | null
+    designation?: string | null
+    facultyDept?: string | null
+    facultyInst?: string | null
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
+    createdById?: string | null
+    nodalCentreId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdUsers?: UserUncheckedCreateNestedManyWithoutCreatedByInput
+    subjectsCreated?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
+    labsCreated?: LabUncheckedCreateNestedManyWithoutCreatedByInput
+    experimentsCreated?: ExperimentUncheckedCreateNestedManyWithoutCreatedByInput
+    institutionsCreated?: InstitutionUncheckedCreateNestedManyWithoutCreatedByInput
+    quizAttempts?: QuizAttemptUncheckedCreateNestedManyWithoutUserInput
+    experimentVisits?: ExperimentVisitUncheckedCreateNestedManyWithoutUserInput
+    feedbacks?: FeedbackUncheckedCreateNestedManyWithoutUserInput
+    chatSent?: ChatMessageUncheckedCreateNestedManyWithoutSenderInput
+    chatReceived?: ChatMessageUncheckedCreateNestedManyWithoutReceiverInput
+    hostedCalls?: ScheduledCallUncheckedCreateNestedManyWithoutHostInput
+    inviteeRecords?: ScheduledCallInviteeUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutWorkshopsCreatedInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutWorkshopsCreatedInput, UserUncheckedCreateWithoutWorkshopsCreatedInput>
+  }
+
+  export type UserUpsertWithoutWorkshopsCreatedInput = {
+    update: XOR<UserUpdateWithoutWorkshopsCreatedInput, UserUncheckedUpdateWithoutWorkshopsCreatedInput>
+    create: XOR<UserCreateWithoutWorkshopsCreatedInput, UserUncheckedCreateWithoutWorkshopsCreatedInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutWorkshopsCreatedInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutWorkshopsCreatedInput, UserUncheckedUpdateWithoutWorkshopsCreatedInput>
+  }
+
+  export type UserUpdateWithoutWorkshopsCreatedInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    customPermissions?: UserUpdatecustomPermissionsInput | string[]
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    mobile?: NullableStringFieldUpdateOperationsInput | string | null
+    profilePic?: NullableStringFieldUpdateOperationsInput | string | null
+    org?: NullableStringFieldUpdateOperationsInput | string | null
+    dept?: NullableStringFieldUpdateOperationsInput | string | null
+    course?: NullableStringFieldUpdateOperationsInput | string | null
+    yearSemester?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    state?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    studentId?: NullableStringFieldUpdateOperationsInput | string | null
+    batch?: NullableStringFieldUpdateOperationsInput | string | null
+    section?: NullableStringFieldUpdateOperationsInput | string | null
+    employeeId?: NullableStringFieldUpdateOperationsInput | string | null
+    designation?: NullableStringFieldUpdateOperationsInput | string | null
+    facultyDept?: NullableStringFieldUpdateOperationsInput | string | null
+    facultyInst?: NullableStringFieldUpdateOperationsInput | string | null
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: UserUpdateOneWithoutCreatedUsersNestedInput
+    createdUsers?: UserUpdateManyWithoutCreatedByNestedInput
+    nodalCentre?: InstitutionUpdateOneWithoutUsersNestedInput
+    subjectsCreated?: SubjectUpdateManyWithoutCreatedByNestedInput
+    labsCreated?: LabUpdateManyWithoutCreatedByNestedInput
+    experimentsCreated?: ExperimentUpdateManyWithoutCreatedByNestedInput
+    institutionsCreated?: InstitutionUpdateManyWithoutCreatedByNestedInput
+    quizAttempts?: QuizAttemptUpdateManyWithoutUserNestedInput
+    experimentVisits?: ExperimentVisitUpdateManyWithoutUserNestedInput
+    feedbacks?: FeedbackUpdateManyWithoutUserNestedInput
+    chatSent?: ChatMessageUpdateManyWithoutSenderNestedInput
+    chatReceived?: ChatMessageUpdateManyWithoutReceiverNestedInput
+    hostedCalls?: ScheduledCallUpdateManyWithoutHostNestedInput
+    inviteeRecords?: ScheduledCallInviteeUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutWorkshopsCreatedInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    customPermissions?: UserUpdatecustomPermissionsInput | string[]
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    mobile?: NullableStringFieldUpdateOperationsInput | string | null
+    profilePic?: NullableStringFieldUpdateOperationsInput | string | null
+    org?: NullableStringFieldUpdateOperationsInput | string | null
+    dept?: NullableStringFieldUpdateOperationsInput | string | null
+    course?: NullableStringFieldUpdateOperationsInput | string | null
+    yearSemester?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    state?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    studentId?: NullableStringFieldUpdateOperationsInput | string | null
+    batch?: NullableStringFieldUpdateOperationsInput | string | null
+    section?: NullableStringFieldUpdateOperationsInput | string | null
+    employeeId?: NullableStringFieldUpdateOperationsInput | string | null
+    designation?: NullableStringFieldUpdateOperationsInput | string | null
+    facultyDept?: NullableStringFieldUpdateOperationsInput | string | null
+    facultyInst?: NullableStringFieldUpdateOperationsInput | string | null
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    nodalCentreId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdUsers?: UserUncheckedUpdateManyWithoutCreatedByNestedInput
+    subjectsCreated?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    labsCreated?: LabUncheckedUpdateManyWithoutCreatedByNestedInput
+    experimentsCreated?: ExperimentUncheckedUpdateManyWithoutCreatedByNestedInput
+    institutionsCreated?: InstitutionUncheckedUpdateManyWithoutCreatedByNestedInput
+    quizAttempts?: QuizAttemptUncheckedUpdateManyWithoutUserNestedInput
+    experimentVisits?: ExperimentVisitUncheckedUpdateManyWithoutUserNestedInput
+    feedbacks?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
+    chatSent?: ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
+    chatReceived?: ChatMessageUncheckedUpdateManyWithoutReceiverNestedInput
+    hostedCalls?: ScheduledCallUncheckedUpdateManyWithoutHostNestedInput
+    inviteeRecords?: ScheduledCallInviteeUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserCreateManyCreatedByInput = {
+    id?: string
+    name: string
+    email: string
+    password: string
+    role: $Enums.Role
+    isActive?: boolean
+    customPermissions?: UserCreatecustomPermissionsInput | string[]
+    username?: string | null
+    mobile?: string | null
+    profilePic?: string | null
+    org?: string | null
+    dept?: string | null
+    course?: string | null
+    yearSemester?: string | null
+    country?: string | null
+    state?: string | null
+    city?: string | null
+    studentId?: string | null
+    batch?: string | null
+    section?: string | null
+    employeeId?: string | null
+    designation?: string | null
+    facultyDept?: string | null
+    facultyInst?: string | null
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
+    nodalCentreId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -23796,19 +26793,6 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
-  export type LabCreateManyNodalCentreInput = {
-    id?: string
-    title: string
-    description?: string | null
-    icon?: string
-    coverPic?: string | null
-    isActive?: boolean
-    subjectId: string
-    createdById: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
   export type ExperimentCreateManyCreatedByInput = {
     id?: string
     title: string
@@ -23820,6 +26804,24 @@ export namespace Prisma {
     contentPath?: string | null
     simulationPath?: string | null
     labId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type InstitutionCreateManyCreatedByInput = {
+    id?: string
+    name: string
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type WorkshopCreateManyCreatedByInput = {
+    id?: string
+    title: string
+    description?: string | null
+    date: Date | string
+    status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -23888,6 +26890,7 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    customPermissions?: UserUpdatecustomPermissionsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -23910,12 +26913,12 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdUsers?: UserUpdateManyWithoutCreatedByNestedInput
-    nodalCentre?: UserUpdateOneWithoutCentreMembersNestedInput
-    centreMembers?: UserUpdateManyWithoutNodalCentreNestedInput
+    nodalCentre?: InstitutionUpdateOneWithoutUsersNestedInput
     subjectsCreated?: SubjectUpdateManyWithoutCreatedByNestedInput
     labsCreated?: LabUpdateManyWithoutCreatedByNestedInput
-    labsAsNodalCentre?: LabUpdateManyWithoutNodalCentreNestedInput
     experimentsCreated?: ExperimentUpdateManyWithoutCreatedByNestedInput
+    institutionsCreated?: InstitutionUpdateManyWithoutCreatedByNestedInput
+    workshopsCreated?: WorkshopUpdateManyWithoutCreatedByNestedInput
     quizAttempts?: QuizAttemptUpdateManyWithoutUserNestedInput
     experimentVisits?: ExperimentVisitUpdateManyWithoutUserNestedInput
     feedbacks?: FeedbackUpdateManyWithoutUserNestedInput
@@ -23932,6 +26935,7 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    customPermissions?: UserUpdatecustomPermissionsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -23955,11 +26959,11 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdUsers?: UserUncheckedUpdateManyWithoutCreatedByNestedInput
-    centreMembers?: UserUncheckedUpdateManyWithoutNodalCentreNestedInput
     subjectsCreated?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
     labsCreated?: LabUncheckedUpdateManyWithoutCreatedByNestedInput
-    labsAsNodalCentre?: LabUncheckedUpdateManyWithoutNodalCentreNestedInput
     experimentsCreated?: ExperimentUncheckedUpdateManyWithoutCreatedByNestedInput
+    institutionsCreated?: InstitutionUncheckedUpdateManyWithoutCreatedByNestedInput
+    workshopsCreated?: WorkshopUncheckedUpdateManyWithoutCreatedByNestedInput
     quizAttempts?: QuizAttemptUncheckedUpdateManyWithoutUserNestedInput
     experimentVisits?: ExperimentVisitUncheckedUpdateManyWithoutUserNestedInput
     feedbacks?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
@@ -23976,6 +26980,7 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    customPermissions?: UserUpdatecustomPermissionsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -23996,125 +27001,6 @@ export namespace Prisma {
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     nodalCentreId?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type UserUpdateWithoutNodalCentreInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    password?: StringFieldUpdateOperationsInput | string
-    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    username?: NullableStringFieldUpdateOperationsInput | string | null
-    mobile?: NullableStringFieldUpdateOperationsInput | string | null
-    profilePic?: NullableStringFieldUpdateOperationsInput | string | null
-    org?: NullableStringFieldUpdateOperationsInput | string | null
-    dept?: NullableStringFieldUpdateOperationsInput | string | null
-    course?: NullableStringFieldUpdateOperationsInput | string | null
-    yearSemester?: NullableStringFieldUpdateOperationsInput | string | null
-    country?: NullableStringFieldUpdateOperationsInput | string | null
-    state?: NullableStringFieldUpdateOperationsInput | string | null
-    city?: NullableStringFieldUpdateOperationsInput | string | null
-    studentId?: NullableStringFieldUpdateOperationsInput | string | null
-    batch?: NullableStringFieldUpdateOperationsInput | string | null
-    section?: NullableStringFieldUpdateOperationsInput | string | null
-    employeeId?: NullableStringFieldUpdateOperationsInput | string | null
-    designation?: NullableStringFieldUpdateOperationsInput | string | null
-    facultyDept?: NullableStringFieldUpdateOperationsInput | string | null
-    facultyInst?: NullableStringFieldUpdateOperationsInput | string | null
-    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
-    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdBy?: UserUpdateOneWithoutCreatedUsersNestedInput
-    createdUsers?: UserUpdateManyWithoutCreatedByNestedInput
-    centreMembers?: UserUpdateManyWithoutNodalCentreNestedInput
-    subjectsCreated?: SubjectUpdateManyWithoutCreatedByNestedInput
-    labsCreated?: LabUpdateManyWithoutCreatedByNestedInput
-    labsAsNodalCentre?: LabUpdateManyWithoutNodalCentreNestedInput
-    experimentsCreated?: ExperimentUpdateManyWithoutCreatedByNestedInput
-    quizAttempts?: QuizAttemptUpdateManyWithoutUserNestedInput
-    experimentVisits?: ExperimentVisitUpdateManyWithoutUserNestedInput
-    feedbacks?: FeedbackUpdateManyWithoutUserNestedInput
-    chatSent?: ChatMessageUpdateManyWithoutSenderNestedInput
-    chatReceived?: ChatMessageUpdateManyWithoutReceiverNestedInput
-    hostedCalls?: ScheduledCallUpdateManyWithoutHostNestedInput
-    inviteeRecords?: ScheduledCallInviteeUpdateManyWithoutUserNestedInput
-  }
-
-  export type UserUncheckedUpdateWithoutNodalCentreInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    password?: StringFieldUpdateOperationsInput | string
-    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    username?: NullableStringFieldUpdateOperationsInput | string | null
-    mobile?: NullableStringFieldUpdateOperationsInput | string | null
-    profilePic?: NullableStringFieldUpdateOperationsInput | string | null
-    org?: NullableStringFieldUpdateOperationsInput | string | null
-    dept?: NullableStringFieldUpdateOperationsInput | string | null
-    course?: NullableStringFieldUpdateOperationsInput | string | null
-    yearSemester?: NullableStringFieldUpdateOperationsInput | string | null
-    country?: NullableStringFieldUpdateOperationsInput | string | null
-    state?: NullableStringFieldUpdateOperationsInput | string | null
-    city?: NullableStringFieldUpdateOperationsInput | string | null
-    studentId?: NullableStringFieldUpdateOperationsInput | string | null
-    batch?: NullableStringFieldUpdateOperationsInput | string | null
-    section?: NullableStringFieldUpdateOperationsInput | string | null
-    employeeId?: NullableStringFieldUpdateOperationsInput | string | null
-    designation?: NullableStringFieldUpdateOperationsInput | string | null
-    facultyDept?: NullableStringFieldUpdateOperationsInput | string | null
-    facultyInst?: NullableStringFieldUpdateOperationsInput | string | null
-    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
-    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdById?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdUsers?: UserUncheckedUpdateManyWithoutCreatedByNestedInput
-    centreMembers?: UserUncheckedUpdateManyWithoutNodalCentreNestedInput
-    subjectsCreated?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
-    labsCreated?: LabUncheckedUpdateManyWithoutCreatedByNestedInput
-    labsAsNodalCentre?: LabUncheckedUpdateManyWithoutNodalCentreNestedInput
-    experimentsCreated?: ExperimentUncheckedUpdateManyWithoutCreatedByNestedInput
-    quizAttempts?: QuizAttemptUncheckedUpdateManyWithoutUserNestedInput
-    experimentVisits?: ExperimentVisitUncheckedUpdateManyWithoutUserNestedInput
-    feedbacks?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
-    chatSent?: ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
-    chatReceived?: ChatMessageUncheckedUpdateManyWithoutReceiverNestedInput
-    hostedCalls?: ScheduledCallUncheckedUpdateManyWithoutHostNestedInput
-    inviteeRecords?: ScheduledCallInviteeUncheckedUpdateManyWithoutUserNestedInput
-  }
-
-  export type UserUncheckedUpdateManyWithoutNodalCentreInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    password?: StringFieldUpdateOperationsInput | string
-    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    username?: NullableStringFieldUpdateOperationsInput | string | null
-    mobile?: NullableStringFieldUpdateOperationsInput | string | null
-    profilePic?: NullableStringFieldUpdateOperationsInput | string | null
-    org?: NullableStringFieldUpdateOperationsInput | string | null
-    dept?: NullableStringFieldUpdateOperationsInput | string | null
-    course?: NullableStringFieldUpdateOperationsInput | string | null
-    yearSemester?: NullableStringFieldUpdateOperationsInput | string | null
-    country?: NullableStringFieldUpdateOperationsInput | string | null
-    state?: NullableStringFieldUpdateOperationsInput | string | null
-    city?: NullableStringFieldUpdateOperationsInput | string | null
-    studentId?: NullableStringFieldUpdateOperationsInput | string | null
-    batch?: NullableStringFieldUpdateOperationsInput | string | null
-    section?: NullableStringFieldUpdateOperationsInput | string | null
-    employeeId?: NullableStringFieldUpdateOperationsInput | string | null
-    designation?: NullableStringFieldUpdateOperationsInput | string | null
-    facultyDept?: NullableStringFieldUpdateOperationsInput | string | null
-    facultyInst?: NullableStringFieldUpdateOperationsInput | string | null
-    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
-    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -24164,7 +27050,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     subject?: SubjectUpdateOneRequiredWithoutLabsNestedInput
-    nodalCentre?: UserUpdateOneWithoutLabsAsNodalCentreNestedInput
+    nodalCentre?: InstitutionUpdateOneWithoutLabsNestedInput
     experiments?: ExperimentUpdateManyWithoutLabNestedInput
   }
 
@@ -24191,47 +27077,6 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     subjectId?: StringFieldUpdateOperationsInput | string
     nodalCentreId?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type LabUpdateWithoutNodalCentreInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    icon?: StringFieldUpdateOperationsInput | string
-    coverPic?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    subject?: SubjectUpdateOneRequiredWithoutLabsNestedInput
-    createdBy?: UserUpdateOneRequiredWithoutLabsCreatedNestedInput
-    experiments?: ExperimentUpdateManyWithoutLabNestedInput
-  }
-
-  export type LabUncheckedUpdateWithoutNodalCentreInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    icon?: StringFieldUpdateOperationsInput | string
-    coverPic?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    subjectId?: StringFieldUpdateOperationsInput | string
-    createdById?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    experiments?: ExperimentUncheckedUpdateManyWithoutLabNestedInput
-  }
-
-  export type LabUncheckedUpdateManyWithoutNodalCentreInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    icon?: StringFieldUpdateOperationsInput | string
-    coverPic?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    subjectId?: StringFieldUpdateOperationsInput | string
-    createdById?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -24283,6 +27128,64 @@ export namespace Prisma {
     contentPath?: NullableStringFieldUpdateOperationsInput | string | null
     simulationPath?: NullableStringFieldUpdateOperationsInput | string | null
     labId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type InstitutionUpdateWithoutCreatedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: UserUpdateManyWithoutNodalCentreNestedInput
+    labs?: LabUpdateManyWithoutNodalCentreNestedInput
+  }
+
+  export type InstitutionUncheckedUpdateWithoutCreatedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: UserUncheckedUpdateManyWithoutNodalCentreNestedInput
+    labs?: LabUncheckedUpdateManyWithoutNodalCentreNestedInput
+  }
+
+  export type InstitutionUncheckedUpdateManyWithoutCreatedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WorkshopUpdateWithoutCreatedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WorkshopUncheckedUpdateWithoutCreatedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WorkshopUncheckedUpdateManyWithoutCreatedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -24483,7 +27386,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: UserUpdateOneRequiredWithoutLabsCreatedNestedInput
-    nodalCentre?: UserUpdateOneWithoutLabsAsNodalCentreNestedInput
+    nodalCentre?: InstitutionUpdateOneWithoutLabsNestedInput
     experiments?: ExperimentUpdateManyWithoutLabNestedInput
   }
 
@@ -24764,6 +27667,214 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type UserCreateManyNodalCentreInput = {
+    id?: string
+    name: string
+    email: string
+    password: string
+    role: $Enums.Role
+    isActive?: boolean
+    customPermissions?: UserCreatecustomPermissionsInput | string[]
+    username?: string | null
+    mobile?: string | null
+    profilePic?: string | null
+    org?: string | null
+    dept?: string | null
+    course?: string | null
+    yearSemester?: string | null
+    country?: string | null
+    state?: string | null
+    city?: string | null
+    studentId?: string | null
+    batch?: string | null
+    section?: string | null
+    employeeId?: string | null
+    designation?: string | null
+    facultyDept?: string | null
+    facultyInst?: string | null
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
+    createdById?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type LabCreateManyNodalCentreInput = {
+    id?: string
+    title: string
+    description?: string | null
+    icon?: string
+    coverPic?: string | null
+    isActive?: boolean
+    subjectId: string
+    createdById: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type UserUpdateWithoutNodalCentreInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    customPermissions?: UserUpdatecustomPermissionsInput | string[]
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    mobile?: NullableStringFieldUpdateOperationsInput | string | null
+    profilePic?: NullableStringFieldUpdateOperationsInput | string | null
+    org?: NullableStringFieldUpdateOperationsInput | string | null
+    dept?: NullableStringFieldUpdateOperationsInput | string | null
+    course?: NullableStringFieldUpdateOperationsInput | string | null
+    yearSemester?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    state?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    studentId?: NullableStringFieldUpdateOperationsInput | string | null
+    batch?: NullableStringFieldUpdateOperationsInput | string | null
+    section?: NullableStringFieldUpdateOperationsInput | string | null
+    employeeId?: NullableStringFieldUpdateOperationsInput | string | null
+    designation?: NullableStringFieldUpdateOperationsInput | string | null
+    facultyDept?: NullableStringFieldUpdateOperationsInput | string | null
+    facultyInst?: NullableStringFieldUpdateOperationsInput | string | null
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: UserUpdateOneWithoutCreatedUsersNestedInput
+    createdUsers?: UserUpdateManyWithoutCreatedByNestedInput
+    subjectsCreated?: SubjectUpdateManyWithoutCreatedByNestedInput
+    labsCreated?: LabUpdateManyWithoutCreatedByNestedInput
+    experimentsCreated?: ExperimentUpdateManyWithoutCreatedByNestedInput
+    institutionsCreated?: InstitutionUpdateManyWithoutCreatedByNestedInput
+    workshopsCreated?: WorkshopUpdateManyWithoutCreatedByNestedInput
+    quizAttempts?: QuizAttemptUpdateManyWithoutUserNestedInput
+    experimentVisits?: ExperimentVisitUpdateManyWithoutUserNestedInput
+    feedbacks?: FeedbackUpdateManyWithoutUserNestedInput
+    chatSent?: ChatMessageUpdateManyWithoutSenderNestedInput
+    chatReceived?: ChatMessageUpdateManyWithoutReceiverNestedInput
+    hostedCalls?: ScheduledCallUpdateManyWithoutHostNestedInput
+    inviteeRecords?: ScheduledCallInviteeUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutNodalCentreInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    customPermissions?: UserUpdatecustomPermissionsInput | string[]
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    mobile?: NullableStringFieldUpdateOperationsInput | string | null
+    profilePic?: NullableStringFieldUpdateOperationsInput | string | null
+    org?: NullableStringFieldUpdateOperationsInput | string | null
+    dept?: NullableStringFieldUpdateOperationsInput | string | null
+    course?: NullableStringFieldUpdateOperationsInput | string | null
+    yearSemester?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    state?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    studentId?: NullableStringFieldUpdateOperationsInput | string | null
+    batch?: NullableStringFieldUpdateOperationsInput | string | null
+    section?: NullableStringFieldUpdateOperationsInput | string | null
+    employeeId?: NullableStringFieldUpdateOperationsInput | string | null
+    designation?: NullableStringFieldUpdateOperationsInput | string | null
+    facultyDept?: NullableStringFieldUpdateOperationsInput | string | null
+    facultyInst?: NullableStringFieldUpdateOperationsInput | string | null
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdUsers?: UserUncheckedUpdateManyWithoutCreatedByNestedInput
+    subjectsCreated?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    labsCreated?: LabUncheckedUpdateManyWithoutCreatedByNestedInput
+    experimentsCreated?: ExperimentUncheckedUpdateManyWithoutCreatedByNestedInput
+    institutionsCreated?: InstitutionUncheckedUpdateManyWithoutCreatedByNestedInput
+    workshopsCreated?: WorkshopUncheckedUpdateManyWithoutCreatedByNestedInput
+    quizAttempts?: QuizAttemptUncheckedUpdateManyWithoutUserNestedInput
+    experimentVisits?: ExperimentVisitUncheckedUpdateManyWithoutUserNestedInput
+    feedbacks?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
+    chatSent?: ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
+    chatReceived?: ChatMessageUncheckedUpdateManyWithoutReceiverNestedInput
+    hostedCalls?: ScheduledCallUncheckedUpdateManyWithoutHostNestedInput
+    inviteeRecords?: ScheduledCallInviteeUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateManyWithoutNodalCentreInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    customPermissions?: UserUpdatecustomPermissionsInput | string[]
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    mobile?: NullableStringFieldUpdateOperationsInput | string | null
+    profilePic?: NullableStringFieldUpdateOperationsInput | string | null
+    org?: NullableStringFieldUpdateOperationsInput | string | null
+    dept?: NullableStringFieldUpdateOperationsInput | string | null
+    course?: NullableStringFieldUpdateOperationsInput | string | null
+    yearSemester?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    state?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    studentId?: NullableStringFieldUpdateOperationsInput | string | null
+    batch?: NullableStringFieldUpdateOperationsInput | string | null
+    section?: NullableStringFieldUpdateOperationsInput | string | null
+    employeeId?: NullableStringFieldUpdateOperationsInput | string | null
+    designation?: NullableStringFieldUpdateOperationsInput | string | null
+    facultyDept?: NullableStringFieldUpdateOperationsInput | string | null
+    facultyInst?: NullableStringFieldUpdateOperationsInput | string | null
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type LabUpdateWithoutNodalCentreInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    icon?: StringFieldUpdateOperationsInput | string
+    coverPic?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    subject?: SubjectUpdateOneRequiredWithoutLabsNestedInput
+    createdBy?: UserUpdateOneRequiredWithoutLabsCreatedNestedInput
+    experiments?: ExperimentUpdateManyWithoutLabNestedInput
+  }
+
+  export type LabUncheckedUpdateWithoutNodalCentreInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    icon?: StringFieldUpdateOperationsInput | string
+    coverPic?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    subjectId?: StringFieldUpdateOperationsInput | string
+    createdById?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    experiments?: ExperimentUncheckedUpdateManyWithoutLabNestedInput
+  }
+
+  export type LabUncheckedUpdateManyWithoutNodalCentreInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    icon?: StringFieldUpdateOperationsInput | string
+    coverPic?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    subjectId?: StringFieldUpdateOperationsInput | string
+    createdById?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
 
 
   /**
@@ -24793,6 +27904,10 @@ export namespace Prisma {
      * @deprecated Use PageCountOutputTypeDefaultArgs instead
      */
     export type PageCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = PageCountOutputTypeDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use InstitutionCountOutputTypeDefaultArgs instead
+     */
+    export type InstitutionCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = InstitutionCountOutputTypeDefaultArgs<ExtArgs>
     /**
      * @deprecated Use UserDefaultArgs instead
      */
@@ -24841,6 +27956,14 @@ export namespace Prisma {
      * @deprecated Use PageSectionDefaultArgs instead
      */
     export type PageSectionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = PageSectionDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use InstitutionDefaultArgs instead
+     */
+    export type InstitutionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = InstitutionDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use WorkshopDefaultArgs instead
+     */
+    export type WorkshopArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = WorkshopDefaultArgs<ExtArgs>
 
   /**
    * Batch Payload for updateMany & deleteMany & createMany

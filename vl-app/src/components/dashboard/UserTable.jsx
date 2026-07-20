@@ -8,10 +8,14 @@ const ROLE_BADGE = {
   nodal_centre: 'bg-orange-500/20 text-orange-300 border-orange-500/30',
   teacher:      'bg-blue-500/20 text-blue-300 border-blue-500/30',
   student:      'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
+  content_admin: 'bg-purple-500/20 text-purple-300 border-purple-500/30',
+  sim_admin:    'bg-indigo-500/20 text-indigo-300 border-indigo-500/30',
+  vl_manager:   'bg-pink-500/20 text-pink-300 border-pink-500/30',
 };
 
 const ROLE_LABELS = {
   admin: 'Admin', nodal_centre: 'Nodal Centre', teacher: 'Teacher', student: 'Student',
+  content_admin: 'Content Admin', sim_admin: 'Sim Admin', vl_manager: 'VL Manager',
 };
 
 export default function UserTable({ users, loading, onRefresh }) {
@@ -142,7 +146,9 @@ export default function UserTable({ users, loading, onRefresh }) {
                     <div className="flex items-center gap-3">
                       <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs font-bold bg-gradient-to-br ${
                         { admin: 'from-red-500 to-rose-600', nodal_centre: 'from-orange-500 to-amber-500',
-                          teacher: 'from-blue-500 to-indigo-600', student: 'from-emerald-500 to-green-600' }[u.role]
+                          teacher: 'from-blue-500 to-indigo-600', student: 'from-emerald-500 to-green-600',
+                          content_admin: 'from-purple-500 to-fuchsia-600', sim_admin: 'from-indigo-500 to-violet-600',
+                          vl_manager: 'from-pink-500 to-rose-500' }[u.role]
                       }`}>
                         {u.name[0]?.toUpperCase()}
                       </div>

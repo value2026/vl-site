@@ -15,6 +15,8 @@ const experimentRoutes  = require('./routes/experiments');
 const analyticsRoutes   = require('./routes/analytics');
 const callRoutes        = require('./routes/calls');
 const pagesRoutes       = require('./routes/pages');
+const institutionRoutes = require('./routes/institutions');
+const workshopRoutes    = require('./routes/workshops');
 
 const app  = express();
 const PORT = process.env.PORT || 5000;
@@ -67,6 +69,8 @@ app.use('/api/experiments', experimentRoutes);
 app.use('/api/analytics',   analyticsRoutes);
 app.use('/api/calls',       callRoutes);
 app.use('/api/pages',       pagesRoutes);
+app.use('/api/institutions', institutionRoutes);
+app.use('/api/workshops',    workshopRoutes);
 
 // Local media upload endpoint (fallback when Cloudinary is not configured)
 const multer = require('multer');

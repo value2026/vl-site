@@ -47,6 +47,7 @@ const login = async (req, res) => {
         role:         user.role,
         name:         user.name,
         nodalCentreId: user.nodalCentreId,
+        customPermissions: user.customPermissions || [],
       },
       process.env.JWT_SECRET,
       { expiresIn: '7d' }
@@ -60,6 +61,7 @@ const login = async (req, res) => {
         email:        user.email,
         role:         user.role,
         nodalCentreId: user.nodalCentreId,
+        customPermissions: user.customPermissions || [],
       },
     });
   } catch (err) {
@@ -79,6 +81,7 @@ const getMe = async (req, res) => {
         email:        true,
         role:         true,
         isActive:     true,
+        customPermissions: true,
         nodalCentreId: true,
         createdAt:    true,
         nodalCentre:  { select: { name: true } },

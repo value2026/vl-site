@@ -1,0 +1,90 @@
+{
+  "version": 2.0,
+  "questions": [
+    {
+      "question": "What is the main problem Shor’s Algorithm is designed to solve?",
+      "answers": {
+        "a": "Sorting numbers",
+        "b": "Integer factorization",
+        "c": "Searching a database",
+        "d": "Matrix multiplication"
+      },
+      "explanations": {
+        "a": "Sorting is not the purpose of Shor’s Algorithm.",
+        "b": "Shor’s Algorithm is specifically designed for integer factorization.",
+        "c": "Database search is addressed by Grover’s Algorithm.",
+        "d": "Matrix multiplication is not related to Shor’s Algorithm."
+      },
+      "correctAnswer": "b",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "Shor’s Algorithm reduces factorization into which mathematical problem?",
+      "answers": {
+        "a": "Optimization",
+        "b": "Prime testing",
+        "c": "Period finding",
+        "d": "Graph traversal"
+      },
+      "explanations": {
+        "a": "Optimization is not the core reduction step.",
+        "b": "Prime testing is different from factorization.",
+        "c": "Shor’s Algorithm reduces factorization to a period finding problem.",
+        "d": "Graph traversal is unrelated."
+      },
+      "correctAnswer": "c",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "Which transform is used to extract the period in Shor’s Algorithm?",
+      "answers": {
+        "a": "Hadamard Transform",
+        "b": "Quantum Fourier Transform",
+        "c": "Laplace Transform",
+        "d": "Z-Transform"
+      },
+      "explanations": {
+        "a": "Hadamard creates superposition but does not extract periodicity.",
+        "b": "The Quantum Fourier Transform is used to detect periodicity.",
+        "c": "Laplace Transform is not used in quantum computing.",
+        "d": "Z-Transform is a signal processing tool."
+      },
+      "correctAnswer": "b",
+      "difficulty": "intermediate"
+    },
+    {
+      "question": "In Shor’s Algorithm, what is the function typically evaluated?",
+      "answers": {
+        "a": "f(x) = x + N",
+        "b": "f(x) = a^x mod N",
+        "c": "f(x) = x^2",
+        "d": "f(x) = log(x)"
+      },
+      "explanations": {
+        "a": "Addition does not create the required periodic structure.",
+        "b": "The modular exponentiation function a^x mod N is used.",
+        "c": "x^2 is not used in the algorithm.",
+        "d": "Logarithm is not involved."
+      },
+      "correctAnswer": "b",
+      "difficulty": "intermediate"
+    },
+    {
+      "question": "After finding the period r, which mathematical operation helps compute the factors?",
+      "answers": {
+        "a": "Integration",
+        "b": "Differentiation",
+        "c": "Greatest Common Divisor (GCD)",
+        "d": "Matrix inversion"
+      },
+      "explanations": {
+        "a": "Integration is not used.",
+        "b": "Differentiation is not used.",
+        "c": "GCD is used to compute the non-trivial factors.",
+        "d": "Matrix inversion is unrelated."
+      },
+      "correctAnswer": "c",
+      "difficulty": "intermediate"
+    }
+  ]
+}

@@ -15,6 +15,9 @@ enum Role {
   nodal_centre
   teacher
   student
+  content_admin
+  sim_admin
+  vl_manager
 }
 
 model User {
@@ -23,7 +26,8 @@ model User {
   email    String  @unique
   password String
   role     Role
-  isActive Boolean @default(true)
+  isActive          Boolean  @default(true)
+  customPermissions String[] @default([])
 
   // Additional fields requested by user
   username          String? @unique
@@ -53,16 +57,17 @@ model User {
   createdBy    User?   @relation("CreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
   createdUsers User[]  @relation("CreatedBy")
 
-  // Which nodal centre this teacher/student belongs to
+  // Which nodal centre (Institution) this user belongs to
   nodalCentreId String?
-  nodalCentre   User?   @relation("NodalCentre", fields: [nodalCentreId], references: [id], onDelete: SetNull)
-  centreMembers User[]  @relation("NodalCentre")
+  nodalCentre   Institution? @relation("InstitutionMembers", fields: [nodalCentreId], references: [id], onDelete: SetNull)
 
   // Lab management relations
   subjectsCreated    Subject[]    @relation("SubjectCreator")
   labsCreated        Lab[]        @relation("LabCreator")
-  labsAsNodalCentre  Lab[]        @relation("LabNodalCentre")
   experimentsCreated Experiment[] @relation("ExperimentCreator")
+  
+  institutionsCreated Institution[] @relation("InstitutionCreator")
+  workshopsCreated    Workshop[]    @relation("WorkshopCreator")
 
   // Analytics relations
   quizAttempts       QuizAttempt[]
@@ -114,9 +119,9 @@ model Lab {
   createdById String
   createdBy   User   @relation("LabCreator", fields: [createdById], references: [id])
 
-  // Which nodal centre owns this lab (null = admin-created global lab)
+  // Which nodal centre (Institution) owns this lab (null = admin-created global lab)
   nodalCentreId String?
-  nodalCentre   User?   @relation("LabNodalCentre", fields: [nodalCentreId], references: [id])
+  nodalCentre   Institution? @relation("LabNodalCentre", fields: [nodalCentreId], references: [id])
 
   experiments Experiment[]
 
@@ -266,5 +271,38 @@ model PageSection {
 
   @@unique([pageId, sectionKey])
   @@map("page_sections")
+}
+
+model Institution {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  isActive    Boolean  @default(true)
+  
+  users       User[]   @relation("InstitutionMembers")
+  labs        Lab[]    @relation("LabNodalCentre")
+
+  createdById String?
+  createdBy   User?    @relation("InstitutionCreator", fields: [createdById], references: [id])
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("institutions")
+}
+
+model Workshop {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  date        DateTime
+  status      String   @default("pending") // pending, approved, rejected
+  
+  createdById String
+  createdBy   User     @relation("WorkshopCreator", fields: [createdById], references: [id])
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("workshops")
 }
 

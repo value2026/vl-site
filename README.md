@@ -101,8 +101,7 @@ After running `npm run db:seed`, the following default accounts are available:
 | Role             | Email                    | Password         |
 | ---------------- | ------------------------ | ---------------- |
 | **Super Admin**  | `admin@virtuallabs.in`   | `VLAdmin@2024`   |
-| **Nodal Centre** | `nodal@virtuallabs.in`   | `VLNodal@2024`   |
-| **Teacher**      | `teacher@virtuallabs.in` | `VLTeacher@2024` |
+| **Nodal Centre** | `nodal@amrita.edu`       | `VLNodal@2024`   |
 | **Student**      | `student@virtuallabs.in` | `VLStudent@2024` |
 
 _Note: It is highly recommended to change these passwords after your first login._

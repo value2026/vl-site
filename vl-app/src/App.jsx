@@ -22,6 +22,9 @@ import AdminDashboard       from './pages/dashboards/AdminDashboard';
 import NodalCentreDashboard from './pages/dashboards/NodalCentreDashboard';
 import TeacherDashboard     from './pages/dashboards/TeacherDashboard';
 import ManagePages          from './pages/dashboards/ManagePages';
+import VLManagerDashboard   from './pages/dashboards/VLManagerDashboard';
+import InstitutionsManagement from './pages/dashboards/InstitutionsManagement';
+import WorkshopsManagement    from './pages/dashboards/WorkshopsManagement';
 
 // Student learning platform
 import StudentHome    from './pages/student/StudentHome';
@@ -108,6 +111,7 @@ function ProtectedRoute({ children, allowedRole }) {
     // Redirect to their correct dashboard
     const dashMap = {
       admin:        '/dashboard/admin',
+      vl_manager:   '/dashboard/vl-manager',
       nodal_centre: '/dashboard/nodal',
       teacher:      '/dashboard/teacher',
       student:      '/student',
@@ -154,6 +158,44 @@ function AppLayout() {
         <Route path="/dashboard/admin/pages" element={
           <ProtectedRoute allowedRole="admin">
             <DashboardLayout title="Manage Pages"><ManagePages /></DashboardLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/dashboard/admin/institutions" element={
+          <ProtectedRoute allowedRole="admin">
+            <DashboardLayout title="Institutions"><InstitutionsManagement /></DashboardLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/dashboard/admin/workshops" element={
+          <ProtectedRoute allowedRole="admin">
+            <DashboardLayout title="Workshops"><WorkshopsManagement /></DashboardLayout>
+          </ProtectedRoute>
+        } />
+
+        {/* VL Manager */}
+        <Route path="/dashboard/vl-manager" element={
+          <ProtectedRoute allowedRole="vl_manager"><VLManagerDashboard /></ProtectedRoute>
+        } />
+        <Route path="/dashboard/vl-manager/users" element={
+          <ProtectedRoute allowedRole="vl_manager"><VLManagerDashboard /></ProtectedRoute>
+        } />
+        <Route path="/dashboard/vl-manager/institutions" element={
+          <ProtectedRoute allowedRole="vl_manager">
+            <DashboardLayout title="Institutions"><InstitutionsManagement /></DashboardLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/dashboard/vl-manager/workshops" element={
+          <ProtectedRoute allowedRole="vl_manager">
+            <DashboardLayout title="Workshops"><WorkshopsManagement /></DashboardLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/dashboard/vl-manager/labs" element={
+          <ProtectedRoute allowedRole="vl_manager">
+            <DashboardLayout title="Lab Management"><LabManagement /></DashboardLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/dashboard/vl-manager/analytics" element={
+          <ProtectedRoute allowedRole="vl_manager">
+            <DashboardLayout title="Usage Analytics"><AnalyticsDashboard /></DashboardLayout>
           </ProtectedRoute>
         } />
 

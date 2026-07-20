@@ -4,7 +4,8 @@ const { sendWelcomeEmail } = require('../utils/mailer');
 
 // Which roles each role is allowed to create
 const CREATION_RULES = {
-  admin:        ['admin', 'nodal_centre', 'teacher', 'student'],
+  admin:        ['admin', 'nodal_centre', 'teacher', 'student', 'content_admin', 'sim_admin', 'vl_manager'],
+  vl_manager:   ['nodal_centre', 'teacher', 'student'],
   nodal_centre: ['teacher', 'student'],
   teacher:      ['student'],
   student:      [],
@@ -99,9 +100,15 @@ const createUser = async (req, res) => {
     } = req.body;
 
     // Validate required fields
-    if (!name || !email || !newRole || !username || !org || !dept || !country) {
+    if (!name || !email || !newRole || !username) {
       return res.status(400).json({ 
-        message: 'Missing required fields. Full Name, Username, Email, Organization/University, Department, and Country are required.' 
+        message: 'Missing required fields. Full Name, Username, Email, and User Type are required.' 
+      });
+    }
+
+    if (newRole === 'teacher' && (!dept || !dept.trim())) {
+      return res.status(400).json({
+        message: 'Department is required for Faculty/Instructors.'
       });
     }
 
@@ -133,7 +140,11 @@ const createUser = async (req, res) => {
     // Determine which nodal centre to assign
     let centreId = nodalCentreId || null;
     if (callerRole === 'nodal_centre') {
-      centreId = callerId; // always under the calling nodal centre
+      const nodalAdmin = await prisma.user.findUnique({
+        where: { id: callerId },
+        select: { nodalCentreId: true },
+      });
+      centreId = nodalAdmin?.nodalCentreId ?? null;
     } else if (callerRole === 'teacher') {
       // Inherit teacher's own nodal centre
       const teacher = await prisma.user.findUnique({
@@ -160,11 +171,11 @@ const createUser = async (req, res) => {
         username:      username.trim(),
         mobile:        mobile ? mobile.trim() : null,
         profilePic:    profilePic || null,
-        org:           org.trim(),
-        dept:          dept.trim(),
+        org:           org ? org.trim() : (newRole === 'student' ? 'Virtual Labs Partner' : null),
+        dept:          dept ? dept.trim() : (newRole === 'student' ? 'Science' : null),
         course:        course ? course.trim() : null,
         yearSemester:  yearSemester ? yearSemester.trim() : null,
-        country:       country.trim(),
+        country:       country ? country.trim() : 'India',
         state:         state ? state.trim() : null,
         city:          city ? city.trim() : null,
 
@@ -178,6 +189,8 @@ const createUser = async (req, res) => {
         designation:   newRole === 'teacher' && designation ? designation.trim() : null,
         facultyDept:   newRole === 'teacher' && facultyDept ? facultyDept.trim() : null,
         facultyInst:   newRole === 'teacher' && facultyInst ? facultyInst.trim() : null,
+        
+        customPermissions: callerRole === 'admin' && req.body.customPermissions ? req.body.customPermissions : [],
       },
       select: {
         id:           true,
@@ -230,6 +243,7 @@ const updateUser = async (req, res) => {
     if (email)                      data.email    = email.toLowerCase().trim();
     if (typeof isActive === 'boolean') data.isActive = isActive;
     if (password)                   data.password = await bcrypt.hash(password, 12);
+    if (req.body.customPermissions && callerRole === 'admin') data.customPermissions = req.body.customPermissions;
 
     const updated = await prisma.user.update({
       where: { id: targetId },
@@ -332,7 +346,11 @@ const bulkCreateStudents = async (req, res) => {
     // Nodal centre id resolution
     let centreId = null;
     if (callerRole === 'nodal_centre') {
-      centreId = callerId;
+      const nodalAdmin = await prisma.user.findUnique({
+        where: { id: callerId },
+        select: { nodalCentreId: true },
+      });
+      centreId = nodalAdmin?.nodalCentreId ?? null;
     } else if (callerRole === 'teacher') {
       const teacher = await prisma.user.findUnique({
         where: { id: callerId },
