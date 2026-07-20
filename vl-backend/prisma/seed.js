@@ -130,48 +130,56 @@ async function main() {
           description: 'Hands-on simulations covering quantum state preparation, Shor\'s algorithm, VQE optimization, QSVM, and quantum machine learning.',
           experiments: [
             {
+              id: 'cbf34d52-0faa-4905-a232-5eeeba2a2775',
               title: 'Expectation Value Calculation in Quantum Systems',
               description: 'Calculate expectation values of observables for various parameterized quantum state vectors.',
               duration: '60 min',
               difficulty: 'Intermediate',
             },
             {
+              id: '29682e5b-0b22-44cc-b2de-b8539d5d732c',
               title: 'Factorization Using Shor\'s Algorithm',
               description: 'Simulate Shor\'s period-finding quantum circuits to factor prime products.',
               duration: '90 min',
               difficulty: 'Advanced',
             },
             {
+              id: '90eb30b9-88e7-4168-a352-6411714ae3dc',
               title: 'Variational Quantum Eigensolver (VQE) Optimization',
               description: 'Solve for the ground state energy of molecular Hamiltonians using parameterized ansatz circuits.',
               duration: '75 min',
               difficulty: 'Advanced',
             },
             {
+              id: '906ca3d5-f1b1-4754-a459-db045046702b',
               title: 'Quantum Measurement and Result Interpretation',
               description: 'Observe quantum measurement collapse, state tomography, and evaluate probability distributions.',
               duration: '45 min',
               difficulty: 'Beginner',
             },
             {
+              id: '265ae76d-5ee7-45ea-ba3c-3c2494a2228a',
               title: 'Quantum Linear Algebra – Matrix and Vector Operations',
               description: 'Explore quantum algorithms for systems of linear equations and state vector operations.',
               duration: '60 min',
               difficulty: 'Intermediate',
             },
             {
+              id: 'd2528cd1-d1cc-4088-aadb-aa4cac1aadac',
               title: 'Applied Linear Algebra – Quantum Gates in Action',
               description: 'Apply Hadamard, Pauli, CNOT, and phase gates in quantum circuits to observe state rotations.',
               duration: '60 min',
               difficulty: 'Intermediate',
             },
             {
+              id: '6f6e8a5f-8143-4a28-935a-85f96a3fe0d3',
               title: 'Quantum Kernel Alignment in Machine Learning',
               description: 'Optimize quantum kernel parameters to increase data separability in high-dimensional feature spaces.',
               duration: '90 min',
               difficulty: 'Advanced',
             },
             {
+              id: '963217c5-6059-4f77-a5ea-2b0dbfbe3747',
               title: 'Quantum Support Vector Machines (QSVM)',
               description: 'Classify complex data distributions using quantum-enhanced kernels and support vectors.',
               duration: '90 min',
@@ -207,24 +215,28 @@ async function main() {
           description: 'Explore spectrophotometry, cryoscopy, ebullioscopy and EMF measurement.',
           experiments: [
             {
+              id: '83c0fc70-8367-4598-93ed-09cb565c06f4',
               title: 'Spectrophotometry',
               description: 'Measure the absorption of light by a chemical substance as a function of wavelength.',
               duration: '60 min',
               difficulty: 'Intermediate',
             },
             {
+              id: 'fb645967-38e2-4244-8204-bda3b83e8587',
               title: 'Cryoscopy',
               description: 'Determine the depression of freezing point to calculate molecular mass.',
               duration: '60 min',
               difficulty: 'Intermediate',
             },
             {
+              id: 'da92a101-b214-41d1-817a-24adff0bf12b',
               title: 'Ebullioscopy',
               description: 'Determine the elevation of boiling point of a solvent due to a solute.',
               duration: '60 min',
               difficulty: 'Intermediate',
             },
             {
+              id: 'd9e0499b-4322-42f5-8d5f-4279ba8588dc',
               title: 'EMF Measurement',
               description: 'Measure electromotive force of galvanic cells to study thermodynamics.',
               duration: '60 min',
@@ -262,20 +274,36 @@ async function main() {
       console.log(`   🔬 Created Lab: ${lab.title}`);
 
       for (const eData of lData.experiments) {
-        // Automatically make Stack Operations dynamic on default simulation fallback
+        const expId = eData.id || undefined;
+        let contentPath = null;
+        let simulationPath = null;
+
+        if (expId) {
+          const fs = require('fs');
+          const path = require('path');
+          const uploadsDir = path.join(__dirname, '../uploads/experiments', expId);
+          if (fs.existsSync(path.join(uploadsDir, 'content'))) {
+            contentPath = `experiments/${expId}/content`;
+          }
+          if (fs.existsSync(path.join(uploadsDir, 'simulation'))) {
+            simulationPath = `experiments/${expId}/simulation`;
+          }
+        }
+
         const exp = await prisma.experiment.create({
           data: {
+            id: expId,
             title: eData.title,
             description: eData.description,
             duration: eData.duration,
             difficulty: eData.difficulty,
             labId: lab.id,
             createdById: admin.id,
-            // Stack Operations will use the fallback react simulation
-            simulationPath: eData.title === 'Stack Operations' ? null : null,
+            contentPath,
+            simulationPath: simulationPath || (eData.title === 'Stack Operations' ? null : null),
           }
         });
-        console.log(`      ⚗️ Created Experiment: ${exp.title}`);
+        console.log(`      ⚗️ Created Experiment: ${exp.title} (${exp.id})`);
       }
     }
   }
