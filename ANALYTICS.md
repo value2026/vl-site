@@ -5,13 +5,17 @@ This document outlines the standard Google Analytics 4 tracking events used thro
 All analytics interactions pass through the centralized `trackEvent` function in `src/utils/analytics.js`, which automatically validates the payload, formats event names to `snake_case`, and securely attaches the current user's `session_id` and UTC `timestamp`.
 
 ## Core Variables
+To bypass Google Analytics 4's strict payload validation engine—which automatically drops custom events containing reserved system keywords like `user_id`, `session_id`, or `experiment_id`—all contextual metadata is heavily namespaced.
+
 These parameters are universally attached to every event (where available in context):
-- `session_id`: Auto-generated unique string per browser session (e.g. `sess_1x2y3z_1721000000`)
-- `timestamp`: UTC ISO string
-- `experiment_id`: UUID of the current experiment (if inside an experiment context)
-- `experiment_name`: Human-readable title of the experiment
-- `user_id`: UUID of the authenticated student
-- `app_version`: Version of the UI application (e.g., `0.0.0`)
+- `custom_session_id`: Auto-generated unique string per browser session (e.g. `sess_1x2y3z_1721000000`)
+- `custom_app_version`: Version of the UI application (e.g., `0.0.0`)
+- `vl_exp_id`: UUID of the current experiment (if inside an experiment context)
+- `vl_exp_name`: Human-readable title of the experiment
+- `vl_user_id`: UUID of the authenticated student
+- `vl_course`: Student's enrolled course
+- `vl_dept`: Student's department
+- `vl_nodal_center`: The institution/nodal center of the user
 
 ---
 
@@ -21,32 +25,31 @@ These parameters are universally attached to every event (where available in con
 Fires exactly once per session when the student navigates to the "Simulation" tab.
 * **Category**: `experiment`
 * **Action**: `simulation_started`
-* **Parameters**: `experiment_id`, `experiment_name`, `user_id`, `session_id`
+* **Parameters**: `vl_exp_id`, `vl_exp_name`, `vl_user_id`, `custom_session_id`
 
 ### 2. simulation_exited
 Fires when the student navigates away from the "Simulation" tab, or unmounts the component. Used to calculate how much time they spent explicitly viewing the interactive element.
 * **Category**: `experiment`
 * **Action**: `simulation_exited`
-* **Parameters**: `duration` (integer, seconds spent on tab)
+* **Parameters**: `vl_duration` (integer, seconds spent on tab)
 
 ### 3. quiz_started
 Fires exactly once per session when a student navigates to a Pretest or Posttest tab.
 * **Category**: `experiment`
 * **Action**: `quiz_started`
-* **Parameters**: `quiz_type` ('pretest' or 'posttest')
+* **Parameters**: `vl_quiz_type` ('pretest' or 'posttest')
 
 ### 4. quiz_completed
 Fires when a student hits "Submit Answers" and scores are graded.
 * **Category**: `experiment`
 * **Action**: `quiz_completed`
-* **Value**: Final percentage score (0-100)
-* **Parameters**: `score` (raw number correct), `quiz_type` ('pretest' or 'posttest')
+* **Parameters**: `vl_score_pct` (Final percentage score 0-100), `vl_score` (raw number correct), `vl_quiz_type` ('pretest' or 'posttest')
 
 ### 5. quiz_exited
 Fires when a student leaves a quiz tab. Helps identify quiz abandonment or how long they pondered the questions before giving up or submitting.
 * **Category**: `experiment`
 * **Action**: `quiz_exited`
-* **Parameters**: `duration` (seconds on tab), `completed` (boolean), `quiz_type`
+* **Parameters**: `vl_duration` (seconds on tab), `vl_completed` (boolean), `vl_quiz_type`
 
 ### 6. experiment_completed
 Fires when the student submits the final Feedback form.
