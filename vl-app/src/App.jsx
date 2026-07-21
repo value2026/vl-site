@@ -54,6 +54,7 @@ function ScrollToTop() {
 
 function GoogleAnalytics() {
   const location = useLocation();
+  const { user } = useAuth(); // Required to track user properties (nodal center, role)
 
   useEffect(() => {
     const measurementId = import.meta.env.VITE_GA_MEASUREMENT_ID;
@@ -61,11 +62,26 @@ function GoogleAnalytics() {
       ReactGA.initialize([
         {
           trackingId: measurementId,
+          gaOptions: { debug_mode: true },
           gtagOptions: { debug_mode: true },
         },
       ]);
     }
   }, []);
+
+  // Sync User Properties to track Nodal Center & User Role
+  useEffect(() => {
+    if (ReactGA.isInitialized && user) {
+      ReactGA.set({ user_id: user.id });
+      // Set user_properties for GA4 to allow segmenting data by Nodal Center and Role
+      if (window.gtag) {
+        window.gtag('set', 'user_properties', {
+          nodal_center_id: user.nodalCentreId || 'none',
+          user_role: user.role
+        });
+      }
+    }
+  }, [user]);
 
   useEffect(() => {
     if (ReactGA.isInitialized) {

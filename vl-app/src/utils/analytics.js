@@ -39,8 +39,8 @@ export const trackEvent = ({ category, action, label, value, ...customParams }) 
       console.error('[GA Event Error] Missing required parameter: action');
       return;
     }
-    if (customParams.experiment_id === undefined && customParams.user_id === undefined) {
-      console.warn(`[GA Event Warning] Missing recommended context (experiment_id or user_id) for action: ${action}`);
+    if (customParams.exp_id === undefined && customParams.custom_user_id === undefined) {
+      console.warn(`[GA Event Warning] Missing recommended context (exp_id or custom_user_id) for action: ${action}`);
     }
 
     // Ensure consistent event and category names (snake_case)
@@ -48,28 +48,41 @@ export const trackEvent = ({ category, action, label, value, ...customParams }) 
     const formattedCategory = (category || 'general').toLowerCase().replace(/\s+/g, '_');
 
     const payload = {
-      category: formattedCategory,
-      action: formattedAction,
-      label: label,
+      event_category: formattedCategory,
+      event_label: label,
       value: value,
-      timestamp: new Date().toISOString(),
-      session_id: getSessionId(),
-      app_version: packageJson.version,
+      // Avoid reserved GA4 parameters (session_id, timestamp, app_version) which cause events to be dropped
+      custom_session_id: getSessionId(),
+      custom_app_version: packageJson.version,
       ...customParams
     };
 
+    // Clean payload (remove undefined/null)
+    const cleanPayload = Object.fromEntries(
+      Object.entries(payload).filter(([_, v]) => v != null)
+    );
+
+    // Explicitly add debug_mode for GA4 DebugView
+    cleanPayload.debug_mode = true;
+
     if (ReactGA.isInitialized) {
-      ReactGA.event(payload);
+      // Use standard react-ga4 custom event tracking API via the send method which is known to work for pageviews
+      ReactGA.send({
+        hitType: "event",
+        eventCategory: cleanPayload.event_category,
+        eventAction: formattedAction,
+        eventLabel: cleanPayload.event_label,
+        eventValue: cleanPayload.value,
+        ...cleanPayload
+      });
       if (import.meta.env.DEV) {
-        console.log(`[GA Event] ${formattedCategory} -> ${formattedAction}`, payload);
+        console.log(`[GA Event] Sent -> ${formattedAction}`, cleanPayload);
       }
     } else {
-      if (import.meta.env.DEV) {
-        console.warn('[GA Warning] ReactGA is not initialized. Event ignored:', payload);
-      }
+      console.warn('[GA Event] ReactGA not initialized. Event missed:', formattedAction);
     }
   } catch (error) {
-    console.error('[GA Event Error] Failed to process analytics event:', error);
+    console.error('[GA Event Error]', error);
   }
 };
 

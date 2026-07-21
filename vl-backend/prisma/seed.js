@@ -25,6 +25,24 @@ async function main() {
     console.log('ℹ️ Admin user already exists.');
   }
 
+  // Create default VL Manager
+  const managerEmail = 'manager@virtuallabs.in';
+  let manager = await prisma.user.findUnique({ where: { email: managerEmail } });
+  if (!manager) {
+    const hashed = await bcrypt.hash('VLManager@2024', 12);
+    manager = await prisma.user.create({
+      data: {
+        name: 'VL Manager',
+        email: managerEmail,
+        password: hashed,
+        role: 'vl_manager',
+      },
+    });
+    console.log('✅ VL Manager created!');
+  } else {
+    console.log('ℹ️ VL Manager already exists.');
+  }
+
   // Create 4 Default Institutions
   const institutionNames = [
     'Amrita Vishwa Vidyapeetham',
@@ -271,11 +289,6 @@ async function main() {
       console.log(`   🔬 Upserted Lab: ${lab.title}`);
 
       for (const eData of lData.experiments) {
-<<<<<<< HEAD
-        // Automatically make Stack Operations dynamic on default simulation fallback
-        const exp = await prisma.experiment.create({
-          data: {
-=======
         const expId = eData.id || undefined;
         let contentPath = null;
         let simulationPath = null;
@@ -304,7 +317,6 @@ async function main() {
           },
           create: {
             id: expId,
->>>>>>> eb013ae3526c10d1d5db237a9ccd26c6e0c3119e
             title: eData.title,
             description: eData.description,
             duration: eData.duration,
@@ -315,11 +327,7 @@ async function main() {
             simulationPath: eData.title === 'Stack Operations' ? null : null,
           }
         });
-<<<<<<< HEAD
-        console.log(`      ⚗️ Created Experiment: ${exp.title}`);
-=======
         console.log(`      ⚗️ Upserted Experiment: ${exp.title} (${exp.id})`);
->>>>>>> eb013ae3526c10d1d5db237a9ccd26c6e0c3119e
       }
     }
   }

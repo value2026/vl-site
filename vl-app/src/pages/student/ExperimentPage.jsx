@@ -254,6 +254,23 @@ export default function ExperimentPage() {
     loadData();
   }, [expId]);
 
+  const getAnalyticsParams = (status = 'Started') => ({
+    vl_exp_id: expId,
+    vl_exp_name: experiment?.title,
+    vl_sim_name: experiment?.title,
+    vl_lab_name: lab?.title ?? undefined,
+    vl_institution: user?.org ?? undefined,
+    vl_nodal_center: user?.nodalCentreId ?? undefined,
+    vl_dept: user?.dept ?? undefined,
+    vl_course: user?.course ?? undefined,
+    vl_semester: user?.yearSemester ?? undefined,
+    vl_role: user?.role ?? undefined,
+    vl_user_name: user?.name ?? undefined,
+    vl_language: 'en',
+    vl_status: status,
+    vl_user_id: user?.id ?? undefined
+  });
+
   // Log active visit on mount
   useEffect(() => {
     if (experiment) {
@@ -281,9 +298,7 @@ export default function ExperimentPage() {
           action: e.data.action ? e.data.action.toLowerCase().replace(/\s+/g, '_') : 'unknown_event',
           label: e.data.label || experiment?.title,
           value: e.data.value,
-          experiment_id: expId,
-          experiment_name: experiment?.title,
-          user_id: user?.id,
+          ...getAnalyticsParams('In Progress'),
           ...(e.data.params || {})
         });
       }
@@ -337,9 +352,7 @@ export default function ExperimentPage() {
           action: EVENTS.SIMULATION_EXITED,
           label: experiment?.title,
           duration: durationSeconds,
-          experiment_id: expId,
-          experiment_name: experiment?.title,
-          user_id: user?.id
+          ...getAnalyticsParams('Completed')
         });
       }
     };
@@ -646,9 +659,7 @@ export default function ExperimentPage() {
                         action: EVENTS.NAVIGATION_CHANGED,
                         from_tab: previousTab,
                         to_tab: id,
-                        experiment_id: expId,
-                        experiment_name: experiment?.title,
-                        user_id: user?.id
+                        ...getAnalyticsParams('In Progress')
                       });
                     }
 
@@ -656,19 +667,19 @@ export default function ExperimentPage() {
                       setTrackedEvents(prev => ({ ...prev, simulation: true }));
                       trackEvent({ 
                         category: 'experiment', action: EVENTS.SIMULATION_STARTED, label: experiment?.title,
-                        experiment_id: expId, experiment_name: experiment?.title, user_id: user?.id 
+                        ...getAnalyticsParams('Started')
                       });
                     } else if (id === 'posttest' && !trackedEvents.posttest) {
                       setTrackedEvents(prev => ({ ...prev, posttest: true }));
                       trackEvent({ 
                         category: 'experiment', action: EVENTS.QUIZ_STARTED, label: `${experiment?.title} - Posttest`,
-                        experiment_id: expId, experiment_name: experiment?.title, quiz_type: 'posttest', user_id: user?.id 
+                        quiz_type: 'posttest', ...getAnalyticsParams('Started')
                       });
                     } else if (id === 'pretest' && !trackedEvents.pretest) {
                       setTrackedEvents(prev => ({ ...prev, pretest: true }));
                       trackEvent({ 
                         category: 'experiment', action: EVENTS.QUIZ_STARTED, label: `${experiment?.title} - Pretest`,
-                        experiment_id: expId, experiment_name: experiment?.title, quiz_type: 'pretest', user_id: user?.id 
+                        quiz_type: 'pretest', ...getAnalyticsParams('Started')
                       });
                     }
                   }}

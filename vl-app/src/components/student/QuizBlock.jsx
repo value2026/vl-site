@@ -61,13 +61,13 @@ export default function QuizBlock({ experimentId, experimentName, userId, quizTy
         category: 'experiment',
         action: EVENTS.QUIZ_COMPLETED,
         label: `${experimentId} - ${quizType}`,
-        value: Math.round((calculatedScore / questions.length) * 100),
-        experiment_id: experimentId,
-        experiment_name: experimentName,
-        quiz_type: quizType,
-        score: calculatedScore,
-        maxScore: questions.length,
-        user_id: userId
+        vl_score_pct: Math.round((calculatedScore / questions.length) * 100),
+        vl_exp_id: experimentId,
+        vl_exp_name: experimentName,
+        vl_quiz_type: quizType,
+        vl_score: calculatedScore,
+        vl_max_score: questions.length,
+        vl_user_id: userId
       });
     } catch (err) {
       console.error('Quiz record error:', err);
@@ -82,17 +82,16 @@ export default function QuizBlock({ experimentId, experimentName, userId, quizTy
     const startTime = Date.now();
     return () => {
       const durationSeconds = Math.round((Date.now() - startTime) / 1000);
-      // We log duration even if not submitted to see how long they spent before leaving
       trackEvent({
         category: 'experiment',
         action: EVENTS.QUIZ_EXITED,
         label: `${experimentId} - ${quizType}`,
-        duration: durationSeconds,
-        experiment_id: experimentId,
-        experiment_name: experimentName,
-        quiz_type: quizType,
-        user_id: userId,
-        completed: submitted
+        vl_duration: durationSeconds,
+        vl_exp_id: experimentId,
+        vl_exp_name: experimentName,
+        vl_quiz_type: quizType,
+        vl_user_id: userId,
+        vl_completed: submitted
       });
     };
   }, [experimentId, experimentName, quizType, userId, submitted]);

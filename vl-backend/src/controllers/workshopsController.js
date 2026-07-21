@@ -52,6 +52,18 @@ const updateWorkshop = async (req, res) => {
     const { id } = req.params;
     const { title, description, date, status, location, mode, seats } = req.body;
 
+    const existingWorkshop = await prisma.workshop.findUnique({
+      where: { id }
+    });
+
+    if (!existingWorkshop) {
+      return res.status(404).json({ message: 'Workshop not found' });
+    }
+
+    if (req.user.role !== 'admin' && existingWorkshop.createdById !== req.user.id) {
+      return res.status(403).json({ message: 'Insufficient permissions to update this workshop' });
+    }
+
     const data = {};
     if (title) data.title = title.trim();
     if (description !== undefined) data.description = description;

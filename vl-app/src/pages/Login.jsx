@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 
 const ROLES = [
   { value: 'admin',        label: 'Admin' },
+  { value: 'vl_manager',   label: 'VL Manager' },
   { value: 'nodal_centre', label: 'Nodal Centre' },
   { value: 'teacher',      label: 'Teacher' },
   { value: 'student',      label: 'Student' },
@@ -12,6 +13,7 @@ const ROLES = [
 
 const DASHBOARD_MAP = {
   admin:        '/dashboard/admin',
+  vl_manager:   '/dashboard/vl-manager',
   nodal_centre: '/dashboard/nodal',
   teacher:      '/dashboard/teacher',
   student:      '/dashboard/student',
@@ -75,13 +77,13 @@ export default function Login() {
 
         <div className="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 shadow-2xl p-8">
           {/* Role tabs */}
-          <div className="grid grid-cols-4 gap-1 bg-white/5 rounded-xl p-1 mb-7">
+          <div className="flex flex-wrap gap-1 bg-white/5 rounded-xl p-1 mb-7">
             {ROLES.map(({ value, label }) => (
               <button
                 key={value}
                 type="button"
                 onClick={() => setForm({ ...form, role: value })}
-                className={`py-2 text-xs font-semibold rounded-lg transition-all duration-200 ${
+                className={`flex-1 min-w-[80px] py-2 px-1 text-xs font-semibold rounded-lg transition-all duration-200 ${
                   form.role === value
                     ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-md shadow-blue-500/20'
                     : 'text-slate-400 hover:text-white'
