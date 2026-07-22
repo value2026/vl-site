@@ -3,13 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { FlaskConical, Eye, EyeOff, ArrowRight } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
-const ROLES = [
-  { value: 'admin',        label: 'Admin' },
-  { value: 'vl_manager',   label: 'VL Manager' },
-  { value: 'nodal_centre', label: 'Nodal Centre' },
-  { value: 'student',      label: 'Student' },
-];
-
 const DASHBOARD_MAP = {
   admin:        '/dashboard/admin',
   vl_manager:   '/dashboard/vl-manager',
@@ -22,7 +15,7 @@ export default function Login() {
   const { login } = useAuth();
   const navigate  = useNavigate();
 
-  const [form,   setForm]   = useState({ email: '', password: '', role: 'student' });
+  const [form,   setForm]   = useState({ email: '', password: '' });
   const [showPw, setShowPw] = useState(false);
   const [error,  setError]  = useState('');
   const [loading, setLoading] = useState(false);
@@ -40,12 +33,6 @@ export default function Login() {
     setLoading(true);
     try {
       const user = await login(form.email, form.password);
-      // Validate that the selected role matches the actual role
-      if (user.role !== form.role) {
-        setError(`This account is registered as "${user.role.replace('_', ' ')}". Please select the correct role.`);
-        setLoading(false);
-        return;
-      }
       navigate(DASHBOARD_MAP[user.role] || '/');
     } catch (err) {
       setError(err.message || 'Login failed. Please try again.');
@@ -75,23 +62,6 @@ export default function Login() {
         </div>
 
         <div className="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 shadow-2xl p-8">
-          {/* Role tabs */}
-          <div className="flex flex-wrap gap-1 bg-white/5 rounded-xl p-1 mb-7">
-            {ROLES.map(({ value, label }) => (
-              <button
-                key={value}
-                type="button"
-                onClick={() => setForm({ ...form, role: value })}
-                className={`flex-1 min-w-[80px] py-2 px-1 text-xs font-semibold rounded-lg transition-all duration-200 ${
-                  form.role === value
-                    ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-md shadow-blue-500/20'
-                    : 'text-slate-400 hover:text-white'
-                }`}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
 
           {/* Error */}
           {error && (
