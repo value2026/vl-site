@@ -276,7 +276,10 @@ exports.Prisma.PageSectionScalarFieldEnum = {
 
 exports.Prisma.InstitutionScalarFieldEnum = {
   id: 'id',
+  legacyId: 'legacyId',
   name: 'name',
+  code: 'code',
+  oldCreatedAt: 'oldCreatedAt',
   isActive: 'isActive',
   createdById: 'createdById',
   createdAt: 'createdAt',

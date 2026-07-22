@@ -102,11 +102,12 @@ export default function UserTable({ users, loading, onRefresh }) {
           <thead>
             <tr className="border-b border-white/10">
               {[
-                { key: 'name',      label: 'Name' },
-                { key: 'email',     label: 'Email' },
-                { key: 'role',      label: 'Role' },
-                { key: 'isActive',  label: 'Status' },
-                { key: 'createdAt', label: 'Joined' },
+                { key: 'name',        label: 'Name' },
+                { key: 'email',       label: 'Email' },
+                { key: 'role',        label: 'Role' },
+                { key: 'nodalCentre', label: 'Institution' },
+                { key: 'isActive',    label: 'Status' },
+                { key: 'createdAt',   label: 'Joined' },
               ].map(({ key, label }) => (
                 <th
                   key={key}
@@ -170,6 +171,9 @@ export default function UserTable({ users, loading, onRefresh }) {
                     <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border ${ROLE_BADGE[u.role]}`}>
                       {ROLE_LABELS[u.role]}
                     </span>
+                  </td>
+                  <td className="px-4 py-3 text-slate-300 text-xs font-medium max-w-[200px] truncate" title={u.nodalCentre?.name || ''}>
+                    {u.nodalCentre?.name || (['admin', 'vl_manager', 'content_admin', 'sim_admin'].includes(u.role) ? 'Global Platform' : '—')}
                   </td>
                   <td className="px-4 py-3">
                     <span className={`inline-flex items-center gap-1.5 text-xs font-medium ${u.isActive ? 'text-emerald-400' : 'text-slate-500'}`}>

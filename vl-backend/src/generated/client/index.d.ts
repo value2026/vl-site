@@ -14954,13 +14954,26 @@ export namespace Prisma {
 
   export type AggregateInstitution = {
     _count: InstitutionCountAggregateOutputType | null
+    _avg: InstitutionAvgAggregateOutputType | null
+    _sum: InstitutionSumAggregateOutputType | null
     _min: InstitutionMinAggregateOutputType | null
     _max: InstitutionMaxAggregateOutputType | null
   }
 
+  export type InstitutionAvgAggregateOutputType = {
+    legacyId: number | null
+  }
+
+  export type InstitutionSumAggregateOutputType = {
+    legacyId: number | null
+  }
+
   export type InstitutionMinAggregateOutputType = {
     id: string | null
+    legacyId: number | null
     name: string | null
+    code: string | null
+    oldCreatedAt: string | null
     isActive: boolean | null
     createdById: string | null
     createdAt: Date | null
@@ -14969,7 +14982,10 @@ export namespace Prisma {
 
   export type InstitutionMaxAggregateOutputType = {
     id: string | null
+    legacyId: number | null
     name: string | null
+    code: string | null
+    oldCreatedAt: string | null
     isActive: boolean | null
     createdById: string | null
     createdAt: Date | null
@@ -14978,7 +14994,10 @@ export namespace Prisma {
 
   export type InstitutionCountAggregateOutputType = {
     id: number
+    legacyId: number
     name: number
+    code: number
+    oldCreatedAt: number
     isActive: number
     createdById: number
     createdAt: number
@@ -14987,9 +15006,20 @@ export namespace Prisma {
   }
 
 
+  export type InstitutionAvgAggregateInputType = {
+    legacyId?: true
+  }
+
+  export type InstitutionSumAggregateInputType = {
+    legacyId?: true
+  }
+
   export type InstitutionMinAggregateInputType = {
     id?: true
+    legacyId?: true
     name?: true
+    code?: true
+    oldCreatedAt?: true
     isActive?: true
     createdById?: true
     createdAt?: true
@@ -14998,7 +15028,10 @@ export namespace Prisma {
 
   export type InstitutionMaxAggregateInputType = {
     id?: true
+    legacyId?: true
     name?: true
+    code?: true
+    oldCreatedAt?: true
     isActive?: true
     createdById?: true
     createdAt?: true
@@ -15007,7 +15040,10 @@ export namespace Prisma {
 
   export type InstitutionCountAggregateInputType = {
     id?: true
+    legacyId?: true
     name?: true
+    code?: true
+    oldCreatedAt?: true
     isActive?: true
     createdById?: true
     createdAt?: true
@@ -15053,6 +15089,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: InstitutionAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: InstitutionSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: InstitutionMinAggregateInputType
@@ -15083,18 +15131,25 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: InstitutionCountAggregateInputType | true
+    _avg?: InstitutionAvgAggregateInputType
+    _sum?: InstitutionSumAggregateInputType
     _min?: InstitutionMinAggregateInputType
     _max?: InstitutionMaxAggregateInputType
   }
 
   export type InstitutionGroupByOutputType = {
     id: string
+    legacyId: number | null
     name: string
+    code: string | null
+    oldCreatedAt: string | null
     isActive: boolean
     createdById: string | null
     createdAt: Date
     updatedAt: Date
     _count: InstitutionCountAggregateOutputType | null
+    _avg: InstitutionAvgAggregateOutputType | null
+    _sum: InstitutionSumAggregateOutputType | null
     _min: InstitutionMinAggregateOutputType | null
     _max: InstitutionMaxAggregateOutputType | null
   }
@@ -15115,7 +15170,10 @@ export namespace Prisma {
 
   export type InstitutionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    legacyId?: boolean
     name?: boolean
+    code?: boolean
+    oldCreatedAt?: boolean
     isActive?: boolean
     createdById?: boolean
     createdAt?: boolean
@@ -15128,7 +15186,10 @@ export namespace Prisma {
 
   export type InstitutionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    legacyId?: boolean
     name?: boolean
+    code?: boolean
+    oldCreatedAt?: boolean
     isActive?: boolean
     createdById?: boolean
     createdAt?: boolean
@@ -15138,7 +15199,10 @@ export namespace Prisma {
 
   export type InstitutionSelectScalar = {
     id?: boolean
+    legacyId?: boolean
     name?: boolean
+    code?: boolean
+    oldCreatedAt?: boolean
     isActive?: boolean
     createdById?: boolean
     createdAt?: boolean
@@ -15164,7 +15228,10 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
+      legacyId: number | null
       name: string
+      code: string | null
+      oldCreatedAt: string | null
       isActive: boolean
       createdById: string | null
       createdAt: Date
@@ -15566,7 +15633,10 @@ export namespace Prisma {
    */ 
   interface InstitutionFieldRefs {
     readonly id: FieldRef<"Institution", 'String'>
+    readonly legacyId: FieldRef<"Institution", 'Int'>
     readonly name: FieldRef<"Institution", 'String'>
+    readonly code: FieldRef<"Institution", 'String'>
+    readonly oldCreatedAt: FieldRef<"Institution", 'String'>
     readonly isActive: FieldRef<"Institution", 'Boolean'>
     readonly createdById: FieldRef<"Institution", 'String'>
     readonly createdAt: FieldRef<"Institution", 'DateTime'>
@@ -17201,7 +17271,10 @@ export namespace Prisma {
 
   export const InstitutionScalarFieldEnum: {
     id: 'id',
+    legacyId: 'legacyId',
     name: 'name',
+    code: 'code',
+    oldCreatedAt: 'oldCreatedAt',
     isActive: 'isActive',
     createdById: 'createdById',
     createdAt: 'createdAt',
@@ -18401,7 +18474,10 @@ export namespace Prisma {
     OR?: InstitutionWhereInput[]
     NOT?: InstitutionWhereInput | InstitutionWhereInput[]
     id?: StringFilter<"Institution"> | string
+    legacyId?: IntNullableFilter<"Institution"> | number | null
     name?: StringFilter<"Institution"> | string
+    code?: StringNullableFilter<"Institution"> | string | null
+    oldCreatedAt?: StringNullableFilter<"Institution"> | string | null
     isActive?: BoolFilter<"Institution"> | boolean
     createdById?: StringNullableFilter<"Institution"> | string | null
     createdAt?: DateTimeFilter<"Institution"> | Date | string
@@ -18413,7 +18489,10 @@ export namespace Prisma {
 
   export type InstitutionOrderByWithRelationInput = {
     id?: SortOrder
+    legacyId?: SortOrderInput | SortOrder
     name?: SortOrder
+    code?: SortOrderInput | SortOrder
+    oldCreatedAt?: SortOrderInput | SortOrder
     isActive?: SortOrder
     createdById?: SortOrderInput | SortOrder
     createdAt?: SortOrder
@@ -18425,10 +18504,13 @@ export namespace Prisma {
 
   export type InstitutionWhereUniqueInput = Prisma.AtLeast<{
     id?: string
+    legacyId?: number
     name?: string
     AND?: InstitutionWhereInput | InstitutionWhereInput[]
     OR?: InstitutionWhereInput[]
     NOT?: InstitutionWhereInput | InstitutionWhereInput[]
+    code?: StringNullableFilter<"Institution"> | string | null
+    oldCreatedAt?: StringNullableFilter<"Institution"> | string | null
     isActive?: BoolFilter<"Institution"> | boolean
     createdById?: StringNullableFilter<"Institution"> | string | null
     createdAt?: DateTimeFilter<"Institution"> | Date | string
@@ -18436,18 +18518,23 @@ export namespace Prisma {
     users?: UserListRelationFilter
     labs?: LabListRelationFilter
     createdBy?: XOR<UserNullableRelationFilter, UserWhereInput> | null
-  }, "id" | "name">
+  }, "id" | "legacyId" | "name">
 
   export type InstitutionOrderByWithAggregationInput = {
     id?: SortOrder
+    legacyId?: SortOrderInput | SortOrder
     name?: SortOrder
+    code?: SortOrderInput | SortOrder
+    oldCreatedAt?: SortOrderInput | SortOrder
     isActive?: SortOrder
     createdById?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: InstitutionCountOrderByAggregateInput
+    _avg?: InstitutionAvgOrderByAggregateInput
     _max?: InstitutionMaxOrderByAggregateInput
     _min?: InstitutionMinOrderByAggregateInput
+    _sum?: InstitutionSumOrderByAggregateInput
   }
 
   export type InstitutionScalarWhereWithAggregatesInput = {
@@ -18455,7 +18542,10 @@ export namespace Prisma {
     OR?: InstitutionScalarWhereWithAggregatesInput[]
     NOT?: InstitutionScalarWhereWithAggregatesInput | InstitutionScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Institution"> | string
+    legacyId?: IntNullableWithAggregatesFilter<"Institution"> | number | null
     name?: StringWithAggregatesFilter<"Institution"> | string
+    code?: StringNullableWithAggregatesFilter<"Institution"> | string | null
+    oldCreatedAt?: StringNullableWithAggregatesFilter<"Institution"> | string | null
     isActive?: BoolWithAggregatesFilter<"Institution"> | boolean
     createdById?: StringNullableWithAggregatesFilter<"Institution"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Institution"> | Date | string
@@ -19675,7 +19765,10 @@ export namespace Prisma {
 
   export type InstitutionCreateInput = {
     id?: string
+    legacyId?: number | null
     name: string
+    code?: string | null
+    oldCreatedAt?: string | null
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -19686,7 +19779,10 @@ export namespace Prisma {
 
   export type InstitutionUncheckedCreateInput = {
     id?: string
+    legacyId?: number | null
     name: string
+    code?: string | null
+    oldCreatedAt?: string | null
     isActive?: boolean
     createdById?: string | null
     createdAt?: Date | string
@@ -19697,7 +19793,10 @@ export namespace Prisma {
 
   export type InstitutionUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    legacyId?: NullableIntFieldUpdateOperationsInput | number | null
     name?: StringFieldUpdateOperationsInput | string
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    oldCreatedAt?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -19708,7 +19807,10 @@ export namespace Prisma {
 
   export type InstitutionUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    legacyId?: NullableIntFieldUpdateOperationsInput | number | null
     name?: StringFieldUpdateOperationsInput | string
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    oldCreatedAt?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -19719,7 +19821,10 @@ export namespace Prisma {
 
   export type InstitutionCreateManyInput = {
     id?: string
+    legacyId?: number | null
     name: string
+    code?: string | null
+    oldCreatedAt?: string | null
     isActive?: boolean
     createdById?: string | null
     createdAt?: Date | string
@@ -19728,7 +19833,10 @@ export namespace Prisma {
 
   export type InstitutionUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
+    legacyId?: NullableIntFieldUpdateOperationsInput | number | null
     name?: StringFieldUpdateOperationsInput | string
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    oldCreatedAt?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -19736,7 +19844,10 @@ export namespace Prisma {
 
   export type InstitutionUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
+    legacyId?: NullableIntFieldUpdateOperationsInput | number | null
     name?: StringFieldUpdateOperationsInput | string
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    oldCreatedAt?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -20747,33 +20858,6 @@ export namespace Prisma {
     _max?: NestedJsonFilter<$PrismaModel>
   }
 
-  export type InstitutionCountOrderByAggregateInput = {
-    id?: SortOrder
-    name?: SortOrder
-    isActive?: SortOrder
-    createdById?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
-  export type InstitutionMaxOrderByAggregateInput = {
-    id?: SortOrder
-    name?: SortOrder
-    isActive?: SortOrder
-    createdById?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
-  export type InstitutionMinOrderByAggregateInput = {
-    id?: SortOrder
-    name?: SortOrder
-    isActive?: SortOrder
-    createdById?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
   export type IntNullableFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel> | null
     in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
@@ -20783,6 +20867,66 @@ export namespace Prisma {
     gt?: number | IntFieldRefInput<$PrismaModel>
     gte?: number | IntFieldRefInput<$PrismaModel>
     not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type InstitutionCountOrderByAggregateInput = {
+    id?: SortOrder
+    legacyId?: SortOrder
+    name?: SortOrder
+    code?: SortOrder
+    oldCreatedAt?: SortOrder
+    isActive?: SortOrder
+    createdById?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type InstitutionAvgOrderByAggregateInput = {
+    legacyId?: SortOrder
+  }
+
+  export type InstitutionMaxOrderByAggregateInput = {
+    id?: SortOrder
+    legacyId?: SortOrder
+    name?: SortOrder
+    code?: SortOrder
+    oldCreatedAt?: SortOrder
+    isActive?: SortOrder
+    createdById?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type InstitutionMinOrderByAggregateInput = {
+    id?: SortOrder
+    legacyId?: SortOrder
+    name?: SortOrder
+    code?: SortOrder
+    oldCreatedAt?: SortOrder
+    isActive?: SortOrder
+    createdById?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type InstitutionSumOrderByAggregateInput = {
+    legacyId?: SortOrder
+  }
+
+  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
   }
 
   export type WorkshopCountOrderByAggregateInput = {
@@ -20833,22 +20977,6 @@ export namespace Prisma {
 
   export type WorkshopSumOrderByAggregateInput = {
     seats?: SortOrder
-  }
-
-  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _avg?: NestedFloatNullableFilter<$PrismaModel>
-    _sum?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedIntNullableFilter<$PrismaModel>
-    _max?: NestedIntNullableFilter<$PrismaModel>
   }
 
   export type UserCreatecustomPermissionsInput = {
@@ -22052,6 +22180,14 @@ export namespace Prisma {
     connect?: LabWhereUniqueInput | LabWhereUniqueInput[]
   }
 
+  export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
   export type UserUpdateManyWithoutNodalCentreNestedInput = {
     create?: XOR<UserCreateWithoutNodalCentreInput, UserUncheckedCreateWithoutNodalCentreInput> | UserCreateWithoutNodalCentreInput[] | UserUncheckedCreateWithoutNodalCentreInput[]
     connectOrCreate?: UserCreateOrConnectWithoutNodalCentreInput | UserCreateOrConnectWithoutNodalCentreInput[]
@@ -22122,14 +22258,6 @@ export namespace Prisma {
     create?: XOR<UserCreateWithoutWorkshopsCreatedInput, UserUncheckedCreateWithoutWorkshopsCreatedInput>
     connectOrCreate?: UserCreateOrConnectWithoutWorkshopsCreatedInput
     connect?: UserWhereUniqueInput
-  }
-
-  export type NullableIntFieldUpdateOperationsInput = {
-    set?: number | null
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
   }
 
   export type UserUpdateOneRequiredWithoutWorkshopsCreatedNestedInput = {
@@ -22577,7 +22705,10 @@ export namespace Prisma {
 
   export type InstitutionCreateWithoutUsersInput = {
     id?: string
+    legacyId?: number | null
     name: string
+    code?: string | null
+    oldCreatedAt?: string | null
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -22587,7 +22718,10 @@ export namespace Prisma {
 
   export type InstitutionUncheckedCreateWithoutUsersInput = {
     id?: string
+    legacyId?: number | null
     name: string
+    code?: string | null
+    oldCreatedAt?: string | null
     isActive?: boolean
     createdById?: string | null
     createdAt?: Date | string
@@ -22720,7 +22854,10 @@ export namespace Prisma {
 
   export type InstitutionCreateWithoutCreatedByInput = {
     id?: string
+    legacyId?: number | null
     name: string
+    code?: string | null
+    oldCreatedAt?: string | null
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -22730,7 +22867,10 @@ export namespace Prisma {
 
   export type InstitutionUncheckedCreateWithoutCreatedByInput = {
     id?: string
+    legacyId?: number | null
     name: string
+    code?: string | null
+    oldCreatedAt?: string | null
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -23136,7 +23276,10 @@ export namespace Prisma {
 
   export type InstitutionUpdateWithoutUsersInput = {
     id?: StringFieldUpdateOperationsInput | string
+    legacyId?: NullableIntFieldUpdateOperationsInput | number | null
     name?: StringFieldUpdateOperationsInput | string
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    oldCreatedAt?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -23146,7 +23289,10 @@ export namespace Prisma {
 
   export type InstitutionUncheckedUpdateWithoutUsersInput = {
     id?: StringFieldUpdateOperationsInput | string
+    legacyId?: NullableIntFieldUpdateOperationsInput | number | null
     name?: StringFieldUpdateOperationsInput | string
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    oldCreatedAt?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -23274,7 +23420,10 @@ export namespace Prisma {
     OR?: InstitutionScalarWhereInput[]
     NOT?: InstitutionScalarWhereInput | InstitutionScalarWhereInput[]
     id?: StringFilter<"Institution"> | string
+    legacyId?: IntNullableFilter<"Institution"> | number | null
     name?: StringFilter<"Institution"> | string
+    code?: StringNullableFilter<"Institution"> | string | null
+    oldCreatedAt?: StringNullableFilter<"Institution"> | string | null
     isActive?: BoolFilter<"Institution"> | boolean
     createdById?: StringNullableFilter<"Institution"> | string | null
     createdAt?: DateTimeFilter<"Institution"> | Date | string
@@ -23876,7 +24025,10 @@ export namespace Prisma {
 
   export type InstitutionCreateWithoutLabsInput = {
     id?: string
+    legacyId?: number | null
     name: string
+    code?: string | null
+    oldCreatedAt?: string | null
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -23886,7 +24038,10 @@ export namespace Prisma {
 
   export type InstitutionUncheckedCreateWithoutLabsInput = {
     id?: string
+    legacyId?: number | null
     name: string
+    code?: string | null
+    oldCreatedAt?: string | null
     isActive?: boolean
     createdById?: string | null
     createdAt?: Date | string
@@ -24094,7 +24249,10 @@ export namespace Prisma {
 
   export type InstitutionUpdateWithoutLabsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    legacyId?: NullableIntFieldUpdateOperationsInput | number | null
     name?: StringFieldUpdateOperationsInput | string
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    oldCreatedAt?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -24104,7 +24262,10 @@ export namespace Prisma {
 
   export type InstitutionUncheckedUpdateWithoutLabsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    legacyId?: NullableIntFieldUpdateOperationsInput | number | null
     name?: StringFieldUpdateOperationsInput | string
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    oldCreatedAt?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -27009,7 +27170,10 @@ export namespace Prisma {
 
   export type InstitutionCreateManyCreatedByInput = {
     id?: string
+    legacyId?: number | null
     name: string
+    code?: string | null
+    oldCreatedAt?: string | null
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -27336,7 +27500,10 @@ export namespace Prisma {
 
   export type InstitutionUpdateWithoutCreatedByInput = {
     id?: StringFieldUpdateOperationsInput | string
+    legacyId?: NullableIntFieldUpdateOperationsInput | number | null
     name?: StringFieldUpdateOperationsInput | string
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    oldCreatedAt?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -27346,7 +27513,10 @@ export namespace Prisma {
 
   export type InstitutionUncheckedUpdateWithoutCreatedByInput = {
     id?: StringFieldUpdateOperationsInput | string
+    legacyId?: NullableIntFieldUpdateOperationsInput | number | null
     name?: StringFieldUpdateOperationsInput | string
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    oldCreatedAt?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -27356,7 +27526,10 @@ export namespace Prisma {
 
   export type InstitutionUncheckedUpdateManyWithoutCreatedByInput = {
     id?: StringFieldUpdateOperationsInput | string
+    legacyId?: NullableIntFieldUpdateOperationsInput | number | null
     name?: StringFieldUpdateOperationsInput | string
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    oldCreatedAt?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string

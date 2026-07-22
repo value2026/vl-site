@@ -274,18 +274,21 @@ model PageSection {
 }
 
 model Institution {
-  id          String   @id @default(uuid())
-  name        String   @unique
-  isActive    Boolean  @default(true)
+  id           String   @id @default(uuid())
+  legacyId     Int?     @unique
+  name         String   @unique
+  code         String?
+  oldCreatedAt String?
+  isActive     Boolean  @default(true)
   
-  users       User[]   @relation("InstitutionMembers")
-  labs        Lab[]    @relation("LabNodalCentre")
+  users        User[]   @relation("InstitutionMembers")
+  labs         Lab[]    @relation("LabNodalCentre")
 
-  createdById String?
-  createdBy   User?    @relation("InstitutionCreator", fields: [createdById], references: [id])
+  createdById  String?
+  createdBy    User?    @relation("InstitutionCreator", fields: [createdById], references: [id])
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   @@map("institutions")
 }

@@ -4,9 +4,9 @@ import { useAuth } from '../../context/AuthContext';
 import CloudinaryUploader from './CloudinaryUploader';
 
 const CREATABLE_ROLES = {
-  admin:        ['admin', 'nodal_centre', 'teacher', 'student', 'content_admin', 'sim_admin', 'vl_manager'],
-  vl_manager:   ['nodal_centre', 'teacher', 'student'],
-  nodal_centre: ['teacher', 'student'],
+  admin:        ['admin', 'nodal_centre', 'student', 'content_admin', 'sim_admin', 'vl_manager'],
+  vl_manager:   ['nodal_centre', 'student'],
+  nodal_centre: ['student'],
   teacher:      ['student'],
 };
 
@@ -92,14 +92,16 @@ export default function AddUserModal({ isOpen, onClose, onSuccess, defaultRole }
   const [parsedPreview, setParsedPreview] = useState([]);
   const [bulkResult,    setBulkResult]    = useState(null);
 
+  const [instSearch,   setInstSearch]   = useState('');
+
   useEffect(() => {
-    if (user?.role === 'admin' || user?.role === 'vl_manager') {
+    if (isOpen) {
       fetch(`${API_URL}/institutions`)
         .then(r => r.json())
         .then(data => setInstitutions(Array.isArray(data) ? data : []))
         .catch(console.error);
     }
-  }, [user, API_URL]);
+  }, [isOpen, API_URL]);
 
   if (!isOpen) return null;
 
@@ -131,8 +133,8 @@ export default function AddUserModal({ isOpen, onClose, onSuccess, defaultRole }
   const isNodalCentre   = form.role === 'nodal_centre';
   const isPlatformRole  = ['admin', 'content_admin', 'sim_admin', 'vl_manager'].includes(form.role);
   const needsInstitution =
-    (user?.role === 'admin' || user?.role === 'vl_manager') &&
-    (isStudent || isTeacher || isNodalCentre);
+    (isStudent || isTeacher || isNodalCentre) &&
+    (!user?.nodalCentreId || user?.role === 'admin' || user?.role === 'vl_manager');
 
   // ─── validation ────────────────────────────────────────────────────────────
   const validate = () => {
@@ -315,12 +317,29 @@ export default function AddUserModal({ isOpen, onClose, onSuccess, defaultRole }
               {needsInstitution && (
                 <div className="col-span-full">
                   <Field label="Institution (Nodal Centre)">
+                    {institutions.length > 5 && (
+                      <input
+                        type="text"
+                        placeholder="🔍 Filter institution by name or code..."
+                        value={instSearch}
+                        onChange={(e) => setInstSearch(e.target.value)}
+                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white placeholder-slate-500 mb-2 focus:outline-none focus:ring-1 focus:ring-blue-500/50"
+                      />
+                    )}
                     <select name="nodalCentreId" value={form.nodalCentreId} onChange={set}
                       className={`${inputCls} appearance-none cursor-pointer`}>
                       <option value="">— Select Institution —</option>
-                      {institutions.map(i => (
-                        <option key={i.id} value={i.id} className="bg-slate-900">{i.name}</option>
-                      ))}
+                      {institutions
+                        .filter(i => 
+                          !instSearch ||
+                          i.name.toLowerCase().includes(instSearch.toLowerCase()) ||
+                          (i.code && i.code.toLowerCase().includes(instSearch.toLowerCase()))
+                        )
+                        .map(i => (
+                          <option key={i.id} value={i.id} className="bg-slate-900">
+                            {i.name}{i.code ? ` (${i.code.toUpperCase()})` : ''}
+                          </option>
+                        ))}
                     </select>
                   </Field>
                 </div>

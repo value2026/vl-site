@@ -7,7 +7,6 @@ const ROLES = [
   { value: 'admin',        label: 'Admin' },
   { value: 'vl_manager',   label: 'VL Manager' },
   { value: 'nodal_centre', label: 'Nodal Centre' },
-  { value: 'teacher',      label: 'Teacher' },
   { value: 'student',      label: 'Student' },
 ];
 

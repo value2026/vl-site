@@ -4,9 +4,9 @@ const { sendWelcomeEmail } = require('../utils/mailer');
 
 // Which roles each role is allowed to create
 const CREATION_RULES = {
-  admin:        ['admin', 'nodal_centre', 'teacher', 'student', 'content_admin', 'sim_admin', 'vl_manager'],
-  vl_manager:   ['nodal_centre', 'teacher', 'student'],
-  nodal_centre: ['teacher', 'student'],
+  admin:        ['admin', 'nodal_centre', 'student', 'content_admin', 'sim_admin', 'vl_manager'],
+  vl_manager:   ['nodal_centre', 'student'],
+  nodal_centre: ['student'],
   teacher:      ['student'],
   student:      [],
 };

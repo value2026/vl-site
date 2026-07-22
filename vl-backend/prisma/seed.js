@@ -43,25 +43,42 @@ async function main() {
     console.log('ℹ️ VL Manager already exists.');
   }
 
-  // Create 4 Default Institutions
-  const institutionNames = [
-    'Amrita Vishwa Vidyapeetham',
-    'IIT Bombay',
-    'NIT Warangal',
-    'IIIT Hyderabad'
+  // Create Default Institutions with Legacy Metadata
+  const defaultInstitutions = [
+    { legacyId: 1, name: 'Amrita Vishwa Vidyapeetham', code: 'amrita', oldCreatedAt: '01-01-2015' },
+    { legacyId: 2, name: 'VMKV Engineering College',  code: 'vmkv',   oldCreatedAt: '2/3/2015' },
+    { legacyId: 3, name: 'IIT Bombay',                 code: 'iitb',   oldCreatedAt: '01-01-2015' },
+    { legacyId: 4, name: 'NIT Warangal',               code: 'nitw',   oldCreatedAt: '01-01-2015' },
+    { legacyId: 5, name: 'MET Nashik',                 code: 'met',    oldCreatedAt: '01-05-2015' },
+    { legacyId: 6, name: 'IIIT Hyderabad',             code: 'iiith',  oldCreatedAt: '01-01-2015' },
   ];
   
   let primaryInstitution = null;
   
-  for (const name of institutionNames) {
-    let inst = await prisma.institution.findUnique({ where: { name } });
+  for (const item of defaultInstitutions) {
+    let inst = await prisma.institution.findUnique({ where: { name: item.name } });
     if (!inst) {
       inst = await prisma.institution.create({
-        data: { name, createdById: admin.id }
+        data: {
+          name: item.name,
+          code: item.code,
+          legacyId: item.legacyId,
+          oldCreatedAt: item.oldCreatedAt,
+          createdById: admin.id
+        }
       });
-      console.log(`✅ Institution created: ${name}`);
+      console.log(`✅ Institution created: ${item.name} (${item.code})`);
+    } else {
+      inst = await prisma.institution.update({
+        where: { id: inst.id },
+        data: {
+          code: item.code,
+          legacyId: item.legacyId,
+          oldCreatedAt: item.oldCreatedAt
+        }
+      });
     }
-    if (name === 'Amrita Vishwa Vidyapeetham') {
+    if (item.name === 'Amrita Vishwa Vidyapeetham') {
       primaryInstitution = inst;
     }
   }
@@ -306,7 +323,7 @@ async function main() {
         }
 
         const exp = await prisma.experiment.upsert({
-          where: { id: eData.id },
+          where: { id: eData.id || '00000000-0000-0000-0000-000000000000' },
           update: {
             title: eData.title,
             description: eData.description,
@@ -323,8 +340,8 @@ async function main() {
             difficulty: eData.difficulty,
             labId: lab.id,
             createdById: admin.id,
-            // Stack Operations will use the fallback react simulation
-            simulationPath: eData.title === 'Stack Operations' ? null : null,
+            contentPath,
+            simulationPath: simulationPath || (eData.title === 'Stack Operations' ? null : null),
           }
         });
         console.log(`      ⚗️ Upserted Experiment: ${exp.title} (${exp.id})`);

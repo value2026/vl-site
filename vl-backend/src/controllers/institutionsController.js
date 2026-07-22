@@ -17,7 +17,7 @@ const getInstitutions = async (req, res) => {
 // POST /api/institutions
 const createInstitution = async (req, res) => {
   try {
-    const { name } = req.body;
+    const { name, code, legacyId, oldCreatedAt } = req.body;
     if (!name || !name.trim()) {
       return res.status(400).json({ message: 'Institution name is required' });
     }
@@ -33,6 +33,9 @@ const createInstitution = async (req, res) => {
     const institution = await prisma.institution.create({
       data: {
         name: name.trim(),
+        code: code ? code.trim() : null,
+        legacyId: legacyId ? parseInt(legacyId, 10) : null,
+        oldCreatedAt: oldCreatedAt ? oldCreatedAt.trim() : null,
         createdById: req.user.id
       }
     });
@@ -48,10 +51,13 @@ const createInstitution = async (req, res) => {
 const updateInstitution = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, isActive } = req.body;
+    const { name, code, legacyId, oldCreatedAt, isActive } = req.body;
 
     const data = {};
     if (name) data.name = name.trim();
+    if (code !== undefined) data.code = code ? code.trim() : null;
+    if (legacyId !== undefined) data.legacyId = legacyId ? parseInt(legacyId, 10) : null;
+    if (oldCreatedAt !== undefined) data.oldCreatedAt = oldCreatedAt ? oldCreatedAt.trim() : null;
     if (typeof isActive === 'boolean') data.isActive = isActive;
 
     const institution = await prisma.institution.update({
