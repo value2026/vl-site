@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, ChevronDown, FlaskConical } from 'lucide-react';
+import { Menu, X, ChevronDown, FlaskConical, LogOut } from 'lucide-react';
 import { navLinks } from '../data/navLinks';
 import { useQuery } from '@tanstack/react-query';
+import { useAuth } from '../context/AuthContext';
 
 async function fetchHomeSections() {
   const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/pages/home/sections`);
@@ -11,7 +12,20 @@ async function fetchHomeSections() {
 }
 
 export default function Header() {
+  const { user, logout } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  const getDashboardLink = () => {
+    if (!user) return '/login';
+    const map = {
+      admin:        '/dashboard/admin',
+      vl_manager:   '/dashboard/vl-manager',
+      nodal_centre: '/dashboard/nodal',
+      teacher:      '/dashboard/teacher',
+      student:      '/dashboard/student',
+    };
+    return map[user.role] || '/dashboard/student';
+  };
   const [scrolled, setScrolled]     = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
   const location = useLocation();
@@ -142,11 +156,26 @@ export default function Header() {
             )}
           </nav>
 
-          {/* Login Button */}
+          {/* Login/Dashboard Button */}
           <div className="hidden lg:flex items-center gap-3">
-            <Link to="/login" className="btn-primary text-sm px-5 py-2.5">
-              Login
-            </Link>
+            {user ? (
+              <>
+                <Link to={getDashboardLink()} className="text-sm font-medium text-gray-600 hover:text-primary-800 transition-colors">
+                  Dashboard
+                </Link>
+                <button 
+                  onClick={() => logout()}
+                  className="btn-primary text-sm px-5 py-2.5 flex items-center gap-2"
+                >
+                  <LogOut className="w-4 h-4" />
+                  Sign Out
+                </button>
+              </>
+            ) : (
+              <Link to="/login" className="btn-primary text-sm px-5 py-2.5">
+                Login
+              </Link>
+            )}
           </div>
 
           {/* Hamburger */}
@@ -209,10 +238,25 @@ export default function Header() {
                 </Link>
               )
             )}
-            <div className="pt-2 border-t border-gray-100 mt-2">
-              <Link to="/login" className="btn-primary w-full justify-center text-sm">
-                Login
-              </Link>
+            <div className="pt-2 border-t border-gray-100 mt-2 space-y-2">
+              {user ? (
+                <>
+                  <Link to={getDashboardLink()} className="block px-3 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:bg-primary-50 hover:text-primary-800 transition-colors">
+                    Dashboard
+                  </Link>
+                  <button 
+                    onClick={() => logout()}
+                    className="btn-primary w-full justify-center text-sm gap-2"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Sign Out
+                  </button>
+                </>
+              ) : (
+                <Link to="/login" className="btn-primary w-full justify-center text-sm">
+                  Login
+                </Link>
+              )}
             </div>
           </nav>
         </div>

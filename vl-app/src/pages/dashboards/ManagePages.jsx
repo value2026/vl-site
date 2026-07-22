@@ -18,10 +18,11 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import {
   GripVertical, Eye, EyeOff, Pencil, ExternalLink,
-  RefreshCw, Globe, AlertCircle, Loader2, CheckCircle2
+  RefreshCw, Globe, AlertCircle, Loader2, CheckCircle2, ChevronDown, DownloadCloud
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import SectionEditorModal from '../../components/dashboard/SectionEditorModal';
+import SurveyResponsesModal from '../../components/dashboard/SurveyResponsesModal';
 
 // ── API helpers ───────────────────────────────────────────────
 
@@ -139,6 +140,7 @@ export default function ManagePages() {
   const queryClient        = useQueryClient();
   const [pageSlug, setPageSlug] = useState('home');
   const [editingSection, setEditingSection] = useState(null);
+  const [showSurveyResponsesModal, setShowSurveyResponsesModal] = useState(false);
   const [savingId,       setSavingId]       = useState(null);
   const [savedId,        setSavedId]        = useState(null);
 
@@ -157,7 +159,7 @@ export default function ManagePages() {
   const toggleMutation = useMutation({
     mutationFn: async (section) => {
       setSavingId(section.id);
-      const res = await fetch(`${API_URL}/pages/home/sections/${section.id}/visibility`, {
+      const res = await fetch(`${API_URL}/pages/${pageSlug}/sections/${section.id}/visibility`, {
         method:  'PATCH',
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -180,7 +182,7 @@ export default function ManagePages() {
   // Reorder mutation
   const reorderMutation = useMutation({
     mutationFn: async (items) => {
-      const res = await fetch(`${API_URL}/pages/home/sections/reorder`, {
+      const res = await fetch(`${API_URL}/pages/${pageSlug}/sections/reorder`, {
         method:  'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -191,7 +193,8 @@ export default function ManagePages() {
       if (!res.ok) throw new Error('Reorder failed');
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['home-sections']);
+      queryClient.invalidateQueries([`${pageSlug}-sections`]);
+      queryClient.invalidateQueries(['admin-page-sections', pageSlug]);
     },
   });
 
@@ -257,15 +260,40 @@ export default function ManagePages() {
           >
             <RefreshCw className="w-4 h-4" />
           </button>
-          <a
-            href="/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-slate-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 transition-all"
-          >
-            <ExternalLink className="w-4 h-4" />
-            View Live
-          </a>
+          
+          {(() => {
+            const getLiveUrl = () => {
+              switch(pageSlug) {
+                case 'home': return '/';
+                case 'student-survey': return '/survey/student';
+                case 'faculty-survey': return '/survey/faculty';
+                case 'nodal-centres': return '/nodal-centres/list';
+                default: return `/${pageSlug}`;
+              }
+            };
+            return (
+              <>
+                {['student-survey', 'faculty-survey'].includes(pageSlug) && (
+                  <button
+                    onClick={() => setShowSurveyResponsesModal(true)}
+                    className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-blue-400 hover:text-white bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 transition-all"
+                  >
+                    <Eye className="w-4 h-4" />
+                    View Responses
+                  </button>
+                )}
+                <a
+                  href={getLiveUrl()}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-slate-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 transition-all"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                  View Live
+                </a>
+              </>
+            );
+          })()}
         </div>
       </div>
 
@@ -311,6 +339,41 @@ export default function ManagePages() {
         >
           Nodal Centres
         </button>
+        <div className="relative group">
+          <button
+            className={`px-5 py-2.5 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 ${
+              ['student-survey', 'faculty-survey'].includes(pageSlug)
+                ? 'bg-red-500/10 text-red-400 border border-red-500/20'
+                : 'text-slate-400 hover:text-white hover:bg-white/5 border border-transparent'
+            }`}
+          >
+            Surveys
+            <ChevronDown className={`w-4 h-4 transition-transform group-hover:rotate-180 ${['student-survey', 'faculty-survey'].includes(pageSlug) ? 'text-red-400' : 'text-slate-500'}`} />
+          </button>
+          
+          <div className="absolute left-0 top-full mt-1 w-48 bg-slate-800 border border-white/10 rounded-xl shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 overflow-hidden py-1">
+            <button
+              onClick={() => { setPageSlug('student-survey'); setLocalOrder(null); }}
+              className={`w-full text-left px-4 py-2.5 text-sm transition-colors ${
+                pageSlug === 'student-survey' 
+                  ? 'bg-blue-500/20 text-blue-300 font-bold border-l-2 border-blue-400' 
+                  : 'text-slate-300 hover:bg-white/5 hover:text-white border-l-2 border-transparent'
+              }`}
+            >
+              Student Survey
+            </button>
+            <button
+              onClick={() => { setPageSlug('faculty-survey'); setLocalOrder(null); }}
+              className={`w-full text-left px-4 py-2.5 text-sm transition-colors ${
+                pageSlug === 'faculty-survey' 
+                  ? 'bg-blue-500/20 text-blue-300 font-bold border-l-2 border-blue-400' 
+                  : 'text-slate-300 hover:bg-white/5 hover:text-white border-l-2 border-transparent'
+              }`}
+            >
+              Faculty Survey
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* Info banner */}
@@ -364,6 +427,7 @@ export default function ManagePages() {
       {editingSection && (
         <SectionEditorModal
           section={editingSection}
+          pageSlug={pageSlug}
           onClose={() => setEditingSection(null)}
           onSaved={() => {
             refetch();
@@ -371,6 +435,13 @@ export default function ManagePages() {
           }}
         />
       )}
+      <SurveyResponsesModal
+        isOpen={showSurveyResponsesModal}
+        onClose={() => setShowSurveyResponsesModal(false)}
+        pageSlug={pageSlug}
+        token={token}
+        API_URL={API_URL}
+      />
     </div>
   );
 }

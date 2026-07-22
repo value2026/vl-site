@@ -14,7 +14,15 @@ const getSessionId = () => {
 // Define event constants to prevent typos
 export const EVENTS = {
   SIMULATION_STARTED: 'simulation_started',
+  SIMULATION_COMPLETED: 'simulation_completed',
   SIMULATION_EXITED: 'simulation_exited',
+  PARAMETER_CHANGED: 'parameter_changed',
+  STEP_CHANGED: 'step_changed',
+  PREDICTION_SUBMITTED: 'prediction_submitted',
+  OBSERVATION_ADDED: 'observation_added',
+  RESULT_GENERATED: 'result_generated',
+  REPORT_DOWNLOADED: 'report_downloaded',
+  FEEDBACK_SUBMITTED: 'feedback_submitted',
   QUIZ_STARTED: 'quiz_started',
   QUIZ_COMPLETED: 'quiz_completed',
   QUIZ_EXITED: 'quiz_exited',

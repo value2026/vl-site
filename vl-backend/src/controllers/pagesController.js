@@ -223,6 +223,10 @@ async function getSections(req, res) {
         page = await seedProjectPage();
       } else if (slug === 'nodal-centres') {
         page = await seedNodalCentresPage();
+      } else if (slug === 'student-survey') {
+        page = await seedStudentSurveyPage();
+      } else if (slug === 'faculty-survey') {
+        page = await seedFacultySurveyPage();
       } else {
         return res.status(404).json({ message: 'Page not found' });
       }
@@ -309,7 +313,7 @@ async function reorderSections(req, res) {
 async function seedPage(req, res) {
   try {
     const { slug } = req.params;
-    if (!['home', 'publications', 'project', 'nodal-centres'].includes(slug)) {
+    if (!['home', 'publications', 'project', 'nodal-centres', 'student-survey', 'faculty-survey'].includes(slug)) {
       return res.status(400).json({ message: 'Page seeding is not supported for this slug' });
     }
 
@@ -318,6 +322,8 @@ async function seedPage(req, res) {
     else if (slug === 'publications') page = await seedPublicationsPage();
     else if (slug === 'project') page = await seedProjectPage();
     else if (slug === 'nodal-centres') page = await seedNodalCentresPage();
+    else if (slug === 'student-survey') page = await seedStudentSurveyPage();
+    else if (slug === 'faculty-survey') page = await seedFacultySurveyPage();
     
     res.json(page.sections);
   } catch (err) {
@@ -541,10 +547,211 @@ async function seedNodalCentresPage() {
   });
 }
 
+async function seedStudentSurveyPage() {
+  const page = await prisma.page.upsert({
+    where: { slug: 'student-survey' },
+    update: { title: 'Student Survey' },
+    create: { slug: 'student-survey', title: 'Student Survey' },
+  });
+
+  const heroSection = {
+    sectionKey: 'hero',
+    label: 'Survey Hero',
+    order: 0,
+    title: 'Student Survey',
+    subtitle: 'Help us improve the Virtual Labs platform. Share your learning experience!',
+    content: {
+      heading: 'Student Survey',
+      subheading: 'Help us improve the Virtual Labs platform. Share your learning experience!',
+      cardHeading: 'Amrita Virtual Labs Workshop - Student Survey',
+      cardText: 'Dear Friends,\n\nWe want to thank you for participating in the Virtual Labs workshop. We would like to request a few minutes of your time to take this detailed survey to allow us use this information in enhancing the experience of using virtual labs for other faculties and students.\n\nSincerely,\n\nThe Virtual Labs Team',
+      cardButtonLabel: 'Start Survey',
+      formUrl: '',
+      questions: [
+        { id: 'q_email', type: 'text', label: 'Email', required: true },
+        { id: 'q_name', type: 'text', label: 'Full Name', required: true },
+        { id: 'q_age', type: 'text', label: 'Age', required: true },
+        { id: 'q_gender', type: 'radio', label: 'Gender', options: ['Female', 'Male', 'Prefer not to say'], required: true },
+        { id: 'q_inst', type: 'text', label: 'Institute Name', required: true },
+        { id: 'q_dept', type: 'text', label: 'Department', required: true },
+        { id: 'q_year', type: 'text', label: 'Year of join', required: true },
+        { id: 'q_r1', type: 'radio', label: 'Using Virtual Labs will improve the quality of my studies.', options: ['Strongly Agree', 'Agree', 'Neutral', 'Disagree', 'Strongly Disagree'], required: true },
+        { id: 'q_r2', type: 'radio', label: 'Virtual Labs will make it easier to do my studies', options: ['Strongly Agree', 'Agree', 'Neutral', 'Disagree', 'Strongly Disagree'], required: true },
+        { id: 'q_r3', type: 'radio', label: 'Virtual Labs provides higher level of engagement in my studies.', options: ['Strongly Agree', 'Agree', 'Neutral', 'Disagree', 'Strongly Disagree'], required: true },
+        { id: 'q_r4', type: 'radio', label: 'Virtual Labs helps me remember the concepts better.', options: ['Strongly Agree', 'Agree', 'Neutral', 'Disagree', 'Strongly Disagree'], required: true },
+        { id: 'q_r5', type: 'radio', label: 'I prefer to use Physical Labs before using Virtual Labs.', options: ['Strongly Agree', 'Agree', 'Neutral', 'Disagree', 'Strongly Disagree'], required: true },
+        { id: 'q_r6', type: 'radio', label: 'Overall, I would find using Virtual Labs to be advantageous in my studies.', options: ['Strongly Agree', 'Agree', 'Neutral', 'Disagree', 'Strongly Disagree'], required: true },
+        { id: 'q_r7', type: 'radio', label: 'Using Virtual Labs will fit into my study style.', options: ['Strongly Agree', 'Agree', 'Neutral', 'Disagree', 'Strongly Disagree'], required: true },
+        { id: 'q_r8', type: 'radio', label: 'I think that using Virtual Labs will fit well with the way I like to study.', options: ['Strongly Agree', 'Agree', 'Neutral', 'Disagree', 'Strongly Disagree'], required: true },
+        { id: 'q_r9', type: 'radio', label: 'Virtual Labs requires more of my study time.', options: ['Strongly Agree', 'Agree', 'Neutral', 'Disagree', 'Strongly Disagree'], required: true },
+        { id: 'q_r10', type: 'radio', label: 'My interaction with Virtual Labs is clear and understandable.', options: ['Strongly Agree', 'Agree', 'Neutral', 'Disagree', 'Strongly Disagree'], required: true },
+        { id: 'q_r11', type: 'radio', label: 'Using Virtual Labs will require a lot of training.', options: ['Strongly Agree', 'Agree', 'Neutral', 'Disagree', 'Strongly Disagree'], required: true },
+        { id: 'q_r12', type: 'radio', label: 'I believe that it is easy to get Virtual Labs to do what I want it to do.', options: ['Strongly Agree', 'Agree', 'Neutral', 'Disagree', 'Strongly Disagree'], required: true },
+        { id: 'q_r13', type: 'radio', label: 'Overall, I believe that Virtual Labs will be easy for me.', options: ['Strongly Agree', 'Agree', 'Neutral', 'Disagree', 'Strongly Disagree'], required: true },
+        { id: 'q_r14', type: 'radio', label: 'I have seen what others do using Virtual Labs.', options: ['Strongly Agree', 'Agree', 'Neutral', 'Disagree', 'Strongly Disagree'], required: true },
+        { id: 'q_r15', type: 'radio', label: 'It is easy for me to observe others using Virtual Labs.', options: ['Strongly Agree', 'Agree', 'Neutral', 'Disagree', 'Strongly Disagree'], required: true }
+      ]
+    }
+  };
+
+  await prisma.pageSection.upsert({
+    where: { pageId_sectionKey: { pageId: page.id, sectionKey: heroSection.sectionKey } },
+    update: {
+      title: heroSection.title,
+      subtitle: heroSection.subtitle,
+      content: heroSection.content
+    },
+    create: {
+      pageId: page.id,
+      sectionKey: heroSection.sectionKey,
+      label: heroSection.label,
+      title: heroSection.title,
+      subtitle: heroSection.subtitle,
+      content: heroSection.content,
+      isVisible: true,
+      order: heroSection.order,
+    },
+  });
+
+  return prisma.page.findUnique({
+    where: { slug: 'student-survey' },
+    include: { sections: { orderBy: { order: 'asc' } } },
+  });
+}
+
+async function seedFacultySurveyPage() {
+  const page = await prisma.page.upsert({
+    where: { slug: 'faculty-survey' },
+    update: { title: 'Faculty Survey' },
+    create: { slug: 'faculty-survey', title: 'Faculty Survey' },
+  });
+
+  const heroSection = {
+    sectionKey: 'hero',
+    label: 'Survey Hero',
+    order: 0,
+    title: 'Faculty Survey',
+    subtitle: 'Share your feedback on using Virtual Labs as a teaching tool.',
+    content: {
+      heading: 'Faculty Survey',
+      subheading: 'Share your feedback on using Virtual Labs as a teaching tool.',
+      cardHeading: 'Workshop Feedback',
+      cardText: 'Dear Participants,\nWe want to thank you for participating in the Virtual Labs workshop. We would like to request a few minutes of your time to take this detailed survey to allow us use this information in enhancing the experience of using virtual labs.',
+      cardButtonLabel: 'Start Survey',
+      formUrl: '',
+      questions: [
+        { id: 'q_email', type: 'text', label: 'Email', required: true },
+        { id: 'q_title', type: 'radio', label: 'Title', options: ['Prof.', 'Dr.', 'Mr.', 'Ms.'], required: true },
+        { id: 'q_name', type: 'text', label: 'Full Name', required: true },
+        { id: 'q_age', type: 'text', label: 'Age', required: true },
+        { id: 'q_gender', type: 'radio', label: 'Gender', options: ['Female', 'Male', 'Prefer not to say'], required: false },
+        { id: 'q_dept', type: 'text', label: 'Department', required: true },
+        { id: 'q_inst', type: 'text', label: 'Institute Name', required: true },
+        { id: 'q_address', type: 'textarea', label: 'Institute Address', required: true },
+        { id: 'q_designation', type: 'text', label: 'Designation', required: true },
+        { id: 'q_exp', type: 'radio', label: 'Years of experience', options: ['< 5 years', '6 - 10 years', '11 - 15 years', '16 - 20 years', '21+ years'], required: true },
+        { id: 'q_contact', type: 'text', label: 'Contact Number', required: false }
+      ]
+    }
+  };
+
+  await prisma.pageSection.upsert({
+    where: { pageId_sectionKey: { pageId: page.id, sectionKey: heroSection.sectionKey } },
+    update: {
+      title: heroSection.title,
+      subtitle: heroSection.subtitle,
+      content: heroSection.content
+    },
+    create: {
+      pageId: page.id,
+      sectionKey: heroSection.sectionKey,
+      label: heroSection.label,
+      title: heroSection.title,
+      subtitle: heroSection.subtitle,
+      content: heroSection.content,
+      isVisible: true,
+      order: heroSection.order,
+    },
+  });
+
+  return prisma.page.findUnique({
+    where: { slug: 'faculty-survey' },
+    include: { sections: { orderBy: { order: 'asc' } } },
+  });
+}
+
+const submitSurveyResponse = async (req, res) => {
+  const { slug } = req.params;
+  const data = req.body;
+  try {
+    const response = await prisma.surveyResponse.create({
+      data: {
+        pageSlug: slug,
+        data,
+      }
+    });
+    res.json({ success: true, id: response.id });
+  } catch (error) {
+    console.error('Failed to submit survey:', error);
+    res.status(500).json({ error: 'Failed to submit survey' });
+  }
+};
+
+const getSurveyResponses = async (req, res) => {
+  const { slug } = req.params;
+  try {
+    const responses = await prisma.surveyResponse.findMany({
+      where: { pageSlug: slug },
+      orderBy: { createdAt: 'desc' }
+    });
+    
+    if (responses.length === 0) {
+      return res.status(404).json({ error: 'No responses found' });
+    }
+
+    if (req.query.format === 'csv') {
+      // Convert JSON data to CSV
+      const allKeys = new Set();
+      responses.forEach(r => {
+        if (r.data) Object.keys(r.data).forEach(k => allKeys.add(k));
+      });
+      const headers = ['Timestamp', ...Array.from(allKeys)];
+      
+      let csv = headers.join(',') + '\n';
+      responses.forEach(r => {
+        const row = [r.createdAt.toISOString()];
+        Array.from(allKeys).forEach(k => {
+          let val = r.data[k] || '';
+          if (typeof val === 'string') {
+            val = val.replace(/"/g, '""');
+            if (val.includes(',') || val.includes('\n')) {
+              val = `"${val}"`;
+            }
+          }
+          row.push(val);
+        });
+        csv += row.join(',') + '\n';
+      });
+
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', `attachment; filename="${slug}-responses.csv"`);
+      return res.send(csv);
+    }
+
+    // Default: return JSON
+    return res.json(responses);
+  } catch (error) {
+    console.error('Failed to get survey responses:', error);
+    res.status(500).json({ error: 'Failed to download responses' });
+  }
+};
+
 module.exports = {
   getSections,
   updateSection,
   toggleVisibility,
   reorderSections,
   seedPage,
+  submitSurveyResponse,
+  getSurveyResponses,
 };

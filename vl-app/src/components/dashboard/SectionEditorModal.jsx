@@ -334,7 +334,7 @@ function SectionDivider({ label }) {
 }
 
 // ── Main modal ────────────────────────────────────────────────
-export default function SectionEditorModal({ section, onClose, onSaved }) {
+export default function SectionEditorModal({ section, pageSlug = 'home', onClose, onSaved }) {
   const { token, API_URL } = useAuth();
   const queryClient = useQueryClient();
 
@@ -366,7 +366,7 @@ export default function SectionEditorModal({ section, onClose, onSaved }) {
 
   const mutation = useMutation({
     mutationFn: async (payload) => {
-      const res = await fetch(`${API_URL}/pages/home/sections/${section.id}`, {
+      const res = await fetch(`${API_URL}/pages/${pageSlug}/sections/${section.id}`, {
         method:  'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -378,8 +378,8 @@ export default function SectionEditorModal({ section, onClose, onSaved }) {
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['home-sections']);
-      queryClient.invalidateQueries(['admin-page-sections', 'home']);
+      queryClient.invalidateQueries([`${pageSlug}-sections`]);
+      queryClient.invalidateQueries(['admin-page-sections', pageSlug]);
       onSaved?.();
       onClose();
     },
@@ -410,15 +410,21 @@ export default function SectionEditorModal({ section, onClose, onSaved }) {
         <div className="flex-1 overflow-y-auto p-6 space-y-6">
 
           {/* ── Common section meta ──────────────────────── */}
-          <SectionDivider label="Section Header" />
-          <TextField label="Section Title" value={title} onChange={setTitle} placeholder="Section heading…" />
-          <TextField label="Section Subtitle" value={subtitle} onChange={setSubtitle} placeholder="Supporting text…" multiline />
+          {!pageSlug.includes('survey') && (
+            <>
+              <SectionDivider label="Section Header" />
+              <TextField label="Section Title" value={title} onChange={setTitle} placeholder="Section heading…" />
+              <TextField label="Section Subtitle" value={subtitle} onChange={setSubtitle} placeholder="Supporting text…" multiline />
+            </>
+          )}
 
           {/* ── HERO ─────────────────────────────────────── */}
           {section.sectionKey === 'hero' && (
             <>
-              <SectionDivider label="Hero Content" />
-              <TextField label="Badge Text" value={content.badge} onChange={v => setContentKey('badge', v)} placeholder="Ministry of Education Initiative · NMEICT" />
+              <SectionDivider label={pageSlug.includes('survey') ? "Survey Header Content" : "Hero Content"} />
+              {!pageSlug.includes('survey') && (
+                <TextField label="Badge Text" value={content.badge} onChange={v => setContentKey('badge', v)} placeholder="Ministry of Education Initiative · NMEICT" />
+              )}
               <TextField label="Main Heading" value={content.heading} onChange={v => setContentKey('heading', v)} placeholder="Learn Science Without Limits" />
 
               <div>
@@ -430,30 +436,152 @@ export default function SectionEditorModal({ section, onClose, onSaved }) {
                 />
               </div>
 
-              <SectionDivider label="Background Image (optional)" />
-              <CloudinaryUploader
-                label="Hero Background Image — replaces the gradient if set"
-                value={content.backgroundImage || ''}
-                onChange={v => setContentKey('backgroundImage', v)}
-              />
+              {pageSlug.includes('survey') ? (
+                <>
+                  <SectionDivider label="Survey Card Content" />
+                  <TextField label="Card Heading" value={content.cardHeading} onChange={v => setContentKey('cardHeading', v)} placeholder="Ready to share your feedback?" />
+                  <TextField label="Card Description" value={content.cardText} onChange={v => setContentKey('cardText', v)} placeholder="Please fill out the form below..." multiline />
+                  <TextField label="Button Label" value={content.cardButtonLabel} onChange={v => setContentKey('cardButtonLabel', v)} placeholder="Open Survey Form" />
+                  
+                  <SectionDivider label="Custom Survey Form Builder" />
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <p className="text-sm text-slate-400">Build your custom survey form below.</p>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newQ = { id: Date.now().toString(), type: 'text', label: 'New Question', required: true, options: [] };
+                          setContentKey('questions', [...(content.questions || []), newQ]);
+                        }}
+                        className="btn-primary text-xs py-1.5 px-3"
+                      >
+                        + Add Question
+                      </button>
+                    </div>
+                    
+                    <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2">
+                      {(content.questions || []).map((q, idx) => (
+                        <div key={q.id} className="p-4 bg-slate-800 rounded-xl border border-slate-700 relative group">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const newQs = [...content.questions];
+                              newQs.splice(idx, 1);
+                              setContentKey('questions', newQs);
+                            }}
+                            className="absolute top-3 right-3 text-slate-500 hover:text-red-500"
+                            title="Remove Question"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                          
+                          <div className="grid grid-cols-2 gap-4 mb-3 pr-8">
+                            <div>
+                              <label className="text-xs font-medium text-slate-400 block mb-1">Question Type</label>
+                              <select
+                                value={q.type}
+                                onChange={e => {
+                                  const newQs = [...content.questions];
+                                  newQs[idx].type = e.target.value;
+                                  if (e.target.value === 'radio' && !newQs[idx].options?.length) {
+                                    newQs[idx].options = ['Option 1', 'Option 2'];
+                                  }
+                                  setContentKey('questions', newQs);
+                                }}
+                                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+                              >
+                                <option value="text">Short Text</option>
+                                <option value="textarea">Long Text (Paragraph)</option>
+                                <option value="radio">Multiple Choice</option>
+                                <option value="rating">1-5 Rating</option>
+                              </select>
+                            </div>
+                            <div className="flex items-end pb-1">
+                              <label className="flex items-center gap-2 cursor-pointer">
+                                <input
+                                  type="checkbox"
+                                  checked={q.required}
+                                  onChange={e => {
+                                    const newQs = [...content.questions];
+                                    newQs[idx].required = e.target.checked;
+                                    setContentKey('questions', newQs);
+                                  }}
+                                  className="rounded border-slate-600 text-blue-500 bg-slate-900 focus:ring-blue-500/50"
+                                />
+                                <span className="text-sm text-slate-300">Required Field</span>
+                              </label>
+                            </div>
+                          </div>
+                          
+                          <div className="mb-3">
+                            <label className="text-xs font-medium text-slate-400 block mb-1">Question Text</label>
+                            <input
+                              type="text"
+                              value={q.label}
+                              onChange={e => {
+                                const newQs = [...content.questions];
+                                newQs[idx].label = e.target.value;
+                                setContentKey('questions', newQs);
+                              }}
+                              placeholder="e.g. How would you rate this lab?"
+                              className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            />
+                          </div>
+                          
+                          {q.type === 'radio' && (
+                            <div>
+                              <label className="text-xs font-medium text-slate-400 block mb-2">Options (comma separated)</label>
+                              <input
+                                type="text"
+                                value={q.options?.join(', ') || ''}
+                                onChange={e => {
+                                  const newQs = [...content.questions];
+                                  newQs[idx].options = e.target.value.split(',').map(s => s.trim()).filter(Boolean);
+                                  setContentKey('questions', newQs);
+                                }}
+                                placeholder="Option 1, Option 2, Option 3"
+                                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+                              />
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                      {(!content.questions || content.questions.length === 0) && (
+                        <div className="text-center py-8 bg-slate-900/50 rounded-xl border border-dashed border-slate-700 text-slate-500 text-sm">
+                          No questions added yet. Click "+ Add Question" to start.
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <SectionDivider label="Background Image (optional)" />
+                  <CloudinaryUploader
+                    label="Hero Background Image — replaces the gradient if set"
+                    value={content.backgroundImage || ''}
+                    onChange={v => setContentKey('backgroundImage', v)}
+                  />
 
-              <SectionDivider label="Call-to-Action Buttons" />
-              <div className="grid grid-cols-2 gap-4">
-                <TextField label="Primary Button Label" value={content.ctaPrimaryLabel} onChange={v => setContentKey('ctaPrimaryLabel', v)} placeholder="Explore Labs" />
-                <TextField label="Primary Button URL" value={content.ctaPrimaryHref} onChange={v => setContentKey('ctaPrimaryHref', v)} placeholder="/labs/biotechnology" />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <TextField label="Secondary Button Label" value={content.ctaSecondaryLabel} onChange={v => setContentKey('ctaSecondaryLabel', v)} placeholder="Watch Demo" />
-                <TextField label="Secondary Button URL" value={content.ctaSecondaryHref} onChange={v => setContentKey('ctaSecondaryHref', v)} placeholder="https://youtube.com/…" />
-              </div>
+                  <SectionDivider label="Call-to-Action Buttons" />
+                  <div className="grid grid-cols-2 gap-4">
+                    <TextField label="Primary Button Label" value={content.ctaPrimaryLabel} onChange={v => setContentKey('ctaPrimaryLabel', v)} placeholder="Explore Labs" />
+                    <TextField label="Primary Button URL" value={content.ctaPrimaryHref} onChange={v => setContentKey('ctaPrimaryHref', v)} placeholder="/labs/biotechnology" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <TextField label="Secondary Button Label" value={content.ctaSecondaryLabel} onChange={v => setContentKey('ctaSecondaryLabel', v)} placeholder="Watch Demo" />
+                    <TextField label="Secondary Button URL" value={content.ctaSecondaryHref} onChange={v => setContentKey('ctaSecondaryHref', v)} placeholder="https://youtube.com/…" />
+                  </div>
 
-              <SectionDivider label="Stats Badges" />
-              <RepeatableList
-                label="Stats Counter Badges"
-                items={content.stats || []}
-                onChange={v => setContentKey('stats', v)}
-                fields={REPEATABLE_CONFIGS.hero.stats.fields}
-              />
+                  <SectionDivider label="Stats Badges" />
+                  <RepeatableList
+                    label="Stats Counter Badges"
+                    items={content.stats || []}
+                    onChange={v => setContentKey('stats', v)}
+                    fields={REPEATABLE_CONFIGS.hero.stats.fields}
+                  />
+                </>
+              )}
             </>
           )}
 

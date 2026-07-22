@@ -4,6 +4,7 @@ import DashboardLayout from '../../components/dashboard/DashboardLayout';
 import UserTable       from '../../components/dashboard/UserTable';
 import AddUserModal    from '../../components/dashboard/AddUserModal';
 import { useAuth }     from '../../context/AuthContext';
+import { useLocation } from 'react-router-dom';
 
 function StatCard({ icon: Icon, label, value, gradient, sub }) {
   return (
@@ -28,6 +29,8 @@ export default function AdminDashboard() {
   const [users,   setUsers]   = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const location = useLocation();
+  const isUsersPage = location.pathname.endsWith('/users');
 
   const fetchAll = useCallback(async () => {
     setLoading(true);
@@ -53,8 +56,10 @@ export default function AdminDashboard() {
       {/* Header row */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-white text-2xl font-bold">Overview</h2>
-          <p className="text-slate-400 text-sm mt-0.5">Manage all users across the platform</p>
+          <h2 className="text-white text-2xl font-bold">{isUsersPage ? 'User Management' : 'Overview'}</h2>
+          <p className="text-slate-400 text-sm mt-0.5">
+            {isUsersPage ? 'Manage all users across the platform' : 'High-level metrics and statistics'}
+          </p>
         </div>
         <div className="flex items-center gap-3">
           <button
@@ -64,57 +69,61 @@ export default function AdminDashboard() {
             <RefreshCw className="w-4 h-4" />
             Refresh
           </button>
-          <button
-            onClick={() => setShowModal(true)}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 shadow-lg shadow-red-500/20 transition-all"
-          >
-            <Plus className="w-4 h-4" />
-            Add User
-          </button>
+          {isUsersPage && (
+            <button
+              onClick={() => setShowModal(true)}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 shadow-lg shadow-red-500/20 transition-all"
+            >
+              <Plus className="w-4 h-4" />
+              Add User
+            </button>
+          )}
         </div>
       </div>
 
-      {/* Stat cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <StatCard
-          icon={ShieldCheck}
-          label="Administrators"
-          value={stats?.totalAdmins}
-          gradient="from-red-600 to-rose-700"
-          sub="Full access"
-        />
-        <StatCard
-          icon={Building2}
-          label="Nodal Centres"
-          value={stats?.totalNodalCentres}
-          gradient="from-orange-500 to-amber-600"
-          sub="Partner institutions"
-        />
-        <StatCard
-          icon={GraduationCap}
-          label="Teachers"
-          value={stats?.totalTeachers}
-          gradient="from-blue-600 to-indigo-700"
-          sub="Faculty members"
-        />
-        <StatCard
-          icon={BookOpen}
-          label="Students"
-          value={stats?.totalStudents}
-          gradient="from-emerald-500 to-green-600"
-          sub="Enrolled learners"
-        />
-      </div>
+      {!isUsersPage && (
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <StatCard
+            icon={ShieldCheck}
+            label="Administrators"
+            value={stats?.totalAdmins}
+            gradient="from-red-600 to-rose-700"
+            sub="Full access"
+          />
+          <StatCard
+            icon={Building2}
+            label="Nodal Centres"
+            value={stats?.totalNodalCentres}
+            gradient="from-orange-500 to-amber-600"
+            sub="Partner institutions"
+          />
+          <StatCard
+            icon={GraduationCap}
+            label="Teachers"
+            value={stats?.totalTeachers}
+            gradient="from-blue-600 to-indigo-700"
+            sub="Faculty members"
+          />
+          <StatCard
+            icon={BookOpen}
+            label="Students"
+            value={stats?.totalStudents}
+            gradient="from-emerald-500 to-green-600"
+            sub="Enrolled learners"
+          />
+        </div>
+      )}
 
-      {/* User table */}
-      <div className="mb-4 flex items-center justify-between">
-        <h3 className="text-white font-semibold text-lg flex items-center gap-2">
-          <Users className="w-5 h-5 text-slate-400" />
-          All Users
-        </h3>
-        <span className="text-slate-500 text-sm">{users.length} total</span>
-      </div>
-      <UserTable users={users} loading={loading} onRefresh={fetchAll} />
+      <>
+        <div className="mb-4 flex items-center justify-between">
+          <h3 className="text-white font-semibold text-lg flex items-center gap-2">
+            <Users className="w-5 h-5 text-slate-400" />
+            {isUsersPage ? "All Users" : "Recent Users"}
+          </h3>
+          <span className="text-slate-500 text-sm">{users.length} total</span>
+        </div>
+        <UserTable users={isUsersPage ? users : users.slice(0, 5)} loading={loading} onRefresh={fetchAll} hideActions={!isUsersPage} />
+      </>
 
       {/* Add user modal */}
       <AddUserModal

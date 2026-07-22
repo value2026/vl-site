@@ -300,6 +300,13 @@ exports.Prisma.WorkshopScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.SurveyResponseScalarFieldEnum = {
+  id: 'id',
+  pageSlug: 'pageSlug',
+  data: 'data',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -348,7 +355,8 @@ exports.Prisma.ModelName = {
   Page: 'Page',
   PageSection: 'PageSection',
   Institution: 'Institution',
-  Workshop: 'Workshop'
+  Workshop: 'Workshop',
+  SurveyResponse: 'SurveyResponse'
 };
 
 /**

@@ -1,6 +1,7 @@
-import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation, Navigate, Link } from 'react-router-dom';
 import { useEffect } from 'react';
 import ReactGA from 'react-ga4';
+import { LayoutDashboard } from 'lucide-react';
 
 // Layout
 import Header from './components/Header';
@@ -14,6 +15,7 @@ import NodalCentres  from './pages/NodalCentres';
 import Publications  from './pages/Publications';
 import News          from './pages/News';
 import Contact       from './pages/Contact';
+import Survey        from './pages/Survey';
 import Login         from './pages/Login';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword  from './pages/ResetPassword';
@@ -142,6 +144,32 @@ function ProtectedRoute({ children, allowedRole }) {
 // ── Public layout (with header + footer) ─────────────────────
 
 const DASHBOARD_PATHS = ['/dashboard', '/student'];
+
+function FloatingDashboardButton() {
+  const { user } = useAuth();
+  if (!user) return null;
+  
+  const dashMap = {
+    admin:        '/dashboard/admin/pages',
+    vl_manager:   '/dashboard/vl-manager',
+    nodal_centre: '/dashboard/nodal',
+    teacher:      '/dashboard/teacher',
+    student:      '/dashboard/student',
+  };
+  
+  const link = dashMap[user.role] || '/login';
+  const label = user.role === 'admin' ? 'Back to Manage Pages' : 'Back to Dashboard';
+  
+  return (
+    <Link 
+      to={link}
+      className="fixed bottom-6 left-6 z-50 flex items-center gap-2 px-5 py-3 bg-slate-900 text-white rounded-full font-medium shadow-2xl hover:bg-slate-800 transition-all hover:scale-105 hover:-translate-y-1 border border-white/10"
+    >
+      <LayoutDashboard className="w-5 h-5" />
+      {label}
+    </Link>
+  );
+}
 
 function AppLayout() {
   const { pathname } = useLocation();
@@ -302,9 +330,9 @@ function AppLayout() {
           <Route path="/nodal-centres/demo"  element={<ComingSoon page="Request a Demo" />} />
           <Route path="/news"                element={<News />} />
           <Route path="/publications"        element={<Publications />} />
-          <Route path="/survey"              element={<ComingSoon page="Survey" />} />
-          <Route path="/survey/faculty"      element={<ComingSoon page="Faculty Survey" />} />
-          <Route path="/survey/student"      element={<ComingSoon page="Student Survey" />} />
+          <Route path="/survey"              element={<Navigate to="/survey/student" replace />} />
+          <Route path="/survey/faculty"      element={<Survey slug="faculty-survey" />} />
+          <Route path="/survey/student"      element={<Survey slug="student-survey" />} />
           <Route path="/contact"             element={<Contact />} />
           <Route path="/labs/:category"      element={<ComingSoon page="Lab Category" />} />
           <Route path="/simulations/:id"     element={<ComingSoon page="Simulation" />} />
@@ -312,6 +340,7 @@ function AppLayout() {
         </Routes>
       </div>
       <Footer />
+      <FloatingDashboardButton />
       <ChatPanel />
     </div>
   );

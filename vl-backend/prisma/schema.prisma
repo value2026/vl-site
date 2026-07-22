@@ -312,3 +312,12 @@ model Workshop {
   @@map("workshops")
 }
 
+model SurveyResponse {
+  id        String   @id @default(uuid())
+  pageSlug  String   // Which survey this belongs to (e.g., student-survey, faculty-survey)
+  data      Json     // The actual answers submitted
+  createdAt DateTime @default(now())
+
+  @@map("survey_responses")
+}
+

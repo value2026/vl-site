@@ -18,20 +18,25 @@ const ROLE_LABELS = {
   content_admin: 'Content Admin', sim_admin: 'Sim Admin', vl_manager: 'VL Manager',
 };
 
-export default function UserTable({ users, loading, onRefresh }) {
+export default function UserTable({ users, loading, onRefresh, hideActions = false }) {
   const { token, API_URL, user: self } = useAuth();
   const [search, setSearch]   = useState('');
+  const [roleFilter, setRoleFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('all');
   const [sortKey, setSortKey] = useState('createdAt');
   const [sortDir, setSortDir] = useState('desc');
   const [actionLoading, setActionLoading] = useState(null);
   const [selectedStudentId, setSelectedStudentId] = useState(null);
 
   const filtered = users
-    .filter((u) =>
-      u.name.toLowerCase().includes(search.toLowerCase()) ||
-      u.email.toLowerCase().includes(search.toLowerCase()) ||
-      ROLE_LABELS[u.role]?.toLowerCase().includes(search.toLowerCase())
-    )
+    .filter((u) => {
+      const matchSearch = u.name.toLowerCase().includes(search.toLowerCase()) ||
+                          u.email.toLowerCase().includes(search.toLowerCase()) ||
+                          ROLE_LABELS[u.role]?.toLowerCase().includes(search.toLowerCase());
+      const matchRole = roleFilter === 'all' || u.role === roleFilter;
+      const matchStatus = statusFilter === 'all' || (statusFilter === 'active' ? u.isActive : !u.isActive);
+      return matchSearch && matchRole && matchStatus;
+    })
     .sort((a, b) => {
       const va = a[sortKey] || '';
       const vb = b[sortKey] || '';
@@ -82,9 +87,9 @@ export default function UserTable({ users, loading, onRefresh }) {
 
   return (
     <div className="bg-slate-900 border border-white/10 rounded-2xl overflow-hidden">
-      {/* Search bar */}
-      <div className="p-4 border-b border-white/10">
-        <div className="relative">
+      {/* Toolbar */}
+      <div className="p-4 border-b border-white/10 flex flex-col sm:flex-row gap-3">
+        <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
           <input
             type="text"
@@ -94,6 +99,29 @@ export default function UserTable({ users, loading, onRefresh }) {
             className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
           />
         </div>
+        {!hideActions && (
+          <div className="flex items-center gap-3">
+            <select
+              value={roleFilter}
+              onChange={(e) => setRoleFilter(e.target.value)}
+              className="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 appearance-none min-w-[140px] cursor-pointer"
+            >
+              <option value="all" className="bg-slate-900">All Roles</option>
+              {Object.entries(ROLE_LABELS).map(([val, label]) => (
+                <option key={val} value={val} className="bg-slate-900">{label}</option>
+              ))}
+            </select>
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 appearance-none min-w-[130px] cursor-pointer"
+            >
+              <option value="all" className="bg-slate-900">All Status</option>
+              <option value="active" className="bg-slate-900">Active</option>
+              <option value="inactive" className="bg-slate-900">Inactive</option>
+            </select>
+          </div>
+        )}
       </div>
 
       {/* Table */}
@@ -119,15 +147,17 @@ export default function UserTable({ users, loading, onRefresh }) {
                   </span>
                 </th>
               ))}
-              <th className="px-4 py-3 text-right text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                Actions
-              </th>
+              {!hideActions && (
+                <th className="px-4 py-3 text-right text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                  Actions
+                </th>
+              )}
             </tr>
           </thead>
           <tbody className="divide-y divide-white/5">
             {loading ? (
               <tr>
-                <td colSpan={6} className="px-4 py-12 text-center text-slate-400">
+                <td colSpan={hideActions ? 5 : 6} className="px-4 py-12 text-center text-slate-400">
                   <div className="flex items-center justify-center gap-2">
                     <span className="w-4 h-4 border-2 border-slate-600 border-t-blue-400 rounded-full animate-spin" />
                     Loading users…
@@ -136,7 +166,7 @@ export default function UserTable({ users, loading, onRefresh }) {
               </tr>
             ) : filtered.length === 0 ? (
               <tr>
-                <td colSpan={6} className="px-4 py-12 text-center text-slate-500 text-sm">
+                <td colSpan={hideActions ? 5 : 6} className="px-4 py-12 text-center text-slate-500 text-sm">
                   No users found{search ? ` matching "${search}"` : ''}.
                 </td>
               </tr>
@@ -184,37 +214,39 @@ export default function UserTable({ users, loading, onRefresh }) {
                   <td className="px-4 py-3 text-slate-400 text-xs">
                     {new Date(u.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
                   </td>
-                  <td className="px-4 py-3">
-                    {u.id !== self?.id && (
-                      <div className="flex items-center justify-end gap-2">
-                        <button
-                          onClick={() => toggleActive(u.id, u.isActive)}
-                          disabled={actionLoading === u.id + '_toggle'}
-                          title={u.isActive ? 'Deactivate' : 'Activate'}
-                          className="text-slate-400 hover:text-amber-400 transition-colors p-1"
-                        >
-                          {u.isActive ? <ToggleRight className="w-4 h-4" /> : <ToggleLeft className="w-4 h-4" />}
-                        </button>
-                        {u.role === 'student' && (
+                  {!hideActions && (
+                    <td className="px-4 py-3">
+                      {u.id !== self?.id && (
+                        <div className="flex items-center justify-end gap-2">
                           <button
-                            onClick={() => setSelectedStudentId(u.id)}
-                            title="View student analytics"
-                            className="text-slate-400 hover:text-blue-400 transition-colors p-1"
+                            onClick={() => toggleActive(u.id, u.isActive)}
+                            disabled={actionLoading === u.id + '_toggle'}
+                            title={u.isActive ? 'Deactivate' : 'Activate'}
+                            className="text-slate-400 hover:text-amber-400 transition-colors p-1"
                           >
-                            <Eye className="w-4 h-4" />
+                            {u.isActive ? <ToggleRight className="w-4 h-4" /> : <ToggleLeft className="w-4 h-4" />}
                           </button>
-                        )}
-                        <button
-                          onClick={() => deleteUser(u.id, u.name)}
-                          disabled={actionLoading === u.id + '_delete'}
-                          title="Delete user"
-                          className="text-slate-400 hover:text-red-400 transition-colors p-1"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    )}
-                  </td>
+                          {u.role === 'student' && (
+                            <button
+                              onClick={() => setSelectedStudentId(u.id)}
+                              title="View student analytics"
+                              className="text-slate-400 hover:text-blue-400 transition-colors p-1"
+                            >
+                              <Eye className="w-4 h-4" />
+                            </button>
+                          )}
+                          <button
+                            onClick={() => deleteUser(u.id, u.name)}
+                            disabled={actionLoading === u.id + '_delete'}
+                            title="Delete user"
+                            className="text-slate-400 hover:text-red-400 transition-colors p-1"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      )}
+                    </td>
+                  )}
                 </tr>
               ))
             )}
