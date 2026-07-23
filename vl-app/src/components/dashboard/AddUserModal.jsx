@@ -4,9 +4,9 @@ import { useAuth } from '../../context/AuthContext';
 import CloudinaryUploader from './CloudinaryUploader';
 
 const CREATABLE_ROLES = {
-  admin:        ['admin', 'nodal_centre', 'student', 'content_admin', 'sim_admin', 'vl_manager'],
-  vl_manager:   ['nodal_centre', 'student'],
-  nodal_centre: ['student'],
+  admin:        ['admin', 'nodal_centre', 'teacher', 'student', 'content_admin', 'sim_admin', 'vl_manager'],
+  vl_manager:   ['nodal_centre', 'teacher', 'student'],
+  nodal_centre: ['teacher', 'student'],
   teacher:      ['student'],
 };
 

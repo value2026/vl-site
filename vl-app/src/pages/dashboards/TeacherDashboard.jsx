@@ -58,9 +58,9 @@ export default function TeacherDashboard() {
             <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center mb-4">
               <BookOpen className="w-5 h-5 text-white" />
             </div>
-            <div className="text-white/70 text-sm font-medium mb-1">My Students</div>
+            <div className="text-white/70 text-sm font-medium mb-1">Institute Students</div>
             <div className="text-white text-4xl font-bold">{stats?.totalStudents ?? '—'}</div>
-            <div className="text-white/60 text-xs mt-1">enrolled under you</div>
+            <div className="text-white/60 text-xs mt-1">in your institute</div>
           </div>
         </div>
 
@@ -92,7 +92,7 @@ export default function TeacherDashboard() {
       {/* Students section */}
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-white font-semibold text-lg flex items-center gap-2">
-          <BookOpen className="w-5 h-5 text-blue-400" /> My Students
+          <BookOpen className="w-5 h-5 text-blue-400" /> Institute Students
           <span className="text-slate-500 text-sm font-normal">({students.length})</span>
         </h3>
         <button

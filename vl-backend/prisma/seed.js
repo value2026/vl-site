@@ -101,6 +101,23 @@ async function main() {
     console.log('✅ Nodal Admin user created!');
   }
 
+  // Create default teacher if not exists
+  const teacherEmail = 'teacher@virtuallabs.in';
+  let teacherExists = await prisma.user.findUnique({ where: { email: teacherEmail } });
+  if (!teacherExists && primaryInstitution) {
+    const hashed = await bcrypt.hash('VLTeacher@2024', 12);
+    teacherExists = await prisma.user.create({
+      data: {
+        name: 'Jane Teacher',
+        email: teacherEmail,
+        password: hashed,
+        role: 'teacher',
+        nodalCentreId: primaryInstitution.id, // Linking to Institution
+      },
+    });
+    console.log('✅ Teacher user created!');
+  }
+
   // Create default student if not exists
   const studentEmail = 'student@virtuallabs.in';
   let studentExists = await prisma.user.findUnique({ where: { email: studentEmail } });

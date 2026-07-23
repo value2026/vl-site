@@ -4,9 +4,9 @@ const { sendWelcomeEmail } = require('../utils/mailer');
 
 // Which roles each role is allowed to create
 const CREATION_RULES = {
-  admin:        ['admin', 'nodal_centre', 'student', 'content_admin', 'sim_admin', 'vl_manager'],
-  vl_manager:   ['nodal_centre', 'student'],
-  nodal_centre: ['student'],
+  admin:        ['admin', 'nodal_centre', 'teacher', 'student', 'content_admin', 'sim_admin', 'vl_manager'],
+  vl_manager:   ['nodal_centre', 'teacher', 'student'],
+  nodal_centre: ['teacher', 'student'],
   teacher:      ['student'],
   student:      [],
 };
@@ -30,12 +30,16 @@ const getUsers = async (req, res) => {
 
     let where = {};
 
-    if (role === 'admin') {
+    if (role === 'admin' || role === 'vl_manager') {
       where = { ...searchFilter, ...roleFilter };
     } else if (role === 'nodal_centre') {
       where = { nodalCentreId: id, ...searchFilter, ...roleFilter };
     } else if (role === 'teacher') {
-      where = { createdById: id, role: 'student', ...searchFilter };
+      if (req.user.nodalCentreId) {
+        where = { nodalCentreId: req.user.nodalCentreId, role: 'student', ...searchFilter };
+      } else {
+        where = { createdById: id, role: 'student', ...searchFilter };
+      }
     } else {
       return res.status(403).json({ message: 'Insufficient permissions' });
     }
@@ -297,7 +301,7 @@ const getStats = async (req, res) => {
   try {
     const { role, id } = req.user;
 
-    if (role === 'admin') {
+    if (role === 'admin' || role === 'vl_manager') {
       const [totalAdmins, totalNodalCentres, totalTeachers, totalStudents] = await Promise.all([
         prisma.user.count({ where: { role: 'admin' } }),
         prisma.user.count({ where: { role: 'nodal_centre' } }),
@@ -314,8 +318,12 @@ const getStats = async (req, res) => {
       res.json({ totalTeachers, totalStudents });
 
     } else if (role === 'teacher') {
+      let whereClause = { createdById: id, role: 'student' };
+      if (req.user.nodalCentreId) {
+        whereClause = { nodalCentreId: req.user.nodalCentreId, role: 'student' };
+      }
       const totalStudents = await prisma.user.count({
-        where: { createdById: id, role: 'student' },
+        where: whereClause,
       });
       res.json({ totalStudents });
 
@@ -338,8 +346,8 @@ const bulkCreateStudents = async (req, res) => {
       return res.status(400).json({ message: 'students must be a non-empty array' });
     }
 
-    // Only Admin, Nodal Centre, and Teacher can bulk add students
-    if (!['admin', 'nodal_centre', 'teacher'].includes(callerRole)) {
+    // Only Admin, VL Manager, Nodal Centre, and Teacher can bulk add students
+    if (!['admin', 'vl_manager', 'nodal_centre', 'teacher'].includes(callerRole)) {
       return res.status(403).json({ message: 'Insufficient permissions to bulk add users' });
     }
 
