@@ -18,7 +18,7 @@ const ROLE_LABELS = {
   content_admin: 'Content Admin', sim_admin: 'Sim Admin', vl_manager: 'VL Manager',
 };
 
-export default function UserTable({ users, loading, onRefresh, hideActions = false }) {
+export default function UserTable({ users, loading, onRefresh, hideActions = false, viewOnly = false }) {
   const { token, API_URL, user: self } = useAuth();
   const [search, setSearch]   = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
@@ -157,7 +157,7 @@ export default function UserTable({ users, loading, onRefresh, hideActions = fal
             className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
           />
         </div>
-        {!hideActions && (
+        {!hideActions && !viewOnly && (
           <div className="flex items-center gap-3">
             <select
               value={roleFilter}
@@ -243,9 +243,14 @@ export default function UserTable({ users, loading, onRefresh, hideActions = fal
                   </span>
                 </th>
               ))}
-              {!hideActions && (
+              {!hideActions && !viewOnly && (
                 <th className="px-4 py-3 text-right text-xs font-semibold text-slate-400 uppercase tracking-wider">
                   Actions
+                </th>
+              )}
+              {viewOnly && (
+                <th className="px-4 py-3 text-right text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                  Details
                 </th>
               )}
             </tr>
@@ -321,7 +326,7 @@ export default function UserTable({ users, loading, onRefresh, hideActions = fal
                   <td className="px-4 py-3 text-slate-400 text-xs">
                     {new Date(u.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
                   </td>
-                  {!hideActions && (
+                  {!hideActions && !viewOnly && (
                     <td className="px-4 py-3">
                       {u.id !== self?.id && (
                         <div className="flex items-center justify-end gap-2">
@@ -356,6 +361,20 @@ export default function UserTable({ users, loading, onRefresh, hideActions = fal
                       )}
                     </td>
                   )}
+                  {viewOnly && u.role === 'student' && (
+                    <td className="px-4 py-3">
+                      <div className="flex items-center justify-end">
+                        <button
+                          onClick={() => setSelectedStudentId(u.id)}
+                          title="View student analytics"
+                          className="text-slate-400 hover:text-blue-400 transition-colors p-1"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  )}
+                  {viewOnly && u.role !== 'student' && <td />}
                 </tr>
               ))
             )}
