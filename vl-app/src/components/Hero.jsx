@@ -10,9 +10,9 @@ const floatingIcons = [
 ];
 
 const DEFAULTS = {
-  badge: 'Ministry of Education Initiative · NMEICT',
+  badge: 'Amrita Vishwa Vidyapeetham · NMEICT Initiative',
   heading: 'Learn Science Without Limits',
-  subheading: 'Access <strong class="text-white">1,800+ virtual experiments</strong> across 700 labs from IITs, NITs, and leading institutions — free, anywhere, anytime.',
+  subheading: 'Access <strong class="text-white">1,800+ virtual experiments</strong> across 700 labs from Amrita Vishwa Vidyapeetham and participating institutions — free, anywhere, anytime.',
   ctaPrimaryLabel: 'Explore Labs',
   ctaPrimaryHref: '/labs/biotechnology',
   ctaSecondaryLabel: 'Watch Demo',
@@ -20,8 +20,8 @@ const DEFAULTS = {
   stats: [
     { n: '700+', label: 'Virtual Labs' },
     { n: '1,800+', label: 'Experiments' },
-    { n: '14', label: 'Partner IITs/NITs' },
-    { n: '5M+', label: 'Students' },
+    { n: '14', label: 'Nodal Centres' },
+    { n: '5M+', label: 'Students Reached' },
   ],
 };
 
@@ -108,10 +108,23 @@ export default function Hero({ content = {} }) {
 
           {/* CTAs */}
           <div className="flex flex-col sm:flex-row gap-4 animate-fade-in-up animate-delay-300">
-            <Link to={d.ctaPrimaryHref || '/labs/biotechnology'} className="btn-secondary text-base px-8 py-4">
-              {d.ctaPrimaryLabel || 'Explore Labs'}
-              <ArrowRight className="w-5 h-5" />
-            </Link>
+            {(d.ctaPrimaryHref || '#labs-heading').startsWith('#') ? (
+              <button 
+                onClick={() => {
+                  const id = (d.ctaPrimaryHref || '#labs-heading').substring(1);
+                  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="btn-secondary text-base px-8 py-4"
+              >
+                {d.ctaPrimaryLabel || 'Explore Labs'}
+                <ArrowRight className="w-5 h-5" />
+              </button>
+            ) : (
+              <Link to={d.ctaPrimaryHref} className="btn-secondary text-base px-8 py-4">
+                {d.ctaPrimaryLabel || 'Explore Labs'}
+                <ArrowRight className="w-5 h-5" />
+              </Link>
+            )}
             <button
               onClick={() => setIsVideoOpen(true)}
               className="btn-outline text-base px-8 py-4 flex items-center justify-center gap-2"

@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight, Calendar } from 'lucide-react';
+import { ArrowRight, Calendar, X } from 'lucide-react';
+import { useState } from 'react';
 
 const DEFAULT_ITEMS = [
   {
@@ -49,9 +50,11 @@ export default function NewsSection({ sectionTitle, sectionSubtitle, content = {
   const heading    = sectionTitle || 'News & Events';
   const tag        = content.sectionTag || 'Latest Updates';
   const viewAllHref = content.viewAllHref || '/news';
+  
+  const [selectedNews, setSelectedNews] = useState(null);
 
   return (
-    <section className="py-24 bg-gray-50" aria-labelledby="news-heading">
+    <section className="py-24 bg-gray-50 relative" aria-labelledby="news-heading">
       <div className="container-custom">
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-12">
           <div>
@@ -71,50 +74,52 @@ export default function NewsSection({ sectionTitle, sectionSubtitle, content = {
 
         <div className="grid lg:grid-cols-3 gap-6">
           {/* Featured news — first item larger */}
-          <div className="lg:col-span-2">
-            <Link
-              to={items[0].href}
-              className="card group block h-full overflow-hidden border border-primary-100 hover:border-transparent bg-gradient-to-br from-primary-50 to-white"
-            >
-              <div className="grid md:grid-cols-5 h-full">
-                {items[0].imageUrl && (
-                  <div className="md:col-span-2 relative h-56 md:h-full overflow-hidden">
-                    <img 
-                      src={items[0].imageUrl} 
-                      alt={items[0].title} 
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                  </div>
-                )}
-                <div className={`p-8 flex flex-col justify-center ${items[0].imageUrl ? 'md:col-span-3' : 'md:col-span-5'}`}>
-                  <div className="flex items-center gap-3 mb-5">
-                    <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${CATEGORY_COLORS[items[0].category] || 'bg-gray-100 text-gray-700'}`}>
-                      {items[0].category}
+          {items.length > 0 && (
+            <div className="lg:col-span-2">
+              <button
+                onClick={() => setSelectedNews(items[0])}
+                className="w-full text-left card group block h-full overflow-hidden border border-primary-100 hover:border-transparent bg-gradient-to-br from-primary-50 to-white"
+              >
+                <div className="grid md:grid-cols-5 h-full">
+                  {items[0].imageUrl && (
+                    <div className="md:col-span-2 relative h-56 md:h-full overflow-hidden">
+                      <img 
+                        src={items[0].imageUrl} 
+                        alt={items[0].title} 
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                    </div>
+                  )}
+                  <div className={`p-8 flex flex-col justify-center ${items[0].imageUrl ? 'md:col-span-3' : 'md:col-span-5'}`}>
+                    <div className="flex items-center gap-3 mb-5">
+                      <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${CATEGORY_COLORS[items[0].category] || 'bg-gray-100 text-gray-700'}`}>
+                        {items[0].category}
+                      </span>
+                      <span className="flex items-center gap-1.5 text-xs text-gray-400">
+                        <Calendar className="w-3.5 h-3.5" />
+                        {items[0].date}
+                      </span>
+                    </div>
+                    <h3 className="font-heading text-2xl font-bold text-gray-900 mb-4 group-hover:text-primary-800 transition-colors leading-snug">
+                      {items[0].title}
+                    </h3>
+                    <p className="text-gray-500 leading-relaxed mb-6">{items[0].excerpt}</p>
+                    <span className="inline-flex items-center gap-2 text-sm font-semibold text-primary-800">
+                      Read More <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                     </span>
-                    <span className="flex items-center gap-1.5 text-xs text-gray-400">
-                      <Calendar className="w-3.5 h-3.5" />
-                      {items[0].date}
-                    </span>
                   </div>
-                  <h3 className="font-heading text-2xl font-bold text-gray-900 mb-4 group-hover:text-primary-800 transition-colors leading-snug">
-                    {items[0].title}
-                  </h3>
-                  <p className="text-gray-500 leading-relaxed mb-6">{items[0].excerpt}</p>
-                  <span className="inline-flex items-center gap-2 text-sm font-semibold text-primary-800">
-                    Read More <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                  </span>
                 </div>
-              </div>
-            </Link>
-          </div>
+              </button>
+            </div>
+          )}
 
           {/* Remaining news — stacked */}
           <div className="flex flex-col gap-4">
             {items.slice(1, 4).map((item) => (
-              <Link
+              <button
                 key={item.id}
-                to={item.href}
-                className="card group flex gap-4 p-5 border border-gray-100 hover:border-transparent overflow-hidden"
+                onClick={() => setSelectedNews(item)}
+                className="w-full text-left card group flex gap-4 p-5 border border-gray-100 hover:border-transparent overflow-hidden"
               >
                 {item.imageUrl && (
                   <div className="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0 relative">
@@ -140,11 +145,67 @@ export default function NewsSection({ sectionTitle, sectionSubtitle, content = {
                   </span>
                 </div>
                 <ArrowRight className="w-4 h-4 text-gray-300 group-hover:text-primary-600 group-hover:translate-x-0.5 transition-all flex-shrink-0 mt-1" />
-              </Link>
+              </button>
             ))}
           </div>
         </div>
       </div>
+
+      {/* News Modal */}
+      {selectedNews && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col animate-fade-in-up">
+            
+            <div className="relative">
+              {selectedNews.imageUrl ? (
+                <div className="h-64 w-full">
+                  <img src={selectedNews.imageUrl} alt={selectedNews.title} className="w-full h-full object-cover" />
+                </div>
+              ) : (
+                <div className="h-32 w-full bg-gradient-to-r from-primary-600 to-primary-900" />
+              )}
+              <button 
+                onClick={() => setSelectedNews(null)}
+                className="absolute top-4 right-4 bg-white/20 hover:bg-white/40 backdrop-blur-md p-2 rounded-full text-white transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-8 overflow-y-auto">
+              <div className="flex items-center gap-3 mb-6">
+                <span className={`text-xs font-semibold px-3 py-1.5 rounded-full ${CATEGORY_COLORS[selectedNews.category] || 'bg-gray-100 text-gray-700'}`}>
+                  {selectedNews.category}
+                </span>
+                <span className="flex items-center gap-1.5 text-sm text-gray-500">
+                  <Calendar className="w-4 h-4" />
+                  {selectedNews.date}
+                </span>
+              </div>
+              
+              <h2 className="text-3xl font-heading font-bold text-gray-900 mb-6 leading-tight">
+                {selectedNews.title}
+              </h2>
+              
+              <div className="prose prose-primary max-w-none">
+                <p className="text-gray-700 text-lg leading-relaxed">
+                  {selectedNews.excerpt}
+                </p>
+                {/* Additional content could go here if it existed in the DB */}
+              </div>
+            </div>
+            
+            <div className="p-6 border-t border-gray-100 flex justify-end">
+              <button 
+                onClick={() => setSelectedNews(null)}
+                className="btn-outline"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

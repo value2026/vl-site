@@ -49,16 +49,16 @@ export default function Project() {
         <div className="container-custom grid lg:grid-cols-2 gap-16 items-center">
           <div>
             <span className="tag">Overview</span>
-            <h2 className="section-title mt-4">What is Virtual Labs?</h2>
+            <h2 className="section-title mt-4">What is Amrita Virtual Labs?</h2>
             <p className="text-gray-600 leading-relaxed mb-6">
-              Virtual Labs is a collaborative project funded by the Ministry of Education
-              (formerly MHRD) under the National Mission on Education through ICT (NMEICT).
-              It is hosted at IIT Bombay and developed by a consortium of IITs and NITs.
+              Amrita Virtual Labs is a major initiative by Amrita Vishwa Vidyapeetham funded by the
+              Ministry of Education under the National Mission on Education through ICT (NMEICT).
+              It provides interactive simulation-based online experiment environments across engineering and sciences.
             </p>
             <p className="text-gray-600 leading-relaxed mb-8">
               The platform provides students access to over 700 virtual labs and 1,800+ experiments
-              spanning core science and engineering disciplines — without the need for physical
-              infrastructure or expensive equipment.
+              spanning core science and engineering disciplines — accessible anytime, anywhere without requiring
+              physical lab equipment.
             </p>
             <div className="flex gap-4">
               <Link to="/nodal-centres/apply" className="btn-primary">

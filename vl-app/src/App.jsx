@@ -47,7 +47,7 @@ import LabManagement    from './pages/dashboards/LabManagement';
 import AnalyticsDashboard from './pages/dashboards/AnalyticsDashboard';
 import ProfileSettings from './pages/dashboards/ProfileSettings';
 import StudentAcademicReports from './components/dashboard/StudentAcademicReports';
-import ChatPanel from './components/communication/ChatPanel';
+
 
 // Auth
 import { useAuth } from './context/AuthContext';
@@ -367,7 +367,6 @@ function AppLayout() {
       </div>
       <Footer />
       <FloatingDashboardButton />
-      <ChatPanel />
     </div>
   );
 }

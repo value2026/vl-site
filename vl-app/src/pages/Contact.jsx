@@ -46,7 +46,7 @@ export default function Contact() {
               {[
                 {
                   Icon: MapPin, label: 'Address',
-                  content: 'Virtual Labs Project\nIIT Bombay, Powai\nMumbai — 400 076',
+                  content: 'Amrita Virtual Labs\nAmrita Vishwa Vidyapeetham, Amritapuri Campus\nKollam, Kerala — 690 525',
                 },
                 { Icon: Mail,  label: 'Email',   content: 'support@vlabs.ac.in' },
                 { Icon: Phone, label: 'Phone',   content: '+91 22 2576 7062' },

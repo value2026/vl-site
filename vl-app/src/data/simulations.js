@@ -3,7 +3,7 @@ export const featuredSimulation = {
   title: 'Newton\'s Laws of Motion — Interactive Lab',
   description:
     'Explore all three of Newton\'s laws through interactive force diagrams, collision simulations, and real-time physics calculations. Perfect for undergraduate physics students.',
-  institution: 'IIT Bombay',
+  institution: 'Amrita Vishwa Vidyapeetham',
   category: 'Physical Sciences',
   duration: '45 minutes',
   difficulty: 'Beginner',

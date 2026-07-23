@@ -14,7 +14,7 @@ const HOME_DEFAULTS = [
       heading: 'Learn Science Without Limits',
       subheading: 'Access <strong>1,800+ virtual experiments</strong> across 700 labs from IITs, NITs, and leading institutions — free, anywhere, anytime.',
       ctaPrimaryLabel: 'Explore Labs',
-      ctaPrimaryHref: '/labs/biotechnology',
+      ctaPrimaryHref: '#labs-heading',
       ctaSecondaryLabel: 'Watch Demo',
       ctaSecondaryHref: 'https://www.youtube.com/watch?v=ViqHtlZSOjM',
       stats: [
@@ -86,10 +86,10 @@ const HOME_DEFAULTS = [
     sectionKey: 'sponsors',
     label: 'Partners & Sponsors',
     order: 3,
-    title: "Backed by India's Premier Institutions",
-    subtitle: 'Virtual Labs is a collaborative project supported by IITs, NITs, and the Ministry of Education under the National Mission on Education through ICT.',
+    title: "Sponsors of Virtual Labs",
+    subtitle: 'This project is an initiative of Ministry of Human Resource Department under National Mission on Education through ICT. These experiments and labs will be hosted for open access through the main project website www.vlab.co.in.',
     content: {
-      sectionTag: 'Our Partners',
+      sectionTag: 'Our Sponsors',
       footerNote: '🇮🇳 A Government of India initiative to democratize quality STEM education',
       sponsors: [
         { id: 'moe', name: 'Ministry of Education', acronym: 'MoE', description: 'Government of India', color: 'from-orange-500 to-red-500' },

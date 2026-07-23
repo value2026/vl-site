@@ -1,16 +1,16 @@
 const DEFAULT_SPONSORS = [
-  { id: 'moe',       name: 'Ministry of Education', acronym: 'MoE',    description: 'Government of India',   color: 'from-orange-500 to-red-500'      },
-  { id: 'iit-bombay',name: 'IIT Bombay',            acronym: 'IITB',   description: 'Lead Institute',        color: 'from-blue-600 to-blue-800'       },
-  { id: 'nmeict',    name: 'NMEICT',                acronym: 'NMEICT', description: 'National Mission',      color: 'from-green-600 to-teal-700'      },
-  { id: 'iit-delhi', name: 'IIT Delhi',             acronym: 'IITD',   description: 'Partner Institute',     color: 'from-purple-600 to-indigo-700'   },
-  { id: 'iit-madras',name: 'IIT Madras',            acronym: 'IITM',   description: 'Partner Institute',     color: 'from-yellow-500 to-orange-600'   },
+  { id: 'amrita',     name: 'Amrita Vishwa Vidyapeetham', acronym: 'AMRITA', description: 'Lead Institution',      color: 'from-rose-700 to-pink-900'       },
+  { id: 'moe',        name: 'Ministry of Education',       acronym: 'MoE',    description: 'Government of India',   color: 'from-orange-500 to-red-500'      },
+  { id: 'nmeict',     name: 'NMEICT',                      acronym: 'NMEICT', description: 'National Mission',      color: 'from-green-600 to-teal-700'      },
+  { id: 'iit-bombay', name: 'IIT Bombay',                  acronym: 'IITB',   description: 'Consortium Partner',    color: 'from-blue-600 to-blue-800'       },
+  { id: 'iit-delhi',  name: 'IIT Delhi',                   acronym: 'IITD',   description: 'Consortium Partner',    color: 'from-purple-600 to-indigo-700'   },
 ];
 
 export default function SponsorsSection({ sectionTitle, sectionSubtitle, content = {} }) {
   const sponsors   = content.sponsors?.length ? content.sponsors : DEFAULT_SPONSORS;
-  const heading    = sectionTitle || "Backed by India's Premier Institutions";
-  const subtitle   = sectionSubtitle || 'Virtual Labs is a collaborative project supported by IITs, NITs, and the Ministry of Education under the National Mission on Education through ICT.';
-  const tag        = content.sectionTag  || 'Our Partners';
+  const heading    = sectionTitle || "Sponsors of Virtual Labs";
+  const subtitle   = sectionSubtitle || 'This project is an initiative of Ministry of Human Resource Department under National Mission on Education through ICT. These experiments and labs will be hosted for open access through the main project website www.vlab.co.in.';
+  const tag        = content.sectionTag  || 'Our Sponsors';
   const footerNote = content.footerNote  || '🇮🇳 A Government of India initiative to democratize quality STEM education';
 
   return (

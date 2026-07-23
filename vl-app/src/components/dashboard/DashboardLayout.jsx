@@ -74,12 +74,12 @@ export default function DashboardLayout({ children, title }) {
       {/* Logo */}
       <div className="p-6 border-b border-white/10">
         <Link to="/" className="flex items-center gap-3">
-          <div className={`w-10 h-10 bg-gradient-to-br ${cfg.gradient} rounded-xl flex items-center justify-center shadow-lg`}>
-            <FlaskConical className="w-5 h-5 text-white" />
+          <div className="bg-white p-1 rounded-xl shadow-lg flex items-center justify-center">
+            <img src="/amrita-icon.jpg" alt="Amrita Logo" className="w-8 h-8 object-contain rounded" />
           </div>
           <div>
-            <div className="text-white font-bold text-sm leading-tight">Virtual Labs</div>
-            <div className="text-slate-400 text-xs">Management Portal</div>
+            <div className="text-white font-bold text-sm leading-tight">VALUE @ Amrita</div>
+            <div className="text-slate-400 text-[10px] font-medium uppercase tracking-wider">Management Portal</div>
           </div>
         </Link>
       </div>

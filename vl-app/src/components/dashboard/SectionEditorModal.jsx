@@ -5,7 +5,8 @@ import Link from '@tiptap/extension-link';
 import Placeholder from '@tiptap/extension-placeholder';
 import {
   X, Save, Plus, Trash2, ChevronDown, ChevronUp,
-  Bold, Italic, List, Heading2, Link2, Undo, Redo, Image as ImageIcon
+  Bold, Italic, List, Heading2, Link2, Undo, Redo, Image as ImageIcon,
+  Search, FlaskConical, Check, Loader2
 } from 'lucide-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import CloudinaryUploader from './CloudinaryUploader';
@@ -342,10 +343,13 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
   const [subtitle, setSubtitle] = useState(section.subtitle || '');
   const [content,  setContent]  = useState(section.content  || {});
   const [experiments, setExperiments] = useState([]);
+  const [expSearch,   setExpSearch]   = useState('');
+  const [expLoading,  setExpLoading]  = useState(false);
 
   useEffect(() => {
     if (section.sectionKey === 'featured_simulation') {
       const fetchExps = async () => {
+        setExpLoading(true);
         try {
           const res = await api.get('/experiments/all/list');
           if (res.ok) {
@@ -354,6 +358,8 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
           }
         } catch (err) {
           console.error('Error fetching experiments:', err);
+        } finally {
+          setExpLoading(false);
         }
       };
       fetchExps();
@@ -588,47 +594,124 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
           {/* ── FEATURED SIMULATION ──────────────────────── */}
           {section.sectionKey === 'featured_simulation' && (
             <>
-              <SectionDivider label="Dynamic Simulation Selector" />
-              <div className="mb-4">
-                <label className="text-sm font-medium text-slate-300 block mb-2">Choose From Current Experiments</label>
-                <select
-                  value={content.experimentId || ''}
-                  onChange={e => {
-                    const selectedId = e.target.value;
-                    const selected = experiments.find(x => x.id === selectedId);
-                    if (selected) {
-                      setContent(prev => ({
-                        ...prev,
-                        experimentId: selectedId,
-                        tag: selected.lab?.subject?.title || 'Science',
-                        category: selected.lab?.title || 'Virtual Lab',
-                        title: selected.title,
-                        description: selected.description,
-                        duration: selected.duration || '60 min',
-                        difficulty: selected.difficulty || 'Intermediate',
-                        institution: selected.lab?.subject?.title === 'Computer Science' ? 'Virtual Labs' : 'Partner IITs',
-                        experiments: 1,
-                        href: `/student/experiment/${selectedId}`,
-                        imageUrl: selected.coverPic || selected.lab?.coverPic || ''
-                      }));
-                    } else {
-                      setContentKey('experimentId', '');
-                    }
-                  }}
-                  className="w-full bg-slate-800 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-red-500/50 transition-colors"
-                >
-                  <option value="">-- Select an Experiment to Auto-fill --</option>
-                  {experiments.map(x => (
-                    <option key={x.id} value={x.id}>
-                      {x.lab?.subject?.title ? `[${x.lab.subject.title}] ` : ''}
-                      {x.lab?.title ? `[${x.lab.title}] ` : ''}
-                      {x.title}
-                    </option>
-                  ))}
-                </select>
+              <SectionDivider label="Select Featured Lab / Experiment" />
+
+              {/* Search box */}
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                <input
+                  type="text"
+                  value={expSearch}
+                  onChange={e => setExpSearch(e.target.value)}
+                  placeholder="Search experiments by name, lab or subject…"
+                  className="w-full bg-slate-800 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-red-500/40 transition-colors"
+                />
               </div>
 
+              {/* Currently selected badge */}
+              {content.experimentId && (() => {
+                const sel = experiments.find(x => x.id === content.experimentId);
+                return sel ? (
+                  <div className="flex items-center gap-3 px-4 py-3 bg-primary-900/30 border border-primary-700/40 rounded-xl">
+                    <Check className="w-4 h-4 text-primary-400 flex-shrink-0" />
+                    <div className="min-w-0">
+                      <div className="text-white text-sm font-semibold truncate">{sel.title}</div>
+                      <div className="text-primary-300 text-xs">
+                        {sel.lab?.subject?.title} › {sel.lab?.title}
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => setContentKey('experimentId', '')}
+                      className="ml-auto p-1 text-slate-500 hover:text-red-400 transition-colors flex-shrink-0"
+                      title="Clear selection"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ) : null;
+              })()}
+
+              {/* Experiment card grid */}
+              {expLoading ? (
+                <div className="flex items-center justify-center py-10 gap-3 text-slate-400">
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <span className="text-sm">Loading experiments…</span>
+                </div>
+              ) : (
+                <div className="max-h-72 overflow-y-auto space-y-2 pr-1">
+                  {experiments
+                    .filter(x => {
+                      const q = expSearch.toLowerCase();
+                      return !q ||
+                        x.title?.toLowerCase().includes(q) ||
+                        x.lab?.title?.toLowerCase().includes(q) ||
+                        x.lab?.subject?.title?.toLowerCase().includes(q);
+                    })
+                    .map(x => {
+                      const isSelected = content.experimentId === x.id;
+                      return (
+                        <button
+                          key={x.id}
+                          type="button"
+                          onClick={() => {
+                            setContent(prev => ({
+                              ...prev,
+                              experimentId: x.id,
+                              tag:          x.lab?.subject?.title || 'Science',
+                              category:     x.lab?.title || 'Virtual Lab',
+                              title:        x.title,
+                              description:  x.description || '',
+                              duration:     x.duration || '60 min',
+                              difficulty:   x.difficulty || 'Intermediate',
+                              institution:  'Amrita Vishwa Vidyapeetham',
+                              experiments:  1,
+                              href:         `/student/experiment/${x.id}`,
+                              imageUrl:     x.coverPic || x.lab?.coverPic || '',
+                            }));
+                          }}
+                          className={`w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl border transition-all ${
+                            isSelected
+                              ? 'bg-primary-900/40 border-primary-600/60 ring-1 ring-primary-500/40'
+                              : 'bg-white/3 border-white/10 hover:bg-white/8 hover:border-white/20'
+                          }`}
+                        >
+                          {/* icon */}
+                          <div className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                            isSelected ? 'bg-primary-700' : 'bg-slate-700'
+                          }`}>
+                            {x.coverPic ? (
+                              <img src={x.coverPic} alt="" className="w-full h-full object-cover rounded-xl" />
+                            ) : (
+                              <FlaskConical className="w-4 h-4 text-white/70" />
+                            )}
+                          </div>
+                          {/* info */}
+                          <div className="min-w-0 flex-1">
+                            <div className={`text-sm font-medium truncate ${
+                              isSelected ? 'text-primary-200' : 'text-white'
+                            }`}>{x.title}</div>
+                            <div className="text-xs text-slate-500 truncate">
+                              {x.lab?.subject?.title && <span className="text-slate-400">{x.lab.subject.title}</span>}
+                              {x.lab?.title && <span> › {x.lab.title}</span>}
+                            </div>
+                          </div>
+                          {isSelected && <Check className="w-4 h-4 text-primary-400 flex-shrink-0" />}
+                        </button>
+                      );
+                    })}
+                  {experiments.filter(x => {
+                    const q = expSearch.toLowerCase();
+                    return !q || x.title?.toLowerCase().includes(q) ||
+                      x.lab?.title?.toLowerCase().includes(q) ||
+                      x.lab?.subject?.title?.toLowerCase().includes(q);
+                  }).length === 0 && (
+                    <p className="text-slate-500 text-sm text-center py-6">No experiments match your search.</p>
+                  )}
+                </div>
+              )}
+
               <SectionDivider label="Customize Spotlight Content" />
+              <p className="text-slate-500 text-xs -mt-2">Fields below are auto-filled when you pick an experiment above. You can fine-tune them here.</p>
               <div className="grid grid-cols-2 gap-4">
                 <TextField label="Tag (e.g., Physics)" value={content.tag} onChange={v => setContentKey('tag', v)} placeholder="Physics" />
                 <TextField label="Category (e.g., Mechanics)" value={content.category} onChange={v => setContentKey('category', v)} placeholder="Mechanics" />
@@ -636,16 +719,17 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
               <TextField label="Simulation Title" value={content.title} onChange={v => setContentKey('title', v)} placeholder="Simple Pendulum Simulation" />
               <TextField label="Description" value={content.description} onChange={v => setContentKey('description', v)} placeholder="Describe the simulation…" multiline />
               <div className="grid grid-cols-3 gap-4">
-                <TextField label="Institution" value={content.institution} onChange={v => setContentKey('institution', v)} placeholder="IIT Bombay" />
+                <TextField label="Institution" value={content.institution} onChange={v => setContentKey('institution', v)} placeholder="Amrita Vishwa Vidyapeetham" />
                 <TextField label="Duration" value={content.duration} onChange={v => setContentKey('duration', v)} placeholder="45 min" />
                 <TextField label="Difficulty" value={content.difficulty} onChange={v => setContentKey('difficulty', v)} placeholder="Intermediate" />
               </div>
               <div className="grid grid-cols-2 gap-4">
-                <TextField label="No. of Experiments" value={content.experiments} onChange={v => setContentKey('experiments', v)} placeholder="12" />
-                <TextField label="Link URL (href)" value={content.href} onChange={v => setContentKey('href', v)} placeholder="/student/experiments/..." />
+                <TextField label="No. of Experiments" value={content.experiments} onChange={v => setContentKey('experiments', v)} placeholder="1" />
+                <TextField label="Link URL (href)" value={content.href} onChange={v => setContentKey('href', v)} placeholder="/student/experiment/..." />
               </div>
 
               <SectionDivider label="Preview Image" />
+              <p className="text-slate-500 text-xs -mt-2">Auto-filled from the experiment's cover image. Upload a custom image to override.</p>
               <CloudinaryUploader
                 label="Simulation Preview Image — shown on the right panel"
                 value={content.imageUrl || ''}

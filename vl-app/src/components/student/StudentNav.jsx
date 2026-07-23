@@ -59,11 +59,14 @@ export default function StudentNav({ breadcrumb = [] }) {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 h-14 bg-white border-b border-gray-200 flex items-center px-4 gap-4 shadow-sm">
       {/* Logo */}
-      <Link to="/student" className="flex items-center gap-2 flex-shrink-0">
-        <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-lg flex items-center justify-center">
-          <FlaskConical className="w-4 h-4 text-white" />
-        </div>
-        <span className="font-bold text-gray-900 text-sm hidden sm:block">Virtual Labs</span>
+      <Link to="/student" className="flex items-center gap-2.5 flex-shrink-0">
+        <img 
+          src="/amrita-logo.jpg" 
+          alt="Amrita Logo" 
+          className="h-8 w-auto object-contain rounded" 
+        />
+        <div className="h-5 w-[1px] bg-gray-200 hidden sm:block" />
+        <span className="font-bold text-gray-900 text-sm hidden sm:block">VALUE @ Amrita</span>
       </Link>
 
       {/* Breadcrumb */}

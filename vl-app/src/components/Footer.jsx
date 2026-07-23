@@ -35,22 +35,22 @@ export default function Footer() {
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-10">
           {/* Brand column */}
           <div className="lg:col-span-1">
-            <div className="flex items-center gap-2.5 mb-5">
-              <div className="w-9 h-9 bg-primary-800 rounded-lg flex items-center justify-center">
-                <FlaskConical className="w-5 h-5 text-white" />
+            <div className="flex items-center gap-3 mb-5">
+              <div className="bg-white p-1.5 rounded-xl shadow-md flex items-center justify-center">
+                <img src="/amrita-icon.jpg" alt="Amrita Logo" className="w-8 h-8 object-contain rounded" />
               </div>
               <div>
                 <span className="block text-white font-heading font-bold text-lg leading-none">
-                  Virtual Labs
+                  VALUE @ Amrita
                 </span>
-                <span className="block text-[10px] text-gray-500 tracking-wide uppercase">
-                  Ministry of Education
+                <span className="block text-[10px] text-primary-300 font-semibold tracking-wider uppercase mt-0.5">
+                  Amrita Vishwa Vidyapeetham
                 </span>
               </div>
             </div>
-            <p className="text-sm leading-relaxed mb-6">
-              An initiative under NMEICT, Ministry of Education, Government of India — providing
-              quality lab experiences to students across the country.
+            <p className="text-sm leading-relaxed mb-6 text-gray-400">
+              An initiative by Amrita Vishwa Vidyapeetham under NMEICT, Ministry of Education, Government of India — providing
+              quality virtual laboratory experiences for students across India.
             </p>
             <div className="flex gap-3">
               {socials.map(({ Icon, href, label }) => (

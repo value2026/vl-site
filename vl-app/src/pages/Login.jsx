@@ -52,13 +52,13 @@ export default function Login() {
       <div className="w-full max-w-md relative z-10">
         {/* Logo */}
         <div className="text-center mb-8">
-          <Link to="/" className="inline-flex items-center gap-2.5 mb-5">
-            <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/30">
-              <FlaskConical className="w-7 h-7 text-white" />
+          <Link to="/" className="inline-flex items-center gap-3 mb-5">
+            <div className="bg-white p-2.5 rounded-2xl shadow-xl shadow-rose-950/40">
+              <img src="/amrita-logo.jpg" alt="Amrita Logo" className="h-10 w-auto object-contain rounded" />
             </div>
           </Link>
           <h1 className="text-3xl font-bold text-white mb-1">Welcome Back</h1>
-          <p className="text-slate-400 text-sm">Sign in to your Virtual Labs account</p>
+          <p className="text-slate-400 text-sm">Sign in to your Amrita Virtual Labs account</p>
         </div>
 
         <div className="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 shadow-2xl p-8">
