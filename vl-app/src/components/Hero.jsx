@@ -108,10 +108,23 @@ export default function Hero({ content = {} }) {
 
           {/* CTAs */}
           <div className="flex flex-col sm:flex-row gap-4 animate-fade-in-up animate-delay-300">
-            <Link to={d.ctaPrimaryHref || '/labs/biotechnology'} className="btn-secondary text-base px-8 py-4">
-              {d.ctaPrimaryLabel || 'Explore Labs'}
-              <ArrowRight className="w-5 h-5" />
-            </Link>
+            {(d.ctaPrimaryHref || '#labs-heading').startsWith('#') ? (
+              <button 
+                onClick={() => {
+                  const id = (d.ctaPrimaryHref || '#labs-heading').substring(1);
+                  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="btn-secondary text-base px-8 py-4"
+              >
+                {d.ctaPrimaryLabel || 'Explore Labs'}
+                <ArrowRight className="w-5 h-5" />
+              </button>
+            ) : (
+              <Link to={d.ctaPrimaryHref} className="btn-secondary text-base px-8 py-4">
+                {d.ctaPrimaryLabel || 'Explore Labs'}
+                <ArrowRight className="w-5 h-5" />
+              </Link>
+            )}
             <button
               onClick={() => setIsVideoOpen(true)}
               className="btn-outline text-base px-8 py-4 flex items-center justify-center gap-2"

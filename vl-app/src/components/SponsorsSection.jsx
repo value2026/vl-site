@@ -8,9 +8,9 @@ const DEFAULT_SPONSORS = [
 
 export default function SponsorsSection({ sectionTitle, sectionSubtitle, content = {} }) {
   const sponsors   = content.sponsors?.length ? content.sponsors : DEFAULT_SPONSORS;
-  const heading    = sectionTitle || "Backed by India's Premier Institutions";
-  const subtitle   = sectionSubtitle || 'Virtual Labs is a collaborative project supported by IITs, NITs, and the Ministry of Education under the National Mission on Education through ICT.';
-  const tag        = content.sectionTag  || 'Our Partners';
+  const heading    = sectionTitle || "Sponsors of Virtual Labs";
+  const subtitle   = sectionSubtitle || 'This project is an initiative of Ministry of Human Resource Department under National Mission on Education through ICT. These experiments and labs will be hosted for open access through the main project website www.vlab.co.in.';
+  const tag        = content.sectionTag  || 'Our Sponsors';
   const footerNote = content.footerNote  || '🇮🇳 A Government of India initiative to democratize quality STEM education';
 
   return (
