@@ -36,21 +36,21 @@ export default function Footer() {
           {/* Brand column */}
           <div className="lg:col-span-1">
             <div className="flex items-center gap-2.5 mb-5">
-              <div className="w-9 h-9 bg-primary-800 rounded-lg flex items-center justify-center">
+              <div className="w-10 h-10 bg-primary-800 rounded-xl flex items-center justify-center shadow-md">
                 <FlaskConical className="w-5 h-5 text-white" />
               </div>
               <div>
                 <span className="block text-white font-heading font-bold text-lg leading-none">
-                  Virtual Labs
+                  Amrita Virtual Labs
                 </span>
-                <span className="block text-[10px] text-gray-500 tracking-wide uppercase">
-                  Ministry of Education
+                <span className="block text-[10px] text-primary-300 font-semibold tracking-wider uppercase mt-0.5">
+                  Amrita Vishwa Vidyapeetham
                 </span>
               </div>
             </div>
-            <p className="text-sm leading-relaxed mb-6">
-              An initiative under NMEICT, Ministry of Education, Government of India — providing
-              quality lab experiences to students across the country.
+            <p className="text-sm leading-relaxed mb-6 text-gray-400">
+              An initiative by Amrita Vishwa Vidyapeetham under NMEICT, Ministry of Education, Government of India — providing
+              quality virtual laboratory experiences for students across India.
             </p>
             <div className="flex gap-3">
               {socials.map(({ Icon, href, label }) => (

@@ -8,7 +8,7 @@ const DEFAULTS = {
   category: 'Mechanics',
   title: 'Simple Pendulum Simulation',
   description: 'Explore the physics of oscillatory motion with our interactive pendulum simulation. Adjust parameters like length, mass, and gravity to observe real-time changes.',
-  institution: 'IIT Bombay',
+  institution: 'Amrita Vishwa Vidyapeetham',
   duration: '45 min',
   difficulty: 'Intermediate',
   experiments: 12,

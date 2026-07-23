@@ -10,9 +10,9 @@ const floatingIcons = [
 ];
 
 const DEFAULTS = {
-  badge: 'Ministry of Education Initiative · NMEICT',
+  badge: 'Amrita Vishwa Vidyapeetham · NMEICT Initiative',
   heading: 'Learn Science Without Limits',
-  subheading: 'Access <strong class="text-white">1,800+ virtual experiments</strong> across 700 labs from IITs, NITs, and leading institutions — free, anywhere, anytime.',
+  subheading: 'Access <strong class="text-white">1,800+ virtual experiments</strong> across 700 labs from Amrita Vishwa Vidyapeetham and participating institutions — free, anywhere, anytime.',
   ctaPrimaryLabel: 'Explore Labs',
   ctaPrimaryHref: '/labs/biotechnology',
   ctaSecondaryLabel: 'Watch Demo',
@@ -20,8 +20,8 @@ const DEFAULTS = {
   stats: [
     { n: '700+', label: 'Virtual Labs' },
     { n: '1,800+', label: 'Experiments' },
-    { n: '14', label: 'Partner IITs/NITs' },
-    { n: '5M+', label: 'Students' },
+    { n: '14', label: 'Nodal Centres' },
+    { n: '5M+', label: 'Students Reached' },
   ],
 };
 

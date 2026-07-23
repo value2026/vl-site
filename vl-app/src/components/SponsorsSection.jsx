@@ -1,9 +1,9 @@
 const DEFAULT_SPONSORS = [
-  { id: 'moe',       name: 'Ministry of Education', acronym: 'MoE',    description: 'Government of India',   color: 'from-orange-500 to-red-500'      },
-  { id: 'iit-bombay',name: 'IIT Bombay',            acronym: 'IITB',   description: 'Lead Institute',        color: 'from-blue-600 to-blue-800'       },
-  { id: 'nmeict',    name: 'NMEICT',                acronym: 'NMEICT', description: 'National Mission',      color: 'from-green-600 to-teal-700'      },
-  { id: 'iit-delhi', name: 'IIT Delhi',             acronym: 'IITD',   description: 'Partner Institute',     color: 'from-purple-600 to-indigo-700'   },
-  { id: 'iit-madras',name: 'IIT Madras',            acronym: 'IITM',   description: 'Partner Institute',     color: 'from-yellow-500 to-orange-600'   },
+  { id: 'amrita',     name: 'Amrita Vishwa Vidyapeetham', acronym: 'AMRITA', description: 'Lead Institution',      color: 'from-rose-700 to-pink-900'       },
+  { id: 'moe',        name: 'Ministry of Education',       acronym: 'MoE',    description: 'Government of India',   color: 'from-orange-500 to-red-500'      },
+  { id: 'nmeict',     name: 'NMEICT',                      acronym: 'NMEICT', description: 'National Mission',      color: 'from-green-600 to-teal-700'      },
+  { id: 'iit-bombay', name: 'IIT Bombay',                  acronym: 'IITB',   description: 'Consortium Partner',    color: 'from-blue-600 to-blue-800'       },
+  { id: 'iit-delhi',  name: 'IIT Delhi',                   acronym: 'IITD',   description: 'Consortium Partner',    color: 'from-purple-600 to-indigo-700'   },
 ];
 
 export default function SponsorsSection({ sectionTitle, sectionSubtitle, content = {} }) {
