@@ -1,0 +1,56 @@
+{
+  "version": 2.0,
+  "questions": [
+    {
+      "question": "Fluid A has a flow rate of 10.1 ml/sec. Fluid B has a flow rate of 11.3 ml/sec. Compared to fluid A, fluid B has.....",
+      "answers": {
+        "a": "None of the above",
+        "b": "Higher viscosity",
+        "c": "Lower viscosity",
+        "d": "Equal viscosity"
+      },
+      "explanations": {
+        "a": "Not applicable here since viscosity can be inferred from flow rate.",
+        "b": "Higher flow rate implies lower viscosity, not higher.",
+        "c": "Correct. Faster flow indicates lower resistance to motion.",
+        "d": "Flow rates differ, so viscosities are not equal."
+      },
+      "correctAnswer": "c",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "The unit of coefficient of viscosity in the CGS system is......",
+      "answers": {
+        "a": "cm³/mol",
+        "b": "Poise",
+        "c": "Kg m⁻¹s⁻¹",
+        "d": "dynes/cm"
+      },
+      "explanations": {
+        "a": "Not a unit of viscosity.",
+        "b": "Correct. Poise is the CGS unit of dynamic viscosity.",
+        "c": "This is the SI unit of viscosity.",
+        "d": "dynes/cm is related to surface tension, not viscosity."
+      },
+      "correctAnswer": "b",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "In general, the viscosity of a liquid .......... with increase in temperature.",
+      "answers": {
+        "a": "Increases",
+        "b": "Decreases",
+        "c": "Independent on temperature",
+        "d": "Equal"
+      },
+      "explanations": {
+        "a": "Incorrect. Liquids generally become less viscous at higher temperatures.",
+        "b": "Correct. Increased temperature reduces cohesive forces.",
+        "c": "Viscosity is temperature-dependent.",
+        "d": "Viscosity varies with temperature, not constant."
+      },
+      "correctAnswer": "b",
+      "difficulty": "beginner"
+    }
+  ]
+}
