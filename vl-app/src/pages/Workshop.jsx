@@ -23,7 +23,7 @@ export default function Workshop() {
     retry: 1,
   });
 
-  const workshopsList = workshops || [];
+  const workshopsList = (workshops || []).filter(w => w.status === 'approved');
   const pageTitle = "Workshops & Training";
   const pageSubtitle = "Join our faculty development programmes, student orientations, and training sessions to make the most of Virtual Labs.";
 
@@ -56,9 +56,7 @@ export default function Workshop() {
           ) : (
             <div className="grid lg:grid-cols-2 gap-6">
               {workshopsList.map((w, i) => {
-                let theme = 'from-primary-800 to-primary-900';
-                if (w.status === 'pending') theme = 'from-amber-500 to-orange-600';
-                if (w.status === 'approved') theme = 'from-emerald-500 to-green-600';
+                const theme = 'from-primary-800 to-primary-900';
                 
                 return (
                   <div key={w.id || i} className="card border border-gray-100 overflow-hidden flex flex-col group">
