@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Search, Trash2, ToggleLeft, ToggleRight, ChevronUp, ChevronDown, Eye } from 'lucide-react';
+import { Search, Trash2, ToggleLeft, ToggleRight, ChevronUp, ChevronDown, Eye, Loader2, AlertCircle } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import StudentAnalyticsModal from './StudentAnalyticsModal';
 
@@ -27,6 +27,12 @@ export default function UserTable({ users, loading, onRefresh, hideActions = fal
   const [sortDir, setSortDir] = useState('desc');
   const [actionLoading, setActionLoading] = useState(null);
   const [selectedStudentId, setSelectedStudentId] = useState(null);
+  const [selectedIds, setSelectedIds] = useState(new Set());
+  const [bulkDeleting, setBulkDeleting] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState(null);
+  const [bulkDeleteMode, setBulkDeleteMode] = useState(false);
+
+  const canDelete = self?.role === 'admin' || self?.role === 'vl_manager';
 
   const filtered = users
     .filter((u) => {
@@ -71,18 +77,70 @@ export default function UserTable({ users, loading, onRefresh, hideActions = fal
     }
   };
 
-  const deleteUser = async (userId, name) => {
-    if (!window.confirm(`Delete user "${name}"? This cannot be undone.`)) return;
+  const requestDeleteUser = (userId, name) => {
+    setDeleteConfirm({ type: 'single', userId, name });
+  };
+
+  const confirmDeleteUser = async () => {
+    const { userId, name } = deleteConfirm;
+    setDeleteConfirm(null);
     setActionLoading(userId + '_delete');
     try {
       await fetch(`${API_URL}/users/${userId}`, {
         method:  'DELETE',
         headers: { Authorization: `Bearer ${token}` },
       });
+      setSelectedIds(prev => { const n = new Set(prev); n.delete(userId); return n; });
       onRefresh?.();
     } finally {
       setActionLoading(null);
     }
+  };
+
+  const requestBulkDelete = () => {
+    if (selectedIds.size === 0) return;
+    setDeleteConfirm({ type: 'bulk', count: selectedIds.size });
+  };
+
+  const confirmBulkDelete = async () => {
+    setDeleteConfirm(null);
+    setBulkDeleting(true);
+    try {
+      const arr = Array.from(selectedIds);
+      // Delete sequentially to avoid overwhelming the server
+      for (const id of arr) {
+        await fetch(`${API_URL}/users/${id}`, {
+          method: 'DELETE',
+          headers: { Authorization: `Bearer ${token}` }
+        });
+      }
+      setSelectedIds(new Set());
+      setBulkDeleteMode(false);
+      onRefresh?.();
+    } catch (err) {
+      console.error("Bulk delete failed:", err);
+      alert("An error occurred during bulk deletion. Please refresh the page.");
+    } finally {
+      setBulkDeleting(false);
+    }
+  };
+
+  const toggleSelectAll = (e) => {
+    if (e.target.checked) {
+      const allIds = filtered.map(u => u.id).filter(id => id !== self?.id);
+      setSelectedIds(new Set(allIds));
+    } else {
+      setSelectedIds(new Set());
+    }
+  };
+
+  const toggleSelectOne = (id) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
   };
 
   return (
@@ -120,6 +178,34 @@ export default function UserTable({ users, loading, onRefresh, hideActions = fal
               <option value="active" className="bg-slate-900">Active</option>
               <option value="inactive" className="bg-slate-900">Inactive</option>
             </select>
+            {canDelete && !bulkDeleteMode && (
+              <button
+                onClick={() => setBulkDeleteMode(true)}
+                className="flex items-center gap-2 px-4 py-2.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 rounded-xl text-sm font-semibold transition-all shadow-sm"
+              >
+                <Trash2 className="w-4 h-4" /> Bulk Delete
+              </button>
+            )}
+            {canDelete && bulkDeleteMode && (
+              <div className="flex gap-2 items-center animate-in fade-in zoom-in-95 duration-200">
+                <button
+                  onClick={() => { setBulkDeleteMode(false); setSelectedIds(new Set()); }}
+                  className="px-4 py-2.5 bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 rounded-xl text-sm font-semibold transition-all"
+                >
+                  Cancel
+                </button>
+                {selectedIds.size > 0 && (
+                  <button
+                    onClick={requestBulkDelete}
+                    disabled={bulkDeleting}
+                    className="flex items-center gap-2 px-4 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-xl text-sm font-bold transition-all shadow-lg shadow-red-500/20"
+                  >
+                    {bulkDeleting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                    {bulkDeleting ? 'Deleting...' : `Confirm (${selectedIds.size})`}
+                  </button>
+                )}
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -129,6 +215,16 @@ export default function UserTable({ users, loading, onRefresh, hideActions = fal
         <table className="w-full">
           <thead>
             <tr className="border-b border-white/10">
+              {!hideActions && canDelete && bulkDeleteMode && (
+                <th className="px-4 py-3 text-left w-12 transition-all duration-300">
+                  <input 
+                    type="checkbox" 
+                    className="w-4 h-4 rounded border-slate-600 bg-slate-800 text-blue-500 focus:ring-blue-500/50 cursor-pointer"
+                    checked={filtered.length > 0 && selectedIds.size === filtered.filter(u => u.id !== self?.id).length}
+                    onChange={toggleSelectAll}
+                  />
+                </th>
+              )}
               {[
                 { key: 'name',        label: 'Name' },
                 { key: 'email',       label: 'Email' },
@@ -157,7 +253,7 @@ export default function UserTable({ users, loading, onRefresh, hideActions = fal
           <tbody className="divide-y divide-white/5">
             {loading ? (
               <tr>
-                <td colSpan={hideActions ? 5 : 6} className="px-4 py-12 text-center text-slate-400">
+                <td colSpan={hideActions ? 5 : 7} className="px-4 py-12 text-center text-slate-400">
                   <div className="flex items-center justify-center gap-2">
                     <span className="w-4 h-4 border-2 border-slate-600 border-t-blue-400 rounded-full animate-spin" />
                     Loading users…
@@ -166,13 +262,24 @@ export default function UserTable({ users, loading, onRefresh, hideActions = fal
               </tr>
             ) : filtered.length === 0 ? (
               <tr>
-                <td colSpan={hideActions ? 5 : 6} className="px-4 py-12 text-center text-slate-500 text-sm">
+                <td colSpan={hideActions ? 5 : 7} className="px-4 py-12 text-center text-slate-500 text-sm">
                   No users found{search ? ` matching "${search}"` : ''}.
                 </td>
               </tr>
             ) : (
               filtered.map((u) => (
-                <tr key={u.id} className="hover:bg-white/3 transition-colors group">
+                <tr key={u.id} className={`hover:bg-white/5 transition-colors group ${selectedIds.has(u.id) ? 'bg-blue-500/5' : ''}`}>
+                  {!hideActions && canDelete && bulkDeleteMode && (
+                    <td className="px-4 py-3 transition-all duration-300">
+                      <input 
+                        type="checkbox"
+                        disabled={u.id === self?.id}
+                        checked={selectedIds.has(u.id)}
+                        onChange={() => toggleSelectOne(u.id)}
+                        className="w-4 h-4 rounded border-slate-600 bg-slate-800 text-blue-500 focus:ring-blue-500/50 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                      />
+                    </td>
+                  )}
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
                       <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs font-bold bg-gradient-to-br ${
@@ -235,14 +342,16 @@ export default function UserTable({ users, loading, onRefresh, hideActions = fal
                               <Eye className="w-4 h-4" />
                             </button>
                           )}
-                          <button
-                            onClick={() => deleteUser(u.id, u.name)}
-                            disabled={actionLoading === u.id + '_delete'}
-                            title="Delete user"
-                            className="text-slate-400 hover:text-red-400 transition-colors p-1"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
+                          {canDelete && (
+                            <button
+                              onClick={() => requestDeleteUser(u.id, u.name)}
+                              disabled={actionLoading === u.id + '_delete'}
+                              title="Delete user"
+                              className="text-slate-400 hover:text-red-400 transition-colors p-1"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          )}
                         </div>
                       )}
                     </td>
@@ -266,6 +375,44 @@ export default function UserTable({ users, loading, onRefresh, hideActions = fal
           userId={selectedStudentId}
           onClose={() => setSelectedStudentId(null)}
         />
+      )}
+
+      {/* Custom Delete Confirmation Modal */}
+      {deleteConfirm && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setDeleteConfirm(null)} />
+          <div className="relative bg-slate-900 border border-red-500/20 rounded-2xl p-6 w-full max-w-md shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-start gap-4">
+              <div className="w-10 h-10 rounded-full bg-red-500/20 flex items-center justify-center flex-shrink-0">
+                <AlertCircle className="w-5 h-5 text-red-500" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-white mb-2">Confirm Deletion</h3>
+                <p className="text-sm text-slate-300 leading-relaxed mb-6">
+                  {deleteConfirm.type === 'bulk' 
+                    ? `Are you sure you want to PERMANENTLY delete ${deleteConfirm.count} users?` 
+                    : `Are you sure you want to PERMANENTLY delete user "${deleteConfirm.name}"?`}
+                  <br /><br />
+                  <span className="text-red-400 font-semibold">This action cannot be undone.</span>
+                </p>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setDeleteConfirm(null)}
+                    className="flex-1 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-300 bg-white/5 hover:bg-white/10 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={deleteConfirm.type === 'bulk' ? confirmBulkDelete : confirmDeleteUser}
+                    className="flex-1 px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-red-500 hover:bg-red-600 shadow-lg shadow-red-500/20 transition-colors"
+                  >
+                    Yes, Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Presentation, Plus, RefreshCw, AlertCircle, Loader2, Save, X, Check, XCircle } from 'lucide-react';
+import { Presentation, Plus, RefreshCw, AlertCircle, Loader2, Save, X, Check, XCircle, Trash2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 export default function WorkshopsManagement() {
@@ -12,6 +12,8 @@ export default function WorkshopsManagement() {
   const [showModal, setShowModal] = useState(false);
   const [form, setForm] = useState({ title: '', description: '', date: '', location: '', mode: 'Online', seats: '' });
   const [submitting, setSubmitting] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState(null);
+  const [actionLoading, setActionLoading] = useState(null);
 
   const fetchWorkshops = useCallback(async () => {
     setLoading(true);
@@ -81,6 +83,33 @@ export default function WorkshopsManagement() {
     }
   };
 
+  const requestDeleteWorkshop = (w) => {
+    setDeleteConfirm(w);
+  };
+
+  const confirmDeleteWorkshop = async () => {
+    if (!deleteConfirm) return;
+    const { id } = deleteConfirm;
+    setDeleteConfirm(null);
+    setActionLoading(id);
+    
+    try {
+      const res = await fetch(`${API_URL}/workshops/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Failed to delete workshop');
+      
+      fetchWorkshops();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
   return (
     <div className="bg-slate-900 border border-white/10 rounded-2xl overflow-hidden p-6">
       <div className="flex items-center justify-between mb-6">
@@ -126,13 +155,13 @@ export default function WorkshopsManagement() {
                 <th className="px-4 py-3">Date</th>
                 <th className="px-4 py-3">Created By</th>
                 <th className="px-4 py-3">Status</th>
-                {user?.role === 'admin' && <th className="px-4 py-3 text-right">Actions</th>}
+                {(user?.role === 'admin' || user?.role === 'vl_manager') && <th className="px-4 py-3 text-right">Actions</th>}
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
               {workshops.length === 0 ? (
                 <tr>
-                  <td colSpan={user?.role === 'admin' ? 5 : 4} className="px-4 py-8 text-center text-slate-500 text-sm">
+                  <td colSpan={(user?.role === 'admin' || user?.role === 'vl_manager') ? 5 : 4} className="px-4 py-8 text-center text-slate-500 text-sm">
                     No workshops created yet.
                   </td>
                 </tr>
@@ -162,24 +191,36 @@ export default function WorkshopsManagement() {
                         {w.status}
                       </span>
                     </td>
-                    {user?.role === 'admin' && (
+                    {(user?.role === 'admin' || user?.role === 'vl_manager') && (
                       <td className="px-4 py-3 text-right">
-                        {w.status === 'pending' && (
-                          <div className="flex justify-end gap-2">
+                        <div className="flex justify-end items-center gap-2">
+                          {w.status === 'pending' && user?.role === 'admin' && (
+                            <>
+                              <button
+                                onClick={() => updateStatus(w.id, 'approved')}
+                                className="text-emerald-400 hover:text-emerald-300 bg-emerald-400/10 hover:bg-emerald-400/20 px-2 py-1.5 rounded-lg flex items-center gap-1 text-xs font-semibold transition-colors"
+                              >
+                                <Check className="w-3.5 h-3.5" /> Approve
+                              </button>
+                              <button
+                                onClick={() => updateStatus(w.id, 'rejected')}
+                                className="text-red-400 hover:text-red-300 bg-red-400/10 hover:bg-red-400/20 px-2 py-1.5 rounded-lg flex items-center gap-1 text-xs font-semibold transition-colors"
+                              >
+                                <XCircle className="w-3.5 h-3.5" /> Reject
+                              </button>
+                            </>
+                          )}
+                          {(user?.role === 'admin' || w.createdBy?.id === user?.id) && (
                             <button
-                              onClick={() => updateStatus(w.id, 'approved')}
-                              className="text-emerald-400 hover:text-emerald-300 bg-emerald-400/10 hover:bg-emerald-400/20 px-2 py-1.5 rounded-lg flex items-center gap-1 text-xs font-semibold transition-colors"
+                              onClick={() => requestDeleteWorkshop(w)}
+                              disabled={actionLoading === w.id}
+                              className="text-slate-400 hover:text-red-400 transition-colors p-1.5 disabled:opacity-50"
+                              title="Delete workshop"
                             >
-                              <Check className="w-3.5 h-3.5" /> Approve
+                              {actionLoading === w.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
                             </button>
-                            <button
-                              onClick={() => updateStatus(w.id, 'rejected')}
-                              className="text-red-400 hover:text-red-300 bg-red-400/10 hover:bg-red-400/20 px-2 py-1.5 rounded-lg flex items-center gap-1 text-xs font-semibold transition-colors"
-                            >
-                              <XCircle className="w-3.5 h-3.5" /> Reject
-                            </button>
-                          </div>
-                        )}
+                          )}
+                        </div>
                       </td>
                     )}
                   </tr>
@@ -297,6 +338,42 @@ export default function WorkshopsManagement() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+      
+      {/* Custom Delete Confirmation Modal */}
+      {deleteConfirm && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setDeleteConfirm(null)} />
+          <div className="relative bg-slate-900 border border-red-500/20 rounded-2xl p-6 w-full max-w-md shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-start gap-4">
+              <div className="w-10 h-10 rounded-full bg-red-500/20 flex items-center justify-center flex-shrink-0">
+                <AlertCircle className="w-5 h-5 text-red-500" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-white mb-2">Confirm Deletion</h3>
+                <p className="text-sm text-slate-300 leading-relaxed mb-6">
+                  Are you sure you want to permanently delete workshop <strong className="text-white">{deleteConfirm.title}</strong>?
+                  <br /><br />
+                  <span className="text-red-400 font-semibold">This action cannot be undone.</span>
+                </p>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setDeleteConfirm(null)}
+                    className="flex-1 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-300 bg-white/5 hover:bg-white/10 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={confirmDeleteWorkshop}
+                    className="flex-1 px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-red-500 hover:bg-red-600 shadow-lg shadow-red-500/20 transition-colors"
+                  >
+                    Yes, Delete
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}

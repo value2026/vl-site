@@ -71,5 +71,40 @@ const updateInstitution = async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+// DELETE /api/institutions/:id
+const deleteInstitution = async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    // Check if institution exists
+    const exists = await prisma.institution.findUnique({
+      where: { id },
+      include: {
+        _count: {
+          select: { users: true }
+        }
+      }
+    });
 
-module.exports = { getInstitutions, createInstitution, updateInstitution };
+    if (!exists) {
+      return res.status(404).json({ message: 'Institution not found' });
+    }
+
+    // Do not allow deletion if there are users associated with it, or maybe cascade delete? 
+    // Usually we don't cascade delete institutions if they have users.
+    if (exists._count.users > 0) {
+      return res.status(400).json({ message: `Cannot delete institution because it has ${exists._count.users} users associated with it. Please reassign or delete the users first.` });
+    }
+
+    await prisma.institution.delete({
+      where: { id }
+    });
+
+    res.json({ message: 'Institution deleted successfully' });
+  } catch (err) {
+    console.error('Delete institution error:', err);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+module.exports = { getInstitutions, createInstitution, updateInstitution, deleteInstitution };

@@ -35,8 +35,9 @@ const getUsers = async (req, res) => {
     } else if (role === 'nodal_centre') {
       where = { nodalCentreId: id, ...searchFilter, ...roleFilter };
     } else if (role === 'teacher') {
-      if (req.user.nodalCentreId) {
-        where = { nodalCentreId: req.user.nodalCentreId, role: 'student', ...searchFilter };
+      const teacher = await prisma.user.findUnique({ where: { id }, select: { nodalCentreId: true } });
+      if (teacher?.nodalCentreId) {
+        where = { nodalCentreId: teacher.nodalCentreId, role: 'student', ...searchFilter };
       } else {
         where = { createdById: id, role: 'student', ...searchFilter };
       }
@@ -233,12 +234,15 @@ const updateUser = async (req, res) => {
     if (!target) return res.status(404).json({ message: 'User not found' });
 
     // Permission check
-    if (callerRole !== 'admin') {
+    if (callerRole !== 'admin' && callerRole !== 'vl_manager') {
       if (callerRole === 'nodal_centre' && target.nodalCentreId !== callerId) {
         return res.status(403).json({ message: 'Insufficient permissions' });
       }
-      if (callerRole === 'teacher' && target.createdById !== callerId) {
-        return res.status(403).json({ message: 'Insufficient permissions' });
+      if (callerRole === 'teacher') {
+        const teacher = await prisma.user.findUnique({ where: { id: callerId }, select: { nodalCentreId: true } });
+        if (target.nodalCentreId !== teacher.nodalCentreId) {
+          return res.status(403).json({ message: 'Insufficient permissions' });
+        }
       }
     }
 
@@ -279,13 +283,8 @@ const deleteUser = async (req, res) => {
     if (!target) return res.status(404).json({ message: 'User not found' });
 
     // Permission check
-    if (callerRole !== 'admin') {
-      if (callerRole === 'nodal_centre' && target.nodalCentreId !== callerId) {
-        return res.status(403).json({ message: 'Insufficient permissions' });
-      }
-      if (callerRole === 'teacher' && target.createdById !== callerId) {
-        return res.status(403).json({ message: 'Insufficient permissions' });
-      }
+    if (callerRole !== 'admin' && callerRole !== 'vl_manager') {
+      return res.status(403).json({ message: 'Only administrators and VL Managers can delete users' });
     }
 
     await prisma.user.delete({ where: { id: targetId } });
@@ -318,9 +317,10 @@ const getStats = async (req, res) => {
       res.json({ totalTeachers, totalStudents });
 
     } else if (role === 'teacher') {
+      const teacher = await prisma.user.findUnique({ where: { id }, select: { nodalCentreId: true } });
       let whereClause = { createdById: id, role: 'student' };
-      if (req.user.nodalCentreId) {
-        whereClause = { nodalCentreId: req.user.nodalCentreId, role: 'student' };
+      if (teacher?.nodalCentreId) {
+        whereClause = { nodalCentreId: teacher.nodalCentreId, role: 'student' };
       }
       const totalStudents = await prisma.user.count({
         where: whereClause,
@@ -340,7 +340,7 @@ const getStats = async (req, res) => {
 const bulkCreateStudents = async (req, res) => {
   try {
     const { role: callerRole, id: callerId } = req.user;
-    const { students } = req.body;
+    const { students, nodalCentreId } = req.body;
 
     if (!Array.isArray(students) || students.length === 0) {
       return res.status(400).json({ message: 'students must be a non-empty array' });
@@ -365,6 +365,9 @@ const bulkCreateStudents = async (req, res) => {
         select: { nodalCentreId: true },
       });
       centreId = teacher?.nodalCentreId ?? null;
+    } else if (callerRole === 'admin' || callerRole === 'vl_manager') {
+      // Admin and VL Manager can specify the institution explicitly
+      centreId = nodalCentreId || null;
     }
 
     let createdCount = 0;
@@ -432,10 +435,16 @@ const bulkCreateStudents = async (req, res) => {
           createdById:   callerId,
           nodalCentreId: centreId,
           username,
-          // Inherit caller academic details if available for helper defaults
+          // Academic & extra details
           org:           student.org || req.user.org || 'Virtual Labs Partner',
           dept:          student.dept || req.user.dept || 'Science',
           country:       student.country || 'India',
+          course:        student.course || null,
+          yearSemester:  student.yearSemester || null,
+          batch:         student.batch || null,
+          studentId:     student.studentId || null,
+          section:       student.section || null,
+          mobile:        student.mobile || null,
         },
       });
 

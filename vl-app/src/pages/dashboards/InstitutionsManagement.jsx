@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Building2, Plus, RefreshCw, AlertCircle, Loader2, Save, X } from 'lucide-react';
+import { Building2, Plus, RefreshCw, AlertCircle, Loader2, Save, X, Trash2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 export default function InstitutionsManagement() {
@@ -12,6 +12,8 @@ export default function InstitutionsManagement() {
   const [showModal, setShowModal] = useState(false);
   const [form, setForm] = useState({ name: '' });
   const [submitting, setSubmitting] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState(null);
+  const [actionLoading, setActionLoading] = useState(null);
 
   const fetchInstitutions = useCallback(async () => {
     setLoading(true);
@@ -58,6 +60,33 @@ export default function InstitutionsManagement() {
     }
   };
 
+  const requestDeleteInstitution = (inst) => {
+    setDeleteConfirm(inst);
+  };
+
+  const confirmDeleteInstitution = async () => {
+    if (!deleteConfirm) return;
+    const { id, name } = deleteConfirm;
+    setDeleteConfirm(null);
+    setActionLoading(id);
+    
+    try {
+      const res = await fetch(`${API_URL}/institutions/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Failed to delete institution');
+      
+      fetchInstitutions();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
   return (
     <div className="bg-slate-900 border border-white/10 rounded-2xl overflow-hidden p-6">
       <div className="flex items-center justify-between mb-6">
@@ -101,12 +130,13 @@ export default function InstitutionsManagement() {
               <tr className="bg-white/5 border-b border-white/10 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">
                 <th className="px-4 py-3">Institution Name</th>
                 <th className="px-4 py-3">Status</th>
+                <th className="px-4 py-3 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
               {institutions.length === 0 ? (
                 <tr>
-                  <td colSpan={2} className="px-4 py-8 text-center text-slate-500 text-sm">
+                  <td colSpan={3} className="px-4 py-8 text-center text-slate-500 text-sm">
                     No institutions registered yet.
                   </td>
                 </tr>
@@ -119,6 +149,16 @@ export default function InstitutionsManagement() {
                         <span className={`w-1.5 h-1.5 rounded-full ${inst.isActive ? 'bg-emerald-400' : 'bg-slate-600'}`} />
                         {inst.isActive ? 'Active' : 'Inactive'}
                       </span>
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <button
+                        onClick={() => requestDeleteInstitution(inst)}
+                        disabled={actionLoading === inst.id}
+                        className="text-slate-400 hover:text-red-400 transition-colors p-1 disabled:opacity-50"
+                        title="Delete institution"
+                      >
+                        {actionLoading === inst.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                      </button>
                     </td>
                   </tr>
                 ))
@@ -168,6 +208,41 @@ export default function InstitutionsManagement() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+      {/* Custom Delete Confirmation Modal */}
+      {deleteConfirm && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setDeleteConfirm(null)} />
+          <div className="relative bg-slate-900 border border-red-500/20 rounded-2xl p-6 w-full max-w-md shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-start gap-4">
+              <div className="w-10 h-10 rounded-full bg-red-500/20 flex items-center justify-center flex-shrink-0">
+                <AlertCircle className="w-5 h-5 text-red-500" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-white mb-2">Confirm Deletion</h3>
+                <p className="text-sm text-slate-300 leading-relaxed mb-6">
+                  Are you sure you want to permanently delete <strong className="text-white">{deleteConfirm.name}</strong>?
+                  <br /><br />
+                  <span className="text-red-400 font-semibold">Note: You cannot delete an institution if it still has users associated with it. This action cannot be undone.</span>
+                </p>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setDeleteConfirm(null)}
+                    className="flex-1 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-300 bg-white/5 hover:bg-white/10 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={confirmDeleteInstitution}
+                    className="flex-1 px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-red-500 hover:bg-red-600 shadow-lg shadow-red-500/20 transition-colors"
+                  >
+                    Yes, Delete
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}

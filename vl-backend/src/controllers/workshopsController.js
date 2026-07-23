@@ -6,7 +6,7 @@ const getWorkshops = async (req, res) => {
     const workshops = await prisma.workshop.findMany({
       orderBy: { date: 'desc' },
       include: {
-        createdBy: { select: { name: true, email: true } }
+        createdBy: { select: { id: true, name: true, email: true } }
       }
     });
     res.json(workshops);
@@ -89,4 +89,32 @@ const updateWorkshop = async (req, res) => {
   }
 };
 
-module.exports = { getWorkshops, createWorkshop, updateWorkshop };
+// DELETE /api/workshops/:id
+const deleteWorkshop = async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const existingWorkshop = await prisma.workshop.findUnique({
+      where: { id }
+    });
+
+    if (!existingWorkshop) {
+      return res.status(404).json({ message: 'Workshop not found' });
+    }
+
+    if (req.user.role !== 'admin' && existingWorkshop.createdById !== req.user.id) {
+      return res.status(403).json({ message: 'Insufficient permissions to delete this workshop' });
+    }
+
+    await prisma.workshop.delete({
+      where: { id }
+    });
+
+    res.json({ message: 'Workshop deleted successfully' });
+  } catch (err) {
+    console.error('Delete workshop error:', err);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+module.exports = { getWorkshops, createWorkshop, updateWorkshop, deleteWorkshop };

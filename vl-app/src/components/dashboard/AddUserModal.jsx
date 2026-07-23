@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, UserPlus, Loader2, Upload, FileText, CheckCircle2, AlertCircle } from 'lucide-react';
+import { X, UserPlus, Loader2, Upload, FileText, CheckCircle2, AlertCircle, Maximize2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import CloudinaryUploader from './CloudinaryUploader';
 
@@ -91,6 +91,8 @@ export default function AddUserModal({ isOpen, onClose, onSuccess, defaultRole }
   const [csvFileName,   setCsvFileName]   = useState('');
   const [parsedPreview, setParsedPreview] = useState([]);
   const [bulkResult,    setBulkResult]    = useState(null);
+  const [showFullPreview, setShowFullPreview] = useState(false);
+  const [showFullscreenPaste, setShowFullscreenPaste] = useState(false);
 
   const [instSearch,   setInstSearch]   = useState('');
 
@@ -136,6 +138,8 @@ export default function AddUserModal({ isOpen, onClose, onSuccess, defaultRole }
     (isStudent || isTeacher || isNodalCentre) &&
     (!user?.nodalCentreId || user?.role === 'admin' || user?.role === 'vl_manager');
 
+  const missingBulkInstitution = isPlatformRole && !form.nodalCentreId;
+
   // ─── validation ────────────────────────────────────────────────────────────
   const validate = () => {
     if (!form.name.trim())     return 'Full Name is required.';
@@ -175,12 +179,51 @@ export default function AddUserModal({ isOpen, onClose, onSuccess, defaultRole }
     try {
       const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
       if (lines.length === 0) return [];
+      
       const firstLine = lines[0].toLowerCase();
-      const startIdx = (firstLine.includes('name') || firstLine.includes('email')) ? 1 : 0;
-      return lines.slice(startIdx).reduce((acc, line) => {
-        const cols = line.split(',').map(c => c.replace(/^[\"']|[\"']$/g, '').trim());
-        if (cols.length >= 2)
-          acc.push({ name: cols[0], email: cols[1], username: cols[1].split('@')[0], country: 'India' });
+      const isHeader = firstLine.includes('name') || firstLine.includes('email');
+      
+      if (!isHeader) {
+        return lines.reduce((acc, line) => {
+          const cols = line.split(',').map(c => c.replace(/^["']|["']$/g, '').trim());
+          if (cols.length >= 2) acc.push({ name: cols[0], email: cols[1], username: cols[1].split('@')[0], country: 'India' });
+          return acc;
+        }, []);
+      }
+
+      const headers = lines[0].split(',').map(h => h.toLowerCase().trim().replace(/["']/g, ''));
+      const colMap = {};
+      headers.forEach((h, i) => colMap[h] = i);
+
+      return lines.slice(1).reduce((acc, line) => {
+        const cols = line.split(',').map(c => c.replace(/^["']|["']$/g, '').trim());
+        if (cols.length < 2) return acc;
+        
+        const getCol = (names) => {
+          for (let n of names) {
+            if (colMap[n] !== undefined) return cols[colMap[n]] || '';
+          }
+          return '';
+        };
+
+        const name = getCol(['name', 'full name']);
+        const email = getCol(['email', 'email address']);
+        
+        if (name && email) {
+          acc.push({
+            name,
+            email,
+            username: email.split('@')[0],
+            course: getCol(['course', 'programme']),
+            dept: getCol(['dept', 'department', 'branch']),
+            yearSemester: getCol(['yearsemester', 'year', 'semester', 'year/semester']),
+            batch: getCol(['batch']),
+            studentId: getCol(['studentid', 'roll number', 'rollno', 'id', 'student id']),
+            section: getCol(['section']),
+            mobile: getCol(['mobile', 'phone', 'phone number']),
+            country: 'India'
+          });
+        }
         return acc;
       }, []);
     } catch { return []; }
@@ -206,12 +249,18 @@ export default function AddUserModal({ isOpen, onClose, onSuccess, defaultRole }
   const handleBulkSubmit = async (e) => {
     e.preventDefault(); setError(''); setBulkResult(null);
     if (parsedPreview.length === 0) { setError('Please upload a valid CSV or paste data.'); return; }
+    
+    if ((user?.role === 'admin' || user?.role === 'vl_manager') && !form.nodalCentreId) {
+      setError('Please select an Institution (Nodal Centre) to assign these students to.');
+      return;
+    }
+
     setLoading(true);
     try {
       const res  = await fetch(`${API_URL}/users/bulk`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ students: parsedPreview }),
+        body: JSON.stringify({ students: parsedPreview, nodalCentreId: form.nodalCentreId }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Failed to bulk import users');
@@ -227,7 +276,11 @@ export default function AddUserModal({ isOpen, onClose, onSuccess, defaultRole }
   };
 
   const downloadSampleCSV = () => {
-    const content = ['Name,Email', 'Alice Smith,alice.smith@school.edu', 'Bob Jones,bob.jones@school.edu'].join('\n');
+    const content = [
+      'Name,Email,Course,Dept,YearSemester,Batch,StudentId,Section,Mobile',
+      'Alice Smith,alice.smith@school.edu,B.Tech,Computer Science,Year 3 / Sem 6,2023-2027,AM.EN.U4CSE23001,CSE-A,9876543210',
+      'Bob Jones,bob.jones@school.edu,B.Tech,Mechanical,Year 2 / Sem 4,2024-2028,AM.EN.U4ME24005,ME-B,'
+    ].join('\n');
     const a = Object.assign(document.createElement('a'), {
       href: URL.createObjectURL(new Blob([content], { type: 'text/csv' })),
       download: 'student_bulk_import_template.csv',
@@ -525,7 +578,39 @@ export default function AddUserModal({ isOpen, onClose, onSuccess, defaultRole }
         ) : (
           /* ── BULK CSV FORM ────────────────────────────────────────────────── */
           <form onSubmit={handleBulkSubmit} className="space-y-4">
-            <div>
+            
+            {(user?.role === 'admin' || user?.role === 'vl_manager') && (
+              <div className="col-span-full">
+                <Field label="Institution (Nodal Centre)" required>
+                  {institutions.length > 5 && (
+                    <input
+                      type="text"
+                      placeholder="🔍 Filter institution by name or code..."
+                      value={instSearch}
+                      onChange={(e) => setInstSearch(e.target.value)}
+                      className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white placeholder-slate-500 mb-2 focus:outline-none focus:ring-1 focus:ring-blue-500/50"
+                    />
+                  )}
+                  <select name="nodalCentreId" value={form.nodalCentreId} onChange={set}
+                    className={`${inputCls} appearance-none cursor-pointer`}>
+                    <option value="">— Select Institution —</option>
+                    {institutions
+                      .filter(i => 
+                        !instSearch ||
+                        i.name.toLowerCase().includes(instSearch.toLowerCase()) ||
+                        (i.code && i.code.toLowerCase().includes(instSearch.toLowerCase()))
+                      )
+                      .map(i => (
+                        <option key={i.id} value={i.id} className="bg-slate-900">
+                          {i.name}{i.code ? ` (${i.code.toUpperCase()})` : ''}
+                        </option>
+                      ))}
+                  </select>
+                </Field>
+              </div>
+            )}
+
+            <div className={missingBulkInstitution ? 'opacity-50 pointer-events-none transition-opacity' : 'transition-opacity'}>
               <div className="flex justify-between items-center mb-2">
                 <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Upload CSV File</label>
                 <button type="button" onClick={downloadSampleCSV}
@@ -533,50 +618,64 @@ export default function AddUserModal({ isOpen, onClose, onSuccess, defaultRole }
                   📥 Download Template
                 </button>
               </div>
-              <div className="border border-dashed border-white/10 bg-white/5 rounded-2xl p-5 text-center flex flex-col items-center hover:border-blue-500/30 transition-colors relative">
-                <input type="file" accept=".csv" onChange={handleFileChange}
-                  className="absolute inset-0 opacity-0 cursor-pointer w-full h-full" />
-                <Upload className="w-8 h-8 text-slate-400 mb-2" />
+              <div className="border border-dashed border-white/20 bg-white/5 hover:bg-white/10 rounded-2xl p-6 text-center flex flex-col items-center hover:border-blue-500/50 transition-all relative group">
+                <input type="file" accept=".csv" onChange={handleFileChange} disabled={missingBulkInstitution}
+                  className="absolute inset-0 opacity-0 cursor-pointer w-full h-full disabled:cursor-not-allowed" />
+                <Upload className="w-8 h-8 text-slate-400 group-hover:text-blue-400 mb-3 transition-colors" />
                 <span className="text-white text-xs font-bold">
                   {csvFileName ? `Selected: ${csvFileName}` : 'Choose a .csv file'}
                 </span>
-                <span className="text-[10px] text-slate-500 mt-1">Columns: Name, Email</span>
+                <span className="text-[10px] text-slate-500 mt-1">Columns: Name, Email, Course, Dept, YearSemester, Batch, StudentId...</span>
               </div>
             </div>
 
-            <div>
+            <div className={missingBulkInstitution ? 'opacity-50 pointer-events-none transition-opacity' : 'transition-opacity'}>
               <div className="flex justify-between items-center mb-1.5">
-                <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Or Paste Data</label>
+                <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                  Or Paste Data
+                  <button type="button" onClick={() => setShowFullscreenPaste(true)} className="text-slate-500 hover:text-white hover:bg-white/10 p-1 rounded transition-colors" title="Expand to Full Screen">
+                    <Maximize2 className="w-3.5 h-3.5" />
+                  </button>
+                </label>
                 {parsedPreview.length > 0 && <span className="text-[10px] text-emerald-400 font-bold">✓ {parsedPreview.length} rows parsed</span>}
               </div>
-              <textarea value={csvText} onChange={handlePasteChange} rows={4}
-                placeholder={`Name, Email\nAlice Johnson, alice@virtuallabs.in\nBob Roberts, bob@virtuallabs.in`}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all font-mono resize-none leading-relaxed" />
+              <textarea value={csvText} onChange={handlePasteChange} rows={6} disabled={missingBulkInstitution}
+                placeholder={`Name, Email, Course, Dept, Batch, StudentId\nAlice Johnson, alice@virtuallabs.in, B.Tech, CSE, 2023-2027, CSE001\nBob Roberts, bob@virtuallabs.in, B.Tech, ECE, 2023-2027, ECE002`}
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all font-mono resize-none leading-relaxed whitespace-pre overflow-auto custom-scrollbar disabled:cursor-not-allowed" />
             </div>
 
             {parsedPreview.length > 0 && (
               <div>
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Preview (first 3)</label>
-                <div className="bg-slate-950/40 border border-white/5 rounded-xl overflow-hidden text-[10px]">
+                <div className="flex justify-between items-center mb-1.5">
+                  <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Preview (first 3)</label>
+                  <button type="button" onClick={() => setShowFullPreview(true)} className="text-xs text-blue-400 hover:text-blue-300 hover:underline flex items-center gap-1 font-semibold">
+                    <FileText className="w-3 h-3" /> View All Data
+                  </button>
+                </div>
+                <div className="bg-slate-950/60 border border-white/10 rounded-xl overflow-hidden text-xs">
                   <table className="w-full text-left">
                     <thead>
-                      <tr className="bg-white/5 border-b border-white/5 text-slate-500 font-bold">
-                        <th className="px-3 py-1.5">Name</th>
-                        <th className="px-3 py-1.5">Email</th>
+                      <tr className="bg-white/10 border-b border-white/10 text-slate-400 font-bold">
+                        <th className="px-4 py-2 w-[30%]">Name</th>
+                        <th className="px-4 py-2 w-[35%]">Email</th>
+                        <th className="px-4 py-2 w-[20%]">Student ID</th>
+                        <th className="px-4 py-2 w-[15%]">Dept</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-white/5">
                       {parsedPreview.slice(0, 3).map((s, i) => (
-                        <tr key={i}>
-                          <td className="px-3 py-1.5 text-white truncate max-w-[130px]">{s.name}</td>
-                          <td className="px-3 py-1.5 text-slate-400 truncate max-w-[160px]">{s.email}</td>
+                        <tr key={i} className="hover:bg-white/5 transition-colors">
+                          <td className="px-4 py-2 text-white truncate max-w-[130px] font-medium">{s.name}</td>
+                          <td className="px-4 py-2 text-slate-300 truncate max-w-[160px]">{s.email}</td>
+                          <td className="px-4 py-2 text-slate-400 truncate max-w-[100px]">{s.studentId || '-'}</td>
+                          <td className="px-4 py-2 text-slate-400 truncate max-w-[100px]">{s.dept || '-'}</td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
                   {parsedPreview.length > 3 && (
-                    <div className="text-[9px] text-slate-500 text-center py-1 italic border-t border-white/5">
-                      …and {parsedPreview.length - 3} more
+                    <div className="text-xs text-slate-400 font-medium text-center py-2 bg-white/5 border-t border-white/10">
+                      …and {parsedPreview.length - 3} more rows
                     </div>
                   )}
                 </div>
@@ -588,7 +687,7 @@ export default function AddUserModal({ isOpen, onClose, onSuccess, defaultRole }
                 className="flex-1 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 bg-white/5 hover:bg-white/10 border border-white/10 transition-all">
                 Cancel
               </button>
-              <button type="submit" disabled={loading || parsedPreview.length === 0}
+              <button type="submit" disabled={loading || parsedPreview.length === 0 || missingBulkInstitution}
                 className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white shadow-lg shadow-blue-500/20 transition-all disabled:opacity-40 disabled:cursor-not-allowed">
                 {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileText className="w-4 h-4" />}
                 {loading ? 'Importing…' : `Bulk Import (${parsedPreview.length})`}
@@ -597,6 +696,98 @@ export default function AddUserModal({ isOpen, onClose, onSuccess, defaultRole }
           </form>
         )}
       </div>
+
+      {showFullPreview && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setShowFullPreview(false)} />
+          <div className="relative w-full max-w-5xl h-[80vh] flex flex-col bg-slate-900 border border-white/10 rounded-3xl shadow-2xl z-10 animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between p-5 border-b border-white/10 bg-white/5 rounded-t-3xl">
+              <h2 className="text-white font-bold text-lg flex items-center gap-2">
+                <FileText className="w-5 h-5 text-blue-400" />
+                Full Data Preview ({parsedPreview.length} rows)
+              </h2>
+              <button type="button" onClick={() => setShowFullPreview(false)} className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-white/10 transition-all">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <div className="flex-1 overflow-auto custom-scrollbar p-5">
+              <div className="bg-slate-950/60 border border-white/10 rounded-xl overflow-hidden text-sm">
+                  <table className="w-full text-left">
+                    <thead>
+                      <tr className="bg-white/10 border-b border-white/10 text-slate-400 font-bold sticky top-0 z-10 backdrop-blur-md">
+                        <th className="px-4 py-3">#</th>
+                        <th className="px-4 py-3">Name</th>
+                        <th className="px-4 py-3">Email</th>
+                        <th className="px-4 py-3">Student ID</th>
+                        <th className="px-4 py-3">Course / Dept</th>
+                        <th className="px-4 py-3">Batch</th>
+                        <th className="px-4 py-3">Section</th>
+                        <th className="px-4 py-3">Mobile</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-white/5">
+                      {parsedPreview.map((s, i) => (
+                        <tr key={i} className="hover:bg-white/5 transition-colors">
+                          <td className="px-4 py-2.5 text-slate-500 font-medium">{i + 1}</td>
+                          <td className="px-4 py-2.5 text-white font-medium truncate max-w-[150px]">{s.name}</td>
+                          <td className="px-4 py-2.5 text-slate-300 truncate max-w-[200px]">{s.email}</td>
+                          <td className="px-4 py-2.5 text-slate-400">{s.studentId || '-'}</td>
+                          <td className="px-4 py-2.5 text-slate-400 truncate max-w-[150px]">{s.course ? `${s.course} ${s.dept ? `- ${s.dept}` : ''}` : (s.dept || '-')}</td>
+                          <td className="px-4 py-2.5 text-slate-400">{s.batch || '-'}</td>
+                          <td className="px-4 py-2.5 text-slate-400">{s.section || '-'}</td>
+                          <td className="px-4 py-2.5 text-slate-400">{s.mobile || '-'}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+              </div>
+            </div>
+            
+            <div className="p-4 border-t border-white/10 flex justify-end bg-slate-900 rounded-b-3xl">
+               <button type="button" onClick={() => setShowFullPreview(false)} className="px-5 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-xl text-sm font-semibold transition-colors shadow-lg shadow-blue-500/20">
+                 Done
+               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showFullscreenPaste && (
+        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setShowFullscreenPaste(false)} />
+          <div className="relative w-full max-w-5xl h-[85vh] flex flex-col bg-slate-900 border border-white/10 rounded-3xl shadow-2xl z-10 animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between p-5 border-b border-white/10 bg-white/5 rounded-t-3xl">
+              <h2 className="text-white font-bold text-lg flex items-center gap-2">
+                <Maximize2 className="w-5 h-5 text-blue-400" />
+                Paste Data (Full Screen)
+              </h2>
+              <button type="button" onClick={() => setShowFullscreenPaste(false)} className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-white/10 transition-all">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <div className="flex-1 p-5 flex flex-col bg-slate-950/40">
+              <textarea 
+                value={csvText} 
+                onChange={handlePasteChange} 
+                autoFocus
+                placeholder={`Name, Email, Course, Dept, Batch, StudentId\nAlice Johnson, alice@virtuallabs.in, B.Tech, CSE, 2023-2027, CSE001`}
+                className="w-full flex-1 bg-white/5 border border-white/10 rounded-xl p-5 text-sm text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all font-mono resize-none leading-relaxed whitespace-pre overflow-auto custom-scrollbar" 
+              />
+            </div>
+            
+            <div className="p-4 border-t border-white/10 flex justify-between items-center bg-slate-900 rounded-b-3xl">
+               <span className="text-xs text-emerald-400 font-bold px-3">
+                 {parsedPreview.length > 0 ? `✓ ${parsedPreview.length} rows parsed automatically` : ''}
+               </span>
+               <button type="button" onClick={() => setShowFullscreenPaste(false)} className="px-6 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-xl text-sm font-semibold transition-colors shadow-lg shadow-blue-500/20">
+                 Done Editing
+               </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
