@@ -6,7 +6,7 @@ const { sendWelcomeEmail } = require('../utils/mailer');
 const CREATION_RULES = {
   admin:        ['admin', 'nodal_centre', 'teacher', 'student', 'content_admin', 'sim_admin', 'vl_manager'],
   vl_manager:   ['nodal_centre', 'teacher', 'student'],
-  nodal_centre: ['teacher', 'student'],
+  nodal_centre: [],
   teacher:      ['student'],
   student:      [],
 };
@@ -33,7 +33,12 @@ const getUsers = async (req, res) => {
     if (role === 'admin' || role === 'vl_manager') {
       where = { ...searchFilter, ...roleFilter };
     } else if (role === 'nodal_centre') {
-      where = { nodalCentreId: id, ...searchFilter, ...roleFilter };
+      const nodalAdmin = await prisma.user.findUnique({ where: { id }, select: { nodalCentreId: true } });
+      if (nodalAdmin?.nodalCentreId) {
+        where = { nodalCentreId: nodalAdmin.nodalCentreId, ...searchFilter, ...roleFilter };
+      } else {
+        where = { createdById: id, ...searchFilter, ...roleFilter };
+      }
     } else if (role === 'teacher') {
       const teacher = await prisma.user.findUnique({ where: { id }, select: { nodalCentreId: true } });
       if (teacher?.nodalCentreId) {
@@ -310,9 +315,18 @@ const getStats = async (req, res) => {
       res.json({ totalAdmins, totalNodalCentres, totalTeachers, totalStudents });
 
     } else if (role === 'nodal_centre') {
+      const nodalAdmin = await prisma.user.findUnique({ where: { id }, select: { nodalCentreId: true } });
+      let whereTeacher = { createdById: id, role: 'teacher' };
+      let whereStudent = { createdById: id, role: 'student' };
+      
+      if (nodalAdmin?.nodalCentreId) {
+        whereTeacher = { nodalCentreId: nodalAdmin.nodalCentreId, role: 'teacher' };
+        whereStudent = { nodalCentreId: nodalAdmin.nodalCentreId, role: 'student' };
+      }
+
       const [totalTeachers, totalStudents] = await Promise.all([
-        prisma.user.count({ where: { nodalCentreId: id, role: 'teacher' } }),
-        prisma.user.count({ where: { nodalCentreId: id, role: 'student' } }),
+        prisma.user.count({ where: whereTeacher }),
+        prisma.user.count({ where: whereStudent }),
       ]);
       res.json({ totalTeachers, totalStudents });
 
@@ -346,8 +360,8 @@ const bulkCreateStudents = async (req, res) => {
       return res.status(400).json({ message: 'students must be a non-empty array' });
     }
 
-    // Only Admin, VL Manager, Nodal Centre, and Teacher can bulk add students
-    if (!['admin', 'vl_manager', 'nodal_centre', 'teacher'].includes(callerRole)) {
+    // Only Admin, VL Manager, and Teacher can bulk add students
+    if (!['admin', 'vl_manager', 'teacher'].includes(callerRole)) {
       return res.status(403).json({ message: 'Insufficient permissions to bulk add users' });
     }
 
