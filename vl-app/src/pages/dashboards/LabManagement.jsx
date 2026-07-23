@@ -415,7 +415,7 @@ function ExperimentsTab({ role }) {
     setUploadMsg((m) => ({ ...m, [key]: '' }));
     const fd = new FormData();
     fd.append('file', file);
-    const res = await api.upload(`/experiments/${expId}/upload-${type}`, fd);
+    const res = await api.upload(`/experiments/${expId}/upload-zip`, fd);
     const data = await res.json();
     setUploading((u) => ({ ...u, [key]: false }));
     setUploadMsg((m) => ({ ...m, [key]: res.ok ? '✅ Done' : `❌ ${data.message}` }));
@@ -427,7 +427,7 @@ function ExperimentsTab({ role }) {
     const inputRef = useRef();
     const isLoading = uploading[key];
     const msg = uploadMsg[key];
-    const hasFile = type === 'content' ? !!exp.contentPath : !!exp.simulationPath;
+    const hasFile = !!exp.contentPath || !!exp.simulationPath;
     return (
       <div className="flex flex-col gap-1">
         <input ref={inputRef} type="file" accept=".zip" className="hidden" onChange={(e) => handleUpload(exp.id, type, e.target.files[0])} />
@@ -506,10 +506,7 @@ function ExperimentsTab({ role }) {
                   {/* Upload Actions */}
                   <div className="flex flex-wrap items-center gap-4 bg-slate-950/40 border border-white/5 p-3 rounded-xl max-w-lg">
                     <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex-shrink-0">Assets:</div>
-                    {role !== 'teacher' && (
-                      <UploadBtn exp={exp} type="content" label={exp.contentPath ? 'Docs Attached' : 'Upload Docs ZIP'} />
-                    )}
-                    <UploadBtn exp={exp} type="simulation" label={exp.simulationPath ? 'Simulation Attached' : 'Upload Sim ZIP'} />
+                    <UploadBtn exp={exp} type="zip" label={exp.contentPath || exp.simulationPath ? 'Experiment ZIP Attached' : 'Upload Experiment ZIP'} />
                   </div>
                 </div>
 

@@ -3,9 +3,7 @@ import { BookOpen, Plus, RefreshCw, GraduationCap } from 'lucide-react';
 import DashboardLayout from '../../components/dashboard/DashboardLayout';
 import UserTable       from '../../components/dashboard/UserTable';
 import AddUserModal    from '../../components/dashboard/AddUserModal';
-import UpcomingCallsCard from '../../components/communication/UpcomingCallsCard';
 import { useAuth }     from '../../context/AuthContext';
-import { useLocation } from 'react-router-dom';
 
 export default function TeacherDashboard() {
   const { token, API_URL, user } = useAuth();
@@ -13,8 +11,6 @@ export default function TeacherDashboard() {
   const [students, setStudents] = useState([]);
   const [loading,  setLoading]  = useState(true);
   const [showModal, setShowModal] = useState(false);
-  const location = useLocation();
-  const isStudentsPage = location.pathname.endsWith('/students');
 
   const fetchAll = useCallback(async () => {
     setLoading(true);
@@ -40,31 +36,21 @@ export default function TeacherDashboard() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-white text-2xl font-bold">{isStudentsPage ? 'My Students' : `Welcome, ${user?.name?.split(' ')[0]}`}</h2>
+          <h2 className="text-white text-2xl font-bold">Welcome, {user?.name?.split(' ')[0]}</h2>
           <p className="text-slate-400 text-sm mt-0.5 flex items-center gap-1.5">
-            <GraduationCap className="w-3.5 h-3.5" /> {isStudentsPage ? 'Manage your institute\'s students' : 'Teacher Portal'}
+            <GraduationCap className="w-3.5 h-3.5" /> Teacher Portal
           </p>
         </div>
-        <div className="flex items-center gap-3">
-          <button
-            onClick={fetchAll}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 transition-all"
-          >
-            <RefreshCw className="w-4 h-4" /> Refresh
-          </button>
-          {isStudentsPage && (
-            <button
-              onClick={() => setShowModal(true)}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 shadow-lg shadow-blue-500/20 transition-all"
-            >
-              <Plus className="w-4 h-4" /> Add Student
-            </button>
-          )}
-        </div>
+        <button
+          onClick={fetchAll}
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 transition-all"
+        >
+          <RefreshCw className="w-4 h-4" /> Refresh
+        </button>
       </div>
 
-      {!isStudentsPage && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      {/* Stat card */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <div className="relative bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl p-6 overflow-hidden col-span-1 flex flex-col justify-between min-h-48 shadow-lg shadow-black/10">
           <div className="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full" />
           <div className="relative z-10">
@@ -95,25 +81,23 @@ export default function TeacherDashboard() {
             </div>
           </div>
         </div>
-
-        {/* Upcoming scheduled calls widget */}
-        <div className="col-span-1">
-          <UpcomingCallsCard />
-        </div>
-        </div>
-      )}
+      </div>
 
       {/* Students section */}
-      <>
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-white font-semibold text-lg flex items-center gap-2">
-            <BookOpen className="w-5 h-5 text-blue-400" /> {isStudentsPage ? 'Institute Students' : 'Recent Students'}
-            <span className="text-slate-500 text-sm font-normal">({students.length})</span>
-          </h3>
-        </div>
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-white font-semibold text-lg flex items-center gap-2">
+          <BookOpen className="w-5 h-5 text-blue-400" /> Institute Students
+          <span className="text-slate-500 text-sm font-normal">({students.length})</span>
+        </h3>
+        <button
+          onClick={() => setShowModal(true)}
+          className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 shadow-lg shadow-blue-500/20 transition-all"
+        >
+          <Plus className="w-4 h-4" /> Add Student
+        </button>
+      </div>
 
-        <UserTable users={isStudentsPage ? students : students.slice(0, 5)} loading={loading} onRefresh={fetchAll} hideActions={!isStudentsPage} />
-      </>
+      <UserTable users={students} loading={loading} onRefresh={fetchAll} />
 
       <AddUserModal
         isOpen={showModal}

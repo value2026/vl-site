@@ -10,6 +10,7 @@ const {
   getStudentDetailsReport,
   getMyPerformance,
 } = require('../controllers/analyticsController');
+const { getGA4Stats } = require('../controllers/gaController');
 
 // Recording stats (public for student role)
 router.post('/visit',          verifyToken, recordVisit);
@@ -19,6 +20,7 @@ router.get('/my-performance', verifyToken, getMyPerformance);
 
 // Viewing dashboard stats (staff only)
 router.get('/dashboard',        verifyToken, requireRole('admin', 'nodal_centre', 'teacher'), getDashboardStats);
+router.get('/google-analytics', verifyToken, requireRole('admin', 'nodal_centre', 'teacher'), getGA4Stats);
 router.get('/reports/academic', verifyToken, requireRole('admin', 'nodal_centre', 'teacher'), getAcademicReport);
 router.get('/student/:userId',  verifyToken, requireRole('admin', 'nodal_centre', 'teacher'), getStudentDetailsReport);
 

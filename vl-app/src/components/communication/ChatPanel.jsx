@@ -1,17 +1,15 @@
 import { useState, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 import {
-  MessageSquare, X, Send, Phone, Calendar, User,
+  MessageSquare, X, Send, Phone, User,
   Circle, AlertCircle, PhoneIncoming, Loader2, ArrowLeft
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { api } from '../../utils/api';
-import MeetingSchedulerModal from './MeetingSchedulerModal';
 import VideoCallCanvas from './VideoCallCanvas';
 
 export default function ChatPanel() {
   const { user, token } = useAuth();
-  if (!user) return null;
 
   const [isOpen, setIsOpen]           = useState(false);
   const [contacts, setContacts]       = useState([]);
@@ -21,9 +19,6 @@ export default function ChatPanel() {
   const [onlineUserIds, setOnlineUserIds] = useState([]);
   const [loadingContacts, setLoadingContacts] = useState(false);
   const [loadingChat, setLoadingChat] = useState(false);
-
-  // Modals state
-  const [isSchedulerOpen, setIsSchedulerOpen] = useState(false);
   
   // WebRTC Call State
   const [localStream, setLocalStream] = useState(null);
@@ -40,7 +35,7 @@ export default function ChatPanel() {
 
   // ── Establish WebSocket Connection ───────────────────────────
   useEffect(() => {
-    if (!isOpen) {
+    if (!user || !isOpen) {
       // Disconnect socket if chat drawer is closed to save resources
       if (socketRef.current) {
         socketRef.current.disconnect();
@@ -106,13 +101,13 @@ export default function ChatPanel() {
     return () => {
       if (s) s.disconnect();
     };
-  }, [isOpen, activeContact?.id]);
+  }, [isOpen, activeContact?.id, user]);
 
   // Handle join-call custom event from UpcomingCallsCard
   useEffect(() => {
     const handleJoinCallEvent = (e) => {
       const { peerId, peerName } = e.detail;
-      setIsOpen(true); // Open the support desk drawer
+      setIsOpen(true); // Open the support drawer
       setCallState({
         isIncoming: false,
         activeCall: true,
@@ -215,6 +210,8 @@ export default function ChatPanel() {
   const getRoleLabel = (r) => {
     return { admin: 'Admin', nodal_centre: 'Nodal Centre', teacher: 'Teacher', student: 'Student' }[r] || 'User';
   };
+
+  if (!user) return null;
 
   return (
     <>
@@ -323,7 +320,7 @@ export default function ChatPanel() {
                     </div>
                   </div>
 
-                  {/* Actions (Call and Schedule) */}
+                  {/* Actions (Instant Call) */}
                   <div className="flex items-center gap-2">
                     {onlineUserIds.includes(activeContact.id) && (
                       <button
@@ -334,13 +331,6 @@ export default function ChatPanel() {
                         <Phone className="w-4 h-4" />
                       </button>
                     )}
-                    <button
-                      onClick={() => setIsSchedulerOpen(true)}
-                      title="Schedule future Video Call"
-                      className="p-2 bg-blue-500/10 border border-blue-500/25 hover:bg-blue-500/20 text-blue-400 rounded-xl transition-all"
-                    >
-                      <Calendar className="w-4 h-4" />
-                    </button>
                   </div>
                 </div>
 
@@ -392,14 +382,7 @@ export default function ChatPanel() {
         </div>
       )}
 
-      {/* ── Schedule modal trigger ── */}
-      {isSchedulerOpen && (
-        <MeetingSchedulerModal
-          isOpen={isSchedulerOpen}
-          onClose={() => setIsSchedulerOpen(false)}
-          contact={activeContact}
-        />
-      )}
+
     </>
   );
 }

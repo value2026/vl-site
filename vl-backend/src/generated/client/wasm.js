@@ -307,6 +307,57 @@ exports.Prisma.SurveyResponseScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.QuestionPaperScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  questions: 'questions',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.AssignmentScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  startTime: 'startTime',
+  endTime: 'endTime',
+  maxAttempts: 'maxAttempts',
+  resultDisplay: 'resultDisplay',
+  resultsPublished: 'resultsPublished',
+  isActive: 'isActive',
+  questionPaperId: 'questionPaperId',
+  teacherId: 'teacherId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.AssignmentStudentScalarFieldEnum = {
+  id: 'id',
+  assignmentId: 'assignmentId',
+  studentId: 'studentId',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.AssignmentAttemptScalarFieldEnum = {
+  id: 'id',
+  assignmentId: 'assignmentId',
+  studentId: 'studentId',
+  score: 'score',
+  maxScore: 'maxScore',
+  answers: 'answers',
+  completedAt: 'completedAt'
+};
+
+exports.Prisma.NotificationScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  title: 'title',
+  message: 'message',
+  isRead: 'isRead',
+  type: 'type',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -356,7 +407,12 @@ exports.Prisma.ModelName = {
   PageSection: 'PageSection',
   Institution: 'Institution',
   Workshop: 'Workshop',
-  SurveyResponse: 'SurveyResponse'
+  SurveyResponse: 'SurveyResponse',
+  QuestionPaper: 'QuestionPaper',
+  Assignment: 'Assignment',
+  AssignmentStudent: 'AssignmentStudent',
+  AssignmentAttempt: 'AssignmentAttempt',
+  Notification: 'Notification'
 };
 
 /**

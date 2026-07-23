@@ -1,1 +1,0 @@
-To apply linear algebra concepts to real quantum gates and circuits

@@ -35,6 +35,10 @@ import SubjectPage    from './pages/student/SubjectPage';
 import LabPage        from './pages/student/LabPage';
 import ExperimentPage from './pages/student/ExperimentPage';
 import StudentAccount from './pages/student/StudentAccount';
+import StudentAssignments from './pages/student/StudentAssignments';
+import DoAssignment from './pages/student/DoAssignment';
+import TeacherAssignments from './pages/dashboards/TeacherAssignments';
+import AssignmentReport from './pages/dashboards/AssignmentReport';
 
 // Dashboard layout and pages
 import DashboardLayout from './components/dashboard/DashboardLayout';
@@ -292,6 +296,12 @@ function AppLayout() {
             <DashboardLayout title="Academic Reports"><StudentAcademicReports /></DashboardLayout>
           </ProtectedRoute>
         } />
+        <Route path="/dashboard/teacher/assignments" element={
+          <ProtectedRoute allowedRole="teacher"><TeacherAssignments /></ProtectedRoute>
+        } />
+        <Route path="/dashboard/teacher/assignments/report/:id" element={
+          <ProtectedRoute allowedRole="teacher"><AssignmentReport /></ProtectedRoute>
+        } />
 
         {/* Student learning platform */}
         <Route path="/dashboard/student" element={
@@ -311,6 +321,12 @@ function AppLayout() {
         } />
         <Route path="/student/account" element={
           <ProtectedRoute allowedRole="student"><StudentAccount /></ProtectedRoute>
+        } />
+        <Route path="/student/assignments" element={
+          <ProtectedRoute allowedRole="student"><StudentAssignments /></ProtectedRoute>
+        } />
+        <Route path="/student/assignments/take/:id" element={
+          <ProtectedRoute allowedRole="student"><DoAssignment /></ProtectedRoute>
         } />
       </Routes>
     );

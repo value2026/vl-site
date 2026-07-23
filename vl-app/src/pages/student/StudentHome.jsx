@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { 
   ArrowRight, FlaskConical, Loader2, History, Play, 
-  TrendingUp, Clock, Award, CheckCircle, Sparkles, BookOpen
+  TrendingUp, Clock, Award, CheckCircle, Sparkles, BookOpen, ClipboardList
 } from 'lucide-react';
 import StudentNav from '../../components/student/StudentNav';
 import { useAuth } from '../../context/AuthContext';
@@ -49,6 +49,16 @@ export default function StudentHome() {
     queryKey: ['student-performance'],
     queryFn: () => api.get('/analytics/my-performance').then(r => r.json()),
   });
+
+  // 3. Fetch student assignments
+  const { data: assignments = [], isLoading: assignmentsLoading } = useQuery({
+    queryKey: ['student-assignments-home'],
+    queryFn: () => api.get('/assignments/my-assignments').then(r => r.json()),
+  });
+
+  const upcomingExams = Array.isArray(assignments)
+    ? assignments.filter(a => a.status === 'active' || a.status === 'yet_to_start').slice(0, 3)
+    : [];
 
   const totalLabs = subjects.reduce((sum, s) => sum + (s._count?.labs || 0), 0);
 
@@ -230,6 +240,69 @@ export default function StudentHome() {
           {/* RIGHT 1-COLUMN AREA (Analytics Panel) */}
           <div className="space-y-6">
             
+            {/* Upcoming Exams Card */}
+            {!assignmentsLoading && upcomingExams.length > 0 && (
+              <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm">
+                <div className="mb-4 pb-4 border-b border-slate-50 flex items-center justify-between">
+                  <h2 className="text-slate-900 font-extrabold text-sm flex items-center gap-2">
+                    <ClipboardList className="w-4.5 h-4.5 text-indigo-600" />
+                    Upcoming Exams
+                  </h2>
+                  <Link
+                    to="/student/assignments"
+                    className="text-[10px] font-bold text-indigo-605 hover:underline"
+                  >
+                    View All
+                  </Link>
+                </div>
+
+                <div className="space-y-4">
+                  {upcomingExams.map((exam) => (
+                    <div
+                      key={exam.id}
+                      className="p-4 bg-slate-55/50 border border-slate-100 rounded-2xl hover:border-indigo-100 transition-colors"
+                    >
+                      <div className="flex justify-between items-start">
+                        <span className={`px-2 py-0.5 rounded text-[8px] font-extrabold uppercase tracking-wide border ${
+                          exam.status === 'active'
+                            ? 'bg-emerald-50 text-emerald-700 border-emerald-100'
+                            : 'bg-amber-50 text-amber-705 border-amber-100'
+                        }`}>
+                          {exam.status === 'active' ? 'Active Now' : 'Upcoming'}
+                        </span>
+                        <span className="text-[9px] text-slate-400 font-medium">
+                          {exam.questionCount} Qs
+                        </span>
+                      </div>
+                      <h4 className="text-slate-800 font-bold text-xs mt-2 line-clamp-2 leading-snug">
+                        {exam.title}
+                      </h4>
+                      <div className="flex items-center gap-1 text-[10px] text-slate-500 mt-2">
+                        <Clock className="w-3.5 h-3.5 text-slate-400" />
+                        <span>
+                          {new Date(exam.startTime).toLocaleDateString('en-IN', {
+                            day: '2-digit',
+                            month: 'short',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          })}
+                        </span>
+                      </div>
+
+                      {exam.status === 'active' && (
+                        <Link
+                          to={`/student/assignments/take/${exam.id}`}
+                          className="mt-3 w-full block text-center py-2 bg-indigo-600 text-white hover:bg-indigo-700 rounded-xl text-[10px] font-bold transition-all shadow-sm shadow-indigo-500/10"
+                        >
+                          Take Test
+                        </Link>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm">
               <h2 className="text-slate-900 font-extrabold text-base flex items-center gap-2 mb-6 border-b border-slate-50 pb-4">
                 <TrendingUp className="w-5 h-5 text-emerald-600" />

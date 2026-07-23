@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Calendar, Clock, Video, Check, X, Loader2, AlertCircle, Users } from 'lucide-react';
 import { api } from '../../utils/api';
 import { useAuth } from '../../context/AuthContext';
-import MeetingSchedulerModal from './MeetingSchedulerModal';
+
 
 const STATUS_STYLES = {
   accepted: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400',
@@ -12,14 +12,17 @@ const STATUS_STYLES = {
 
 export default function UpcomingCallsCard() {
   const { user } = useAuth();
-  if (!user) return null;
 
   const [calls, setCalls]           = useState([]);
   const [loading, setLoading]       = useState(true);
   const [actionId, setActionId]     = useState(null);
-  const [isSchedulerOpen, setIsSchedulerOpen] = useState(false);
 
-  useEffect(() => { fetchScheduledCalls(); }, []);
+
+  useEffect(() => {
+    if (user) {
+      fetchScheduledCalls();
+    }
+  }, [user]);
 
   const fetchScheduledCalls = async () => {
     try {
@@ -58,6 +61,8 @@ export default function UpcomingCallsCard() {
     }));
   };
 
+  if (!user) return null;
+
   if (loading) {
     return (
       <div className="bg-slate-900/40 border border-white/10 rounded-2xl p-6 flex flex-col items-center justify-center min-h-40">
@@ -84,28 +89,14 @@ export default function UpcomingCallsCard() {
           <Calendar className="w-4 h-4 text-blue-400" />
           <h4 className="text-white font-extrabold text-sm uppercase tracking-wider">Scheduled Consultations</h4>
         </div>
-        {user.role !== 'student' && (
-          <button
-            onClick={() => setIsSchedulerOpen(true)}
-            className="px-3 py-1 text-[10px] font-bold text-white bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors flex items-center gap-1"
-          >
-            + Schedule Call
-          </button>
-        )}
+
       </div>
 
       {activeSchedules.length === 0 ? (
         <div className="flex-1 flex flex-col items-center justify-center text-center text-slate-500 py-8 space-y-2">
           <AlertCircle className="w-7 h-7 text-slate-600" />
           <p className="text-xs font-semibold">No upcoming consultations.</p>
-          {user.role !== 'student' && (
-            <button
-              onClick={() => setIsSchedulerOpen(true)}
-              className="mt-2 text-[10px] text-blue-400 hover:text-blue-300 underline underline-offset-2 transition-colors"
-            >
-              Schedule one now →
-            </button>
-          )}
+
         </div>
       ) : (
         <div className="flex-1 overflow-y-auto space-y-3 max-h-[350px] pr-0.5">
@@ -222,14 +213,7 @@ export default function UpcomingCallsCard() {
         </div>
       )}
 
-      {isSchedulerOpen && (
-        <MeetingSchedulerModal
-          isOpen={isSchedulerOpen}
-          onClose={() => setIsSchedulerOpen(false)}
-          contact={null}
-          onSuccess={fetchScheduledCalls}
-        />
-      )}
+
     </div>
   );
 }

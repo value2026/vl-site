@@ -183,32 +183,177 @@ const deleteExperiment = async (req, res) => {
   }
 };
 
-// POST /api/experiments/:id/upload-content   (admin, nodal_centre)
-const uploadContent = async (req, res) => {
+// POST /api/experiments/:id/upload-zip   (admin, nodal_centre, teacher)
+const uploadZip = async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
 
     const { id } = req.params;
-    const targetDir   = `experiments/${id}/content`;
-    const absoluteDir = uploadsPath('experiments', id, 'content');
 
-    extractZip(req.file.path, absoluteDir);
+    // Fetch experiment along with lab and subject to construct slug folders
+    const exp = await prisma.experiment.findUnique({
+      where: { id },
+      include: {
+        lab: {
+          include: {
+            subject: true
+          }
+        }
+      }
+    });
 
-    // Delete temporary uploaded zip file
+    if (!exp) {
+      return res.status(404).json({ message: 'Experiment not found' });
+    }
+
+    const getSlug = (str) => {
+      return str.toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/(^-|-$)/g, '');
+    };
+
+    const subjectSlug = getSlug(exp.lab.subject.title);
+    const labSlug     = getSlug(exp.lab.title);
+    const expSlug     = getSlug(exp.title);
+
+    // Target sub-directories (relative to uploads/)
+    const relativeContentSubDir = `${subjectSlug}/${labSlug}/${expSlug}/content`;
+
+    // Absolute directory paths
+    const absoluteContentDir = uploadsPath(subjectSlug, labSlug, expSlug, 'content');
+
+    // Create a temporary path for zip extraction
+    const tempExtractDir = path.join(__dirname, '../../tmp', `extracted-${id}`);
+
+    // Clean temp extraction dir if it exists
+    if (fs.existsSync(tempExtractDir)) {
+      fs.rmSync(tempExtractDir, { recursive: true, force: true });
+    }
+    fs.mkdirSync(tempExtractDir, { recursive: true });
+
+    // Extract the main uploaded zip to the temp directory
+    const AdmZip = require('adm-zip');
+    const mainZip = new AdmZip(req.file.path);
+    mainZip.extractAllTo(tempExtractDir, true);
+
+    // Remove the uploaded temp zip file
     try {
       fs.unlinkSync(req.file.path);
     } catch (e) {
-      console.warn('Warning: Failed to delete temp zip file after content extraction', e.message);
+      console.warn('Warning: Failed to delete temp uploaded zip file', e.message);
     }
 
+    // ── Documentation files ────────────────────────────────────────────────────
+    // Copy doc files (*.md, *.json, images/) to content directory.
+    // Exclude non-doc directories like simulation/, template/, etc.
+    const DOC_FILES = new Set(['aim.md', 'theory.md', 'procedure.md', 'references.md', 'contributors.md', 'pretest.json', 'posttest.json', 'README.md', 'assignment.md', 'experiment-name.md']);
+    const DOC_DIRS  = new Set(['images']);
+    const SIM_DIRS  = new Set(['simulation', 'template']); // folders to skip in content
+
+    if (fs.existsSync(absoluteContentDir)) {
+      fs.rmSync(absoluteContentDir, { recursive: true, force: true });
+    }
+    fs.mkdirSync(absoluteContentDir, { recursive: true });
+
+    for (const entry of fs.readdirSync(tempExtractDir)) {
+      const src = path.join(tempExtractDir, entry);
+      const dst = path.join(absoluteContentDir, entry);
+      const stat = fs.statSync(src);
+
+      if (stat.isDirectory()) {
+        if (DOC_DIRS.has(entry.toLowerCase())) {
+          fs.cpSync(src, dst, { recursive: true });
+        }
+        // Skip simulation/, template/, and other non-doc dirs
+      } else {
+        // Copy all root-level files (md, json, etc.)
+        fs.copyFileSync(src, dst);
+      }
+    }
+
+    // ── Simulation ─────────────────────────────────────────────────────────────
+    const tempSimPath = path.join(tempExtractDir, 'simulation');
+    let finalSimPath = null;
+
+    if (fs.existsSync(tempSimPath)) {
+      // Detect whether the simulation/ folder has sibling dependency folders
+      // (e.g. template/ for Angular-based experiments that use ../template/... paths).
+      // These must be co-located alongside simulation/ so relative paths resolve.
+      const siblingDirs = fs.readdirSync(tempExtractDir).filter((entry) => {
+        const p = path.join(tempExtractDir, entry);
+        return fs.statSync(p).isDirectory() && entry !== 'simulation' && !DOC_DIRS.has(entry.toLowerCase());
+      });
+
+      const hasSiblingDeps = siblingDirs.length > 0;
+
+      if (hasSiblingDeps) {
+        // Format 2 (Angular/template-based): copy simulation/ AND all sibling dirs
+        // into a sim-root/ folder so ../template/ relative paths resolve correctly.
+        const relativeSimRoot    = `${subjectSlug}/${labSlug}/${expSlug}/sim-root`;
+        const absoluteSimRootDir = uploadsPath(subjectSlug, labSlug, expSlug, 'sim-root');
+
+        if (fs.existsSync(absoluteSimRootDir)) {
+          fs.rmSync(absoluteSimRootDir, { recursive: true, force: true });
+        }
+        fs.mkdirSync(absoluteSimRootDir, { recursive: true });
+
+        // Copy simulation/ into sim-root/simulation/
+        fs.cpSync(tempSimPath, path.join(absoluteSimRootDir, 'simulation'), { recursive: true });
+
+        // Copy each sibling dependency dir (template/ etc.) into sim-root/
+        for (const dir of siblingDirs) {
+          const src = path.join(tempExtractDir, dir);
+          const dst = path.join(absoluteSimRootDir, dir);
+          fs.cpSync(src, dst, { recursive: true });
+        }
+
+        // simulationPath points to the simulation subfolder inside sim-root
+        finalSimPath = `${relativeSimRoot}/simulation`;
+        console.log(`✅ UploadZip: Angular/template simulation deployed to: ${absoluteSimRootDir}`);
+
+      } else {
+        // Format 1 (React/pre-compiled static): just use compileSimulation as before
+        const relativeSimSubDir = `${subjectSlug}/${labSlug}/${expSlug}/simulation`;
+        const tempSimZipPath = path.join(__dirname, '../../tmp', `temp-sim-${id}.zip`);
+        const simZip = new AdmZip();
+        simZip.addLocalFolder(tempSimPath);
+        simZip.writeZip(tempSimZipPath);
+
+        finalSimPath = await compileSimulation(tempSimZipPath, relativeSimSubDir);
+
+        try {
+          fs.unlinkSync(tempSimZipPath);
+        } catch (e) {
+          console.warn('Warning: Failed to delete temp simulation zip', e.message);
+        }
+        console.log(`✅ UploadZip: React/static simulation deployed to: ${relativeSimSubDir}`);
+      }
+    }
+
+    // Cleanup temp extraction directory
+    try {
+      fs.rmSync(tempExtractDir, { recursive: true, force: true });
+    } catch (e) {
+      console.warn('Warning: Failed to delete temp extraction dir', e.message);
+    }
+
+    // Update experiment model
     await prisma.experiment.update({
       where: { id },
-      data: { contentPath: targetDir },
+      data: {
+        contentPath: relativeContentSubDir,
+        simulationPath: finalSimPath
+      }
     });
-    res.json({ message: 'Content uploaded and extracted successfully', contentPath: targetDir });
+
+    res.json({
+      message: 'Experiment ZIP uploaded and assets extracted successfully',
+      contentPath: relativeContentSubDir,
+      simulationPath: finalSimPath
+    });
   } catch (err) {
-    console.error(err);
-    res.status(550).json({ message: err.message || 'Upload failed' });
+    console.error('Upload Experiment ZIP error:', err);
+    res.status(500).json({ message: err.message || 'Experiment ZIP upload failed' });
   }
 };
 
@@ -228,7 +373,7 @@ const getExperimentDocs = async (req, res) => {
       return res.status(404).json({ message: 'No content uploaded for this experiment yet.' });
     }
 
-    const absoluteDir = uploadsPath('experiments', id, 'content');
+    const absoluteDir = uploadsPath(experiment.contentPath);
     
     // Read markdown files
     const docs = {};
@@ -240,7 +385,7 @@ const getExperimentDocs = async (req, res) => {
       contributors: 'contributors.md'
     };
 
-    const hostPrefix = `${req.protocol}://${req.get('host')}/files/experiments/${id}/content/`;
+    const hostPrefix = `${req.protocol}://${req.get('host')}/files/${experiment.contentPath}/`;
 
     for (const [key, filename] of Object.entries(textFiles)) {
       const filePath = path.join(absoluteDir, filename);
@@ -283,41 +428,8 @@ const getExperimentDocs = async (req, res) => {
   }
 };
 
-// POST /api/experiments/:id/upload-simulation   (admin, nodal_centre, teacher)
-const uploadSimulation = async (req, res) => {
-  try {
-    if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
-
-    const { id } = req.params;
-    const targetDir = `experiments/${id}/simulation`;
-
-    // Compile the uploaded React code zip and get relative path to index.html
-    const simulationHtmlPath = await compileSimulation(req.file.path, targetDir);
-
-    // Remove the temporary uploaded file
-    try {
-      fs.unlinkSync(req.file.path);
-    } catch (e) {
-      console.warn('Warning: Failed to delete temp zip file after compilation', e.message);
-    }
-
-    await prisma.experiment.update({
-      where: { id },
-      data: { simulationPath: simulationHtmlPath },
-    });
-
-    res.json({ 
-      message: 'Simulation uploaded, compiled and deployed successfully', 
-      simulationPath: simulationHtmlPath 
-    });
-  } catch (err) {
-    console.error('Simulation upload compile error:', err);
-    res.status(550).json({ message: err.message || 'Simulation compilation failed' });
-  }
-};
-
 module.exports = {
   getExperiments, getAllExperiments, getExperiment, getExperimentSection,
   createExperiment, updateExperiment, deleteExperiment,
-  uploadContent, uploadSimulation, getExperimentDocs,
+  uploadZip, getExperimentDocs,
 };

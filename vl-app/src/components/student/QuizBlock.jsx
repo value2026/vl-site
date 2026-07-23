@@ -11,6 +11,25 @@ export default function QuizBlock({ experimentId, experimentName, userId, quizTy
   const [score, setScore] = useState(0);
   const [errorMessage, setErrorMessage] = useState('');
 
+  // Track quiz duration when unmounted
+  useEffect(() => {
+    const startTime = Date.now();
+    return () => {
+      const durationSeconds = Math.round((Date.now() - startTime) / 1000);
+      trackEvent({
+        category: 'experiment',
+        action: EVENTS.QUIZ_EXITED,
+        label: `${experimentId} - ${quizType}`,
+        vl_duration: durationSeconds,
+        vl_exp_id: experimentId,
+        vl_exp_name: experimentName,
+        vl_quiz_type: quizType,
+        vl_user_id: userId,
+        vl_completed: submitted
+      });
+    };
+  }, [experimentId, experimentName, quizType, userId, submitted]);
+
   if (!questions || questions.length === 0) {
     return (
       <div className="bg-slate-900 border border-white/5 rounded-2xl p-6 text-center text-slate-400 text-sm">
@@ -76,25 +95,6 @@ export default function QuizBlock({ experimentId, experimentName, userId, quizTy
       setLoading(false);
     }
   };
-
-  // Track quiz duration when unmounted
-  useEffect(() => {
-    const startTime = Date.now();
-    return () => {
-      const durationSeconds = Math.round((Date.now() - startTime) / 1000);
-      trackEvent({
-        category: 'experiment',
-        action: EVENTS.QUIZ_EXITED,
-        label: `${experimentId} - ${quizType}`,
-        vl_duration: durationSeconds,
-        vl_exp_id: experimentId,
-        vl_exp_name: experimentName,
-        vl_quiz_type: quizType,
-        vl_user_id: userId,
-        vl_completed: submitted
-      });
-    };
-  }, [experimentId, experimentName, quizType, userId, submitted]);
 
   const handleReset = () => {
     setAnswers({});

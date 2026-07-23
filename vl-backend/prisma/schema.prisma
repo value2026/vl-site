@@ -80,6 +80,13 @@ model User {
   hostedCalls        ScheduledCall[]        @relation("HostedCalls")
   inviteeRecords     ScheduledCallInvitee[] @relation("InviteeRecords")
 
+  // Assignment & Notification relations
+  questionPapersCreated QuestionPaper[]     @relation("QuestionPaperCreator")
+  assignmentsCreated    Assignment[]        @relation("TeacherAssignments")
+  assignmentsAssigned   AssignmentStudent[] @relation("StudentAssignments")
+  assignmentAttempts    AssignmentAttempt[] @relation("StudentAssignmentAttempts")
+  notifications         Notification[]      @relation("UserNotifications")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -319,5 +326,82 @@ model SurveyResponse {
   createdAt DateTime @default(now())
 
   @@map("survey_responses")
+}
+
+model QuestionPaper {
+  id          String       @id @default(uuid())
+  title       String
+  questions   Json         // Array of MCQ questions: { questionText: string, options: string[], correctOptionIndex: number }[]
+  createdById String
+  createdBy   User         @relation("QuestionPaperCreator", fields: [createdById], references: [id], onDelete: Cascade)
+  assignments Assignment[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@map("question_papers")
+}
+
+model Assignment {
+  id               String              @id @default(uuid())
+  title            String              // Custom label for this scheduled assignment
+  startTime        DateTime
+  endTime          DateTime
+  maxAttempts      Int                 @default(1)
+  resultDisplay    String              @default("immediate") // "immediate" or "manual"
+  resultsPublished Boolean             @default(false)
+  isActive         Boolean             @default(true)
+  
+  questionPaperId  String
+  questionPaper    QuestionPaper       @relation(fields: [questionPaperId], references: [id], onDelete: Cascade)
+  
+  teacherId        String
+  teacher          User                @relation("TeacherAssignments", fields: [teacherId], references: [id], onDelete: Cascade)
+  
+  students         AssignmentStudent[]
+  attempts         AssignmentAttempt[]
+  
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+
+  @@map("assignments")
+}
+
+model AssignmentStudent {
+  id           String     @id @default(uuid())
+  assignmentId String
+  assignment   Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  studentId    String
+  student      User       @relation("StudentAssignments", fields: [studentId], references: [id], onDelete: Cascade)
+  createdAt    DateTime   @default(now())
+
+  @@unique([assignmentId, studentId])
+  @@map("assignment_students")
+}
+
+model AssignmentAttempt {
+  id           String     @id @default(uuid())
+  assignmentId String
+  assignment   Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  studentId    String
+  student      User       @relation("StudentAssignmentAttempts", fields: [studentId], references: [id], onDelete: Cascade)
+  score        Int
+  maxScore     Int
+  answers      Json       // Student's selected option indices: { [questionIndex]: number }
+  completedAt  DateTime   @default(now())
+
+  @@map("assignment_attempts")
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation("UserNotifications", fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  message   String
+  isRead    Boolean  @default(false)
+  type      String   @default("info") // "exam_reminder", "info"
+  createdAt DateTime @default(now())
+
+  @@map("notifications")
 }
 

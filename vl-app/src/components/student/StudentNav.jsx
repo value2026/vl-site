@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FlaskConical, Search, User, LogOut, LayoutDashboard, ChevronDown, X } from 'lucide-react';
+import { FlaskConical, Search, User, LogOut, LayoutDashboard, ChevronDown, X, Bell, ClipboardList } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { api } from '../../utils/api';
 
 export default function StudentNav({ breadcrumb = [] }) {
   const { user, logout } = useAuth();
@@ -10,9 +11,45 @@ export default function StudentNav({ breadcrumb = [] }) {
   const [searchOpen, setSearchOpen] = useState(false);
   const dropRef = useRef(null);
 
-  // Close dropdown on outside click
+  // Notifications State
+  const [notifications, setNotifications] = useState([]);
+  const [notifOpen, setNotifOpen]         = useState(false);
+  const notifRef                          = useRef(null);
+
+  const fetchNotifications = async () => {
+    try {
+      const res = await api.get('/assignments/notifications');
+      if (res.ok) setNotifications(await res.json());
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   useEffect(() => {
-    const handler = (e) => { if (dropRef.current && !dropRef.current.contains(e.target)) setDropOpen(false); };
+    if (user) {
+      fetchNotifications();
+      const interval = setInterval(fetchNotifications, 30000);
+      return () => clearInterval(interval);
+    }
+  }, [user]);
+
+  const markNotificationsRead = async () => {
+    try {
+      const res = await api.put('/assignments/notifications/read-all');
+      if (res.ok) fetchNotifications();
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const unreadCount = notifications.filter(n => !n.isRead).length;
+
+  // Close dropdowns on outside click
+  useEffect(() => {
+    const handler = (e) => {
+      if (dropRef.current && !dropRef.current.contains(e.target)) setDropOpen(false);
+      if (notifRef.current && !notifRef.current.contains(e.target)) setNotifOpen(false);
+    };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, []);
@@ -56,6 +93,75 @@ export default function StudentNav({ breadcrumb = [] }) {
       >
         <Search className="w-4 h-4" />
       </button>
+ 
+      {/* Notifications Bell */}
+      <div className="relative" ref={notifRef}>
+        <button
+          onClick={() => {
+            setNotifOpen(!notifOpen);
+            if (!notifOpen) {
+              markNotificationsRead();
+            }
+          }}
+          className="p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all relative"
+          aria-label="Notifications"
+        >
+          <Bell className="w-4.5 h-4.5" />
+          {unreadCount > 0 && (
+            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full" />
+          )}
+        </button>
+
+        {notifOpen && (
+          <div className="absolute right-0 top-full mt-2 w-80 bg-white border border-gray-200 rounded-2xl shadow-xl overflow-hidden z-50">
+            <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
+              <div className="text-sm font-semibold text-gray-900">Notifications</div>
+              {unreadCount > 0 && (
+                <button
+                  onClick={markNotificationsRead}
+                  className="text-xs text-blue-600 hover:text-blue-700 font-medium"
+                >
+                  Mark all read
+                </button>
+              )}
+            </div>
+            <div className="max-h-64 overflow-y-auto">
+              {notifications.length === 0 ? (
+                <div className="p-6 text-center text-xs text-gray-400 italic">No notifications yet.</div>
+              ) : (
+                notifications.map((n) => (
+                  <div
+                    key={n.id}
+                    className={`px-4 py-3 border-b border-gray-50 hover:bg-gray-50/50 transition-colors ${
+                      !n.isRead ? 'bg-blue-50/20' : ''
+                    }`}
+                  >
+                    <div className="text-xs font-semibold text-gray-800">{n.title}</div>
+                    <div className="text-[11px] text-gray-600 mt-0.5 leading-relaxed">{n.message}</div>
+                    <div className="text-[9px] text-gray-450 mt-1">
+                      {new Date(n.createdAt).toLocaleDateString('en-IN', {
+                        day: '2-digit',
+                        month: 'short',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+            <div className="bg-gray-50/50 px-4 py-2 border-t border-gray-150 text-center">
+              <Link
+                to="/student/assignments"
+                onClick={() => setNotifOpen(false)}
+                className="text-xs text-blue-600 hover:text-blue-700 font-semibold"
+              >
+                Go to My Assignments
+              </Link>
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* Account dropdown */}
       <div className="relative" ref={dropRef}>
@@ -93,6 +199,14 @@ export default function StudentNav({ breadcrumb = [] }) {
               >
                 <LayoutDashboard className="w-4 h-4 text-gray-400" />
                 My Account
+              </Link>
+              <Link
+                to="/student/assignments"
+                onClick={() => setDropOpen(false)}
+                className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+              >
+                <ClipboardList className="w-4 h-4 text-gray-400" />
+                My Assignments
               </Link>
               <Link
                 to="/student/account"

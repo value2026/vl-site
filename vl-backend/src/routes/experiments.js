@@ -5,7 +5,7 @@ const { upload } = require('../middleware/upload');
 const {
   getExperiments, getAllExperiments, getExperiment, getExperimentSection,
   createExperiment, updateExperiment, deleteExperiment,
-  uploadContent, uploadSimulation, getExperimentDocs,
+  uploadZip, getExperimentDocs,
 } = require('../controllers/experimentsController');
 
 // Public
@@ -22,18 +22,11 @@ router.delete('/:id',   verifyToken, requireRole('admin', 'nodal_centre', 'teach
 
 // File uploads
 router.post(
-  '/:id/upload-content',
-  verifyToken,
-  requireRole('admin', 'nodal_centre'),
-  upload.single('file'),
-  uploadContent,
-);
-router.post(
-  '/:id/upload-simulation',
+  '/:id/upload-zip',
   verifyToken,
   requireRole('admin', 'nodal_centre', 'teacher'),
   upload.single('file'),
-  uploadSimulation,
+  uploadZip,
 );
 
 module.exports = router;

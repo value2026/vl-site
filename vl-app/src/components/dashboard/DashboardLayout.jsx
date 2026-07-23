@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   FlaskConical, LayoutDashboard, Users, GraduationCap, BookOpen,
-  LogOut, Menu, X, ChevronRight, Bell, TrendingUp, FileText, Globe, KeyRound, Building2, Presentation
+  LogOut, Menu, X, ChevronRight, Bell, TrendingUp, FileText, Globe, KeyRound, Building2, Presentation, ClipboardList
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import ChangePasswordModal from '../ChangePasswordModal';
@@ -36,6 +36,7 @@ const NAV = {
   teacher: [
     { icon: LayoutDashboard, label: 'Overview',    path: '/dashboard/teacher' },
     { icon: BookOpen,        label: 'My Students', path: '/dashboard/teacher/students' },
+    { icon: ClipboardList,   label: 'Assignments', path: '/dashboard/teacher/assignments' },
     { icon: FlaskConical,    label: 'Lab Management',  path: '/dashboard/teacher/labs' },
     { icon: TrendingUp,      label: 'Usage Analytics',  path: '/dashboard/teacher/analytics' },
     { icon: FileText,        label: 'Academic Reports', path: '/dashboard/teacher/reports' },
