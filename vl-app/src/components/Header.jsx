@@ -86,29 +86,27 @@ export default function Header() {
           {/* Logo */}
           <Link
             to="/"
-            className="flex items-center gap-2.5 group"
-            aria-label="Amrita Virtual Labs Home"
+            className="flex items-center gap-3 group flex-shrink-0 whitespace-nowrap mr-8"
+            aria-label="VALUE @ Amrita Home"
           >
-            <div className="w-10 h-10 bg-primary-800 rounded-xl flex items-center justify-center group-hover:bg-primary-700 transition-colors shadow-sm">
-              <FlaskConical className="w-5 h-5 text-white" />
-            </div>
-            <div className="leading-tight">
-              <span className="block font-heading font-bold text-primary-800 text-lg leading-none tracking-tight">
-                Amrita Virtual Labs
-              </span>
-              <span className="block text-[10px] text-gray-500 font-semibold tracking-wider uppercase mt-0.5">
-                Amrita Vishwa Vidyapeetham
-              </span>
-            </div>
+            <img 
+              src="/amrita-logo.jpg" 
+              alt="Amrita Logo" 
+              className="h-10 w-auto object-contain transition-transform group-hover:scale-105 rounded flex-shrink-0" 
+            />
+            <div className="h-7 w-[1px] bg-gray-200 hidden sm:block flex-shrink-0" />
+            <span className="font-heading font-bold text-primary-800 text-xl tracking-tight whitespace-nowrap">
+              VALUE @ Amrita
+            </span>
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center gap-1" aria-label="Main navigation">
+          <nav className="hidden lg:flex items-center gap-1.5" aria-label="Main navigation">
             {displayNavLinks.map((link) =>
               link.children ? (
-                <div key={link.label} className="relative">
+                <div key={link.label} className="relative flex-shrink-0">
                   <button
-                    className={`flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150 ${
+                    className={`flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-150 ${
                       isActive(link.href)
                         ? 'text-primary-800 bg-primary-50'
                         : 'text-gray-600 hover:text-primary-800 hover:bg-gray-50'
@@ -119,9 +117,9 @@ export default function Header() {
                     aria-expanded={openDropdown === link.label}
                     aria-haspopup="true"
                   >
-                    {link.label}
+                    <span className="whitespace-nowrap">{link.label}</span>
                     <ChevronDown
-                      className={`w-3.5 h-3.5 transition-transform duration-200 ${
+                      className={`w-3.5 h-3.5 flex-shrink-0 transition-transform duration-200 ${
                         openDropdown === link.label ? 'rotate-180' : ''
                       }`}
                     />
@@ -132,7 +130,7 @@ export default function Header() {
                         <Link
                           key={child.label}
                           to={child.href}
-                          className="block px-4 py-2.5 text-sm text-gray-600 hover:text-primary-800 hover:bg-primary-50 transition-colors"
+                          className="block px-4 py-2.5 text-sm text-gray-600 hover:text-primary-800 hover:bg-primary-50 transition-colors whitespace-nowrap"
                         >
                           {child.label}
                         </Link>
@@ -144,7 +142,7 @@ export default function Header() {
                 <Link
                   key={link.label}
                   to={link.href}
-                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150 ${
+                  className={`px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap flex-shrink-0 transition-all duration-150 ${
                     isActive(link.href)
                       ? 'text-primary-800 bg-primary-50'
                       : 'text-gray-600 hover:text-primary-800 hover:bg-gray-50'

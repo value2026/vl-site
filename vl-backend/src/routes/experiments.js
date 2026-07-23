@@ -15,7 +15,7 @@ router.get('/:id/docs',        getExperimentDocs);
 router.get('/:id/content/:section', getExperimentSection);
 
 // Staff
-router.get('/all/list', verifyToken, requireRole('admin', 'nodal_centre', 'teacher'), getAllExperiments);
+router.get('/all/list', verifyToken, requireRole('admin', 'vl_manager', 'nodal_centre', 'teacher'), getAllExperiments);
 router.post('/',        verifyToken, requireRole('admin', 'nodal_centre', 'teacher'), createExperiment);
 router.put('/:id',      verifyToken, requireRole('admin', 'nodal_centre', 'teacher'), updateExperiment);
 router.delete('/:id',   verifyToken, requireRole('admin', 'nodal_centre', 'teacher'), deleteExperiment);
