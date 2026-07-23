@@ -5,7 +5,6 @@ import {
   LogOut, Menu, X, ChevronRight, Bell, TrendingUp, FileText, Globe, KeyRound, Building2, Presentation, ClipboardList
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import ChangePasswordModal from '../ChangePasswordModal';
 
 const NAV = {
   admin: [
@@ -59,7 +58,6 @@ export default function DashboardLayout({ children, title }) {
   const navigate         = useNavigate();
   const location         = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [changePwOpen, setChangePwOpen] = useState(false);
   const [showSignOutConfirm, setShowSignOutConfirm] = useState(false);
 
   const cfg     = ROLE_CONFIG[user?.role] || ROLE_CONFIG.student;
@@ -94,12 +92,13 @@ export default function DashboardLayout({ children, title }) {
         </div>
         <div className="text-white font-semibold text-sm truncate">{user?.name}</div>
         <div className="text-slate-400 text-xs truncate mb-2">{user?.email}</div>
-        <button
-          onClick={() => setChangePwOpen(true)}
-          className="w-full flex items-center justify-center gap-1.5 px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-[10px] font-bold text-slate-350 hover:text-white uppercase tracking-wider transition-all"
+        <Link
+          to="/dashboard/profile"
+          onClick={() => setSidebarOpen(false)}
+          className="w-full flex items-center justify-center gap-1.5 px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-[10px] font-bold text-slate-400 hover:text-white uppercase tracking-wider transition-all"
         >
-          <KeyRound className="w-3 h-3" /> Change Password
-        </button>
+          <KeyRound className="w-3 h-3" /> Profile Settings
+        </Link>
       </div>
 
       {/* Nav */}
@@ -114,7 +113,7 @@ export default function DashboardLayout({ children, title }) {
               className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 group ${
                 active
                   ? `bg-gradient-to-r ${cfg.gradient} text-white shadow-lg`
-                  : 'text-slate-400 hover:text-white hover:bg-white/5'
+                  : 'text-slate-300 hover:text-white hover:bg-white/5'
               }`}
             >
               <Icon className="w-4 h-4 flex-shrink-0" />
@@ -185,8 +184,6 @@ export default function DashboardLayout({ children, title }) {
           {children}
         </main>
       </div>
-
-      <ChangePasswordModal isOpen={changePwOpen} onClose={() => setChangePwOpen(false)} />
       
       {/* Custom Sign Out Confirmation Modal */}
       {showSignOutConfirm && (

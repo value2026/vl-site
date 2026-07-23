@@ -295,6 +295,7 @@ exports.Prisma.WorkshopScalarFieldEnum = {
   mode: 'mode',
   seats: 'seats',
   status: 'status',
+  formSchema: 'formSchema',
   createdById: 'createdById',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -364,6 +365,11 @@ exports.Prisma.SortOrder = {
 };
 
 exports.Prisma.JsonNullValueInput = {
+  JsonNull: Prisma.JsonNull
+};
+
+exports.Prisma.NullableJsonNullValueInput = {
+  DbNull: Prisma.DbNull,
   JsonNull: Prisma.JsonNull
 };
 

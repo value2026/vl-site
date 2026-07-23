@@ -11,6 +11,7 @@ import Footer from './components/Footer';
 import Home          from './pages/Home';
 import Project       from './pages/Project';
 import Workshop      from './pages/Workshop';
+import WorkshopDetails from './pages/WorkshopDetails';
 import NodalCentres  from './pages/NodalCentres';
 import Publications  from './pages/Publications';
 import News          from './pages/News';
@@ -44,6 +45,7 @@ import AssignmentReport from './pages/dashboards/AssignmentReport';
 import DashboardLayout from './components/dashboard/DashboardLayout';
 import LabManagement    from './pages/dashboards/LabManagement';
 import AnalyticsDashboard from './pages/dashboards/AnalyticsDashboard';
+import ProfileSettings from './pages/dashboards/ProfileSettings';
 import StudentAcademicReports from './components/dashboard/StudentAcademicReports';
 import ChatPanel from './components/communication/ChatPanel';
 
@@ -186,6 +188,13 @@ function AppLayout() {
         <Route path="/login" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+
+        {/* Shared Profile Route */}
+        <Route path="/dashboard/profile" element={
+          <ProtectedRoute>
+            <DashboardLayout title="Profile Settings"><ProfileSettings /></DashboardLayout>
+          </ProtectedRoute>
+        } />
 
         {/* Admin */}
         <Route path="/dashboard/admin" element={
@@ -340,6 +349,7 @@ function AppLayout() {
           <Route path="/"                    element={<Home />} />
           <Route path="/project"             element={<Project />} />
           <Route path="/workshop"            element={<Workshop />} />
+          <Route path="/workshop/:id"        element={<WorkshopDetails />} />
           <Route path="/nodal-centres"       element={<NodalCentres />} />
           <Route path="/nodal-centres/apply" element={<ComingSoon page="Apply as Nodal Centre" />} />
           <Route path="/nodal-centres/list"  element={<NodalCentres />} />

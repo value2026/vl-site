@@ -1,5 +1,7 @@
+import { useState } from 'react';
 import { Calendar, MapPin, Clock, Users, ArrowRight, Loader2 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
+import { Link } from 'react-router-dom';
 
 async function fetchWorkshops() {
   const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/workshops`);
@@ -91,9 +93,12 @@ export default function Workshop() {
                           </span>
                         </div>
                       </div>
-                      <button className="btn-primary text-sm px-5 py-2.5 w-fit">
-                        Register Now <ArrowRight className="w-4 h-4" />
-                      </button>
+                      <Link 
+                        to={`/workshop/${w.id}`}
+                        className="btn-primary text-sm px-5 py-2.5 w-fit flex items-center gap-2"
+                      >
+                        View Details <ArrowRight className="w-4 h-4" />
+                      </Link>
                     </div>
                   </div>
                 );

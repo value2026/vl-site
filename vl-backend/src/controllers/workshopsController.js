@@ -50,7 +50,7 @@ const createWorkshop = async (req, res) => {
 const updateWorkshop = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, description, date, status, location, mode, seats } = req.body;
+    const { title, description, date, status, location, mode, seats, formSchema } = req.body;
 
     const existingWorkshop = await prisma.workshop.findUnique({
       where: { id }
@@ -71,6 +71,7 @@ const updateWorkshop = async (req, res) => {
     if (location !== undefined) data.location = location;
     if (mode !== undefined) data.mode = mode;
     if (seats !== undefined) data.seats = parseInt(seats);
+    if (formSchema !== undefined) data.formSchema = formSchema;
     
     // Only admins can approve/reject workshops, or change status
     if (status && req.user.role === 'admin') {
@@ -117,4 +118,26 @@ const deleteWorkshop = async (req, res) => {
   }
 };
 
-module.exports = { getWorkshops, createWorkshop, updateWorkshop, deleteWorkshop };
+// GET /api/workshops/:id
+const getWorkshopById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const workshop = await prisma.workshop.findUnique({
+      where: { id },
+      include: {
+        createdBy: { select: { id: true, name: true, email: true } }
+      }
+    });
+    
+    if (!workshop) {
+      return res.status(404).json({ message: 'Workshop not found' });
+    }
+    
+    res.json(workshop);
+  } catch (err) {
+    console.error('Get workshop by id error:', err);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+module.exports = { getWorkshops, getWorkshopById, createWorkshop, updateWorkshop, deleteWorkshop };

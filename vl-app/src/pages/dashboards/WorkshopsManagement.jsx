@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Presentation, Plus, RefreshCw, AlertCircle, Loader2, Save, X, Check, XCircle, Trash2 } from 'lucide-react';
+import { Presentation, Plus, RefreshCw, AlertCircle, Loader2, Save, X, Check, XCircle, Trash2, Edit, FileText } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import ManageWorkshopFormModal from '../../components/dashboard/ManageWorkshopFormModal';
 
 export default function WorkshopsManagement() {
   const { token, API_URL, user } = useAuth();
@@ -11,6 +12,8 @@ export default function WorkshopsManagement() {
   // Modal state
   const [showModal, setShowModal] = useState(false);
   const [form, setForm] = useState({ title: '', description: '', date: '', location: '', mode: 'Online', seats: '' });
+  const [editingWorkshop, setEditingWorkshop] = useState(null);
+  const [formWorkshop, setFormWorkshop] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
   const [actionLoading, setActionLoading] = useState(null);
@@ -35,13 +38,36 @@ export default function WorkshopsManagement() {
     fetchWorkshops();
   }, [fetchWorkshops]);
 
-  const handleCreate = async (e) => {
+  const openCreateModal = () => {
+    setEditingWorkshop(null);
+    setForm({ title: '', description: '', date: '', location: '', mode: 'Online', seats: '' });
+    setShowModal(true);
+  };
+
+  const openEditModal = (w) => {
+    setEditingWorkshop(w);
+    setForm({
+      title: w.title,
+      description: w.description || '',
+      date: new Date(w.date).toISOString().split('T')[0],
+      location: w.location || '',
+      mode: w.mode || 'Online',
+      seats: w.seats || ''
+    });
+    setShowModal(true);
+  };
+
+  const handleSave = async (e) => {
     e.preventDefault();
     if (!form.title.trim() || !form.date) return;
     setSubmitting(true);
     try {
-      const res = await fetch(`${API_URL}/workshops`, {
-        method: 'POST',
+      const isEdit = !!editingWorkshop;
+      const url = isEdit ? `${API_URL}/workshops/${editingWorkshop.id}` : `${API_URL}/workshops`;
+      const method = isEdit ? 'PUT' : 'POST';
+
+      const res = await fetch(url, {
+        method,
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
@@ -50,9 +76,10 @@ export default function WorkshopsManagement() {
       });
       if (!res.ok) {
         const d = await res.json();
-        throw new Error(d.message || 'Failed to create workshop');
+        throw new Error(d.message || 'Failed to save workshop');
       }
       setShowModal(false);
+      setEditingWorkshop(null);
       setForm({ title: '', description: '', date: '', location: '', mode: 'Online', seats: '' });
       fetchWorkshops();
     } catch (err) {
@@ -128,7 +155,7 @@ export default function WorkshopsManagement() {
             <RefreshCw className="w-4 h-4" /> Refresh
           </button>
           <button
-            onClick={() => setShowModal(true)}
+            onClick={openCreateModal}
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 shadow-lg shadow-purple-500/20 transition-all"
           >
             <Plus className="w-4 h-4" /> New Workshop
@@ -211,14 +238,30 @@ export default function WorkshopsManagement() {
                             </>
                           )}
                           {(user?.role === 'admin' || w.createdBy?.id === user?.id) && (
-                            <button
-                              onClick={() => requestDeleteWorkshop(w)}
-                              disabled={actionLoading === w.id}
-                              className="text-slate-400 hover:text-red-400 transition-colors p-1.5 disabled:opacity-50"
-                              title="Delete workshop"
-                            >
-                              {actionLoading === w.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
-                            </button>
+                            <>
+                              <button
+                                onClick={() => setFormWorkshop(w)}
+                                className="text-blue-400 hover:text-blue-300 bg-blue-400/10 hover:bg-blue-400/20 px-2 py-1.5 rounded-lg flex items-center gap-1 text-xs font-semibold transition-colors"
+                                title="Manage Registration Form"
+                              >
+                                <FileText className="w-3.5 h-3.5" /> Form
+                              </button>
+                              <button
+                                onClick={() => openEditModal(w)}
+                                className="text-slate-400 hover:text-white transition-colors p-1.5"
+                                title="Edit workshop"
+                              >
+                                <Edit className="w-4 h-4" />
+                              </button>
+                              <button
+                                onClick={() => requestDeleteWorkshop(w)}
+                                disabled={actionLoading === w.id}
+                                className="text-slate-400 hover:text-red-400 transition-colors p-1.5 disabled:opacity-50"
+                                title="Delete workshop"
+                              >
+                                {actionLoading === w.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                              </button>
+                            </>
                           )}
                         </div>
                       </td>
@@ -236,12 +279,12 @@ export default function WorkshopsManagement() {
           <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setShowModal(false)} />
           <div className="relative w-full max-w-md bg-slate-900 border border-white/10 rounded-3xl p-6 shadow-2xl z-10">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-bold text-white">Propose New Workshop</h3>
+              <h3 className="text-xl font-bold text-white">{editingWorkshop ? 'Edit Workshop' : 'Propose New Workshop'}</h3>
               <button onClick={() => setShowModal(false)} className="text-slate-400 hover:text-white">
                 <X className="w-5 h-5" />
               </button>
             </div>
-            <form onSubmit={handleCreate} className="space-y-4">
+            <form onSubmit={handleSave} className="space-y-4">
               <div>
                 <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Workshop Title *</label>
                 <input
@@ -342,7 +385,6 @@ export default function WorkshopsManagement() {
         </div>
       )}
       
-      {/* Custom Delete Confirmation Modal */}
       {deleteConfirm && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setDeleteConfirm(null)} />
@@ -376,6 +418,18 @@ export default function WorkshopsManagement() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Manage Workshop Form Modal */}
+      {formWorkshop && (
+        <ManageWorkshopFormModal
+          workshop={formWorkshop}
+          onClose={() => setFormWorkshop(null)}
+          onSave={() => {
+            fetchWorkshops();
+            setFormWorkshop(null);
+          }}
+        />
       )}
     </div>
   );

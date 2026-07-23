@@ -16837,6 +16837,7 @@ export namespace Prisma {
     mode: number
     seats: number
     status: number
+    formSchema: number
     createdById: number
     createdAt: number
     updatedAt: number
@@ -16889,6 +16890,7 @@ export namespace Prisma {
     mode?: true
     seats?: true
     status?: true
+    formSchema?: true
     createdById?: true
     createdAt?: true
     updatedAt?: true
@@ -16990,6 +16992,7 @@ export namespace Prisma {
     mode: string | null
     seats: number | null
     status: string
+    formSchema: JsonValue | null
     createdById: string
     createdAt: Date
     updatedAt: Date
@@ -17023,6 +17026,7 @@ export namespace Prisma {
     mode?: boolean
     seats?: boolean
     status?: boolean
+    formSchema?: boolean
     createdById?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -17038,6 +17042,7 @@ export namespace Prisma {
     mode?: boolean
     seats?: boolean
     status?: boolean
+    formSchema?: boolean
     createdById?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -17053,6 +17058,7 @@ export namespace Prisma {
     mode?: boolean
     seats?: boolean
     status?: boolean
+    formSchema?: boolean
     createdById?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -17079,6 +17085,7 @@ export namespace Prisma {
       mode: string | null
       seats: number | null
       status: string
+      formSchema: Prisma.JsonValue | null
       createdById: string
       createdAt: Date
       updatedAt: Date
@@ -17484,6 +17491,7 @@ export namespace Prisma {
     readonly mode: FieldRef<"Workshop", 'String'>
     readonly seats: FieldRef<"Workshop", 'Int'>
     readonly status: FieldRef<"Workshop", 'String'>
+    readonly formSchema: FieldRef<"Workshop", 'Json'>
     readonly createdById: FieldRef<"Workshop", 'String'>
     readonly createdAt: FieldRef<"Workshop", 'DateTime'>
     readonly updatedAt: FieldRef<"Workshop", 'DateTime'>
@@ -23862,6 +23870,7 @@ export namespace Prisma {
     mode: 'mode',
     seats: 'seats',
     status: 'status',
+    formSchema: 'formSchema',
     createdById: 'createdById',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
@@ -23959,6 +23968,14 @@ export namespace Prisma {
   };
 
   export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
+
+
+  export const NullableJsonNullValueInput: {
+    DbNull: typeof DbNull,
+    JsonNull: typeof JsonNull
+  };
+
+  export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
 
 
   export const QueryMode: {
@@ -25224,6 +25241,7 @@ export namespace Prisma {
     mode?: StringNullableFilter<"Workshop"> | string | null
     seats?: IntNullableFilter<"Workshop"> | number | null
     status?: StringFilter<"Workshop"> | string
+    formSchema?: JsonNullableFilter<"Workshop">
     createdById?: StringFilter<"Workshop"> | string
     createdAt?: DateTimeFilter<"Workshop"> | Date | string
     updatedAt?: DateTimeFilter<"Workshop"> | Date | string
@@ -25239,6 +25257,7 @@ export namespace Prisma {
     mode?: SortOrderInput | SortOrder
     seats?: SortOrderInput | SortOrder
     status?: SortOrder
+    formSchema?: SortOrderInput | SortOrder
     createdById?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -25257,6 +25276,7 @@ export namespace Prisma {
     mode?: StringNullableFilter<"Workshop"> | string | null
     seats?: IntNullableFilter<"Workshop"> | number | null
     status?: StringFilter<"Workshop"> | string
+    formSchema?: JsonNullableFilter<"Workshop">
     createdById?: StringFilter<"Workshop"> | string
     createdAt?: DateTimeFilter<"Workshop"> | Date | string
     updatedAt?: DateTimeFilter<"Workshop"> | Date | string
@@ -25272,6 +25292,7 @@ export namespace Prisma {
     mode?: SortOrderInput | SortOrder
     seats?: SortOrderInput | SortOrder
     status?: SortOrder
+    formSchema?: SortOrderInput | SortOrder
     createdById?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -25294,6 +25315,7 @@ export namespace Prisma {
     mode?: StringNullableWithAggregatesFilter<"Workshop"> | string | null
     seats?: IntNullableWithAggregatesFilter<"Workshop"> | number | null
     status?: StringWithAggregatesFilter<"Workshop"> | string
+    formSchema?: JsonNullableWithAggregatesFilter<"Workshop">
     createdById?: StringWithAggregatesFilter<"Workshop"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Workshop"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Workshop"> | Date | string
@@ -26943,6 +26965,7 @@ export namespace Prisma {
     mode?: string | null
     seats?: number | null
     status?: string
+    formSchema?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     createdBy: UserCreateNestedOneWithoutWorkshopsCreatedInput
@@ -26957,6 +26980,7 @@ export namespace Prisma {
     mode?: string | null
     seats?: number | null
     status?: string
+    formSchema?: NullableJsonNullValueInput | InputJsonValue
     createdById: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -26971,6 +26995,7 @@ export namespace Prisma {
     mode?: NullableStringFieldUpdateOperationsInput | string | null
     seats?: NullableIntFieldUpdateOperationsInput | number | null
     status?: StringFieldUpdateOperationsInput | string
+    formSchema?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: UserUpdateOneRequiredWithoutWorkshopsCreatedNestedInput
@@ -26985,6 +27010,7 @@ export namespace Prisma {
     mode?: NullableStringFieldUpdateOperationsInput | string | null
     seats?: NullableIntFieldUpdateOperationsInput | number | null
     status?: StringFieldUpdateOperationsInput | string
+    formSchema?: NullableJsonNullValueInput | InputJsonValue
     createdById?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -26999,6 +27025,7 @@ export namespace Prisma {
     mode?: string | null
     seats?: number | null
     status?: string
+    formSchema?: NullableJsonNullValueInput | InputJsonValue
     createdById: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -27013,6 +27040,7 @@ export namespace Prisma {
     mode?: NullableStringFieldUpdateOperationsInput | string | null
     seats?: NullableIntFieldUpdateOperationsInput | number | null
     status?: StringFieldUpdateOperationsInput | string
+    formSchema?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -27026,6 +27054,7 @@ export namespace Prisma {
     mode?: NullableStringFieldUpdateOperationsInput | string | null
     seats?: NullableIntFieldUpdateOperationsInput | number | null
     status?: StringFieldUpdateOperationsInput | string
+    formSchema?: NullableJsonNullValueInput | InputJsonValue
     createdById?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -28468,6 +28497,28 @@ export namespace Prisma {
     _min?: NestedIntNullableFilter<$PrismaModel>
     _max?: NestedIntNullableFilter<$PrismaModel>
   }
+  export type JsonNullableFilter<$PrismaModel = never> = 
+    | PatchUndefined<
+        Either<Required<JsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonNullableFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonNullableFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
 
   export type WorkshopCountOrderByAggregateInput = {
     id?: SortOrder
@@ -28478,6 +28529,7 @@ export namespace Prisma {
     mode?: SortOrder
     seats?: SortOrder
     status?: SortOrder
+    formSchema?: SortOrder
     createdById?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -28517,6 +28569,31 @@ export namespace Prisma {
 
   export type WorkshopSumOrderByAggregateInput = {
     seats?: SortOrder
+  }
+  export type JsonNullableWithAggregatesFilter<$PrismaModel = never> = 
+    | PatchUndefined<
+        Either<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonNullableWithAggregatesFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedJsonNullableFilter<$PrismaModel>
+    _max?: NestedJsonNullableFilter<$PrismaModel>
   }
 
   export type SurveyResponseCountOrderByAggregateInput = {
@@ -30696,6 +30773,28 @@ export namespace Prisma {
     gte?: number | FloatFieldRefInput<$PrismaModel>
     not?: NestedFloatNullableFilter<$PrismaModel> | number | null
   }
+  export type NestedJsonNullableFilter<$PrismaModel = never> = 
+    | PatchUndefined<
+        Either<Required<NestedJsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>,
+        Required<NestedJsonNullableFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>
+
+  export type NestedJsonNullableFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
 
   export type UserCreateWithoutCreatedUsersInput = {
     id?: string
@@ -31106,6 +31205,7 @@ export namespace Prisma {
     mode?: string | null
     seats?: number | null
     status?: string
+    formSchema?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -31119,6 +31219,7 @@ export namespace Prisma {
     mode?: string | null
     seats?: number | null
     status?: string
+    formSchema?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -31825,6 +31926,7 @@ export namespace Prisma {
     mode?: StringNullableFilter<"Workshop"> | string | null
     seats?: IntNullableFilter<"Workshop"> | number | null
     status?: StringFilter<"Workshop"> | string
+    formSchema?: JsonNullableFilter<"Workshop">
     createdById?: StringFilter<"Workshop"> | string
     createdAt?: DateTimeFilter<"Workshop"> | Date | string
     updatedAt?: DateTimeFilter<"Workshop"> | Date | string
@@ -37383,6 +37485,7 @@ export namespace Prisma {
     mode?: string | null
     seats?: number | null
     status?: string
+    formSchema?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -37795,6 +37898,7 @@ export namespace Prisma {
     mode?: NullableStringFieldUpdateOperationsInput | string | null
     seats?: NullableIntFieldUpdateOperationsInput | number | null
     status?: StringFieldUpdateOperationsInput | string
+    formSchema?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -37808,6 +37912,7 @@ export namespace Prisma {
     mode?: NullableStringFieldUpdateOperationsInput | string | null
     seats?: NullableIntFieldUpdateOperationsInput | number | null
     status?: StringFieldUpdateOperationsInput | string
+    formSchema?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -37821,6 +37926,7 @@ export namespace Prisma {
     mode?: NullableStringFieldUpdateOperationsInput | string | null
     seats?: NullableIntFieldUpdateOperationsInput | number | null
     status?: StringFieldUpdateOperationsInput | string
+    formSchema?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

@@ -238,16 +238,23 @@ const updateUser = async (req, res) => {
     const target = await prisma.user.findUnique({ where: { id: targetId } });
     if (!target) return res.status(404).json({ message: 'User not found' });
 
-    // Permission check
-    if (callerRole !== 'admin' && callerRole !== 'vl_manager') {
-      if (callerRole === 'nodal_centre' && target.nodalCentreId !== callerId) {
-        return res.status(403).json({ message: 'Insufficient permissions' });
-      }
-      if (callerRole === 'teacher') {
-        const teacher = await prisma.user.findUnique({ where: { id: callerId }, select: { nodalCentreId: true } });
-        if (target.nodalCentreId !== teacher.nodalCentreId) {
+    // Permission check — self-edit always allowed; otherwise scope-check
+    if (callerId !== targetId && callerRole !== 'admin' && callerRole !== 'vl_manager') {
+      const caller = await prisma.user.findUnique({
+        where: { id: callerId },
+        select: { nodalCentreId: true },
+      });
+
+      if (callerRole === 'nodal_centre') {
+        if (!caller?.nodalCentreId || target.nodalCentreId !== caller.nodalCentreId) {
           return res.status(403).json({ message: 'Insufficient permissions' });
         }
+      } else if (callerRole === 'teacher') {
+        if (target.nodalCentreId !== caller?.nodalCentreId) {
+          return res.status(403).json({ message: 'Insufficient permissions' });
+        }
+      } else {
+        return res.status(403).json({ message: 'Insufficient permissions' });
       }
     }
 

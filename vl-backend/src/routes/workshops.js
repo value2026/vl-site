@@ -3,6 +3,7 @@ const router = express.Router();
 const { verifyToken, requireRole } = require('../middleware/auth');
 const {
   getWorkshops,
+  getWorkshopById,
   createWorkshop,
   updateWorkshop,
   deleteWorkshop
@@ -10,6 +11,7 @@ const {
 
 // Public endpoint for the frontend Workshop landing page
 router.get('/', getWorkshops);
+router.get('/:id', getWorkshopById);
 
 router.use(verifyToken);
 
