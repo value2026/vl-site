@@ -38,6 +38,7 @@ export default function WorkshopRegistrationModal({ workshop, onClose }) {
 
       if (!res.ok) throw new Error('Registration failed. Please try again.');
       
+      localStorage.setItem(`registered-workshop-${workshop.id}`, 'true');
       setSuccess(true);
     } catch (err) {
       setError(err.message);

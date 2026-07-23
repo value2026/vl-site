@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Calendar, MapPin, Users, ArrowRight, Loader2, ArrowLeft, Video, Clock } from 'lucide-react';
+import { Calendar, MapPin, Users, ArrowRight, Loader2, ArrowLeft, Video, Clock, CheckCircle2 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import WorkshopRegistrationModal from '../components/public/WorkshopRegistrationModal';
 
@@ -19,6 +19,13 @@ const modeColor = {
 export default function WorkshopDetails() {
   const { id } = useParams();
   const [registeringWorkshop, setRegisteringWorkshop] = useState(null);
+  const [isRegistered, setIsRegistered] = useState(false);
+
+  useEffect(() => {
+    if (localStorage.getItem(`registered-workshop-${id}`)) {
+      setIsRegistered(true);
+    }
+  }, [id, registeringWorkshop]); // re-run when registeringWorkshop closes (might have just registered)
 
   const { data: workshop, isLoading, error } = useQuery({
     queryKey: ['workshop', id],
@@ -135,12 +142,21 @@ export default function WorkshopDetails() {
                   </li>
                 </ul>
 
-                <button 
-                  onClick={() => setRegisteringWorkshop(workshop)}
-                  className="btn-primary w-full py-3 flex justify-center items-center gap-2 text-base shadow-lg shadow-primary-500/20"
-                >
-                  Register Now <ArrowRight className="w-5 h-5" />
-                </button>
+                {isRegistered ? (
+                  <button 
+                    disabled
+                    className="w-full py-3 flex justify-center items-center gap-2 text-base rounded-xl font-semibold bg-green-50 text-green-600 border border-green-200 cursor-not-allowed"
+                  >
+                    <CheckCircle2 className="w-5 h-5" /> Registered
+                  </button>
+                ) : (
+                  <button 
+                    onClick={() => setRegisteringWorkshop(workshop)}
+                    className="btn-primary w-full py-3 flex justify-center items-center gap-2 text-base shadow-lg shadow-primary-500/20"
+                  >
+                    Register Now <ArrowRight className="w-5 h-5" />
+                  </button>
+                )}
               </div>
             </div>
 

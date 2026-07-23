@@ -29,6 +29,7 @@ import ManagePages          from './pages/dashboards/ManagePages';
 import VLManagerDashboard   from './pages/dashboards/VLManagerDashboard';
 import InstitutionsManagement from './pages/dashboards/InstitutionsManagement';
 import WorkshopsManagement    from './pages/dashboards/WorkshopsManagement';
+import WorkshopEditor         from './pages/dashboards/WorkshopEditor';
 
 // Student learning platform
 import StudentHome    from './pages/student/StudentHome';
@@ -228,6 +229,11 @@ function AppLayout() {
             <DashboardLayout title="Workshops"><WorkshopsManagement /></DashboardLayout>
           </ProtectedRoute>
         } />
+        <Route path="/dashboard/admin/workshops/:id" element={
+          <ProtectedRoute allowedRole="admin">
+            <DashboardLayout title="Workshop Editor"><WorkshopEditor /></DashboardLayout>
+          </ProtectedRoute>
+        } />
 
         {/* VL Manager */}
         <Route path="/dashboard/vl-manager" element={
@@ -244,6 +250,11 @@ function AppLayout() {
         <Route path="/dashboard/vl-manager/workshops" element={
           <ProtectedRoute allowedRole="vl_manager">
             <DashboardLayout title="Workshops"><WorkshopsManagement /></DashboardLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/dashboard/vl-manager/workshops/:id" element={
+          <ProtectedRoute allowedRole="vl_manager">
+            <DashboardLayout title="Workshop Editor"><WorkshopEditor /></DashboardLayout>
           </ProtectedRoute>
         } />
         <Route path="/dashboard/vl-manager/labs" element={

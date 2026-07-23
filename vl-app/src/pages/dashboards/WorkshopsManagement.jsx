@@ -1,20 +1,21 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Presentation, Plus, RefreshCw, AlertCircle, Loader2, Save, X, Check, XCircle, Trash2, Edit, FileText } from 'lucide-react';
+import { Presentation, Plus, RefreshCw, AlertCircle, Loader2, X, Check, XCircle, Trash2, Edit, Users } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import ManageWorkshopFormModal from '../../components/dashboard/ManageWorkshopFormModal';
+import WorkshopRegistrationsModal from '../../components/dashboard/WorkshopRegistrationsModal';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 export default function WorkshopsManagement() {
   const { token, API_URL, user } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const rolePath = location.pathname.split('/')[2]; // e.g. admin or vl-manager
   const [workshops, setWorkshops] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   
-  // Modal state
-  const [showModal, setShowModal] = useState(false);
-  const [form, setForm] = useState({ title: '', description: '', date: '', location: '', mode: 'Online', seats: '' });
-  const [editingWorkshop, setEditingWorkshop] = useState(null);
-  const [formWorkshop, setFormWorkshop] = useState(null);
-  const [submitting, setSubmitting] = useState(false);
+  // Unified Editor State
+  const [editorState, setEditorState] = useState({ open: false, workshop: null });
+  const [viewingRegistrations, setViewingRegistrations] = useState(null);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
   const [actionLoading, setActionLoading] = useState(null);
 
@@ -39,54 +40,11 @@ export default function WorkshopsManagement() {
   }, [fetchWorkshops]);
 
   const openCreateModal = () => {
-    setEditingWorkshop(null);
-    setForm({ title: '', description: '', date: '', location: '', mode: 'Online', seats: '' });
-    setShowModal(true);
+    navigate(`/dashboard/${rolePath}/workshops/new`);
   };
 
-  const openEditModal = (w) => {
-    setEditingWorkshop(w);
-    setForm({
-      title: w.title,
-      description: w.description || '',
-      date: new Date(w.date).toISOString().split('T')[0],
-      location: w.location || '',
-      mode: w.mode || 'Online',
-      seats: w.seats || ''
-    });
-    setShowModal(true);
-  };
-
-  const handleSave = async (e) => {
-    e.preventDefault();
-    if (!form.title.trim() || !form.date) return;
-    setSubmitting(true);
-    try {
-      const isEdit = !!editingWorkshop;
-      const url = isEdit ? `${API_URL}/workshops/${editingWorkshop.id}` : `${API_URL}/workshops`;
-      const method = isEdit ? 'PUT' : 'POST';
-
-      const res = await fetch(url, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify(form)
-      });
-      if (!res.ok) {
-        const d = await res.json();
-        throw new Error(d.message || 'Failed to save workshop');
-      }
-      setShowModal(false);
-      setEditingWorkshop(null);
-      setForm({ title: '', description: '', date: '', location: '', mode: 'Online', seats: '' });
-      fetchWorkshops();
-    } catch (err) {
-      alert(err.message);
-    } finally {
-      setSubmitting(false);
-    }
+  const openEditModal = (workshop) => {
+    navigate(`/dashboard/${rolePath}/workshops/${workshop.id}`);
   };
 
   const updateStatus = async (id, status) => {
@@ -219,50 +177,57 @@ export default function WorkshopsManagement() {
                       </span>
                     </td>
                     {(user?.role === 'admin' || user?.role === 'vl_manager') && (
-                      <td className="px-4 py-3 text-right">
-                        <div className="flex justify-end items-center gap-2">
-                          {w.status === 'pending' && user?.role === 'admin' && (
-                            <>
-                              <button
-                                onClick={() => updateStatus(w.id, 'approved')}
-                                className="text-emerald-400 hover:text-emerald-300 bg-emerald-400/10 hover:bg-emerald-400/20 px-2 py-1.5 rounded-lg flex items-center gap-1 text-xs font-semibold transition-colors"
-                              >
-                                <Check className="w-3.5 h-3.5" /> Approve
-                              </button>
-                              <button
-                                onClick={() => updateStatus(w.id, 'rejected')}
-                                className="text-red-400 hover:text-red-300 bg-red-400/10 hover:bg-red-400/20 px-2 py-1.5 rounded-lg flex items-center gap-1 text-xs font-semibold transition-colors"
-                              >
-                                <XCircle className="w-3.5 h-3.5" /> Reject
-                              </button>
-                            </>
-                          )}
+                      <td className="px-4 py-3">
+                        <div className="flex flex-col items-end gap-2">
+                          
                           {(user?.role === 'admin' || w.createdBy?.id === user?.id) && (
-                            <>
-                              <button
-                                onClick={() => setFormWorkshop(w)}
-                                className="text-blue-400 hover:text-blue-300 bg-blue-400/10 hover:bg-blue-400/20 px-2 py-1.5 rounded-lg flex items-center gap-1 text-xs font-semibold transition-colors"
-                                title="Manage Registration Form"
-                              >
-                                <FileText className="w-3.5 h-3.5" /> Form
-                              </button>
-                              <button
-                                onClick={() => openEditModal(w)}
-                                className="text-slate-400 hover:text-white transition-colors p-1.5"
-                                title="Edit workshop"
-                              >
-                                <Edit className="w-4 h-4" />
-                              </button>
-                              <button
-                                onClick={() => requestDeleteWorkshop(w)}
-                                disabled={actionLoading === w.id}
-                                className="text-slate-400 hover:text-red-400 transition-colors p-1.5 disabled:opacity-50"
-                                title="Delete workshop"
-                              >
-                                {actionLoading === w.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
-                              </button>
-                            </>
+                            <button
+                              onClick={() => setViewingRegistrations(w)}
+                              className="text-purple-400 hover:text-purple-300 bg-purple-400/10 hover:bg-purple-400/20 px-3 py-1.5 rounded-lg flex items-center justify-center gap-1.5 text-[11px] font-semibold transition-colors whitespace-nowrap w-full sm:w-auto"
+                              title="View Registrations"
+                            >
+                              <Users className="w-3.5 h-3.5" /> View Registered Students Data
+                            </button>
                           )}
+
+                          <div className="flex flex-wrap items-center justify-end gap-2 w-full sm:w-auto">
+                            {w.status === 'pending' && user?.role === 'admin' && (
+                              <>
+                                <button
+                                  onClick={() => updateStatus(w.id, 'approved')}
+                                  className="text-emerald-400 hover:text-emerald-300 bg-emerald-400/10 hover:bg-emerald-400/20 px-2 py-1.5 rounded-lg flex items-center gap-1 text-[11px] font-semibold transition-colors"
+                                >
+                                  <Check className="w-3.5 h-3.5" /> Approve
+                                </button>
+                                <button
+                                  onClick={() => updateStatus(w.id, 'rejected')}
+                                  className="text-red-400 hover:text-red-300 bg-red-400/10 hover:bg-red-400/20 px-2 py-1.5 rounded-lg flex items-center gap-1 text-[11px] font-semibold transition-colors"
+                                >
+                                  <XCircle className="w-3.5 h-3.5" /> Reject
+                                </button>
+                              </>
+                            )}
+
+                            {(user?.role === 'admin' || w.createdBy?.id === user?.id) && (
+                              <>
+                                <button
+                                  onClick={() => openEditModal(w)}
+                                  className="text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 px-2 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 text-[11px] font-semibold"
+                                  title="Edit workshop settings and registration form"
+                                >
+                                  <Edit className="w-3.5 h-3.5" /> Edit / Setup Form
+                                </button>
+                                <button
+                                  onClick={() => requestDeleteWorkshop(w)}
+                                  disabled={actionLoading === w.id}
+                                  className="text-slate-400 hover:text-red-400 bg-white/5 hover:bg-red-500/10 px-2 py-1.5 rounded-lg transition-colors flex items-center gap-1 text-[11px] font-semibold disabled:opacity-50"
+                                  title="Delete workshop"
+                                >
+                                  {actionLoading === w.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />} Delete
+                                </button>
+                              </>
+                            )}
+                          </div>
                         </div>
                       </td>
                     )}
@@ -274,116 +239,6 @@ export default function WorkshopsManagement() {
         </div>
       )}
 
-      {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setShowModal(false)} />
-          <div className="relative w-full max-w-md bg-slate-900 border border-white/10 rounded-3xl p-6 shadow-2xl z-10">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-bold text-white">{editingWorkshop ? 'Edit Workshop' : 'Propose New Workshop'}</h3>
-              <button onClick={() => setShowModal(false)} className="text-slate-400 hover:text-white">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <form onSubmit={handleSave} className="space-y-4">
-              <div>
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Workshop Title *</label>
-                <input
-                  type="text"
-                  required
-                  value={form.title}
-                  onChange={e => setForm({ ...form, title: e.target.value })}
-                  placeholder="e.g. Introduction to Virtual Labs"
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Date *</label>
-                <input
-                  type="date"
-                  required
-                  value={form.date}
-                  onChange={e => setForm({ ...form, date: e.target.value })}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Location</label>
-                  <input
-                    type="text"
-                    value={form.location}
-                    onChange={e => setForm({ ...form, location: e.target.value })}
-                    placeholder="e.g. IIT Bombay / Virtual Labs"
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Mode</label>
-                  <select
-                    value={form.mode}
-                    onChange={e => setForm({ ...form, mode: e.target.value })}
-                    className="w-full bg-slate-800 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50"
-                  >
-                    <option value="Online">Online</option>
-                    <option value="Hybrid">Hybrid</option>
-                    <option value="In-person">In-person</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Available Seats</label>
-                  <input
-                    type="number"
-                    value={form.seats}
-                    onChange={e => setForm({ ...form, seats: e.target.value })}
-                    placeholder="e.g. 100"
-                    min="1"
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Description</label>
-                <textarea
-                  value={form.description}
-                  onChange={e => setForm({ ...form, description: e.target.value })}
-                  placeholder="Brief agenda or description..."
-                  rows={3}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 resize-none"
-                />
-              </div>
-              
-              {user?.role !== 'admin' && (
-                <p className="text-xs text-amber-400/80 italic mt-2 text-center">
-                  Workshops require admin approval before becoming active.
-                </p>
-              )}
-
-              <div className="flex gap-3 pt-4">
-                <button
-                  type="button"
-                  onClick={() => setShowModal(false)}
-                  className="flex-1 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-400 bg-white/5 hover:bg-white/10 border border-white/10"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={submitting || !form.title.trim() || !form.date}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-purple-600 hover:bg-purple-700 text-white shadow-lg disabled:opacity-50"
-                >
-                  {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                  Submit
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
       
       {deleteConfirm && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
@@ -420,15 +275,10 @@ export default function WorkshopsManagement() {
         </div>
       )}
 
-      {/* Manage Workshop Form Modal */}
-      {formWorkshop && (
-        <ManageWorkshopFormModal
-          workshop={formWorkshop}
-          onClose={() => setFormWorkshop(null)}
-          onSave={() => {
-            fetchWorkshops();
-            setFormWorkshop(null);
-          }}
+      {viewingRegistrations && (
+        <WorkshopRegistrationsModal
+          workshop={viewingRegistrations}
+          onClose={() => setViewingRegistrations(null)}
         />
       )}
     </div>
