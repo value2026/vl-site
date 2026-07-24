@@ -13,7 +13,6 @@ const NAV = {
     { icon: Building2,       label: 'Institutions',    path: '/dashboard/admin/institutions' },
     { icon: Presentation,    label: 'Workshops',       path: '/dashboard/admin/workshops' },
     { icon: FlaskConical,    label: 'Lab Management',  path: '/dashboard/admin/labs' },
-    { icon: BookOpen,        label: 'Student Platform',path: '/student' },
     { icon: FileText,        label: 'Contact Messages', path: '/dashboard/admin/messages' },
     { icon: TrendingUp,      label: 'Usage Analytics',  path: '/dashboard/admin/analytics' },
     { icon: Globe,           label: 'Manage Pages',    path: '/dashboard/admin/pages' },

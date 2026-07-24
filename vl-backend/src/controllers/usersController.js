@@ -318,7 +318,7 @@ const getStats = async (req, res) => {
     const { role, id } = req.user;
 
     if (role === 'admin' || role === 'vl_manager') {
-      const [totalAdmins, totalNodalCentres, totalTeachers, totalStudents] = await Promise.all([
+      const [totalAdmins, totalContentAdmins, totalNodalCentres, totalTeachers, totalStudents] = await Promise.all([
         prisma.user.count({ where: { role: 'admin' } }),
         prisma.user.count({ where: { role: 'content_admin' } }),
         prisma.user.count({ where: { role: 'nodal_centre' } }),
