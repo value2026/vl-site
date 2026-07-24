@@ -50,16 +50,16 @@ services:
       - uploads_data:/app/uploads
     networks:
       - vl-network
-    # Backend is NOT exposed to host directly — Nginx proxies it
+    # Backend is NOT exposed to host directly — the frontend container proxies it
 
-  # ── React Frontend (Nginx) ──────────────────────────────────
+  # ── React Frontend ──────────────────────────────────────────
   frontend:
     build:
       context: ./vl-app
       dockerfile: Dockerfile
       args:
-        # /api maps to the backend via Nginx proxy — no hardcoded host needed
-        VITE_API_URL: /api
+        # Empty string lets the frontend append /api/... seamlessly relative to host
+        VITE_API_URL: ""
     container_name: vl-frontend
     restart: unless-stopped
     depends_on:

@@ -8,14 +8,26 @@ export default function Contact() {
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.name || !form.email || !form.message) {
       setError('Please fill in all required fields.');
       return;
     }
     setError('');
-    setSent(true);
+    
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/pages/contact/survey`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form)
+      });
+      
+      if (!res.ok) throw new Error('Failed to send message');
+      setSent(true);
+    } catch (err) {
+      setError('An error occurred while sending your message. Please try again.');
+    }
   };
 
   return (

@@ -66,7 +66,7 @@ Alternatively, you can run the entire stack using **Docker** and **Docker Compos
 
 ## 🐳 Option 2: Docker Setup (Production/Quick Start)
 
-The easiest way to get the platform running with zero configuration is using Docker. This will automatically spin up PostgreSQL, the Node.js backend, and the React frontend (served via Nginx).
+The easiest way to get the platform running with zero configuration is using Docker. This will automatically spin up PostgreSQL, the Node.js backend, and the React frontend.
 
 1. In the root of the project, configure your environment variables:
 
@@ -82,14 +82,9 @@ The easiest way to get the platform running with zero configuration is using Doc
    docker-compose up -d --build
    ```
 
-3. **Important: Seed the Docker Database**
-   Once the containers are running, you must seed the database inside the backend container to create the initial experiments and admin accounts:
+   # (The database migrations and seed script will automatically run when the container starts)
 
-   ```bash
-   docker exec -it vl-backend npm run db:seed
-   ```
-
-4. Access the platform:
+3. Access the platform:
    Open your browser and navigate to `http://localhost`
 
 ---
