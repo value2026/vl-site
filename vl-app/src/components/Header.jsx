@@ -172,14 +172,14 @@ export default function Header() {
                   </Link>
                   <button 
                     onClick={() => setShowSignOutModal(true)}
-                    className="bg-[#af0c3e] hover:bg-[#8e0a32] text-white transition-all rounded-full px-5 py-2 font-bold text-[14px] flex items-center gap-2 whitespace-nowrap flex-shrink-0 shadow-sm"
+                    className="bg-primary-800 hover:bg-primary-900 text-white transition-all rounded-full px-5 py-2 font-bold text-[14px] flex items-center gap-2 whitespace-nowrap flex-shrink-0 shadow-sm"
                   >
                     <LogOut className="w-4 h-4 flex-shrink-0" />
                     <span>Sign Out</span>
                   </button>
                 </>
               ) : (
-                <Link to="/login" className="bg-[#af0c3e] hover:bg-[#8e0a32] text-white transition-all rounded-full px-6 py-2 font-bold text-[14px] whitespace-nowrap flex-shrink-0 shadow-sm">
+                <Link to="/login" className="bg-primary-800 hover:bg-primary-900 text-white transition-all rounded-full px-6 py-2 font-bold text-[14px] whitespace-nowrap flex-shrink-0 shadow-sm">
                   Sign In
                 </Link>
               )}
@@ -264,14 +264,14 @@ export default function Header() {
                   </Link>
                   <button 
                     onClick={() => setShowSignOutModal(true)}
-                    className="w-full flex items-center justify-center bg-[#af0c3e] hover:bg-[#8e0a32] text-white shadow-sm rounded-xl py-3 text-[14px] font-bold gap-2 transition-colors"
+                    className="w-full flex items-center justify-center bg-primary-800 hover:bg-primary-900 text-white shadow-sm rounded-xl py-3 text-[14px] font-bold gap-2 transition-colors"
                   >
                     <LogOut className="w-4 h-4" />
                     Sign Out
                   </button>
                 </>
               ) : (
-                <Link to="/login" className="flex items-center justify-center w-full bg-[#af0c3e] hover:bg-[#8e0a32] text-white shadow-sm rounded-xl py-3 text-[14px] font-bold transition-colors">
+                <Link to="/login" className="flex items-center justify-center w-full bg-primary-800 hover:bg-primary-900 text-white shadow-sm rounded-xl py-3 text-[14px] font-bold transition-colors">
                   Sign In
                 </Link>
               )}
@@ -297,7 +297,7 @@ export default function Header() {
                   setShowSignOutModal(false);
                   logout();
                 }}
-                className="px-5 py-2.5 font-bold text-white bg-[#af0c3e] hover:bg-[#8e0a32] rounded-xl transition-colors"
+                className="px-5 py-2.5 font-bold text-white bg-primary-800 hover:bg-primary-900 rounded-xl transition-colors"
               >
                 Sign Out
               </button>

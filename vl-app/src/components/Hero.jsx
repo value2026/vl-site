@@ -27,20 +27,19 @@ export default function Hero({ content = {} }) {
   return (
     <div className="relative">
       <section
-        className="relative min-h-[85vh] lg:min-h-[800px] flex items-center overflow-hidden"
-        style={{ background: 'linear-gradient(135deg, #7A1632 0%, #5A1025 55%, #2B0D18 100%)' }}
+        className="relative min-h-[85vh] lg:min-h-[800px] flex items-center overflow-hidden bg-hero-gradient"
         aria-labelledby="hero-heading"
       >
         {/* Floating Icons (Right Side) */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-24 right-16 md:right-24 xl:right-32 animate-float">
-            <div className="w-[4.5rem] h-[4.5rem] rounded-2xl border border-[#ebc335]/30 bg-white/5 backdrop-blur-md flex items-center justify-center shadow-lg">
-               <FlaskConical className="text-[#ebc335] w-8 h-8 opacity-90"/>
+            <div className="w-[4.5rem] h-[4.5rem] rounded-2xl border border-cyan-400/30 bg-white/5 backdrop-blur-md flex items-center justify-center shadow-lg">
+               <FlaskConical className="text-cyan-400 w-8 h-8 opacity-90"/>
             </div>
           </div>
           <div className="absolute top-52 right-24 md:right-32 xl:right-48 animate-float" style={{ animationDelay: '1s' }}>
-             <div className="w-[4.5rem] h-[4.5rem] rounded-2xl border border-blue-400/30 bg-white/5 backdrop-blur-md flex items-center justify-center shadow-lg">
-               <Atom className="text-blue-300 w-8 h-8 opacity-90"/>
+             <div className="w-[4.5rem] h-[4.5rem] rounded-2xl border border-indigo-400/30 bg-white/5 backdrop-blur-md flex items-center justify-center shadow-lg">
+               <Atom className="text-indigo-300 w-8 h-8 opacity-90"/>
             </div>
           </div>
         </div>
@@ -51,11 +50,11 @@ export default function Hero({ content = {} }) {
             {/* Heading */}
             <h1
               id="hero-heading"
-              className="font-heading text-4xl sm:text-[3.75rem] lg:text-[4rem] font-extrabold leading-[1.05] mb-8 animate-fade-in-up tracking-tight"
+              className="font-heading text-4xl sm:text-[3rem] lg:text-[4rem] font-extrabold leading-[1.15] mb-6 animate-fade-in-up text-white tracking-tight"
             >
-              <span className="text-white block mb-3 font-bold drop-shadow-sm">Build Your Future with</span>
-              <span className="bg-gradient-to-r from-yellow-200 via-[#f1c40f] to-amber-500 bg-clip-text text-transparent block font-black drop-shadow-md">Emerging Technologies</span>
-              <span className="bg-gradient-to-r from-yellow-200 via-[#f1c40f] to-amber-500 bg-clip-text text-transparent block font-black drop-shadow-md pb-2">and Create Impact</span>
+              Build Your Future with <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-blue-500 drop-shadow-sm">Emerging Technologies</span> <br />
+              and Create Impact.
             </h1>
 
 
@@ -74,13 +73,13 @@ export default function Hero({ content = {} }) {
                     const id = (d.ctaPrimaryHref || '#labs-heading').substring(1);
                     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
                   }}
-                  className="bg-gradient-to-r from-[#f1c40f] to-amber-500 hover:from-amber-400 hover:to-amber-600 text-gray-900 font-extrabold text-[16px] px-9 py-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-xl hover:shadow-2xl hover:-translate-y-1"
+                  className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold text-[16px] px-9 py-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-xl hover:shadow-2xl hover:-translate-y-1"
                 >
                   {d.ctaPrimaryLabel || 'Explore Virtual Labs'}
                   <ArrowRight className="w-5 h-5" />
                 </button>
               ) : (
-                <Link to={d.ctaPrimaryHref} className="bg-gradient-to-r from-[#f1c40f] to-amber-500 hover:from-amber-400 hover:to-amber-600 text-gray-900 font-extrabold text-[16px] px-9 py-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-xl hover:shadow-2xl hover:-translate-y-1">
+                <Link to={d.ctaPrimaryHref} className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold text-[16px] px-9 py-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-xl hover:shadow-2xl hover:-translate-y-1">
                   {d.ctaPrimaryLabel || 'Explore Virtual Labs'}
                   <ArrowRight className="w-5 h-5" />
                 </Link>
