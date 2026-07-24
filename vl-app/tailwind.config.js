@@ -8,18 +8,18 @@ export default {
     extend: {
       colors: {
         primary: {
-          DEFAULT: '#7a1f1f',
-          50:  '#fdf2f2',
-          100: '#fce4e4',
-          200: '#f9c9c9',
-          300: '#f49e9e',
-          400: '#ec6666',
-          500: '#df3535',
-          600: '#cc1e1e',
-          700: '#ab1818',
-          800: '#7a1f1f',
-          900: '#661919',
-          950: '#380909',
+          DEFAULT: '#af0c3e',
+          50:  '#fdf2f4',
+          100: '#fbe5e9',
+          200: '#f7cfd7',
+          300: '#f09fb1',
+          400: '#e56482',
+          500: '#d5345b',
+          600: '#be1b44',
+          700: '#9e1137',
+          800: '#af0c3e',
+          900: '#6d0b28',
+          950: '#400314',
         },
         secondary: {
           DEFAULT: '#f4b400',
@@ -41,12 +41,12 @@ export default {
         heading: ['Poppins', 'Inter', 'sans-serif'],
       },
       backgroundImage: {
-        'hero-gradient': 'linear-gradient(135deg, #7a1f1f 0%, #3d0f0f 50%, #1a0505 100%)',
+        'hero-gradient': 'linear-gradient(135deg, #af0c3e 0%, #6d0b28 50%, #30020e 100%)',
       },
       boxShadow: {
         card: '0 4px 24px rgba(0,0,0,0.08)',
         'card-hover': '0 12px 40px rgba(0,0,0,0.18)',
-        glow: '0 0 30px rgba(122,31,31,0.3)',
+        glow: '0 0 30px rgba(175,12,62,0.35)',
       },
       animation: {
         'fade-in-up': 'fadeInUp 0.6s ease-out forwards',

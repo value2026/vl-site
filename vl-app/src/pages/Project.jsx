@@ -1,27 +1,33 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight, CheckCircle2, Calendar, Users } from 'lucide-react';
+import { ArrowRight, CheckCircle2, Calendar, Users, Loader2 } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 
-const timeline = [
-  { year: '2009', title: 'Project Inception', desc: 'Virtual Labs launched under NMEICT Phase I with 5 partner institutions.' },
-  { year: '2011', title: 'First 100 Labs', desc: 'Milestone of 100 virtual labs across engineering and science disciplines.' },
-  { year: '2014', title: 'Phase II Expansion', desc: 'Expanded to 14 IITs and NITs; introduced remote-triggered labs.' },
-  { year: '2017', title: 'Nodal Centre Network', desc: 'Over 800 nodal centres established across India.' },
-  { year: '2021', title: 'New Platform Launch', desc: 'Revamped platform with improved UX, accessibility, and mobile support.' },
-  { year: '2025', title: '5 Million Students', desc: 'Crossed 5 million experiment completions and 1,800+ experiments.' },
-];
-
-const objectives = [
-  'Provide remote access to labs in science and engineering disciplines',
-  'Develop a complete learning management system for virtual labs',
-  'Train students, researchers, and educators on the platform',
-  'Create a repository of open-access lab content',
-  'Foster collaboration between top institutions',
-  'Democratize quality STEM education for Tier-2 and Tier-3 cities',
-];
+async function fetchProjectSections() {
+  const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/pages/project/sections`);
+  if (!res.ok) throw new Error('Failed to fetch project sections');
+  return res.json();
+}
 
 export default function Project() {
+  const { data: sections, isLoading } = useQuery({
+    queryKey: ['project-sections'],
+    queryFn: fetchProjectSections,
+    staleTime: 60_000,
+    retry: 1,
+  });
+
+  let timeline = [];
+  let objectives = [];
+
+  if (sections) {
+    const timelineSec = sections.find(s => s.sectionKey === 'project_timeline');
+    const objSec = sections.find(s => s.sectionKey === 'project_objectives');
+    if (timelineSec?.content?.items) timeline = timelineSec.content.items;
+    if (objSec?.content?.items) objectives = objSec.content.items;
+  }
+
   return (
-    <main className="pt-20">
+    <main>
       {/* Hero */}
       <section className="bg-hero-gradient py-20">
         <div className="container-custom text-center">
@@ -43,16 +49,16 @@ export default function Project() {
         <div className="container-custom grid lg:grid-cols-2 gap-16 items-center">
           <div>
             <span className="tag">Overview</span>
-            <h2 className="section-title mt-4">What is Virtual Labs?</h2>
+            <h2 className="section-title mt-4">What is Amrita Virtual Labs?</h2>
             <p className="text-gray-600 leading-relaxed mb-6">
-              Virtual Labs is a collaborative project funded by the Ministry of Education
-              (formerly MHRD) under the National Mission on Education through ICT (NMEICT).
-              It is hosted at IIT Bombay and developed by a consortium of IITs and NITs.
+              Amrita Virtual Labs is a major initiative by Amrita Vishwa Vidyapeetham funded by the
+              Ministry of Education under the National Mission on Education through ICT (NMEICT).
+              It provides interactive simulation-based online experiment environments across engineering and sciences.
             </p>
             <p className="text-gray-600 leading-relaxed mb-8">
               The platform provides students access to over 700 virtual labs and 1,800+ experiments
-              spanning core science and engineering disciplines — without the need for physical
-              infrastructure or expensive equipment.
+              spanning core science and engineering disciplines — accessible anytime, anywhere without requiring
+              physical lab equipment.
             </p>
             <div className="flex gap-4">
               <Link to="/nodal-centres/apply" className="btn-primary">
@@ -90,12 +96,20 @@ export default function Project() {
             <h2 className="section-title mt-4">Project Objectives</h2>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-5xl mx-auto">
-            {objectives.map((obj, i) => (
-              <div key={i} className="card p-6 border border-gray-100 flex gap-3">
-                <CheckCircle2 className="w-5 h-5 text-primary-700 flex-shrink-0 mt-0.5" />
-                <p className="text-gray-700 text-sm leading-relaxed">{obj}</p>
+            {isLoading ? (
+              <div className="col-span-full flex justify-center py-10">
+                <Loader2 className="w-8 h-8 animate-spin text-primary-500" />
               </div>
-            ))}
+            ) : objectives.length === 0 ? (
+              <div className="col-span-full text-center text-gray-400 py-10">No objectives configured.</div>
+            ) : (
+              objectives.map((obj, i) => (
+                <div key={i} className="card p-6 border border-gray-100 flex gap-3">
+                  <CheckCircle2 className="w-5 h-5 text-primary-700 flex-shrink-0 mt-0.5" />
+                  <p className="text-gray-700 text-sm leading-relaxed">{obj.text}</p>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </section>
@@ -108,20 +122,30 @@ export default function Project() {
             <h2 className="section-title mt-4">Project Timeline</h2>
           </div>
           <div className="relative max-w-3xl mx-auto">
-            <div className="absolute left-1/2 -translate-x-px top-0 bottom-0 w-0.5 bg-primary-100" />
-            {timeline.map((item, i) => (
-              <div key={item.year} className={`relative flex gap-8 mb-10 ${i % 2 === 0 ? 'flex-row' : 'flex-row-reverse'}`}>
-                <div className="flex-1">
-                  <div className={`card p-6 border border-gray-100 ${i % 2 === 0 ? 'text-right' : 'text-left'}`}>
-                    <div className="text-xs font-bold text-primary-700 uppercase tracking-widest mb-1">{item.year}</div>
-                    <h3 className="font-heading font-bold text-gray-900 mb-2">{item.title}</h3>
-                    <p className="text-gray-500 text-sm leading-relaxed">{item.desc}</p>
-                  </div>
-                </div>
-                <div className="absolute left-1/2 -translate-x-1/2 w-4 h-4 bg-primary-700 rounded-full border-4 border-white shadow top-6" />
-                <div className="flex-1" />
+            {isLoading ? (
+              <div className="flex justify-center py-10">
+                <Loader2 className="w-8 h-8 animate-spin text-primary-500" />
               </div>
-            ))}
+            ) : timeline.length === 0 ? (
+              <div className="text-center text-gray-400 py-10">No timeline events configured.</div>
+            ) : (
+              <>
+                <div className="absolute left-1/2 -translate-x-px top-0 bottom-0 w-0.5 bg-primary-100" />
+                {timeline.map((item, i) => (
+                  <div key={item.year + i} className={`relative flex gap-8 mb-10 ${i % 2 === 0 ? 'flex-row' : 'flex-row-reverse'}`}>
+                    <div className="flex-1">
+                      <div className={`card p-6 border border-gray-100 ${i % 2 === 0 ? 'text-right' : 'text-left'}`}>
+                        <div className="text-xs font-bold text-primary-700 uppercase tracking-widest mb-1">{item.year}</div>
+                        <h3 className="font-heading font-bold text-gray-900 mb-2">{item.title}</h3>
+                        <p className="text-gray-500 text-sm leading-relaxed">{item.desc}</p>
+                      </div>
+                    </div>
+                    <div className="absolute left-1/2 -translate-x-1/2 w-4 h-4 bg-primary-700 rounded-full border-4 border-white shadow top-6" />
+                    <div className="flex-1" />
+                  </div>
+                ))}
+              </>
+            )}
           </div>
         </div>
       </section>

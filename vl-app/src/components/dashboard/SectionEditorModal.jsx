@@ -5,7 +5,8 @@ import Link from '@tiptap/extension-link';
 import Placeholder from '@tiptap/extension-placeholder';
 import {
   X, Save, Plus, Trash2, ChevronDown, ChevronUp,
-  Bold, Italic, List, Heading2, Link2, Undo, Redo, Image as ImageIcon
+  Bold, Italic, List, Heading2, Link2, Undo, Redo, Image as ImageIcon,
+  Search, FlaskConical, Check, Loader2
 } from 'lucide-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import CloudinaryUploader from './CloudinaryUploader';
@@ -93,7 +94,13 @@ function TiptapEditor({ content, onChange, placeholder = 'Start writing…' }) {
 function RepeatableList({ label, items = [], onChange, fields }) {
   const add = () => {
     const blank = {};
-    fields.forEach(f => { blank[f.key] = ''; });
+    fields.forEach(f => {
+      blank[f.key] = '';
+      if (f.key === 'date') {
+        const today = new Date();
+        blank[f.key] = today.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+      }
+    });
     onChange([...items, blank]);
   };
   const remove = (i) => onChange(items.filter((_, idx) => idx !== i));
@@ -236,6 +243,69 @@ const REPEATABLE_CONFIGS = {
       ],
     },
   },
+  publications_list: {
+    items: {
+      label: 'Publication Items',
+      fields: [
+        { key: 'year',     label: 'Year',    placeholder: 'e.g., 2024' },
+        { key: 'title',    label: 'Title',   placeholder: 'Paper Title', type: 'textarea' },
+        { key: 'authors',  label: 'Authors', placeholder: 'Sharma, R., Verma, A.' },
+        { key: 'journal',  label: 'Journal', placeholder: 'Journal of Engineering Education...' },
+        { key: 'doi',      label: 'DOI/URL', placeholder: 'https://doi.org/...' },
+      ],
+    },
+  },
+  project_timeline: {
+    items: {
+      label: 'Timeline Items',
+      fields: [
+        { key: 'year',  label: 'Year',  placeholder: '2024' },
+        { key: 'title', label: 'Title', placeholder: 'Major Milestone' },
+        { key: 'desc',  label: 'Description', placeholder: 'Description of the milestone', type: 'textarea' },
+      ],
+    },
+  },
+  project_objectives: {
+    items: {
+      label: 'Objective Items',
+      fields: [
+        { key: 'text', label: 'Objective', placeholder: 'Provide remote access to labs...', type: 'textarea' },
+      ],
+    },
+  },
+  workshop_list: {
+    items: {
+      label: 'Workshops',
+      fields: [
+        { key: 'title',       label: 'Title',       placeholder: 'Faculty Development...' },
+        { key: 'date',        label: 'Date',        placeholder: 'August 12–13, 2025' },
+        { key: 'location',    label: 'Location',    placeholder: 'IIT Bombay, Mumbai' },
+        { key: 'mode',        label: 'Mode',        placeholder: 'Hybrid, In-person, Online' },
+        { key: 'seats',       label: 'Seats',       placeholder: '60' },
+        { key: 'description', label: 'Description', placeholder: 'Short description...', type: 'textarea' },
+        { key: 'color',       label: 'Color Theme', placeholder: 'from-blue-600 to-blue-800' },
+      ],
+    },
+  },
+  nc_benefits: {
+    items: {
+      label: 'Benefits',
+      fields: [
+        { key: 'text', label: 'Benefit', placeholder: 'Free access to all 700+ virtual labs...', type: 'textarea' },
+      ],
+    },
+  },
+  nc_list: {
+    items: {
+      label: 'Centres',
+      fields: [
+        { key: 'name',     label: 'Name',     placeholder: 'BITS Pilani' },
+        { key: 'location', label: 'Location', placeholder: 'Pilani, Rajasthan' },
+        { key: 'category', label: 'Category', placeholder: 'Engineering / Science' },
+        { key: 'active',   label: 'Active (true/false)', placeholder: 'true' },
+      ],
+    },
+  },
 };
 
 // ── Simple text input ─────────────────────────────────────────
@@ -265,7 +335,7 @@ function SectionDivider({ label }) {
 }
 
 // ── Main modal ────────────────────────────────────────────────
-export default function SectionEditorModal({ section, onClose, onSaved }) {
+export default function SectionEditorModal({ section, pageSlug = 'home', onClose, onSaved }) {
   const { token, API_URL } = useAuth();
   const queryClient = useQueryClient();
 
@@ -273,10 +343,13 @@ export default function SectionEditorModal({ section, onClose, onSaved }) {
   const [subtitle, setSubtitle] = useState(section.subtitle || '');
   const [content,  setContent]  = useState(section.content  || {});
   const [experiments, setExperiments] = useState([]);
+  const [expSearch,   setExpSearch]   = useState('');
+  const [expLoading,  setExpLoading]  = useState(false);
 
   useEffect(() => {
     if (section.sectionKey === 'featured_simulation') {
       const fetchExps = async () => {
+        setExpLoading(true);
         try {
           const res = await api.get('/experiments/all/list');
           if (res.ok) {
@@ -285,6 +358,8 @@ export default function SectionEditorModal({ section, onClose, onSaved }) {
           }
         } catch (err) {
           console.error('Error fetching experiments:', err);
+        } finally {
+          setExpLoading(false);
         }
       };
       fetchExps();
@@ -297,7 +372,7 @@ export default function SectionEditorModal({ section, onClose, onSaved }) {
 
   const mutation = useMutation({
     mutationFn: async (payload) => {
-      const res = await fetch(`${API_URL}/pages/home/sections/${section.id}`, {
+      const res = await fetch(`${API_URL}/pages/${pageSlug}/sections/${section.id}`, {
         method:  'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -309,8 +384,8 @@ export default function SectionEditorModal({ section, onClose, onSaved }) {
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['home-sections']);
-      queryClient.invalidateQueries(['admin-page-sections', 'home']);
+      queryClient.invalidateQueries([`${pageSlug}-sections`]);
+      queryClient.invalidateQueries(['admin-page-sections', pageSlug]);
       onSaved?.();
       onClose();
     },
@@ -341,15 +416,21 @@ export default function SectionEditorModal({ section, onClose, onSaved }) {
         <div className="flex-1 overflow-y-auto p-6 space-y-6">
 
           {/* ── Common section meta ──────────────────────── */}
-          <SectionDivider label="Section Header" />
-          <TextField label="Section Title" value={title} onChange={setTitle} placeholder="Section heading…" />
-          <TextField label="Section Subtitle" value={subtitle} onChange={setSubtitle} placeholder="Supporting text…" multiline />
+          {!pageSlug.includes('survey') && (
+            <>
+              <SectionDivider label="Section Header" />
+              <TextField label="Section Title" value={title} onChange={setTitle} placeholder="Section heading…" />
+              <TextField label="Section Subtitle" value={subtitle} onChange={setSubtitle} placeholder="Supporting text…" multiline />
+            </>
+          )}
 
           {/* ── HERO ─────────────────────────────────────── */}
           {section.sectionKey === 'hero' && (
             <>
-              <SectionDivider label="Hero Content" />
-              <TextField label="Badge Text" value={content.badge} onChange={v => setContentKey('badge', v)} placeholder="Ministry of Education Initiative · NMEICT" />
+              <SectionDivider label={pageSlug.includes('survey') ? "Survey Header Content" : "Hero Content"} />
+              {!pageSlug.includes('survey') && (
+                <TextField label="Badge Text" value={content.badge} onChange={v => setContentKey('badge', v)} placeholder="Ministry of Education Initiative · NMEICT" />
+              )}
               <TextField label="Main Heading" value={content.heading} onChange={v => setContentKey('heading', v)} placeholder="Learn Science Without Limits" />
 
               <div>
@@ -361,77 +442,276 @@ export default function SectionEditorModal({ section, onClose, onSaved }) {
                 />
               </div>
 
-              <SectionDivider label="Background Image (optional)" />
-              <CloudinaryUploader
-                label="Hero Background Image — replaces the gradient if set"
-                value={content.backgroundImage || ''}
-                onChange={v => setContentKey('backgroundImage', v)}
-              />
+              {pageSlug.includes('survey') ? (
+                <>
+                  <SectionDivider label="Survey Card Content" />
+                  <TextField label="Card Heading" value={content.cardHeading} onChange={v => setContentKey('cardHeading', v)} placeholder="Ready to share your feedback?" />
+                  <TextField label="Card Description" value={content.cardText} onChange={v => setContentKey('cardText', v)} placeholder="Please fill out the form below..." multiline />
+                  <TextField label="Button Label" value={content.cardButtonLabel} onChange={v => setContentKey('cardButtonLabel', v)} placeholder="Open Survey Form" />
+                  
+                  <SectionDivider label="Custom Survey Form Builder" />
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <p className="text-sm text-slate-400">Build your custom survey form below.</p>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newQ = { id: Date.now().toString(), type: 'text', label: 'New Question', required: true, options: [] };
+                          setContentKey('questions', [...(content.questions || []), newQ]);
+                        }}
+                        className="btn-primary text-xs py-1.5 px-3"
+                      >
+                        + Add Question
+                      </button>
+                    </div>
+                    
+                    <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2">
+                      {(content.questions || []).map((q, idx) => (
+                        <div key={q.id} className="p-4 bg-slate-800 rounded-xl border border-slate-700 relative group">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const newQs = [...content.questions];
+                              newQs.splice(idx, 1);
+                              setContentKey('questions', newQs);
+                            }}
+                            className="absolute top-3 right-3 text-slate-500 hover:text-red-500"
+                            title="Remove Question"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                          
+                          <div className="grid grid-cols-2 gap-4 mb-3 pr-8">
+                            <div>
+                              <label className="text-xs font-medium text-slate-400 block mb-1">Question Type</label>
+                              <select
+                                value={q.type}
+                                onChange={e => {
+                                  const newQs = [...content.questions];
+                                  newQs[idx].type = e.target.value;
+                                  if (e.target.value === 'radio' && !newQs[idx].options?.length) {
+                                    newQs[idx].options = ['Option 1', 'Option 2'];
+                                  }
+                                  setContentKey('questions', newQs);
+                                }}
+                                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+                              >
+                                <option value="text">Short Text</option>
+                                <option value="textarea">Long Text (Paragraph)</option>
+                                <option value="radio">Multiple Choice</option>
+                                <option value="rating">1-5 Rating</option>
+                              </select>
+                            </div>
+                            <div className="flex items-end pb-1">
+                              <label className="flex items-center gap-2 cursor-pointer">
+                                <input
+                                  type="checkbox"
+                                  checked={q.required}
+                                  onChange={e => {
+                                    const newQs = [...content.questions];
+                                    newQs[idx].required = e.target.checked;
+                                    setContentKey('questions', newQs);
+                                  }}
+                                  className="rounded border-slate-600 text-blue-500 bg-slate-900 focus:ring-blue-500/50"
+                                />
+                                <span className="text-sm text-slate-300">Required Field</span>
+                              </label>
+                            </div>
+                          </div>
+                          
+                          <div className="mb-3">
+                            <label className="text-xs font-medium text-slate-400 block mb-1">Question Text</label>
+                            <input
+                              type="text"
+                              value={q.label}
+                              onChange={e => {
+                                const newQs = [...content.questions];
+                                newQs[idx].label = e.target.value;
+                                setContentKey('questions', newQs);
+                              }}
+                              placeholder="e.g. How would you rate this lab?"
+                              className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            />
+                          </div>
+                          
+                          {q.type === 'radio' && (
+                            <div>
+                              <label className="text-xs font-medium text-slate-400 block mb-2">Options (comma separated)</label>
+                              <input
+                                type="text"
+                                value={q.options?.join(', ') || ''}
+                                onChange={e => {
+                                  const newQs = [...content.questions];
+                                  newQs[idx].options = e.target.value.split(',').map(s => s.trim()).filter(Boolean);
+                                  setContentKey('questions', newQs);
+                                }}
+                                placeholder="Option 1, Option 2, Option 3"
+                                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+                              />
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                      {(!content.questions || content.questions.length === 0) && (
+                        <div className="text-center py-8 bg-slate-900/50 rounded-xl border border-dashed border-slate-700 text-slate-500 text-sm">
+                          No questions added yet. Click "+ Add Question" to start.
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <SectionDivider label="Background Image (optional)" />
+                  <CloudinaryUploader
+                    label="Hero Background Image — replaces the gradient if set"
+                    value={content.backgroundImage || ''}
+                    onChange={v => setContentKey('backgroundImage', v)}
+                  />
 
-              <SectionDivider label="Call-to-Action Buttons" />
-              <div className="grid grid-cols-2 gap-4">
-                <TextField label="Primary Button Label" value={content.ctaPrimaryLabel} onChange={v => setContentKey('ctaPrimaryLabel', v)} placeholder="Explore Labs" />
-                <TextField label="Primary Button URL" value={content.ctaPrimaryHref} onChange={v => setContentKey('ctaPrimaryHref', v)} placeholder="/labs/biotechnology" />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <TextField label="Secondary Button Label" value={content.ctaSecondaryLabel} onChange={v => setContentKey('ctaSecondaryLabel', v)} placeholder="Watch Demo" />
-                <TextField label="Secondary Button URL" value={content.ctaSecondaryHref} onChange={v => setContentKey('ctaSecondaryHref', v)} placeholder="https://youtube.com/…" />
-              </div>
+                  <SectionDivider label="Call-to-Action Buttons" />
+                  <div className="grid grid-cols-2 gap-4">
+                    <TextField label="Primary Button Label" value={content.ctaPrimaryLabel} onChange={v => setContentKey('ctaPrimaryLabel', v)} placeholder="Explore Labs" />
+                    <TextField label="Primary Button URL" value={content.ctaPrimaryHref} onChange={v => setContentKey('ctaPrimaryHref', v)} placeholder="/labs/biotechnology" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <TextField label="Secondary Button Label" value={content.ctaSecondaryLabel} onChange={v => setContentKey('ctaSecondaryLabel', v)} placeholder="Watch Demo" />
+                    <TextField label="Secondary Button URL" value={content.ctaSecondaryHref} onChange={v => setContentKey('ctaSecondaryHref', v)} placeholder="https://youtube.com/…" />
+                  </div>
 
-              <SectionDivider label="Stats Badges" />
-              <RepeatableList
-                label="Stats Counter Badges"
-                items={content.stats || []}
-                onChange={v => setContentKey('stats', v)}
-                fields={REPEATABLE_CONFIGS.hero.stats.fields}
-              />
+                  <SectionDivider label="Stats Badges" />
+                  <RepeatableList
+                    label="Stats Counter Badges"
+                    items={content.stats || []}
+                    onChange={v => setContentKey('stats', v)}
+                    fields={REPEATABLE_CONFIGS.hero.stats.fields}
+                  />
+                </>
+              )}
             </>
           )}
 
           {/* ── FEATURED SIMULATION ──────────────────────── */}
           {section.sectionKey === 'featured_simulation' && (
             <>
-              <SectionDivider label="Dynamic Simulation Selector" />
-              <div className="mb-4">
-                <label className="text-sm font-medium text-slate-300 block mb-2">Choose From Current Experiments</label>
-                <select
-                  value={content.experimentId || ''}
-                  onChange={e => {
-                    const selectedId = e.target.value;
-                    const selected = experiments.find(x => x.id === selectedId);
-                    if (selected) {
-                      setContent(prev => ({
-                        ...prev,
-                        experimentId: selectedId,
-                        tag: selected.lab?.subject?.title || 'Science',
-                        category: selected.lab?.title || 'Virtual Lab',
-                        title: selected.title,
-                        description: selected.description,
-                        duration: selected.duration || '60 min',
-                        difficulty: selected.difficulty || 'Intermediate',
-                        institution: selected.lab?.subject?.title === 'Computer Science' ? 'Virtual Labs' : 'Partner IITs',
-                        experiments: 1,
-                        href: `/student/experiment/${selectedId}`,
-                        imageUrl: selected.coverPic || selected.lab?.coverPic || ''
-                      }));
-                    } else {
-                      setContentKey('experimentId', '');
-                    }
-                  }}
-                  className="w-full bg-slate-800 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-red-500/50 transition-colors"
-                >
-                  <option value="">-- Select an Experiment to Auto-fill --</option>
-                  {experiments.map(x => (
-                    <option key={x.id} value={x.id}>
-                      {x.lab?.subject?.title ? `[${x.lab.subject.title}] ` : ''}
-                      {x.lab?.title ? `[${x.lab.title}] ` : ''}
-                      {x.title}
-                    </option>
-                  ))}
-                </select>
+              <SectionDivider label="Select Featured Lab / Experiment" />
+
+              {/* Search box */}
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                <input
+                  type="text"
+                  value={expSearch}
+                  onChange={e => setExpSearch(e.target.value)}
+                  placeholder="Search experiments by name, lab or subject…"
+                  className="w-full bg-slate-800 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-red-500/40 transition-colors"
+                />
               </div>
 
+              {/* Currently selected badge */}
+              {content.experimentId && (() => {
+                const sel = experiments.find(x => x.id === content.experimentId);
+                return sel ? (
+                  <div className="flex items-center gap-3 px-4 py-3 bg-primary-900/30 border border-primary-700/40 rounded-xl">
+                    <Check className="w-4 h-4 text-primary-400 flex-shrink-0" />
+                    <div className="min-w-0">
+                      <div className="text-white text-sm font-semibold truncate">{sel.title}</div>
+                      <div className="text-primary-300 text-xs">
+                        {sel.lab?.subject?.title} › {sel.lab?.title}
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => setContentKey('experimentId', '')}
+                      className="ml-auto p-1 text-slate-500 hover:text-red-400 transition-colors flex-shrink-0"
+                      title="Clear selection"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ) : null;
+              })()}
+
+              {/* Experiment card grid */}
+              {expLoading ? (
+                <div className="flex items-center justify-center py-10 gap-3 text-slate-400">
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <span className="text-sm">Loading experiments…</span>
+                </div>
+              ) : (
+                <div className="max-h-72 overflow-y-auto space-y-2 pr-1">
+                  {experiments
+                    .filter(x => {
+                      const q = expSearch.toLowerCase();
+                      return !q ||
+                        x.title?.toLowerCase().includes(q) ||
+                        x.lab?.title?.toLowerCase().includes(q) ||
+                        x.lab?.subject?.title?.toLowerCase().includes(q);
+                    })
+                    .map(x => {
+                      const isSelected = content.experimentId === x.id;
+                      return (
+                        <button
+                          key={x.id}
+                          type="button"
+                          onClick={() => {
+                            setContent(prev => ({
+                              ...prev,
+                              experimentId: x.id,
+                              tag:          x.lab?.subject?.title || 'Science',
+                              category:     x.lab?.title || 'Virtual Lab',
+                              title:        x.title,
+                              description:  x.description || '',
+                              duration:     x.duration || '60 min',
+                              difficulty:   x.difficulty || 'Intermediate',
+                              institution:  'Amrita Vishwa Vidyapeetham',
+                              experiments:  1,
+                              href:         `/student/experiment/${x.id}`,
+                              imageUrl:     x.coverPic || x.lab?.coverPic || '',
+                            }));
+                          }}
+                          className={`w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl border transition-all ${
+                            isSelected
+                              ? 'bg-primary-900/40 border-primary-600/60 ring-1 ring-primary-500/40'
+                              : 'bg-white/3 border-white/10 hover:bg-white/8 hover:border-white/20'
+                          }`}
+                        >
+                          {/* icon */}
+                          <div className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                            isSelected ? 'bg-primary-700' : 'bg-slate-700'
+                          }`}>
+                            {x.coverPic ? (
+                              <img src={x.coverPic} alt="" className="w-full h-full object-cover rounded-xl" />
+                            ) : (
+                              <FlaskConical className="w-4 h-4 text-white/70" />
+                            )}
+                          </div>
+                          {/* info */}
+                          <div className="min-w-0 flex-1">
+                            <div className={`text-sm font-medium truncate ${
+                              isSelected ? 'text-primary-200' : 'text-white'
+                            }`}>{x.title}</div>
+                            <div className="text-xs text-slate-500 truncate">
+                              {x.lab?.subject?.title && <span className="text-slate-400">{x.lab.subject.title}</span>}
+                              {x.lab?.title && <span> › {x.lab.title}</span>}
+                            </div>
+                          </div>
+                          {isSelected && <Check className="w-4 h-4 text-primary-400 flex-shrink-0" />}
+                        </button>
+                      );
+                    })}
+                  {experiments.filter(x => {
+                    const q = expSearch.toLowerCase();
+                    return !q || x.title?.toLowerCase().includes(q) ||
+                      x.lab?.title?.toLowerCase().includes(q) ||
+                      x.lab?.subject?.title?.toLowerCase().includes(q);
+                  }).length === 0 && (
+                    <p className="text-slate-500 text-sm text-center py-6">No experiments match your search.</p>
+                  )}
+                </div>
+              )}
+
               <SectionDivider label="Customize Spotlight Content" />
+              <p className="text-slate-500 text-xs -mt-2">Fields below are auto-filled when you pick an experiment above. You can fine-tune them here.</p>
               <div className="grid grid-cols-2 gap-4">
                 <TextField label="Tag (e.g., Physics)" value={content.tag} onChange={v => setContentKey('tag', v)} placeholder="Physics" />
                 <TextField label="Category (e.g., Mechanics)" value={content.category} onChange={v => setContentKey('category', v)} placeholder="Mechanics" />
@@ -439,16 +719,17 @@ export default function SectionEditorModal({ section, onClose, onSaved }) {
               <TextField label="Simulation Title" value={content.title} onChange={v => setContentKey('title', v)} placeholder="Simple Pendulum Simulation" />
               <TextField label="Description" value={content.description} onChange={v => setContentKey('description', v)} placeholder="Describe the simulation…" multiline />
               <div className="grid grid-cols-3 gap-4">
-                <TextField label="Institution" value={content.institution} onChange={v => setContentKey('institution', v)} placeholder="IIT Bombay" />
+                <TextField label="Institution" value={content.institution} onChange={v => setContentKey('institution', v)} placeholder="Amrita Vishwa Vidyapeetham" />
                 <TextField label="Duration" value={content.duration} onChange={v => setContentKey('duration', v)} placeholder="45 min" />
                 <TextField label="Difficulty" value={content.difficulty} onChange={v => setContentKey('difficulty', v)} placeholder="Intermediate" />
               </div>
               <div className="grid grid-cols-2 gap-4">
-                <TextField label="No. of Experiments" value={content.experiments} onChange={v => setContentKey('experiments', v)} placeholder="12" />
-                <TextField label="Link URL (href)" value={content.href} onChange={v => setContentKey('href', v)} placeholder="/student/experiments/..." />
+                <TextField label="No. of Experiments" value={content.experiments} onChange={v => setContentKey('experiments', v)} placeholder="1" />
+                <TextField label="Link URL (href)" value={content.href} onChange={v => setContentKey('href', v)} placeholder="/student/experiment/..." />
               </div>
 
               <SectionDivider label="Preview Image" />
+              <p className="text-slate-500 text-xs -mt-2">Auto-filled from the experiment's cover image. Upload a custom image to override.</p>
               <CloudinaryUploader
                 label="Simulation Preview Image — shown on the right panel"
                 value={content.imageUrl || ''}
@@ -567,6 +848,141 @@ export default function SectionEditorModal({ section, onClose, onSaved }) {
                 items={content.videos || []}
                 onChange={v => setContentKey('videos', v)}
                 fields={REPEATABLE_CONFIGS.media.videos.fields}
+              />
+            </>
+          )}
+
+          {/* ── PUBLICATIONS ────────────────────────────────── */}
+          {section.sectionKey === 'publications_list' && (
+            <>
+              <SectionDivider label="Publication Settings" />
+              <div className="flex gap-4">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (window.confirm('Are you sure you want to delete all publications? This cannot be undone.')) {
+                      setContentKey('items', []);
+                    }
+                  }}
+                  className="px-4 py-2 rounded-lg text-sm font-medium text-red-400 bg-red-400/10 hover:bg-red-400/20 transition-all border border-red-500/20"
+                >
+                  Delete All Publications
+                </button>
+              </div>
+
+              <SectionDivider label="Research Publications (Ordered by Year)" />
+              <p className="text-slate-500 text-xs -mt-2">
+                💡 Add papers here. The frontend will group them automatically by year.
+              </p>
+              <RepeatableList
+                label="Publications Items"
+                items={content.items || []}
+                onChange={v => setContentKey('items', v)}
+                fields={REPEATABLE_CONFIGS.publications_list.items.fields}
+              />
+            </>
+          )}
+
+          {/* ── PROJECT ─────────────────────────────────────── */}
+          {section.sectionKey === 'project_timeline' && (
+            <>
+              <SectionDivider label="Timeline Entries" />
+              <div className="flex gap-4 mb-4">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (window.confirm('Are you sure you want to delete all timeline entries?')) {
+                      setContentKey('items', []);
+                    }
+                  }}
+                  className="px-4 py-2 rounded-lg text-sm font-medium text-red-400 bg-red-400/10 hover:bg-red-400/20 transition-all border border-red-500/20"
+                >
+                  Delete All Timeline Entries
+                </button>
+              </div>
+              <RepeatableList
+                label="Timeline Items"
+                items={content.items || []}
+                onChange={v => setContentKey('items', v)}
+                fields={REPEATABLE_CONFIGS.project_timeline.items.fields}
+              />
+            </>
+          )}
+
+          {section.sectionKey === 'project_objectives' && (
+            <>
+              <SectionDivider label="Mission Objectives" />
+              <div className="flex gap-4 mb-4">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (window.confirm('Are you sure you want to delete all objectives?')) {
+                      setContentKey('items', []);
+                    }
+                  }}
+                  className="px-4 py-2 rounded-lg text-sm font-medium text-red-400 bg-red-400/10 hover:bg-red-400/20 transition-all border border-red-500/20"
+                >
+                  Delete All Objectives
+                </button>
+              </div>
+              <RepeatableList
+                label="Objective Items"
+                items={content.items || []}
+                onChange={v => setContentKey('items', v)}
+                fields={REPEATABLE_CONFIGS.project_objectives.items.fields}
+              />
+            </>
+          )}
+
+
+
+          {/* ── NODAL CENTRES ───────────────────────────────── */}
+          {section.sectionKey === 'nc_benefits' && (
+            <>
+              <SectionDivider label="Nodal Centre Benefits" />
+              <div className="flex gap-4 mb-4">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (window.confirm('Are you sure you want to delete all benefits?')) {
+                      setContentKey('items', []);
+                    }
+                  }}
+                  className="px-4 py-2 rounded-lg text-sm font-medium text-red-400 bg-red-400/10 hover:bg-red-400/20 transition-all border border-red-500/20"
+                >
+                  Delete All Benefits
+                </button>
+              </div>
+              <RepeatableList
+                label="Benefits List"
+                items={content.items || []}
+                onChange={v => setContentKey('items', v)}
+                fields={REPEATABLE_CONFIGS.nc_benefits.items.fields}
+              />
+            </>
+          )}
+
+          {section.sectionKey === 'nc_list' && (
+            <>
+              <SectionDivider label="Registered Nodal Centres" />
+              <div className="flex gap-4 mb-4">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (window.confirm('Are you sure you want to delete all registered centres?')) {
+                      setContentKey('items', []);
+                    }
+                  }}
+                  className="px-4 py-2 rounded-lg text-sm font-medium text-red-400 bg-red-400/10 hover:bg-red-400/20 transition-all border border-red-500/20"
+                >
+                  Delete All Centres
+                </button>
+              </div>
+              <RepeatableList
+                label="Centres List"
+                items={content.items || []}
+                onChange={v => setContentKey('items', v)}
+                fields={REPEATABLE_CONFIGS.nc_list.items.fields}
               />
             </>
           )}

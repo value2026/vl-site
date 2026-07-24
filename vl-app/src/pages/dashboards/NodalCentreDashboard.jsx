@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
-import { GraduationCap, BookOpen, Plus, RefreshCw, Building2, Eye, Award, TrendingUp } from 'lucide-react';
+import { GraduationCap, BookOpen, RefreshCw, Building2 } from 'lucide-react';
 import DashboardLayout from '../../components/dashboard/DashboardLayout';
 import UserTable       from '../../components/dashboard/UserTable';
-import AddUserModal    from '../../components/dashboard/AddUserModal';
 import UpcomingCallsCard from '../../components/communication/UpcomingCallsCard';
 import { useAuth }     from '../../context/AuthContext';
+import { useLocation } from 'react-router-dom';
 
 function StatCard({ icon: Icon, label, value, gradient }) {
   return (
@@ -27,8 +27,11 @@ export default function NodalCentreDashboard() {
   const [stats,    setStats]    = useState(null);
   const [users,    setUsers]    = useState([]);
   const [loading,  setLoading]  = useState(true);
-  const [showModal, setShowModal] = useState(false);
-  const [defaultRole, setDefaultRole] = useState('teacher');
+  const location = useLocation();
+
+  const isTeachersPage = location.pathname.endsWith('/teachers');
+  const isStudentsPage = location.pathname.endsWith('/students');
+  const isOverviewPage = !isTeachersPage && !isStudentsPage;
 
   const fetchAll = useCallback(async () => {
     setLoading(true);
@@ -49,8 +52,6 @@ export default function NodalCentreDashboard() {
 
   useEffect(() => { fetchAll(); }, [fetchAll]);
 
-  const openModal = (role) => { setDefaultRole(role); setShowModal(true); };
-
   const teachers = users.filter((u) => u.role === 'teacher');
   const students = users.filter((u) => u.role === 'student');
 
@@ -59,9 +60,12 @@ export default function NodalCentreDashboard() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-white text-2xl font-bold">{user?.name}</h2>
+          <h2 className="text-white text-2xl font-bold">
+            {isOverviewPage ? user?.name : (isTeachersPage ? 'Teachers' : 'Students')}
+          </h2>
           <p className="text-slate-400 text-sm mt-0.5 flex items-center gap-1.5">
-            <Building2 className="w-3.5 h-3.5" /> Nodal Centre Portal
+            <Building2 className="w-3.5 h-3.5" /> 
+            {isOverviewPage ? 'Nodal Centre Portal' : (isTeachersPage ? 'View all institute teachers' : 'View all institute students')}
           </p>
         </div>
         <button
@@ -72,62 +76,39 @@ export default function NodalCentreDashboard() {
         </button>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
-        <StatCard icon={GraduationCap} label="Teachers"  value={teachers.length} gradient="from-blue-600 to-indigo-700" />
-        <StatCard icon={BookOpen}      label="Students"  value={students.length}  gradient="from-emerald-500 to-green-600" />
-        <StatCard icon={Eye}           label="Total Visits" value={stats?.counts?.totalVisits} gradient="from-purple-600 to-violet-700" />
-        <StatCard icon={Award}         label="Avg Quiz Score" value={stats?.quizzes?.averageScore !== undefined ? `${stats.quizzes.averageScore}%` : '—'} gradient="from-amber-500 to-orange-600" />
-        <StatCard icon={TrendingUp}    label="Active Users" value={stats?.activeUsers?.mau} gradient="from-pink-500 to-rose-600" />
-      </div>
-
-      {/* Upcoming calls row */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-        <div className="lg:col-span-2">
-          <UpcomingCallsCard />
+      {/* Stats - Only on Overview */}
+      {isOverviewPage && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <StatCard icon={GraduationCap} label="Teachers"  value={stats?.totalTeachers} gradient="from-blue-600 to-indigo-700" />
+          <StatCard icon={BookOpen}      label="Students"  value={stats?.totalStudents}  gradient="from-emerald-500 to-green-600" />
         </div>
-      </div>
+      )}
 
       {/* Teachers section */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-white font-semibold text-lg flex items-center gap-2">
-            <GraduationCap className="w-5 h-5 text-blue-400" /> Teachers
-            <span className="text-slate-500 text-sm font-normal">({teachers.length})</span>
-          </h3>
-          <button
-            onClick={() => openModal('teacher')}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 shadow-lg shadow-blue-500/20 transition-all"
-          >
-            <Plus className="w-4 h-4" /> Add Teacher
-          </button>
+      {(isOverviewPage || isTeachersPage) && (
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-white font-semibold text-lg flex items-center gap-2">
+              <GraduationCap className="w-5 h-5 text-blue-400" /> {isTeachersPage ? 'All Teachers' : 'Recent Teachers'}
+              <span className="text-slate-500 text-sm font-normal">({teachers.length})</span>
+            </h3>
+          </div>
+          <UserTable users={isTeachersPage ? teachers : teachers.slice(0, 5)} loading={loading} onRefresh={fetchAll} hideActions />
         </div>
-        <UserTable users={teachers} loading={loading} onRefresh={fetchAll} />
-      </div>
+      )}
 
       {/* Students section */}
-      <div>
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-white font-semibold text-lg flex items-center gap-2">
-            <BookOpen className="w-5 h-5 text-emerald-400" /> Students
-            <span className="text-slate-500 text-sm font-normal">({students.length})</span>
-          </h3>
-          <button
-            onClick={() => openModal('student')}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 shadow-lg shadow-emerald-500/20 transition-all"
-          >
-            <Plus className="w-4 h-4" /> Add Student
-          </button>
+      {(isOverviewPage || isStudentsPage) && (
+        <div>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-white font-semibold text-lg flex items-center gap-2">
+              <BookOpen className="w-5 h-5 text-emerald-400" /> {isStudentsPage ? 'All Students' : 'Recent Students'}
+              <span className="text-slate-500 text-sm font-normal">({students.length})</span>
+            </h3>
+          </div>
+          <UserTable users={isStudentsPage ? students : students.slice(0, 5)} loading={loading} onRefresh={fetchAll} hideActions />
         </div>
-        <UserTable users={students} loading={loading} onRefresh={fetchAll} />
-      </div>
-
-      <AddUserModal
-        isOpen={showModal}
-        onClose={() => setShowModal(false)}
-        onSuccess={fetchAll}
-        defaultRole={defaultRole}
-      />
+      )}
     </DashboardLayout>
   );
 }

@@ -16,6 +16,9 @@ enum Role {
   nodal_centre
   teacher
   student
+  content_admin
+  sim_admin
+  vl_manager
 }
 
 model User {
@@ -24,7 +27,8 @@ model User {
   email    String  @unique
   password String
   role     Role
-  isActive Boolean @default(true)
+  isActive          Boolean  @default(true)
+  customPermissions String[] @default([])
 
   // Additional fields requested by user
   username          String? @unique
@@ -54,16 +58,17 @@ model User {
   createdBy    User?   @relation("CreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
   createdUsers User[]  @relation("CreatedBy")
 
-  // Which nodal centre this teacher/student belongs to
+  // Which nodal centre (Institution) this user belongs to
   nodalCentreId String?
-  nodalCentre   User?   @relation("NodalCentre", fields: [nodalCentreId], references: [id], onDelete: SetNull)
-  centreMembers User[]  @relation("NodalCentre")
+  nodalCentre   Institution? @relation("InstitutionMembers", fields: [nodalCentreId], references: [id], onDelete: SetNull)
 
   // Lab management relations
   subjectsCreated    Subject[]    @relation("SubjectCreator")
   labsCreated        Lab[]        @relation("LabCreator")
-  labsAsNodalCentre  Lab[]        @relation("LabNodalCentre")
   experimentsCreated Experiment[] @relation("ExperimentCreator")
+  
+  institutionsCreated Institution[] @relation("InstitutionCreator")
+  workshopsCreated    Workshop[]    @relation("WorkshopCreator")
 
   // Analytics relations
   quizAttempts       QuizAttempt[]
@@ -75,6 +80,13 @@ model User {
   chatReceived       ChatMessage[]          @relation("ReceivedMessages")
   hostedCalls        ScheduledCall[]        @relation("HostedCalls")
   inviteeRecords     ScheduledCallInvitee[] @relation("InviteeRecords")
+
+  // Assignment & Notification relations
+  questionPapersCreated QuestionPaper[]     @relation("QuestionPaperCreator")
+  assignmentsCreated    Assignment[]        @relation("TeacherAssignments")
+  assignmentsAssigned   AssignmentStudent[] @relation("StudentAssignments")
+  assignmentAttempts    AssignmentAttempt[] @relation("StudentAssignmentAttempts")
+  notifications         Notification[]      @relation("UserNotifications")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -115,9 +127,9 @@ model Lab {
   createdById String
   createdBy   User   @relation("LabCreator", fields: [createdById], references: [id])
 
-  // Which nodal centre owns this lab (null = admin-created global lab)
+  // Which nodal centre (Institution) owns this lab (null = admin-created global lab)
   nodalCentreId String?
-  nodalCentre   User?   @relation("LabNodalCentre", fields: [nodalCentreId], references: [id])
+  nodalCentre   Institution? @relation("LabNodalCentre", fields: [nodalCentreId], references: [id])
 
   experiments Experiment[]
 
@@ -181,6 +193,7 @@ model ExperimentVisit {
   duration     Int        @default(0) // seconds spent
   device       String?    // mobile, tablet, desktop
   browser      String?    // chrome, firefox, safari
+  tabsVisited  String[]   @default([])
   createdAt    DateTime   @default(now())
 
   @@map("experiment_visits")
@@ -267,5 +280,132 @@ model PageSection {
 
   @@unique([pageId, sectionKey])
   @@map("page_sections")
+}
+
+model Institution {
+  id           String   @id @default(uuid())
+  legacyId     Int?     @unique
+  name         String   @unique
+  code         String?
+  oldCreatedAt String?
+  isActive     Boolean  @default(true)
+  
+  users        User[]   @relation("InstitutionMembers")
+  labs         Lab[]    @relation("LabNodalCentre")
+
+  createdById  String?
+  createdBy    User?    @relation("InstitutionCreator", fields: [createdById], references: [id])
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("institutions")
+}
+
+model Workshop {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  date        DateTime
+  location    String?
+  mode        String?  @default("Online") // Online, Hybrid, In-person
+  seats       Int?
+  status      String   @default("pending") // pending, approved, rejected
+  
+  formSchema  Json?    // Optional JSON to hold custom registration form questions
+  
+  createdById String
+  createdBy   User     @relation("WorkshopCreator", fields: [createdById], references: [id])
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("workshops")
+}
+
+model SurveyResponse {
+  id        String   @id @default(uuid())
+  pageSlug  String   // Which survey this belongs to (e.g., student-survey, faculty-survey)
+  data      Json     // The actual answers submitted
+  createdAt DateTime @default(now())
+
+  @@map("survey_responses")
+}
+
+model QuestionPaper {
+  id          String       @id @default(uuid())
+  title       String
+  questions   Json         // Array of MCQ questions: { questionText: string, options: string[], correctOptionIndex: number }[]
+  createdById String
+  createdBy   User         @relation("QuestionPaperCreator", fields: [createdById], references: [id], onDelete: Cascade)
+  assignments Assignment[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@map("question_papers")
+}
+
+model Assignment {
+  id               String              @id @default(uuid())
+  title            String              // Custom label for this scheduled assignment
+  startTime        DateTime
+  endTime          DateTime
+  maxAttempts      Int                 @default(1)
+  resultDisplay    String              @default("immediate") // "immediate" or "manual"
+  resultsPublished Boolean             @default(false)
+  isActive         Boolean             @default(true)
+  
+  questionPaperId  String
+  questionPaper    QuestionPaper       @relation(fields: [questionPaperId], references: [id], onDelete: Cascade)
+  
+  teacherId        String
+  teacher          User                @relation("TeacherAssignments", fields: [teacherId], references: [id], onDelete: Cascade)
+  
+  students         AssignmentStudent[]
+  attempts         AssignmentAttempt[]
+  
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+
+  @@map("assignments")
+}
+
+model AssignmentStudent {
+  id           String     @id @default(uuid())
+  assignmentId String
+  assignment   Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  studentId    String
+  student      User       @relation("StudentAssignments", fields: [studentId], references: [id], onDelete: Cascade)
+  createdAt    DateTime   @default(now())
+
+  @@unique([assignmentId, studentId])
+  @@map("assignment_students")
+}
+
+model AssignmentAttempt {
+  id           String     @id @default(uuid())
+  assignmentId String
+  assignment   Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  studentId    String
+  student      User       @relation("StudentAssignmentAttempts", fields: [studentId], references: [id], onDelete: Cascade)
+  score        Int
+  maxScore     Int
+  answers      Json       // Student's selected option indices: { [questionIndex]: number }
+  completedAt  DateTime   @default(now())
+
+  @@map("assignment_attempts")
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation("UserNotifications", fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  message   String
+  isRead    Boolean  @default(false)
+  type      String   @default("info") // "exam_reminder", "info"
+  createdAt DateTime @default(now())
+
+  @@map("notifications")
 }
 

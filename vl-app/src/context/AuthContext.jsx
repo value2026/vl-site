@@ -15,6 +15,10 @@ export function AuthProvider({ children }) {
     setUser(null);
   }, []);
 
+  const updateProfile = useCallback((newUserData) => {
+    setUser(prev => ({ ...prev, ...newUserData }));
+  }, []);
+
   useEffect(() => {
     if (!token) { setLoading(false); return; }
 
@@ -43,7 +47,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, logout, API_URL }}>
+    <AuthContext.Provider value={{ user, token, loading, login, logout, updateProfile, API_URL }}>
       {children}
     </AuthContext.Provider>
   );

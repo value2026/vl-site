@@ -129,6 +129,7 @@ exports.Prisma.UserScalarFieldEnum = {
   password: 'password',
   role: 'role',
   isActive: 'isActive',
+  customPermissions: 'customPermissions',
   username: 'username',
   mobile: 'mobile',
   profilePic: 'profilePic',
@@ -214,6 +215,7 @@ exports.Prisma.ExperimentVisitScalarFieldEnum = {
   duration: 'duration',
   device: 'device',
   browser: 'browser',
+  tabsVisited: 'tabsVisited',
   createdAt: 'createdAt'
 };
 
@@ -273,12 +275,102 @@ exports.Prisma.PageSectionScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.InstitutionScalarFieldEnum = {
+  id: 'id',
+  legacyId: 'legacyId',
+  name: 'name',
+  code: 'code',
+  oldCreatedAt: 'oldCreatedAt',
+  isActive: 'isActive',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.WorkshopScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  description: 'description',
+  date: 'date',
+  location: 'location',
+  mode: 'mode',
+  seats: 'seats',
+  status: 'status',
+  formSchema: 'formSchema',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.SurveyResponseScalarFieldEnum = {
+  id: 'id',
+  pageSlug: 'pageSlug',
+  data: 'data',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.QuestionPaperScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  questions: 'questions',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.AssignmentScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  startTime: 'startTime',
+  endTime: 'endTime',
+  maxAttempts: 'maxAttempts',
+  resultDisplay: 'resultDisplay',
+  resultsPublished: 'resultsPublished',
+  isActive: 'isActive',
+  questionPaperId: 'questionPaperId',
+  teacherId: 'teacherId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.AssignmentStudentScalarFieldEnum = {
+  id: 'id',
+  assignmentId: 'assignmentId',
+  studentId: 'studentId',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.AssignmentAttemptScalarFieldEnum = {
+  id: 'id',
+  assignmentId: 'assignmentId',
+  studentId: 'studentId',
+  score: 'score',
+  maxScore: 'maxScore',
+  answers: 'answers',
+  completedAt: 'completedAt'
+};
+
+exports.Prisma.NotificationScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  title: 'title',
+  message: 'message',
+  isRead: 'isRead',
+  type: 'type',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
 };
 
 exports.Prisma.JsonNullValueInput = {
+  JsonNull: Prisma.JsonNull
+};
+
+exports.Prisma.NullableJsonNullValueInput = {
+  DbNull: Prisma.DbNull,
   JsonNull: Prisma.JsonNull
 };
 
@@ -302,7 +394,10 @@ exports.Role = exports.$Enums.Role = {
   content_admin: 'content_admin',
   nodal_centre: 'nodal_centre',
   teacher: 'teacher',
-  student: 'student'
+  student: 'student',
+  content_admin: 'content_admin',
+  sim_admin: 'sim_admin',
+  vl_manager: 'vl_manager'
 };
 
 exports.Prisma.ModelName = {
@@ -317,7 +412,15 @@ exports.Prisma.ModelName = {
   ScheduledCall: 'ScheduledCall',
   ScheduledCallInvitee: 'ScheduledCallInvitee',
   Page: 'Page',
-  PageSection: 'PageSection'
+  PageSection: 'PageSection',
+  Institution: 'Institution',
+  Workshop: 'Workshop',
+  SurveyResponse: 'SurveyResponse',
+  QuestionPaper: 'QuestionPaper',
+  Assignment: 'Assignment',
+  AssignmentStudent: 'AssignmentStudent',
+  AssignmentAttempt: 'AssignmentAttempt',
+  Notification: 'Notification'
 };
 
 /**

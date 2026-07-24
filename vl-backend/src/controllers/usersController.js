@@ -4,10 +4,10 @@ const { sendWelcomeEmail } = require('../utils/mailer');
 
 // Which roles each role is allowed to create
 const CREATION_RULES = {
-  admin:        ['admin', 'content_admin', 'nodal_centre', 'teacher', 'student'],
-  content_admin:[],
-  nodal_centre: ['teacher', 'student'],
-  teacher:      [],
+  admin:        ['admin', 'nodal_centre', 'teacher', 'student', 'content_admin', 'sim_admin', 'vl_manager'],
+  vl_manager:   ['nodal_centre', 'teacher', 'student'],
+  nodal_centre: [],
+  teacher:      ['student'],
   student:      [],
 };
 
@@ -30,12 +30,22 @@ const getUsers = async (req, res) => {
 
     let where = {};
 
-    if (role === 'admin') {
+    if (role === 'admin' || role === 'vl_manager') {
       where = { ...searchFilter, ...roleFilter };
     } else if (role === 'nodal_centre') {
-      where = { nodalCentreId: id, ...searchFilter, ...roleFilter };
+      const nodalAdmin = await prisma.user.findUnique({ where: { id }, select: { nodalCentreId: true } });
+      if (nodalAdmin?.nodalCentreId) {
+        where = { nodalCentreId: nodalAdmin.nodalCentreId, ...searchFilter, ...roleFilter };
+      } else {
+        where = { createdById: id, ...searchFilter, ...roleFilter };
+      }
     } else if (role === 'teacher') {
-      where = { createdById: id, role: 'student', ...searchFilter };
+      const teacher = await prisma.user.findUnique({ where: { id }, select: { nodalCentreId: true } });
+      if (teacher?.nodalCentreId) {
+        where = { nodalCentreId: teacher.nodalCentreId, role: 'student', ...searchFilter };
+      } else {
+        where = { createdById: id, role: 'student', ...searchFilter };
+      }
     } else {
       return res.status(403).json({ message: 'Insufficient permissions' });
     }
@@ -105,9 +115,15 @@ const createUser = async (req, res) => {
     } = req.body;
 
     // Validate required fields
-    if (!name || !email || !newRole || !username || !org || !dept || !country) {
+    if (!name || !email || !newRole || !username) {
       return res.status(400).json({ 
-        message: 'Missing required fields. Full Name, Username, Email, Organization/University, Department, and Country are required.' 
+        message: 'Missing required fields. Full Name, Username, Email, and User Type are required.' 
+      });
+    }
+
+    if (newRole === 'teacher' && (!dept || !dept.trim())) {
+      return res.status(400).json({
+        message: 'Department is required for Faculty/Instructors.'
       });
     }
 
@@ -139,7 +155,11 @@ const createUser = async (req, res) => {
     // Determine which nodal centre to assign
     let centreId = nodalCentreId || null;
     if (callerRole === 'nodal_centre') {
-      centreId = callerId; // always under the calling nodal centre
+      const nodalAdmin = await prisma.user.findUnique({
+        where: { id: callerId },
+        select: { nodalCentreId: true },
+      });
+      centreId = nodalAdmin?.nodalCentreId ?? null;
     } else if (callerRole === 'teacher') {
       // Inherit teacher's own nodal centre
       const teacher = await prisma.user.findUnique({
@@ -166,11 +186,11 @@ const createUser = async (req, res) => {
         username:      username.trim(),
         mobile:        mobile ? mobile.trim() : null,
         profilePic:    profilePic || null,
-        org:           org.trim(),
-        dept:          dept.trim(),
+        org:           org ? org.trim() : (newRole === 'student' ? 'Virtual Labs Partner' : null),
+        dept:          dept ? dept.trim() : (newRole === 'student' ? 'Science' : null),
         course:        course ? course.trim() : null,
         yearSemester:  yearSemester ? yearSemester.trim() : null,
-        country:       country.trim(),
+        country:       country ? country.trim() : 'India',
         state:         state ? state.trim() : null,
         city:          city ? city.trim() : null,
 
@@ -184,6 +204,8 @@ const createUser = async (req, res) => {
         designation:   newRole === 'teacher' && designation ? designation.trim() : null,
         facultyDept:   newRole === 'teacher' && facultyDept ? facultyDept.trim() : null,
         facultyInst:   newRole === 'teacher' && facultyInst ? facultyInst.trim() : null,
+        
+        customPermissions: callerRole === 'admin' && req.body.customPermissions ? req.body.customPermissions : [],
       },
       select: {
         id:           true,
@@ -221,12 +243,22 @@ const updateUser = async (req, res) => {
     const target = await prisma.user.findUnique({ where: { id: targetId } });
     if (!target) return res.status(404).json({ message: 'User not found' });
 
-    // Permission check
-    if (callerRole !== 'admin') {
-      if (callerRole === 'nodal_centre' && target.nodalCentreId !== callerId) {
-        return res.status(403).json({ message: 'Insufficient permissions' });
-      }
-      if (callerRole === 'teacher' && target.createdById !== callerId) {
+    // Permission check — self-edit always allowed; otherwise scope-check
+    if (callerId !== targetId && callerRole !== 'admin' && callerRole !== 'vl_manager') {
+      const caller = await prisma.user.findUnique({
+        where: { id: callerId },
+        select: { nodalCentreId: true },
+      });
+
+      if (callerRole === 'nodal_centre') {
+        if (!caller?.nodalCentreId || target.nodalCentreId !== caller.nodalCentreId) {
+          return res.status(403).json({ message: 'Insufficient permissions' });
+        }
+      } else if (callerRole === 'teacher') {
+        if (target.nodalCentreId !== caller?.nodalCentreId) {
+          return res.status(403).json({ message: 'Insufficient permissions' });
+        }
+      } else {
         return res.status(403).json({ message: 'Insufficient permissions' });
       }
     }
@@ -236,6 +268,7 @@ const updateUser = async (req, res) => {
     if (email)                      data.email    = email.toLowerCase().trim();
     if (typeof isActive === 'boolean') data.isActive = isActive;
     if (password)                   data.password = await bcrypt.hash(password, 12);
+    if (req.body.customPermissions && callerRole === 'admin') data.customPermissions = req.body.customPermissions;
 
     const updated = await prisma.user.update({
       where: { id: targetId },
@@ -267,13 +300,8 @@ const deleteUser = async (req, res) => {
     if (!target) return res.status(404).json({ message: 'User not found' });
 
     // Permission check
-    if (callerRole !== 'admin') {
-      if (callerRole === 'nodal_centre' && target.nodalCentreId !== callerId) {
-        return res.status(403).json({ message: 'Insufficient permissions' });
-      }
-      if (callerRole === 'teacher' && target.createdById !== callerId) {
-        return res.status(403).json({ message: 'Insufficient permissions' });
-      }
+    if (callerRole !== 'admin' && callerRole !== 'vl_manager') {
+      return res.status(403).json({ message: 'Only administrators and VL Managers can delete users' });
     }
 
     await prisma.user.delete({ where: { id: targetId } });
@@ -289,8 +317,8 @@ const getStats = async (req, res) => {
   try {
     const { role, id } = req.user;
 
-    if (role === 'admin') {
-      const [totalAdmins, totalContentAdmins, totalNodalCentres, totalTeachers, totalStudents] = await Promise.all([
+    if (role === 'admin' || role === 'vl_manager') {
+      const [totalAdmins, totalNodalCentres, totalTeachers, totalStudents] = await Promise.all([
         prisma.user.count({ where: { role: 'admin' } }),
         prisma.user.count({ where: { role: 'content_admin' } }),
         prisma.user.count({ where: { role: 'nodal_centre' } }),
@@ -300,15 +328,29 @@ const getStats = async (req, res) => {
       res.json({ totalAdmins, totalContentAdmins, totalNodalCentres, totalTeachers, totalStudents });
 
     } else if (role === 'nodal_centre') {
+      const nodalAdmin = await prisma.user.findUnique({ where: { id }, select: { nodalCentreId: true } });
+      let whereTeacher = { createdById: id, role: 'teacher' };
+      let whereStudent = { createdById: id, role: 'student' };
+      
+      if (nodalAdmin?.nodalCentreId) {
+        whereTeacher = { nodalCentreId: nodalAdmin.nodalCentreId, role: 'teacher' };
+        whereStudent = { nodalCentreId: nodalAdmin.nodalCentreId, role: 'student' };
+      }
+
       const [totalTeachers, totalStudents] = await Promise.all([
-        prisma.user.count({ where: { nodalCentreId: id, role: 'teacher' } }),
-        prisma.user.count({ where: { nodalCentreId: id, role: 'student' } }),
+        prisma.user.count({ where: whereTeacher }),
+        prisma.user.count({ where: whereStudent }),
       ]);
       res.json({ totalTeachers, totalStudents });
 
     } else if (role === 'teacher') {
+      const teacher = await prisma.user.findUnique({ where: { id }, select: { nodalCentreId: true } });
+      let whereClause = { createdById: id, role: 'student' };
+      if (teacher?.nodalCentreId) {
+        whereClause = { nodalCentreId: teacher.nodalCentreId, role: 'student' };
+      }
       const totalStudents = await prisma.user.count({
-        where: { createdById: id, role: 'student' },
+        where: whereClause,
       });
       res.json({ totalStudents });
 
@@ -325,27 +367,34 @@ const getStats = async (req, res) => {
 const bulkCreateStudents = async (req, res) => {
   try {
     const { role: callerRole, id: callerId } = req.user;
-    const { students } = req.body;
+    const { students, nodalCentreId } = req.body;
 
     if (!Array.isArray(students) || students.length === 0) {
       return res.status(400).json({ message: 'students must be a non-empty array' });
     }
 
-    // Only Admin, Nodal Centre, and Teacher can bulk add students
-    if (!['admin', 'nodal_centre', 'teacher'].includes(callerRole)) {
+    // Only Admin, VL Manager, and Teacher can bulk add students
+    if (!['admin', 'vl_manager', 'teacher'].includes(callerRole)) {
       return res.status(403).json({ message: 'Insufficient permissions to bulk add users' });
     }
 
     // Nodal centre id resolution
     let centreId = null;
     if (callerRole === 'nodal_centre') {
-      centreId = callerId;
+      const nodalAdmin = await prisma.user.findUnique({
+        where: { id: callerId },
+        select: { nodalCentreId: true },
+      });
+      centreId = nodalAdmin?.nodalCentreId ?? null;
     } else if (callerRole === 'teacher') {
       const teacher = await prisma.user.findUnique({
         where: { id: callerId },
         select: { nodalCentreId: true },
       });
       centreId = teacher?.nodalCentreId ?? null;
+    } else if (callerRole === 'admin' || callerRole === 'vl_manager') {
+      // Admin and VL Manager can specify the institution explicitly
+      centreId = nodalCentreId || null;
     }
 
     let createdCount = 0;
@@ -413,10 +462,16 @@ const bulkCreateStudents = async (req, res) => {
           createdById:   callerId,
           nodalCentreId: centreId,
           username,
-          // Inherit caller academic details if available for helper defaults
+          // Academic & extra details
           org:           student.org || req.user.org || 'Virtual Labs Partner',
           dept:          student.dept || req.user.dept || 'Science',
           country:       student.country || 'India',
+          course:        student.course || null,
+          yearSemester:  student.yearSemester || null,
+          batch:         student.batch || null,
+          studentId:     student.studentId || null,
+          section:       student.section || null,
+          mobile:        student.mobile || null,
         },
       });
 

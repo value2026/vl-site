@@ -8,18 +8,30 @@ export default function Contact() {
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.name || !form.email || !form.message) {
       setError('Please fill in all required fields.');
       return;
     }
     setError('');
-    setSent(true);
+    
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/pages/contact/survey`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form)
+      });
+      
+      if (!res.ok) throw new Error('Failed to send message');
+      setSent(true);
+    } catch (err) {
+      setError('An error occurred while sending your message. Please try again.');
+    }
   };
 
   return (
-    <main className="pt-20">
+    <main>
       {/* Hero */}
       <section className="bg-hero-gradient py-20">
         <div className="container-custom text-center">
@@ -46,10 +58,10 @@ export default function Contact() {
               {[
                 {
                   Icon: MapPin, label: 'Address',
-                  content: 'Virtual Labs Project\nIIT Bombay, Powai\nMumbai — 400 076',
+                  content: 'Amrita Virtual Labs\nAmrita Vishwa Vidyapeetham\nAmritapuri Campus, Kollam\nKerala — 690 525',
                 },
-                { Icon: Mail,  label: 'Email',   content: 'support@vlabs.ac.in' },
-                { Icon: Phone, label: 'Phone',   content: '+91 22 2576 7062' },
+                { Icon: Mail,  label: 'Email',   content: 'virtual_labs@am.amrita.edu' },
+                { Icon: Phone, label: 'Phone',   content: '+91 422 268 5000' },
               ].map(({ Icon, label, content }) => (
                 <div key={label} className="flex gap-4 mb-6">
                   <div className="w-11 h-11 bg-primary-50 rounded-xl flex items-center justify-center flex-shrink-0">

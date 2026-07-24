@@ -4,8 +4,6 @@ const cors    = require('cors');
 const path    = require('path');
 const fs      = require('fs');
 
-const http    = require('http');
-const { initSocket } = require('./socket');
 
 const authRoutes        = require('./routes/auth');
 const userRoutes        = require('./routes/users');
@@ -15,13 +13,13 @@ const experimentRoutes  = require('./routes/experiments');
 const analyticsRoutes   = require('./routes/analytics');
 const callRoutes        = require('./routes/calls');
 const pagesRoutes       = require('./routes/pages');
+const institutionRoutes = require('./routes/institutions');
+const workshopRoutes    = require('./routes/workshops');
+const assignmentRoutes  = require('./routes/assignments');
 
 const app  = express();
 const PORT = process.env.PORT || 5000;
 
-// Create HTTP Server
-const server = http.createServer(app);
-initSocket(server);
 
 // ── Middleware ────────────────────────────────────────────────
 const allowedOrigins = [
@@ -67,6 +65,9 @@ app.use('/api/experiments', experimentRoutes);
 app.use('/api/analytics',   analyticsRoutes);
 app.use('/api/calls',       callRoutes);
 app.use('/api/pages',       pagesRoutes);
+app.use('/api/institutions', institutionRoutes);
+app.use('/api/workshops',    workshopRoutes);
+app.use('/api/assignments',  assignmentRoutes);
 
 // Local media upload endpoint (fallback when Cloudinary is not configured)
 const multer = require('multer');
@@ -118,7 +119,7 @@ app.use((err, _req, res, _next) => {
 });
 
 // ── Start ─────────────────────────────────────────────────────
-server.listen(PORT, () => {
+app.listen(PORT, () => {
   console.log(`\n🚀 Virtual Labs API running at http://localhost:${PORT}`);
   console.log(`   Health: http://localhost:${PORT}/api/health\n`);
 });

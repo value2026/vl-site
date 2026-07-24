@@ -14,7 +14,7 @@ const HOME_DEFAULTS = [
       heading: 'Learn Science Without Limits',
       subheading: 'Access <strong>1,800+ virtual experiments</strong> across 700 labs from IITs, NITs, and leading institutions — free, anywhere, anytime.',
       ctaPrimaryLabel: 'Explore Labs',
-      ctaPrimaryHref: '/labs/biotechnology',
+      ctaPrimaryHref: '#labs-heading',
       ctaSecondaryLabel: 'Watch Demo',
       ctaSecondaryHref: 'https://www.youtube.com/watch?v=ViqHtlZSOjM',
       stats: [
@@ -86,10 +86,10 @@ const HOME_DEFAULTS = [
     sectionKey: 'sponsors',
     label: 'Partners & Sponsors',
     order: 3,
-    title: "Backed by India's Premier Institutions",
-    subtitle: 'Virtual Labs is a collaborative project supported by IITs, NITs, and the Ministry of Education under the National Mission on Education through ICT.',
+    title: "Sponsors of Virtual Labs",
+    subtitle: 'This project is an initiative of Ministry of Human Resource Department under National Mission on Education through ICT. These experiments and labs will be hosted for open access through the main project website www.vlab.co.in.',
     content: {
-      sectionTag: 'Our Partners',
+      sectionTag: 'Our Sponsors',
       footerNote: '🇮🇳 A Government of India initiative to democratize quality STEM education',
       sponsors: [
         { id: 'moe', name: 'Ministry of Education', acronym: 'MoE', description: 'Government of India', color: 'from-orange-500 to-red-500' },
@@ -217,6 +217,23 @@ async function getSections(req, res) {
     if (!page) {
       if (slug === 'home') {
         page = await seedHomePage();
+      } else if (slug === 'publications') {
+        page = await seedPublicationsPage();
+      } else if (slug === 'project') {
+        page = await seedProjectPage();
+      } else if (slug === 'nodal-centres') {
+        page = await seedNodalCentresPage();
+      } else if (slug === 'student-survey') {
+        page = await seedStudentSurveyPage();
+      } else if (slug === 'faculty-survey') {
+        page = await seedFacultySurveyPage();
+      } else if (slug === 'nodal-centre-request') {
+        page = await seedNodalCentreRequestPage();
+      } else if (slug === 'contact') {
+        // Create an empty page for contact messages so it doesn't 404
+        page = await prisma.page.create({
+          data: { slug: 'contact', title: 'Contact Messages' }
+        });
       } else {
         return res.status(404).json({ message: 'Page not found' });
       }
@@ -303,9 +320,19 @@ async function reorderSections(req, res) {
 async function seedPage(req, res) {
   try {
     const { slug } = req.params;
-    if (slug !== 'home') return res.status(400).json({ message: 'Only home page seeding is supported' });
+    if (!['home', 'publications', 'project', 'nodal-centres', 'student-survey', 'faculty-survey'].includes(slug)) {
+      return res.status(400).json({ message: 'Page seeding is not supported for this slug' });
+    }
 
-    const page = await seedHomePage();
+    let page;
+    if (slug === 'home') page = await seedHomePage();
+    else if (slug === 'publications') page = await seedPublicationsPage();
+    else if (slug === 'project') page = await seedProjectPage();
+    else if (slug === 'nodal-centres') page = await seedNodalCentresPage();
+    else if (slug === 'student-survey') page = await seedStudentSurveyPage();
+    else if (slug === 'faculty-survey') page = await seedFacultySurveyPage();
+    else if (slug === 'nodal-centre-request') page = await seedNodalCentreRequestPage();
+    
     res.json(page.sections);
   } catch (err) {
     console.error('seedPage error:', err);
@@ -346,10 +373,444 @@ async function seedHomePage() {
   });
 }
 
+async function seedPublicationsPage() {
+  const page = await prisma.page.upsert({
+    where: { slug: 'publications' },
+    update: { title: 'Publications' },
+    create: { slug: 'publications', title: 'Publications' },
+  });
+
+  const pubsSection = {
+    sectionKey: 'publications_list',
+    label: 'Publications List',
+    order: 0,
+    title: 'Research Publications',
+    subtitle: 'Academic papers and research findings from the Virtual Labs initiative.',
+    content: {
+      items: [
+        {
+          id: 'p1',
+          year: '2024',
+          title: 'Impact of Virtual Labs on Student Learning Outcomes in Engineering Education',
+          authors: 'Sharma, R., Verma, A., & Kumar, S.',
+          journal: 'Journal of Engineering Education, Vol. 113(2)',
+          doi: '#',
+        },
+        {
+          id: 'p2',
+          year: '2023',
+          title: 'Remote Laboratory Access for Developing Nations: A Case Study',
+          authors: 'Nair, P., Iyer, M., & Singh, D.',
+          journal: 'IEEE Transactions on Education, Vol. 66(4)',
+          doi: '#',
+        }
+      ]
+    }
+  };
+
+  await prisma.pageSection.upsert({
+    where: { pageId_sectionKey: { pageId: page.id, sectionKey: pubsSection.sectionKey } },
+    update: {},
+    create: {
+      pageId: page.id,
+      sectionKey: pubsSection.sectionKey,
+      label: pubsSection.label,
+      title: pubsSection.title,
+      subtitle: pubsSection.subtitle,
+      content: pubsSection.content,
+      isVisible: true,
+      order: pubsSection.order,
+    },
+  });
+
+  return prisma.page.findUnique({
+    where: { slug: 'publications' },
+    include: { sections: { orderBy: { order: 'asc' } } },
+  });
+}
+
+async function seedProjectPage() {
+  const page = await prisma.page.upsert({
+    where: { slug: 'project' },
+    update: { title: 'Project' },
+    create: { slug: 'project', title: 'Project' },
+  });
+
+  const timelineSection = {
+    sectionKey: 'project_timeline',
+    label: 'Project Timeline',
+    order: 0,
+    title: 'Project Timeline',
+    content: {
+      items: [
+        { year: '2009', title: 'Project Inception', desc: 'Virtual Labs launched under NMEICT Phase I with 5 partner institutions.' },
+        { year: '2011', title: 'First 100 Labs', desc: 'Milestone of 100 virtual labs across engineering and science disciplines.' },
+        { year: '2014', title: 'Phase II Expansion', desc: 'Expanded to 14 IITs and NITs; introduced remote-triggered labs.' },
+        { year: '2017', title: 'Nodal Centre Network', desc: 'Over 800 nodal centres established across India.' },
+        { year: '2021', title: 'New Platform Launch', desc: 'Revamped platform with improved UX, accessibility, and mobile support.' },
+        { year: '2025', title: '5 Million Students', desc: 'Crossed 5 million experiment completions and 1,800+ experiments.' },
+      ]
+    }
+  };
+
+  const objectivesSection = {
+    sectionKey: 'project_objectives',
+    label: 'Project Objectives',
+    order: 1,
+    title: 'Project Objectives',
+    content: {
+      items: [
+        { text: 'Provide remote access to labs in science and engineering disciplines' },
+        { text: 'Develop a complete learning management system for virtual labs' },
+        { text: 'Train students, researchers, and educators on the platform' },
+        { text: 'Create a repository of open-access lab content' },
+        { text: 'Foster collaboration between top institutions' },
+        { text: 'Democratize quality STEM education for Tier-2 and Tier-3 cities' },
+      ]
+    }
+  };
+
+  for (const sec of [timelineSection, objectivesSection]) {
+    await prisma.pageSection.upsert({
+      where: { pageId_sectionKey: { pageId: page.id, sectionKey: sec.sectionKey } },
+      update: {},
+      create: {
+        pageId: page.id,
+        sectionKey: sec.sectionKey,
+        label: sec.label,
+        title: sec.title,
+        content: sec.content,
+        isVisible: true,
+        order: sec.order,
+      },
+    });
+  }
+
+  return prisma.page.findUnique({
+    where: { slug: 'project' },
+    include: { sections: { orderBy: { order: 'asc' } } },
+  });
+}
+
+
+
+async function seedNodalCentresPage() {
+  const page = await prisma.page.upsert({
+    where: { slug: 'nodal-centres' },
+    update: { title: 'Nodal Centres' },
+    create: { slug: 'nodal-centres', title: 'Nodal Centres' },
+  });
+
+  const benefitsSection = {
+    sectionKey: 'nc_benefits',
+    label: 'Nodal Centre Benefits',
+    order: 0,
+    title: 'Benefits of Becoming a Nodal Centre',
+    content: {
+      items: [
+        { text: 'Free access to all 700+ virtual labs for your institution' },
+        { text: 'Priority support and technical assistance' },
+        { text: 'Dedicated workshops and faculty training sessions' },
+        { text: 'Certificate of recognition from Ministry of Education' },
+        { text: 'Usage analytics and progress tracking dashboard' },
+        { text: 'Promotion on Virtual Labs official website' },
+      ]
+    }
+  };
+
+  const listSection = {
+    sectionKey: 'nc_list',
+    label: 'Registered Nodal Centres',
+    order: 1,
+    title: 'Registered Nodal Centres',
+    content: {
+      items: [
+        { name: 'BITS Pilani', location: 'Pilani, Rajasthan', category: 'Engineering', active: true },
+        { name: 'VIT University', location: 'Vellore, Tamil Nadu', category: 'Engineering', active: true },
+        { name: 'Amrita University', location: 'Coimbatore, Tamil Nadu', category: 'Science', active: true },
+        { name: 'Jadavpur University', location: 'Kolkata, West Bengal', category: 'Engineering', active: true },
+      ]
+    }
+  };
+
+  for (const sec of [benefitsSection, listSection]) {
+    await prisma.pageSection.upsert({
+      where: { pageId_sectionKey: { pageId: page.id, sectionKey: sec.sectionKey } },
+      update: {},
+      create: {
+        pageId: page.id,
+        sectionKey: sec.sectionKey,
+        label: sec.label,
+        title: sec.title,
+        content: sec.content,
+        isVisible: true,
+        order: sec.order,
+      },
+    });
+  }
+
+  return prisma.page.findUnique({
+    where: { slug: 'nodal-centres' },
+    include: { sections: { orderBy: { order: 'asc' } } },
+  });
+}
+
+async function seedStudentSurveyPage() {
+  const page = await prisma.page.upsert({
+    where: { slug: 'student-survey' },
+    update: { title: 'Student Survey' },
+    create: { slug: 'student-survey', title: 'Student Survey' },
+  });
+
+  const heroSection = {
+    sectionKey: 'hero',
+    label: 'Survey Hero',
+    order: 0,
+    title: 'Student Survey',
+    subtitle: 'Help us improve the Virtual Labs platform. Share your learning experience!',
+    content: {
+      heading: 'Student Survey',
+      subheading: 'Help us improve the Virtual Labs platform. Share your learning experience!',
+      cardHeading: 'Amrita Virtual Labs Workshop - Student Survey',
+      cardText: 'Dear Friends,\n\nWe want to thank you for participating in the Virtual Labs workshop. We would like to request a few minutes of your time to take this detailed survey to allow us use this information in enhancing the experience of using virtual labs for other faculties and students.\n\nSincerely,\n\nThe Virtual Labs Team',
+      cardButtonLabel: 'Start Survey',
+      formUrl: '',
+      questions: [
+        { id: 'q_email', type: 'text', label: 'Email', required: true },
+        { id: 'q_name', type: 'text', label: 'Full Name', required: true },
+        { id: 'q_age', type: 'text', label: 'Age', required: true },
+        { id: 'q_gender', type: 'radio', label: 'Gender', options: ['Female', 'Male', 'Prefer not to say'], required: true },
+        { id: 'q_inst', type: 'text', label: 'Institute Name', required: true },
+        { id: 'q_dept', type: 'text', label: 'Department', required: true },
+        { id: 'q_year', type: 'text', label: 'Year of join', required: true },
+        { id: 'q_r1', type: 'radio', label: 'Using Virtual Labs will improve the quality of my studies.', options: ['Strongly Agree', 'Agree', 'Neutral', 'Disagree', 'Strongly Disagree'], required: true },
+        { id: 'q_r2', type: 'radio', label: 'Virtual Labs will make it easier to do my studies', options: ['Strongly Agree', 'Agree', 'Neutral', 'Disagree', 'Strongly Disagree'], required: true },
+        { id: 'q_r3', type: 'radio', label: 'Virtual Labs provides higher level of engagement in my studies.', options: ['Strongly Agree', 'Agree', 'Neutral', 'Disagree', 'Strongly Disagree'], required: true },
+        { id: 'q_r4', type: 'radio', label: 'Virtual Labs helps me remember the concepts better.', options: ['Strongly Agree', 'Agree', 'Neutral', 'Disagree', 'Strongly Disagree'], required: true },
+        { id: 'q_r5', type: 'radio', label: 'I prefer to use Physical Labs before using Virtual Labs.', options: ['Strongly Agree', 'Agree', 'Neutral', 'Disagree', 'Strongly Disagree'], required: true },
+        { id: 'q_r6', type: 'radio', label: 'Overall, I would find using Virtual Labs to be advantageous in my studies.', options: ['Strongly Agree', 'Agree', 'Neutral', 'Disagree', 'Strongly Disagree'], required: true },
+        { id: 'q_r7', type: 'radio', label: 'Using Virtual Labs will fit into my study style.', options: ['Strongly Agree', 'Agree', 'Neutral', 'Disagree', 'Strongly Disagree'], required: true },
+        { id: 'q_r8', type: 'radio', label: 'I think that using Virtual Labs will fit well with the way I like to study.', options: ['Strongly Agree', 'Agree', 'Neutral', 'Disagree', 'Strongly Disagree'], required: true },
+        { id: 'q_r9', type: 'radio', label: 'Virtual Labs requires more of my study time.', options: ['Strongly Agree', 'Agree', 'Neutral', 'Disagree', 'Strongly Disagree'], required: true },
+        { id: 'q_r10', type: 'radio', label: 'My interaction with Virtual Labs is clear and understandable.', options: ['Strongly Agree', 'Agree', 'Neutral', 'Disagree', 'Strongly Disagree'], required: true },
+        { id: 'q_r11', type: 'radio', label: 'Using Virtual Labs will require a lot of training.', options: ['Strongly Agree', 'Agree', 'Neutral', 'Disagree', 'Strongly Disagree'], required: true },
+        { id: 'q_r12', type: 'radio', label: 'I believe that it is easy to get Virtual Labs to do what I want it to do.', options: ['Strongly Agree', 'Agree', 'Neutral', 'Disagree', 'Strongly Disagree'], required: true },
+        { id: 'q_r13', type: 'radio', label: 'Overall, I believe that Virtual Labs will be easy for me.', options: ['Strongly Agree', 'Agree', 'Neutral', 'Disagree', 'Strongly Disagree'], required: true },
+        { id: 'q_r14', type: 'radio', label: 'I have seen what others do using Virtual Labs.', options: ['Strongly Agree', 'Agree', 'Neutral', 'Disagree', 'Strongly Disagree'], required: true },
+        { id: 'q_r15', type: 'radio', label: 'It is easy for me to observe others using Virtual Labs.', options: ['Strongly Agree', 'Agree', 'Neutral', 'Disagree', 'Strongly Disagree'], required: true }
+      ]
+    }
+  };
+
+  await prisma.pageSection.upsert({
+    where: { pageId_sectionKey: { pageId: page.id, sectionKey: heroSection.sectionKey } },
+    update: {
+      title: heroSection.title,
+      subtitle: heroSection.subtitle,
+      content: heroSection.content
+    },
+    create: {
+      pageId: page.id,
+      sectionKey: heroSection.sectionKey,
+      label: heroSection.label,
+      title: heroSection.title,
+      subtitle: heroSection.subtitle,
+      content: heroSection.content,
+      isVisible: true,
+      order: heroSection.order,
+    },
+  });
+
+  return prisma.page.findUnique({
+    where: { slug: 'student-survey' },
+    include: { sections: { orderBy: { order: 'asc' } } },
+  });
+}
+
+async function seedFacultySurveyPage() {
+  const page = await prisma.page.upsert({
+    where: { slug: 'faculty-survey' },
+    update: { title: 'Faculty Survey' },
+    create: { slug: 'faculty-survey', title: 'Faculty Survey' },
+  });
+
+  const heroSection = {
+    sectionKey: 'hero',
+    label: 'Survey Hero',
+    order: 0,
+    title: 'Faculty Survey',
+    subtitle: 'Share your feedback on using Virtual Labs as a teaching tool.',
+    content: {
+      heading: 'Faculty Survey',
+      subheading: 'Share your feedback on using Virtual Labs as a teaching tool.',
+      cardHeading: 'Workshop Feedback',
+      cardText: 'Dear Participants,\nWe want to thank you for participating in the Virtual Labs workshop. We would like to request a few minutes of your time to take this detailed survey to allow us use this information in enhancing the experience of using virtual labs.',
+      cardButtonLabel: 'Start Survey',
+      formUrl: '',
+      questions: [
+        { id: 'q_email', type: 'text', label: 'Email', required: true },
+        { id: 'q_title', type: 'radio', label: 'Title', options: ['Prof.', 'Dr.', 'Mr.', 'Ms.'], required: true },
+        { id: 'q_name', type: 'text', label: 'Full Name', required: true },
+        { id: 'q_age', type: 'text', label: 'Age', required: true },
+        { id: 'q_gender', type: 'radio', label: 'Gender', options: ['Female', 'Male', 'Prefer not to say'], required: false },
+        { id: 'q_dept', type: 'text', label: 'Department', required: true },
+        { id: 'q_inst', type: 'text', label: 'Institute Name', required: true },
+        { id: 'q_address', type: 'textarea', label: 'Institute Address', required: true },
+        { id: 'q_designation', type: 'text', label: 'Designation', required: true },
+        { id: 'q_exp', type: 'radio', label: 'Years of experience', options: ['< 5 years', '6 - 10 years', '11 - 15 years', '16 - 20 years', '21+ years'], required: true },
+        { id: 'q_contact', type: 'text', label: 'Contact Number', required: false }
+      ]
+    }
+  };
+
+  await prisma.pageSection.upsert({
+    where: { pageId_sectionKey: { pageId: page.id, sectionKey: heroSection.sectionKey } },
+    update: {
+      title: heroSection.title,
+      subtitle: heroSection.subtitle,
+      content: heroSection.content
+    },
+    create: {
+      pageId: page.id,
+      sectionKey: heroSection.sectionKey,
+      label: heroSection.label,
+      title: heroSection.title,
+      subtitle: heroSection.subtitle,
+      content: heroSection.content,
+      isVisible: true,
+      order: heroSection.order,
+    },
+  });
+
+  return prisma.page.findUnique({
+    where: { slug: 'faculty-survey' },
+    include: { sections: { orderBy: { order: 'asc' } } },
+  });
+}
+
+async function seedNodalCentreRequestPage() {
+  const page = await prisma.page.upsert({
+    where: { slug: 'nodal-centre-request' },
+    update: { title: 'Nodal Centre Request' },
+    create: { slug: 'nodal-centre-request', title: 'Nodal Centre Request' },
+  });
+
+  const formSection = {
+    sectionKey: 'formSchema',
+    label: 'Request Form Schema',
+    order: 0,
+    title: 'Nodal Centre Request Form',
+    content: {
+      questions: [
+        { id: '1', text: 'Email', type: 'email', required: true, options: [] },
+        { id: '2', text: 'Name of the nodal centre (Note: If your institute is not listed, you must apply to become a nodal centre first)', type: 'text', required: true, options: [] },
+        { id: '3', text: 'Name of the faculty member', type: 'text', required: true, options: [] },
+        { id: '4', text: 'Designation', type: 'text', required: true, options: [] },
+        { id: '5', text: 'Department', type: 'text', required: true, options: [] },
+        { id: '6', text: 'Contact number', type: 'text', required: true, options: [] },
+        { id: '7', text: 'Select the department(s) those who are attending the workshop', type: 'checkbox', required: true, options: [
+          'Physics', 'Chemistry', 'Biotechnology', 'Mechanical Engineering', 'Civil Engineering', 'Computer Science', 'Electronics and communications', 'Electrical Engineering', 'Other'
+        ]},
+        { id: '8', text: 'Expected number of participants (including students and faculty members)', type: 'text', required: true, options: [] },
+        { id: '9', text: 'Select the mode of training', type: 'radio', required: true, options: ['Online', 'Offline'] },
+        { id: '10', text: 'Proposed Date for the training program', type: 'date', required: true, options: [] },
+        { id: '11', text: 'Proposed Time for the training program', type: 'time', required: true, options: [] }
+      ]
+    }
+  };
+
+  await prisma.pageSection.upsert({
+    where: { pageId_sectionKey: { pageId: page.id, sectionKey: formSection.sectionKey } },
+    update: {},
+    create: {
+      pageId: page.id,
+      sectionKey: formSection.sectionKey,
+      label: formSection.label,
+      title: formSection.title,
+      content: formSection.content,
+      isVisible: true,
+      order: formSection.order,
+    },
+  });
+
+  return prisma.page.findUnique({
+    where: { slug: 'nodal-centre-request' },
+    include: { sections: { orderBy: { order: 'asc' } } },
+  });
+}
+
+const submitSurveyResponse = async (req, res) => {
+  const { slug } = req.params;
+  const data = req.body;
+  try {
+    const response = await prisma.surveyResponse.create({
+      data: {
+        pageSlug: slug,
+        data,
+      }
+    });
+    res.json({ success: true, id: response.id });
+  } catch (error) {
+    console.error('Failed to submit survey:', error);
+    res.status(500).json({ error: 'Failed to submit survey' });
+  }
+};
+
+const getSurveyResponses = async (req, res) => {
+  const { slug } = req.params;
+  try {
+    const responses = await prisma.surveyResponse.findMany({
+      where: { pageSlug: slug },
+      orderBy: { createdAt: 'desc' }
+    });
+    
+    if (responses.length === 0) {
+      return res.status(404).json({ error: 'No responses found' });
+    }
+
+    if (req.query.format === 'csv') {
+      // Convert JSON data to CSV
+      const allKeys = new Set();
+      responses.forEach(r => {
+        if (r.data) Object.keys(r.data).forEach(k => allKeys.add(k));
+      });
+      const headers = ['Timestamp', ...Array.from(allKeys)];
+      
+      let csv = headers.join(',') + '\n';
+      responses.forEach(r => {
+        const row = [r.createdAt.toISOString()];
+        Array.from(allKeys).forEach(k => {
+          let val = r.data[k] || '';
+          if (typeof val === 'string') {
+            val = val.replace(/"/g, '""');
+            if (val.includes(',') || val.includes('\n')) {
+              val = `"${val}"`;
+            }
+          }
+          row.push(val);
+        });
+        csv += row.join(',') + '\n';
+      });
+
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', `attachment; filename="${slug}-responses.csv"`);
+      return res.send(csv);
+    }
+
+    // Default: return JSON
+    return res.json(responses);
+  } catch (error) {
+    console.error('Failed to get survey responses:', error);
+    res.status(500).json({ error: 'Failed to download responses' });
+  }
+};
+
 module.exports = {
   getSections,
   updateSection,
   toggleVisibility,
   reorderSections,
   seedPage,
+  submitSurveyResponse,
+  getSurveyResponses,
 };

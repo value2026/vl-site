@@ -1,0 +1,71 @@
+{
+  "version": 2.0,
+  "questions": [
+    {
+      "question": "Which of the following best describes a conventional database?",
+      "answers": {
+        "a": "A distributed ledger that records transactions across multiple computers.",
+        "b": "A database structure that uses tables to store data and allows for complex queries.",
+        "c": "A database where data is stored in blocks and chained together cryptographically.",
+        "d": "A system where every participant has a full copy of the entire database history."
+      },
+      "correctAnswer": "b",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "What is a key feature of a blockchain database that differentiates it from conventional databases?",
+      "answers": {
+        "a": "It primarily uses SQL for data retrieval and manipulation.",
+        "b": "It can only be accessed by a centralized authority or administrator.",
+        "c": "Its data, once added, becomes immutable and cannot be changed without altering all subsequent blocks.",
+        "d": "It's optimized for rapid transaction speeds and instantaneous data updates."
+      },
+      "correctAnswer": "c",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "Which statement best captures a fundamental difference between conventional and blockchain databases regarding trust?",
+      "answers": {
+        "a": "Conventional databases are always more secure than blockchain databases.",
+        "b": "Trust in blockchain databases is typically established through centralized intermediaries.",
+        "c": "Conventional databases inherently offer data transparency to all its users.",
+        "d": "Blockchain databases are decentralized and use consensus algorithms to establish trust among participants."
+      },
+      "correctAnswer": "d",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "Which component is unique to blockchain architecture compared to traditional databases?",
+      "answers": {
+        "a": "Tables and columns.",
+        "b": "Primary and foreign keys.",
+        "c": "Blocks containing transaction records linked using cryptographic hashes.",
+        "d": "Relational data models."
+      },
+      "correctAnswer": "c",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "In a conventional database, who typically has the authority to modify or delete data?",
+      "answers": {
+        "a": "Every user in the network.",
+        "b": "A consensus algorithm.",
+        "c": "A central administrator or authorized personnel.",
+        "d": "No one can modify or delete data once stored."
+      },
+      "correctAnswer": "c",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "What ensures the security and integrity of data in a blockchain database?",
+      "answers": {
+        "a": "Firewall configurations and antivirus programs.",
+        "b": "Data replication and SQL triggers.",
+        "c": "Consensus mechanisms and cryptographic hashing.",
+        "d": "Manual verification by database administrators."
+      },
+      "correctAnswer": "c",
+      "difficulty": "beginner"
+    }
+  ]
+}

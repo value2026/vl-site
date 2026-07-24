@@ -14,11 +14,11 @@ const quickLinks = [
 ];
 
 const labLinks = [
-  { label: 'Biotechnology', href: '/labs/biotechnology' },
-  { label: 'Chemical Sciences', href: '/labs/chemical-sciences' },
-  { label: 'Physical Sciences', href: '/labs/physical-sciences' },
-  { label: 'Computer Science', href: '/labs/computer-science' },
-  { label: 'Mechanical Engg.', href: '/labs/mechanical-engineering' },
+  { label: 'Physical Sciences', href: '/nodal-centres' },
+  { label: 'Chemical Sciences', href: '/nodal-centres' },
+  { label: 'Computer Science', href: '/nodal-centres' },
+  { label: 'Biological Sciences', href: '/nodal-centres' },
+  { label: 'Mechanical Engg.', href: '/nodal-centres' },
 ];
 
 const socials = [
@@ -30,27 +30,27 @@ const socials = [
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-900 text-gray-400" aria-label="Site footer">
+    <footer className="bg-[#0F172A] text-slate-400" aria-labelledby="footer-heading">
       <div className="container-custom py-16">
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-10">
           {/* Brand column */}
           <div className="lg:col-span-1">
-            <div className="flex items-center gap-2.5 mb-5">
-              <div className="w-9 h-9 bg-primary-800 rounded-lg flex items-center justify-center">
-                <FlaskConical className="w-5 h-5 text-white" />
+            <div className="flex items-center gap-3.5 mb-6">
+              <div className="bg-white p-2.5 rounded-[1.25rem] shadow-sm flex items-center justify-center flex-shrink-0">
+                <img src="/amrita-icon.jpg" alt="Amrita Logo" className="w-8 h-8 object-contain" />
               </div>
-              <div>
-                <span className="block text-white font-heading font-bold text-lg leading-none">
-                  Virtual Labs
+              <div className="flex flex-col justify-center pt-1">
+                <span className="block text-white font-bold text-[1rem] leading-none tracking-wide" style={{ fontFamily: 'Arial, sans-serif' }}>
+                  VALUE @ Amrita
                 </span>
-                <span className="block text-[10px] text-gray-500 tracking-wide uppercase">
-                  Ministry of Education
+                <span className="block text-[11px] text-[#A51C4A] font-bold tracking-[0.08em] uppercase mt-1.5">
+                  Amrita Vishwa Vidyapeetham
                 </span>
               </div>
             </div>
-            <p className="text-sm leading-relaxed mb-6">
-              An initiative under NMEICT, Ministry of Education, Government of India — providing
-              quality lab experiences to students across the country.
+            <p className="text-sm leading-relaxed mb-6 text-gray-400">
+              An initiative by Amrita Vishwa Vidyapeetham under NMEICT, Ministry of Education, Government of India — providing
+              quality virtual laboratory experiences for students across India.
             </p>
             <div className="flex gap-3">
               {socials.map(({ Icon, href, label }) => (
@@ -58,9 +58,9 @@ export default function Footer() {
                   key={label}
                   href={href}
                   aria-label={label}
-                  className="w-9 h-9 bg-white/5 hover:bg-primary-800 border border-white/10 rounded-lg flex items-center justify-center transition-colors duration-200"
+                  className="w-11 h-11 bg-transparent hover:bg-white/5 border border-slate-700/80 rounded-[0.85rem] flex items-center justify-center transition-colors duration-200 text-slate-400 hover:text-white"
                 >
-                  <Icon className="w-4 h-4" />
+                  <Icon className="w-4 h-4" strokeWidth={1.5} />
                 </a>
               ))}
             </div>
@@ -113,21 +113,22 @@ export default function Footer() {
               <li className="flex gap-3">
                 <MapPin className="w-4 h-4 text-primary-400 flex-shrink-0 mt-0.5" />
                 <span>
-                  Virtual Labs Project<br />
-                  IIT Bombay, Powai<br />
-                  Mumbai — 400 076
+                  Amrita Virtual Labs<br />
+                  Amrita Vishwa Vidyapeetham<br />
+                  Amritapuri Campus, Kollam<br />
+                  Kerala — 690 525
                 </span>
               </li>
               <li className="flex items-center gap-3">
                 <Mail className="w-4 h-4 text-primary-400 flex-shrink-0" />
-                <a href="mailto:support@vlabs.ac.in" className="hover:text-white transition-colors">
-                  support@vlabs.ac.in
+                <a href="mailto:virtual_labs@am.amrita.edu" className="hover:text-white transition-colors">
+                  virtual_labs@am.amrita.edu
                 </a>
               </li>
               <li className="flex items-center gap-3">
                 <Phone className="w-4 h-4 text-primary-400 flex-shrink-0" />
-                <a href="tel:+912225767062" className="hover:text-white transition-colors">
-                  +91 22 2576 7062
+                <a href="tel:+914222685000" className="hover:text-white transition-colors">
+                  +91 422 268 5000
                 </a>
               </li>
             </ul>

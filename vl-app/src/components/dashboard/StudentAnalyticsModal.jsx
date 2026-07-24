@@ -54,8 +54,8 @@ export default function StudentAnalyticsModal({ userId, onClose }) {
 
   const totalTime = visits.reduce((sum, v) => sum + v.duration, 0);
   const minutesSpent = Math.round(totalTime / 60);
-  const passedQuizzes = quizzes.filter(q => q.passed).length;
-  const passRate = quizzes.length > 0 ? Math.round((passedQuizzes / quizzes.length) * 100) : 0;
+  const totalScorePct = quizzes.reduce((sum, q) => sum + (q.score / q.maxScore) * 100, 0);
+  const avgMarks = quizzes.length > 0 ? Math.round(totalScorePct / quizzes.length) : 0;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md">
@@ -79,12 +79,13 @@ export default function StudentAnalyticsModal({ userId, onClose }) {
         {/* Modal Content */}
         <div className="p-6 flex-1 overflow-y-auto space-y-6">
           {/* Key Metrics Cards */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
             {[
               { label: 'Unique Visits', val: new Set(visits.map(v => v.experimentId)).size, icon: BookOpen, color: 'text-blue-400 bg-blue-500/10' },
               { label: 'Time Invested', val: `${minutesSpent} min`, icon: Clock, color: 'text-purple-400 bg-purple-500/10' },
-              { label: 'Quiz Pass Rate', val: `${passRate}%`, icon: Award, color: 'text-emerald-400 bg-emerald-500/10' },
-              { label: 'Feedbacks Sent', val: feedbacks.length, icon: Star, color: 'text-amber-400 bg-amber-500/10' },
+              { label: 'Quiz Attempts', val: quizzes.length, icon: Award, color: 'text-emerald-400 bg-emerald-500/10' },
+              { label: 'Avg Marks', val: `${avgMarks}%`, icon: Star, color: 'text-amber-400 bg-amber-500/10' },
+              { label: 'Feedbacks', val: feedbacks.length, icon: Star, color: 'text-rose-400 bg-rose-500/10' },
             ].map((m, i) => (
               <div key={i} className="bg-slate-950/40 border border-white/5 rounded-xl p-4 flex items-center gap-3">
                 <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${m.color}`}>
@@ -127,6 +128,7 @@ export default function StudentAnalyticsModal({ userId, onClose }) {
                       <thead>
                         <tr className="text-slate-500 font-bold border-b border-white/5 pb-2 uppercase tracking-wider">
                           <th className="pb-2">Experiment</th>
+                          <th className="pb-2">Pages Visited</th>
                           <th className="pb-2 text-center">Duration</th>
                           <th className="pb-2 text-center">Device</th>
                           <th className="pb-2 text-right">Date</th>
@@ -138,6 +140,19 @@ export default function StudentAnalyticsModal({ userId, onClose }) {
                           return (
                             <tr key={v.id} className="hover:bg-white/5 transition-colors">
                               <td className="py-2.5 font-semibold text-white">{v.experiment?.title}</td>
+                              <td className="py-2.5">
+                                <div className="flex flex-wrap gap-1">
+                                  {v.tabsVisited && v.tabsVisited.length > 0 ? (
+                                    v.tabsVisited.map(t => (
+                                      <span key={t} className="inline-flex px-1.5 py-0.5 rounded text-[9px] font-medium bg-blue-500/10 text-blue-400 border border-blue-500/20 capitalize">
+                                        {t}
+                                      </span>
+                                    ))
+                                  ) : (
+                                    <span className="text-slate-500 text-[10px] italic">Not tracked</span>
+                                  )}
+                                </div>
+                              </td>
                               <td className="py-2.5 text-center text-slate-400">{Math.round(v.duration / 60)}m {v.duration % 60}s</td>
                               <td className="py-2.5 text-center">
                                 <span className="inline-flex items-center gap-1 text-slate-400 bg-white/5 border border-white/5 px-2 py-0.5 rounded">
@@ -170,7 +185,6 @@ export default function StudentAnalyticsModal({ userId, onClose }) {
                           <th className="pb-2">Experiment</th>
                           <th className="pb-2 text-center">Quiz Type</th>
                           <th className="pb-2 text-center">Score</th>
-                          <th className="pb-2 text-center">Status</th>
                           <th className="pb-2 text-right">Date</th>
                         </tr>
                       </thead>
@@ -180,11 +194,6 @@ export default function StudentAnalyticsModal({ userId, onClose }) {
                             <td className="py-2.5 font-semibold text-white">{q.experiment?.title}</td>
                             <td className="py-2.5 text-center capitalize text-slate-400">{q.quizType}</td>
                             <td className="py-2.5 text-center font-bold text-white">{q.score}/{q.maxScore}</td>
-                            <td className="py-2.5 text-center">
-                              <span className={`inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold border ${q.passed ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 'bg-rose-500/10 border-rose-500/20 text-rose-400'}`}>
-                                {q.passed ? 'PASSED' : 'FAILED'}
-                              </span>
-                            </td>
                             <td className="py-2.5 text-right text-slate-500">
                               {new Date(q.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}
                             </td>

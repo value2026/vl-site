@@ -1,7 +1,7 @@
 import { FlaskConical, BookOpen, Award, Clock, ArrowRight } from 'lucide-react';
 import DashboardLayout from '../../components/dashboard/DashboardLayout';
 import { useAuth }     from '../../context/AuthContext';
-import UpcomingCallsCard from '../../components/communication/UpcomingCallsCard';
+
 
 export default function StudentDashboard() {
   const { user } = useAuth();
@@ -54,29 +54,23 @@ export default function StudentDashboard() {
         ))}
       </div>
 
-      {/* Profile info & Video consultations row */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-        <div className="bg-slate-900 border border-white/10 rounded-2xl p-6 lg:col-span-2">
-          <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
-            <Clock className="w-4 h-4 text-slate-400" /> My Profile
-          </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-            {[
-              { label: 'Full Name', value: user?.name },
-              { label: 'Email',    value: user?.email },
-              { label: 'Role',     value: 'Student' },
-              { label: 'Status',   value: 'Active' },
-            ].map(({ label, value }) => (
-              <div key={label} className="bg-white/3 rounded-xl p-4">
-                <div className="text-slate-500 text-xs mb-1">{label}</div>
-                <div className="text-white font-medium">{value}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="col-span-1">
-          <UpcomingCallsCard />
+      {/* Profile info row */}
+      <div className="bg-slate-900 border border-white/10 rounded-2xl p-6 mb-8">
+        <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
+          <Clock className="w-4 h-4 text-slate-400" /> My Profile
+        </h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+          {[
+            { label: 'Full Name', value: user?.name },
+            { label: 'Email',    value: user?.email },
+            { label: 'Role',     value: 'Student' },
+            { label: 'Status',   value: 'Active' },
+          ].map(({ label, value }) => (
+            <div key={label} className="bg-white/3 rounded-xl p-4">
+              <div className="text-slate-500 text-xs mb-1">{label}</div>
+              <div className="text-white font-medium">{value}</div>
+            </div>
+          ))}
         </div>
       </div>
 

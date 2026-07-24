@@ -18,10 +18,11 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import {
   GripVertical, Eye, EyeOff, Pencil, ExternalLink,
-  RefreshCw, Globe, AlertCircle, Loader2, CheckCircle2
+  RefreshCw, Globe, AlertCircle, Loader2, CheckCircle2, ChevronDown, DownloadCloud
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import SectionEditorModal from '../../components/dashboard/SectionEditorModal';
+import SurveyResponsesModal from '../../components/dashboard/SurveyResponsesModal';
 
 // ── API helpers ───────────────────────────────────────────────
 
@@ -137,11 +138,13 @@ function SortableSection({ section, onEdit, onToggle, isSaving }) {
 export default function ManagePages() {
   const { token, API_URL } = useAuth();
   const queryClient        = useQueryClient();
+  const [pageSlug, setPageSlug] = useState('home');
   const [editingSection, setEditingSection] = useState(null);
+  const [showSurveyResponsesModal, setShowSurveyResponsesModal] = useState(false);
   const [savingId,       setSavingId]       = useState(null);
   const [savedId,        setSavedId]        = useState(null);
 
-  const { data: sections = [], isLoading, isError, refetch } = usePageSections('home', token, API_URL);
+  const { data: sections = [], isLoading, isError, refetch } = usePageSections(pageSlug, token, API_URL);
 
   // Local ordering state (optimistic UI)
   const [localOrder, setLocalOrder] = useState(null);
@@ -156,7 +159,7 @@ export default function ManagePages() {
   const toggleMutation = useMutation({
     mutationFn: async (section) => {
       setSavingId(section.id);
-      const res = await fetch(`${API_URL}/pages/home/sections/${section.id}/visibility`, {
+      const res = await fetch(`${API_URL}/pages/${pageSlug}/sections/${section.id}/visibility`, {
         method:  'PATCH',
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -164,11 +167,12 @@ export default function ManagePages() {
       return res.json();
     },
     onSuccess: (updated) => {
-      queryClient.setQueryData(['admin-page-sections', 'home'], (old) =>
+      queryClient.setQueryData(['admin-page-sections', pageSlug], (old) =>
         old?.map(s => s.id === updated.id ? updated : s)
       );
-      // Also invalidate the public home sections cache
-      queryClient.invalidateQueries(['home-sections']);
+      setLocalOrder(prev => prev ? prev.map(s => s.id === updated.id ? { ...s, isVisible: updated.isVisible } : s) : null);
+      // Also invalidate the public cache
+      queryClient.invalidateQueries([`${pageSlug}-sections`]);
       setSavedId(updated.id);
       setTimeout(() => setSavedId(null), 2000);
     },
@@ -178,7 +182,7 @@ export default function ManagePages() {
   // Reorder mutation
   const reorderMutation = useMutation({
     mutationFn: async (items) => {
-      const res = await fetch(`${API_URL}/pages/home/sections/reorder`, {
+      const res = await fetch(`${API_URL}/pages/${pageSlug}/sections/reorder`, {
         method:  'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -189,7 +193,8 @@ export default function ManagePages() {
       if (!res.ok) throw new Error('Reorder failed');
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['home-sections']);
+      queryClient.invalidateQueries([`${pageSlug}-sections`]);
+      queryClient.invalidateQueries(['admin-page-sections', pageSlug]);
     },
   });
 
@@ -237,33 +242,137 @@ export default function ManagePages() {
 
   return (
     <div className="max-w-3xl mx-auto">
-      {/* Header */}
-      <div className="flex items-start justify-between mb-8">
+      {/* Header and Actions */}
+      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6">
         <div>
           <h2 className="text-white text-2xl font-bold flex items-center gap-3">
             <Globe className="w-6 h-6 text-red-400" />
-            Home Page
+            Manage Pages
           </h2>
           <p className="text-slate-400 text-sm mt-1.5">
             Drag to reorder sections · Toggle visibility · Click Edit to change content
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <button
             onClick={() => refetch()}
             className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 transition-all"
           >
             <RefreshCw className="w-4 h-4" />
           </button>
-          <a
-            href="/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-slate-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 transition-all"
+          
+          {(() => {
+            const getLiveUrl = () => {
+              switch(pageSlug) {
+                case 'home': return '/';
+                case 'student-survey': return '/survey/student';
+                case 'faculty-survey': return '/survey/faculty';
+                case 'nodal-centres': return '/nodal-centres/list';
+                default: return `/${pageSlug}`;
+              }
+            };
+            return (
+              <>
+                {['student-survey', 'faculty-survey'].includes(pageSlug) && (
+                  <button
+                    onClick={() => setShowSurveyResponsesModal(true)}
+                    className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-blue-400 hover:text-white bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 transition-all"
+                  >
+                    <Eye className="w-4 h-4" />
+                    View Responses
+                  </button>
+                )}
+                <a
+                  href={getLiveUrl()}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-slate-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 transition-all"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                  View Live
+                </a>
+              </>
+            );
+          })()}
+        </div>
+      </div>
+
+      {/* Page Tabs */}
+      <div className="flex flex-wrap items-center gap-2 mb-6 border-b border-white/10 pb-4">
+        <button
+          onClick={() => { setPageSlug('home'); setLocalOrder(null); }}
+          className={`px-5 py-2.5 rounded-lg text-sm font-semibold transition-all ${
+            pageSlug === 'home'
+              ? 'bg-red-500/10 text-red-400 border border-red-500/20'
+              : 'text-slate-400 hover:text-white hover:bg-white/5 border border-transparent'
+          }`}
+        >
+          Home Page
+        </button>
+        <button
+          onClick={() => { setPageSlug('publications'); setLocalOrder(null); }}
+          className={`px-5 py-2.5 rounded-lg text-sm font-semibold transition-all ${
+            pageSlug === 'publications'
+              ? 'bg-red-500/10 text-red-400 border border-red-500/20'
+              : 'text-slate-400 hover:text-white hover:bg-white/5 border border-transparent'
+          }`}
+        >
+          Publications
+        </button>
+        <button
+          onClick={() => { setPageSlug('project'); setLocalOrder(null); }}
+          className={`px-5 py-2.5 rounded-lg text-sm font-semibold transition-all ${
+            pageSlug === 'project'
+              ? 'bg-red-500/10 text-red-400 border border-red-500/20'
+              : 'text-slate-400 hover:text-white hover:bg-white/5 border border-transparent'
+          }`}
+        >
+          Project
+        </button>
+        <button
+          onClick={() => { setPageSlug('nodal-centres'); setLocalOrder(null); }}
+          className={`px-5 py-2.5 rounded-lg text-sm font-semibold transition-all ${
+            pageSlug === 'nodal-centres'
+              ? 'bg-red-500/10 text-red-400 border border-red-500/20'
+              : 'text-slate-400 hover:text-white hover:bg-white/5 border border-transparent'
+          }`}
+        >
+          Nodal Centres
+        </button>
+        <div className="relative group">
+          <button
+            className={`px-5 py-2.5 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 ${
+              ['student-survey', 'faculty-survey'].includes(pageSlug)
+                ? 'bg-red-500/10 text-red-400 border border-red-500/20'
+                : 'text-slate-400 hover:text-white hover:bg-white/5 border border-transparent'
+            }`}
           >
-            <ExternalLink className="w-4 h-4" />
-            View Live
-          </a>
+            Surveys
+            <ChevronDown className={`w-4 h-4 transition-transform group-hover:rotate-180 ${['student-survey', 'faculty-survey'].includes(pageSlug) ? 'text-red-400' : 'text-slate-500'}`} />
+          </button>
+          
+          <div className="absolute left-0 top-full mt-1 w-48 bg-slate-800 border border-white/10 rounded-xl shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 overflow-hidden py-1">
+            <button
+              onClick={() => { setPageSlug('student-survey'); setLocalOrder(null); }}
+              className={`w-full text-left px-4 py-2.5 text-sm transition-colors ${
+                pageSlug === 'student-survey' 
+                  ? 'bg-blue-500/20 text-blue-300 font-bold border-l-2 border-blue-400' 
+                  : 'text-slate-300 hover:bg-white/5 hover:text-white border-l-2 border-transparent'
+              }`}
+            >
+              Student Survey
+            </button>
+            <button
+              onClick={() => { setPageSlug('faculty-survey'); setLocalOrder(null); }}
+              className={`w-full text-left px-4 py-2.5 text-sm transition-colors ${
+                pageSlug === 'faculty-survey' 
+                  ? 'bg-blue-500/20 text-blue-300 font-bold border-l-2 border-blue-400' 
+                  : 'text-slate-300 hover:bg-white/5 hover:text-white border-l-2 border-transparent'
+              }`}
+            >
+              Faculty Survey
+            </button>
+          </div>
         </div>
       </div>
 
@@ -318,6 +427,7 @@ export default function ManagePages() {
       {editingSection && (
         <SectionEditorModal
           section={editingSection}
+          pageSlug={pageSlug}
           onClose={() => setEditingSection(null)}
           onSaved={() => {
             refetch();
@@ -325,6 +435,13 @@ export default function ManagePages() {
           }}
         />
       )}
+      <SurveyResponsesModal
+        isOpen={showSurveyResponsesModal}
+        onClose={() => setShowSurveyResponsesModal(false)}
+        pageSlug={pageSlug}
+        token={token}
+        API_URL={API_URL}
+      />
     </div>
   );
 }

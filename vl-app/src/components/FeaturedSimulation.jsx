@@ -1,14 +1,15 @@
-import { Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import {
   ArrowRight, Clock, BarChart2, BookOpen, Building2, Layers
 } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 const DEFAULTS = {
   tag: 'Physics',
   category: 'Mechanics',
   title: 'Simple Pendulum Simulation',
   description: 'Explore the physics of oscillatory motion with our interactive pendulum simulation. Adjust parameters like length, mass, and gravity to observe real-time changes.',
-  institution: 'IIT Bombay',
+  institution: 'Amrita Vishwa Vidyapeetham',
   duration: '45 min',
   difficulty: 'Intermediate',
   experiments: 12,
@@ -17,14 +18,37 @@ const DEFAULTS = {
 
 export default function FeaturedSimulation({ content = {} }) {
   const sim = { ...DEFAULTS, ...content };
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   // Retroactive fix: rewrite legacy plural routes to matching singular route format
   if (sim.href && sim.href.startsWith('/student/experiments/')) {
     sim.href = sim.href.replace('/student/experiments/', '/student/experiment/');
   }
 
+  // Derive experiment ID from href if possible
+  const experimentPath = sim.href?.startsWith('/student/experiment/')
+    ? sim.href
+    : null;
+
+  const handleTrySimulation = (e) => {
+    e.preventDefault();
+    if (!experimentPath) {
+      // Fallback for non-experiment hrefs
+      navigate(sim.href || '/login');
+      return;
+    }
+    if (user) {
+      // All authenticated users (students, teachers, admins, etc.) can view
+      navigate(experimentPath);
+    } else {
+      // Only unauthenticated visitors are redirected to login
+      navigate(`/login?redirect=${encodeURIComponent(experimentPath)}`);
+    }
+  };
+
   return (
-    <section className="py-24 bg-white" aria-labelledby="featured-sim-heading">
+    <section className="py-[100px] bg-white" aria-labelledby="featured-sim-heading">
       <div className="container-custom">
         {/* Section header */}
         <div className="text-center mb-16">
@@ -38,7 +62,7 @@ export default function FeaturedSimulation({ content = {} }) {
         </div>
 
         {/* Split card */}
-        <div className="bg-gradient-to-br from-primary-50 to-blue-50 rounded-3xl overflow-hidden shadow-card-hover">
+        <div className="bg-white rounded-[2rem] overflow-hidden shadow-2xl border border-[#E2E8F0] mt-[50px]">
           <div className="grid lg:grid-cols-2 gap-0">
             {/* Left — content */}
             <div className="p-10 lg:p-14 flex flex-col justify-center">
@@ -63,10 +87,10 @@ export default function FeaturedSimulation({ content = {} }) {
                 <MetaBadge Icon={Layers}    label={`${sim.experiments} experiments`} />
               </div>
 
-              <Link to={sim.href} className="btn-primary self-start text-base">
+              <button onClick={handleTrySimulation} className="btn-primary self-start text-base">
                 Try Simulation
                 <ArrowRight className="w-5 h-5" />
-              </Link>
+              </button>
             </div>
 
             {/* Right — visual */}

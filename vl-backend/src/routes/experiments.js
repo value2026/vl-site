@@ -5,7 +5,7 @@ const { upload } = require('../middleware/upload');
 const {
   getExperiments, getAllExperiments, getExperiment, getExperimentSection,
   createExperiment, updateExperiment, deleteExperiment,
-  uploadContent, uploadSimulation, getExperimentDocs,
+  uploadZip, getExperimentDocs,
 } = require('../controllers/experimentsController');
 
 // Public
@@ -15,25 +15,18 @@ router.get('/:id/docs',        getExperimentDocs);
 router.get('/:id/content/:section', getExperimentSection);
 
 // Staff
-router.get('/all/list', verifyToken, requireRole('admin', 'content_admin'), getAllExperiments);
-router.post('/',        verifyToken, requireRole('admin', 'content_admin'), createExperiment);
-router.put('/:id',      verifyToken, requireRole('admin', 'content_admin'), updateExperiment);
-router.delete('/:id',   verifyToken, requireRole('admin', 'content_admin'), deleteExperiment);
+router.get('/all/list', verifyToken, requireRole('admin', 'vl_manager', 'nodal_centre', 'teacher'), getAllExperiments);
+router.post('/',        verifyToken, requireRole('admin', 'nodal_centre', 'teacher'), createExperiment);
+router.put('/:id',      verifyToken, requireRole('admin', 'nodal_centre', 'teacher'), updateExperiment);
+router.delete('/:id',   verifyToken, requireRole('admin', 'nodal_centre', 'teacher'), deleteExperiment);
 
 // File uploads
 router.post(
-  '/:id/upload-content',
+  '/:id/upload-zip',
   verifyToken,
   requireRole('admin', 'content_admin'),
   upload.single('file'),
-  uploadContent,
-);
-router.post(
-  '/:id/upload-simulation',
-  verifyToken,
-  requireRole('admin', 'content_admin'),
-  upload.single('file'),
-  uploadSimulation,
+  uploadZip,
 );
 
 module.exports = router;

@@ -1,0 +1,50 @@
+[
+  {
+    "legacyId": 2,
+    "name": "VMKV Engineering College",
+    "code": "vmkv",
+    "oldCreatedAt": "2/3/2015"
+  },
+  {
+    "legacyId": 5,
+    "name": "MET Nashik",
+    "code": "met",
+    "oldCreatedAt": "01-05-2015"
+  },
+  {
+    "legacyId": 1,
+    "name": "Amrita Vishwa Vidyapeetham",
+    "code": "amrita",
+    "oldCreatedAt": "01-01-2015"
+  },
+  {
+    "legacyId": 3,
+    "name": "IIT Bombay",
+    "code": "iitb",
+    "oldCreatedAt": "01-01-2015"
+  },
+  {
+    "legacyId": 4,
+    "name": "NIT Warangal",
+    "code": "nitw",
+    "oldCreatedAt": "01-01-2015"
+  },
+  {
+    "legacyId": 6,
+    "name": "IIIT Hyderabad",
+    "code": "iiith",
+    "oldCreatedAt": "01-01-2015"
+  },
+  {
+    "legacyId": 7,
+    "name": "College of Engineering Pune",
+    "code": "coep",
+    "oldCreatedAt": "01-01-2015"
+  },
+  {
+    "legacyId": 8,
+    "name": "National Institute of Technology Calicut",
+    "code": "nitc",
+    "oldCreatedAt": "01-01-2015"
+  }
+]

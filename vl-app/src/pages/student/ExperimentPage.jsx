@@ -1,8 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { FlaskConical, Star, Bug, Menu, X, ChevronLeft, CheckCircle, Circle, Loader2, Maximize2, Monitor } from 'lucide-react';
 import { api, fileUrl } from '../../utils/api';
+import { trackEvent, trackError, EVENTS } from '../../utils/analytics';
 import QuizBlock from '../../components/student/QuizBlock';
+import { useAuth } from '../../context/AuthContext';
 
 // ── Sidebar sections ─────────────────────────────────────────
 const SECTIONS = [
@@ -196,8 +198,10 @@ function FeedbackSection({ onComplete }) {
 export default function ExperimentPage() {
   const { expId }  = useParams();
   const navigate   = useNavigate();
+  const { user }   = useAuth();
   const [active, setActive]         = useState('aim');
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [trackedEvents, setTrackedEvents] = useState({ simulation: false, pretest: false, posttest: false });
 
   const [experiment, setExperiment] = useState(null);
   const [loading, setLoading]       = useState(true);
@@ -214,6 +218,7 @@ export default function ExperimentPage() {
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
+      const perfStart = performance.now();
       try {
         const expRes = await api.get(`/experiments/${expId}`);
         if (expRes.ok) {
@@ -227,9 +232,21 @@ export default function ExperimentPage() {
               setSections(docsData);
             }
           }
+          
+          const loadMs = Math.round(performance.now() - perfStart);
+          trackEvent({
+            category: 'performance',
+            action: EVENTS.PERFORMANCE_METRIC,
+            metric_name: 'api_load_time_ms',
+            value: loadMs,
+            experiment_id: expId,
+            experiment_name: expData?.title,
+            user_id: user?.id
+          });
         }
       } catch (err) {
         console.error('Failed to load experiment', err);
+        trackError('api_error', 'Failed to load experiment data', { experiment_id: expId });
       } finally {
         setLoading(false);
       }
@@ -237,16 +254,40 @@ export default function ExperimentPage() {
     loadData();
   }, [expId]);
 
+  const getAnalyticsParams = (status = 'Started') => ({
+    vl_exp_id: expId,
+    vl_exp_name: experiment?.title,
+    vl_sim_name: experiment?.title,
+    vl_lab_name: lab?.title ?? undefined,
+    vl_institution: user?.org ?? undefined,
+    vl_nodal_center: user?.nodalCentreId ?? undefined,
+    vl_dept: user?.dept ?? undefined,
+    vl_course: user?.course ?? undefined,
+    vl_semester: user?.yearSemester ?? undefined,
+    vl_role: user?.role ?? undefined,
+    vl_user_name: user?.name ?? undefined,
+    vl_language: 'en',
+    vl_status: status,
+    vl_user_id: user?.id ?? undefined
+  });
+
+  const [visitId, setVisitId] = useState(null);
+  const sessionStartTime = useRef(Date.now());
+
   // Log active visit on mount
   useEffect(() => {
     if (experiment) {
       const logVisit = async () => {
         try {
-          await api.post('/analytics/visit', {
+          const res = await api.post('/analytics/visit', {
             experimentId: expId,
             device: window.innerWidth < 640 ? 'mobile' : window.innerWidth < 1024 ? 'tablet' : 'desktop',
             browser: navigator.userAgent.toLowerCase().includes('firefox') ? 'firefox' : navigator.userAgent.toLowerCase().includes('safari') && !navigator.userAgent.toLowerCase().includes('chrome') ? 'safari' : 'chrome'
           });
+          if (res.ok) {
+            const data = await res.json();
+            setVisitId(data.id);
+          }
         } catch (err) {
           // Silent catch
         }
@@ -254,6 +295,48 @@ export default function ExperimentPage() {
       logVisit();
     }
   }, [experiment, expId]);
+
+  // Log active tab visits and periodically update duration
+  useEffect(() => {
+    if (!visitId) return;
+
+    // Log the current tab and the current duration immediately
+    if (active) {
+      const currentDuration = Math.round((Date.now() - sessionStartTime.current) / 1000);
+      api.put(`/analytics/visit/${visitId}`, { tabId: active, duration: currentDuration }).catch(() => {});
+    }
+
+    // Periodically update the total duration of this session (every 10s)
+    const interval = setInterval(() => {
+      const currentDuration = Math.round((Date.now() - sessionStartTime.current) / 1000);
+      api.put(`/analytics/visit/${visitId}`, { duration: currentDuration }).catch(() => {});
+    }, 10000);
+
+    return () => {
+      clearInterval(interval);
+      // Try to log the final duration when this effect cleans up (e.g., unmount or tab switch)
+      const finalDuration = Math.round((Date.now() - sessionStartTime.current) / 1000);
+      api.put(`/analytics/visit/${visitId}`, { duration: finalDuration }).catch(() => {});
+    };
+  }, [visitId, active]);
+
+  // Listen for custom GA events coming from the simulation iframe via postMessage
+  useEffect(() => {
+    const handleMessage = (e) => {
+      if (e.data && e.data.type === 'GA_EVENT') {
+        trackEvent({
+          category: 'simulation',
+          action: e.data.action ? e.data.action.toLowerCase().replace(/\s+/g, '_') : 'unknown_event',
+          label: e.data.label || experiment?.title,
+          value: e.data.value,
+          ...getAnalyticsParams('In Progress'),
+          ...(e.data.params || {})
+        });
+      }
+    };
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, [experiment, user, expId]);
 
   const handleFullscreen = () => {
     const elem = document.getElementById('simulation-frame-container');
@@ -286,6 +369,26 @@ export default function ExperimentPage() {
     }
   }, [sections, active]);
 
+  // Track simulation exit and duration
+  useEffect(() => {
+    let startTime;
+    if (active === 'simulation') {
+      startTime = Date.now();
+    }
+    return () => {
+      if (active === 'simulation' && startTime) {
+        const durationSeconds = Math.round((Date.now() - startTime) / 1000);
+        trackEvent({
+          category: 'experiment',
+          action: EVENTS.SIMULATION_EXITED,
+          label: experiment?.title,
+          duration: durationSeconds,
+          ...getAnalyticsParams('Completed')
+        });
+      }
+    };
+  }, [active, experiment, expId, user]);
+
 
 
   const handleFeedbackComplete = async (rating, comment) => {
@@ -295,8 +398,18 @@ export default function ExperimentPage() {
         rating,
         comment,
       });
+      trackEvent({
+        category: 'experiment',
+        action: EVENTS.EXPERIMENT_COMPLETED,
+        label: experiment?.title,
+        value: rating,
+        experiment_id: expId,
+        experiment_name: experiment?.title,
+        user_id: user?.id
+      });
     } catch (err) {
       console.error(err);
+      trackError('api_error', 'Failed to submit feedback', { experiment_id: expId });
     }
   };
 
@@ -364,7 +477,13 @@ export default function ExperimentPage() {
         return (
           <div>
             <SectionHeader title="Pretest" subtitle="Answer these questions before starting the simulation to assess your prior knowledge." />
-            <QuizBlock experimentId={expId} quizType="pretest" questions={sections.pretest?.questions || []} />
+            <QuizBlock 
+              experimentId={expId} 
+              experimentName={experiment.title}
+              userId={user?.id}
+              quizType="pretest" 
+              questions={sections.pretest?.questions || []} 
+            />
           </div>
         );
 
@@ -417,13 +536,23 @@ export default function ExperimentPage() {
                     </div>
                   </div>
 
-                  {/* Sandbox IFrame */}
                   <iframe
                     src={fileUrl(`${experiment.simulationPath}/index.html`)}
                     className="w-full flex-1 border-none bg-[#3CA4AB]"
                     title="Simulation"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
+                    onLoad={(e) => {
+                      const measurementId = import.meta.env.VITE_GA_MEASUREMENT_ID;
+                      if (measurementId) {
+                        e.target.contentWindow.postMessage({ 
+                          type: 'INIT_GA', 
+                          measurementId,
+                          userId: user?.id,
+                          experimentId: expId
+                        }, '*');
+                      }
+                    }}
                   />
                 </div>
               </div>
@@ -439,7 +568,13 @@ export default function ExperimentPage() {
         return (
           <div>
             <SectionHeader title="Posttest" subtitle="Test your understanding after completing the simulation." />
-            <QuizBlock experimentId={expId} quizType="posttest" questions={sections.posttest?.questions || []} />
+            <QuizBlock 
+              experimentId={expId} 
+              experimentName={experiment.title}
+              userId={user?.id}
+              quizType="posttest" 
+              questions={sections.posttest?.questions || []} 
+            />
           </div>
         );
 
@@ -544,7 +679,41 @@ export default function ExperimentPage() {
               return (
                 <button
                   key={id}
-                  onClick={() => { setActive(id); setSidebarOpen(false); }}
+                  onClick={() => { 
+                    const previousTab = active;
+                    setActive(id); 
+                    setSidebarOpen(false);
+                    
+                    if (previousTab !== id) {
+                      trackEvent({
+                        category: 'experiment',
+                        action: EVENTS.NAVIGATION_CHANGED,
+                        from_tab: previousTab,
+                        to_tab: id,
+                        ...getAnalyticsParams('In Progress')
+                      });
+                    }
+
+                    if (id === 'simulation' && !trackedEvents.simulation) {
+                      setTrackedEvents(prev => ({ ...prev, simulation: true }));
+                      trackEvent({ 
+                        category: 'experiment', action: EVENTS.SIMULATION_STARTED, label: experiment?.title,
+                        ...getAnalyticsParams('Started')
+                      });
+                    } else if (id === 'posttest' && !trackedEvents.posttest) {
+                      setTrackedEvents(prev => ({ ...prev, posttest: true }));
+                      trackEvent({ 
+                        category: 'experiment', action: EVENTS.QUIZ_STARTED, label: `${experiment?.title} - Posttest`,
+                        quiz_type: 'posttest', ...getAnalyticsParams('Started')
+                      });
+                    } else if (id === 'pretest' && !trackedEvents.pretest) {
+                      setTrackedEvents(prev => ({ ...prev, pretest: true }));
+                      trackEvent({ 
+                        category: 'experiment', action: EVENTS.QUIZ_STARTED, label: `${experiment?.title} - Pretest`,
+                        quiz_type: 'pretest', ...getAnalyticsParams('Started')
+                      });
+                    }
+                  }}
                   className={`w-full text-left px-5 py-3 text-sm transition-all duration-150 relative ${
                     isActive
                       ? 'text-blue-700 font-semibold bg-blue-50'

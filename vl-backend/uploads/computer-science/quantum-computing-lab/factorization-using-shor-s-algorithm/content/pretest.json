@@ -1,0 +1,71 @@
+{
+  "version": 2.0,
+  "questions": [
+    {
+      "question": "Which of the following is an example of a conventional database?",
+      "answers": {
+        "a": "MySQL",
+        "b": "Bitcoin",
+        "c": "Ethereum",
+        "d": "Blockchain"
+      },
+      "correctAnswer": "a",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "What does a blockchain store data in?",
+      "answers": {
+        "a": "Tables",
+        "b": "Spreadsheets",
+        "c": "Blocks",
+        "d": "Documents"
+      },
+      "correctAnswer": "c",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "Which of these is a key feature of a blockchain?",
+      "answers": {
+        "a": "Data can be deleted anytime",
+        "b": "Data is stored in a central server",
+        "c": "Data is stored in blocks linked together",
+        "d": "Data is not encrypted"
+      },
+      "correctAnswer": "c",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "Who controls a centralized database?",
+      "answers": {
+        "a": "Everyone in the network",
+        "b": "A single authority or admin",
+        "c": "No one controls it",
+        "d": "Only users with blockchain wallets"
+      },
+      "correctAnswer": "b",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "Which database type allows decentralization?",
+      "answers": {
+        "a": "Conventional database",
+        "b": "Cloud database",
+        "c": "Blockchain database",
+        "d": "Flat file database"
+      },
+      "correctAnswer": "c",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "What ensures the sequence of data in a blockchain?",
+      "answers": {
+        "a": "Data tables",
+        "b": "Date of entry",
+        "c": "Cryptographic hashes linking blocks",
+        "d": "Database keys"
+      },
+      "correctAnswer": "c",
+      "difficulty": "beginner"
+    }
+  ]
+}

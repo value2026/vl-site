@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('🌱 Starting database seed...');
 
-  // 1. Create or Find default users
+  // 1. Create or Find default users and institutions
   const adminEmail = 'admin@virtuallabs.in';
   let admin = await prisma.user.findUnique({ where: { email: adminEmail } });
 
@@ -25,106 +25,154 @@ async function main() {
     console.log('ℹ️ Admin user already exists.');
   }
 
-  // Create default student if not exists
-  const studentEmail = 'student@virtuallabs.in';
-  const studentExists = await prisma.user.findUnique({ where: { email: studentEmail } });
-  if (!studentExists) {
-    const hashed = await bcrypt.hash('VLStudent@2024', 12);
-    await prisma.user.create({
+  // Create default VL Manager
+  const managerEmail = 'manager@virtuallabs.in';
+  let manager = await prisma.user.findUnique({ where: { email: managerEmail } });
+  if (!manager) {
+    const hashed = await bcrypt.hash('VLManager@2024', 12);
+    manager = await prisma.user.create({
       data: {
-        name: 'John Student',
-        email: studentEmail,
+        name: 'VL Manager',
+        email: managerEmail,
         password: hashed,
-        role: 'student',
+        role: 'vl_manager',
       },
     });
-    console.log('✅ Student user created!');
+    console.log('✅ VL Manager created!');
+  } else {
+    console.log('ℹ️ VL Manager already exists.');
+  }
+
+  // Create Default Institutions with Legacy Metadata
+  const defaultInstitutions = [
+    { legacyId: 1, name: 'Amrita Vishwa Vidyapeetham', code: 'amrita', oldCreatedAt: '01-01-2015' },
+    { legacyId: 2, name: 'VMKV Engineering College',  code: 'vmkv',   oldCreatedAt: '2/3/2015' },
+    { legacyId: 3, name: 'IIT Bombay',                 code: 'iitb',   oldCreatedAt: '01-01-2015' },
+    { legacyId: 4, name: 'NIT Warangal',               code: 'nitw',   oldCreatedAt: '01-01-2015' },
+    { legacyId: 5, name: 'MET Nashik',                 code: 'met',    oldCreatedAt: '01-05-2015' },
+    { legacyId: 6, name: 'IIIT Hyderabad',             code: 'iiith',  oldCreatedAt: '01-01-2015' },
+  ];
+  
+  let primaryInstitution = null;
+  
+  for (const item of defaultInstitutions) {
+    let inst = await prisma.institution.findUnique({ where: { name: item.name } });
+    if (!inst) {
+      inst = await prisma.institution.create({
+        data: {
+          name: item.name,
+          code: item.code,
+          legacyId: item.legacyId,
+          oldCreatedAt: item.oldCreatedAt,
+          createdById: admin.id
+        }
+      });
+      console.log(`✅ Institution created: ${item.name} (${item.code})`);
+    } else {
+      inst = await prisma.institution.update({
+        where: { id: inst.id },
+        data: {
+          code: item.code,
+          legacyId: item.legacyId,
+          oldCreatedAt: item.oldCreatedAt
+        }
+      });
+    }
+    if (item.name === 'Amrita Vishwa Vidyapeetham') {
+      primaryInstitution = inst;
+    }
+  }
+
+  // Create default nodal admin (Nodal Centre role)
+  const nodalEmail = 'nodal@amrita.edu';
+  let nodalAdmin = await prisma.user.findUnique({ where: { email: nodalEmail } });
+  if (!nodalAdmin && primaryInstitution) {
+    const hashed = await bcrypt.hash('VLNodal@2024', 12);
+    nodalAdmin = await prisma.user.create({
+      data: {
+        name: 'Amrita Nodal Admin',
+        email: nodalEmail,
+        password: hashed,
+        role: 'nodal_centre',
+        nodalCentreId: primaryInstitution.id, // Linking to Institution
+        createdById: admin.id,
+      },
+    });
+    console.log('✅ Nodal Admin user created!');
   }
 
   // Create default teacher if not exists
   const teacherEmail = 'teacher@virtuallabs.in';
-  const teacherExists = await prisma.user.findUnique({ where: { email: teacherEmail } });
-  if (!teacherExists) {
+  let teacherExists = await prisma.user.findUnique({ where: { email: teacherEmail } });
+  if (!teacherExists && primaryInstitution) {
     const hashed = await bcrypt.hash('VLTeacher@2024', 12);
-    await prisma.user.create({
+    teacherExists = await prisma.user.create({
       data: {
-        name: 'Dr. Jane Smith',
+        name: 'Jane Teacher',
         email: teacherEmail,
         password: hashed,
         role: 'teacher',
+        nodalCentreId: primaryInstitution.id, // Linking to Institution
       },
     });
     console.log('✅ Teacher user created!');
   }
 
-  // Get teacher record (needed for linking)
-  const teacher = await prisma.user.findUnique({ where: { email: teacherEmail } });
-
-  // Create default nodal centre if not exists
-  const nodalEmail = 'nodal@virtuallabs.in';
-  let nodalCentre = await prisma.user.findUnique({ where: { email: nodalEmail } });
-  if (!nodalCentre) {
-    const hashed = await bcrypt.hash('VLNodal@2024', 12);
-    nodalCentre = await prisma.user.create({
+  // Create default student if not exists
+  const studentEmail = 'student@virtuallabs.in';
+  let studentExists = await prisma.user.findUnique({ where: { email: studentEmail } });
+  if (!studentExists && primaryInstitution) {
+    const hashed = await bcrypt.hash('VLStudent@2024', 12);
+    studentExists = await prisma.user.create({
       data: {
-        name: 'Nodal Centre',
-        email: nodalEmail,
+        name: 'John Student',
+        email: studentEmail,
         password: hashed,
-        role: 'nodal_centre',
-        createdById: admin.id,
+        role: 'student',
+        nodalCentreId: primaryInstitution.id, // Linking to Institution
       },
     });
-    console.log('✅ Nodal Centre user created!');
+    console.log('✅ Student user created!');
   }
 
-  // Link teacher to nodal centre (if not already linked)
-  if (teacher && !teacher.nodalCentreId) {
-    await prisma.user.update({
-      where: { id: teacher.id },
-      data: { nodalCentreId: nodalCentre.id, createdById: nodalCentre.id }
-    });
-  }
-
-  // Link default student to teacher + nodal centre (so they appear in contacts)
-  const defaultStudent = await prisma.user.findUnique({ where: { email: 'student@virtuallabs.in' } });
-  if (defaultStudent && !defaultStudent.createdById && teacher) {
-    await prisma.user.update({
-      where: { id: defaultStudent.id },
-      data: { createdById: teacher.id, nodalCentreId: nodalCentre.id }
-    });
-  }
-
-  // Link extra students (alice, bob, charlie) to teacher + nodal centre
+  // Ensure extra students (alice, bob, charlie) if they exist are linked to the primary institution
   const extraStudentEmails = ['alice@virtuallabs.in', 'bob@virtuallabs.in', 'charlie@virtuallabs.in'];
   for (const email of extraStudentEmails) {
     const s = await prisma.user.findUnique({ where: { email } });
-    if (s) {
+    if (s && primaryInstitution) {
       await prisma.user.update({
         where: { id: s.id },
         data: {
-          createdById: teacher?.id || null,
-          nodalCentreId: nodalCentre.id
+          nodalCentreId: primaryInstitution.id
         }
       });
     }
   }
 
-  // 2. Clear existing subjects/labs/experiments if any to prevent duplicates on re-seed
-  // Order of deletion: Experiment -> Lab -> Subject
-  await prisma.experiment.deleteMany({});
-  await prisma.lab.deleteMany({});
-  await prisma.subject.deleteMany({});
-  console.log('🧹 Cleaned existing lab/experiment structures.');
+  // 2. Clear existing subjects/labs/experiments ONLY if explicitly forced
+  // WARNING: This deletes all lab content. Only run with SEED_FORCE=true when you
+  // intentionally want to reset lab data (e.g. fresh install / dev environment).
+  // In production, leave SEED_FORCE unset so existing lab data is preserved.
+  if (process.env.SEED_FORCE === 'true') {
+    await prisma.experiment.deleteMany({});
+    await prisma.lab.deleteMany({});
+    await prisma.subject.deleteMany({});
+    console.log('🧹 [SEED_FORCE] Cleaned existing lab/experiment structures.');
+  } else {
+    console.log('ℹ️  Skipping lab data wipe (set SEED_FORCE=true to reset lab data).');
+  }
 
   // 3. Define Seed Data
   const subjectsData = [
     {
+      id: '11111111-1111-1111-1111-111111111111',
       title: 'Computer Science',
       icon: '💻',
       description: 'Explore programming, algorithms, data structures, and computer networking.',
       gradient: 'from-blue-600 to-indigo-700',
       labs: [
         {
+          id: '55555555-5555-5555-5555-555555555555',
           title: 'Quantum Computing Lab',
           icon: '⚛️',
           description: 'Hands-on simulations covering quantum state preparation, Shor\'s algorithm, VQE optimization, QSVM, and quantum machine learning.',
@@ -180,13 +228,78 @@ async function main() {
           ]
         }
       ]
+    },
+    {
+      id: '22222222-2222-2222-2222-222222222222',
+      title: 'Chemistry',
+      icon: '🧪',
+      description: 'Interact with virtual retorts, acids, bases, and examine organic reactions.',
+      gradient: 'from-emerald-600 to-green-700',
+      labs: []
+    },
+    {
+      id: '33333333-3333-3333-3333-333333333333',
+      title: 'Physics',
+      icon: '⚛️',
+      description: 'Explore kinematic forces, optics, thermodynamics, and electromagnetism.',
+      gradient: 'from-amber-500 to-orange-600',
+      labs: []
+    },
+    {
+      id: '44444444-4444-4444-4444-444444444444',
+      title: 'Chemical Science',
+      icon: '🧪',
+      description: 'Explore chemical systems, molecular reactions, and physical chemistry principles.',
+      gradient: 'from-teal-500 to-cyan-600',
+      labs: [
+        {
+          id: '66666666-6666-6666-6666-666666666666',
+          title: 'Physical Chemistry Virtual Lab',
+          icon: '⚗️',
+          description: 'Explore spectrophotometry, cryoscopy, ebullioscopy and EMF measurement.',
+          experiments: [
+            {
+              title: 'Spectrophotometry',
+              description: 'Measure the absorption of light by a chemical substance as a function of wavelength.',
+              duration: '60 min',
+              difficulty: 'Intermediate',
+            },
+            {
+              title: 'Cryoscopy',
+              description: 'Determine the depression of freezing point to calculate molecular mass.',
+              duration: '60 min',
+              difficulty: 'Intermediate',
+            },
+            {
+              title: 'Ebullioscopy',
+              description: 'Determine the elevation of boiling point of a solvent due to a solute.',
+              duration: '60 min',
+              difficulty: 'Intermediate',
+            },
+            {
+              title: 'EMF Measurement',
+              description: 'Measure electromotive force of galvanic cells to study thermodynamics.',
+              duration: '60 min',
+              difficulty: 'Advanced',
+            }
+          ]
+        }
+      ]
     }
   ];
 
   // 4. Insert Seed Data
   for (const sData of subjectsData) {
-    const subject = await prisma.subject.create({
-      data: {
+    const subject = await prisma.subject.upsert({
+      where: { id: sData.id },
+      update: {
+        title: sData.title,
+        icon: sData.icon,
+        description: sData.description,
+        gradient: sData.gradient,
+      },
+      create: {
+        id: sData.id,
         title: sData.title,
         icon: sData.icon,
         description: sData.description,
@@ -194,11 +307,18 @@ async function main() {
         createdById: admin.id,
       }
     });
-    console.log(`📚 Created Subject: ${subject.title}`);
+    console.log(`📚 Upserted Subject: ${subject.title}`);
 
     for (const lData of sData.labs) {
-      const lab = await prisma.lab.create({
-        data: {
+      const lab = await prisma.lab.upsert({
+        where: { id: lData.id },
+        update: {
+          title: lData.title,
+          icon: lData.icon,
+          description: lData.description,
+        },
+        create: {
+          id: lData.id,
           title: lData.title,
           icon: lData.icon,
           description: lData.description,
@@ -206,39 +326,48 @@ async function main() {
           createdById: admin.id,
         }
       });
-      console.log(`   🔬 Created Lab: ${lab.title}`);
+      console.log(`   🔬 Upserted Lab: ${lab.title}`);
 
       for (const eData of lData.experiments) {
-        const specificId = {
-          'Expectation Value Calculation in Quantum Systems': 'cbf34d52-0faa-4905-a232-5eeeba2a2775',
-          'Factorization Using Shor\'s Algorithm': '3e16b36e-6443-46a5-992d-6a8595f984f6',
-          'Variational Quantum Eigensolver (VQE) Optimization': '02f63ce2-8ee9-49da-84aa-fc847f6092e2',
-          'Quantum Measurement and Result Interpretation': 'af183cbb-1a73-41d7-8f16-cc4337a63287',
-          'Quantum Linear Algebra – Matrix and Vector Operations': '7e633a86-d25d-4cc5-9f61-b2fbd0f7f66c',
-          'Applied Linear Algebra – Quantum Gates in Action': '500c175a-d20d-4146-b1a0-3b7274d40922',
-          'Quantum Kernel Alignment in Machine Learning': '492bacfc-ecfd-4816-a8e0-6bdbbc657a99',
-          'Quantum Support Vector Machines (QSVM)': '32f468e4-8f23-4653-8391-c89e25a16d8f'
-        }[eData.title];
+        const expId = eData.id || undefined;
+        let contentPath = null;
+        let simulationPath = null;
 
-        const expData = {
-          title: eData.title,
-          description: eData.description,
-          duration: eData.duration,
-          difficulty: eData.difficulty,
-          labId: lab.id,
-          createdById: admin.id,
-          simulationPath: eData.title === 'Stack Operations' ? null : (specificId ? 'experiments/' + specificId + '/simulation' : null),
-          contentPath: specificId ? 'experiments/' + specificId + '/content' : null,
-        };
-
-        if (specificId) {
-          expData.id = specificId;
+        if (expId) {
+          const fs = require('fs');
+          const path = require('path');
+          const uploadsDir = path.join(__dirname, '../uploads/experiments', expId);
+          if (fs.existsSync(path.join(uploadsDir, 'content'))) {
+            contentPath = `experiments/${expId}/content`;
+          }
+          if (fs.existsSync(path.join(uploadsDir, 'simulation'))) {
+            simulationPath = `experiments/${expId}/simulation`;
+          }
         }
 
-        const exp = await prisma.experiment.create({
-          data: expData
+        const exp = await prisma.experiment.upsert({
+          where: { id: eData.id || '00000000-0000-0000-0000-000000000000' },
+          update: {
+            title: eData.title,
+            description: eData.description,
+            duration: eData.duration,
+            difficulty: eData.difficulty,
+            contentPath,
+            simulationPath: simulationPath || (eData.title === 'Stack Operations' ? null : null),
+          },
+          create: {
+            id: expId,
+            title: eData.title,
+            description: eData.description,
+            duration: eData.duration,
+            difficulty: eData.difficulty,
+            labId: lab.id,
+            createdById: admin.id,
+            contentPath,
+            simulationPath: simulationPath || (eData.title === 'Stack Operations' ? null : null),
+          }
         });
-        console.log(`      ⚗️ Created Experiment: ${exp.title}`);
+        console.log(`      ⚗️ Upserted Experiment: ${exp.title} (${exp.id})`);
       }
     }
   }
@@ -270,7 +399,7 @@ async function main() {
             email: est.email,
             password: hashed,
             role: 'student',
-            nodalCentreId: teacherForAnalytics?.nodalCentreId || null, // Group them to make report work
+            nodalCentreId: student?.nodalCentreId || null, // Group them to make report work
           },
         });
       }

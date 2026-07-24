@@ -1,13 +1,34 @@
 import { useState } from 'react';
 import { CheckCircle2, AlertCircle, HelpCircle, Loader2, RefreshCw } from 'lucide-react';
 import { api } from '../../utils/api';
+import { trackEvent, trackError, EVENTS } from '../../utils/analytics';
+import { useEffect } from 'react';
 
-export default function QuizBlock({ experimentId, quizType, questions = [] }) {
+export default function QuizBlock({ experimentId, experimentName, userId, quizType, questions = [] }) {
   const [answers, setAnswers] = useState({}); // { [questionIndex]: 'a' | 'b' ... }
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [score, setScore] = useState(0);
   const [errorMessage, setErrorMessage] = useState('');
+
+  // Track quiz duration when unmounted
+  useEffect(() => {
+    const startTime = Date.now();
+    return () => {
+      const durationSeconds = Math.round((Date.now() - startTime) / 1000);
+      trackEvent({
+        category: 'experiment',
+        action: EVENTS.QUIZ_EXITED,
+        label: `${experimentId} - ${quizType}`,
+        vl_duration: durationSeconds,
+        vl_exp_id: experimentId,
+        vl_exp_name: experimentName,
+        vl_quiz_type: quizType,
+        vl_user_id: userId,
+        vl_completed: submitted
+      });
+    };
+  }, [experimentId, experimentName, quizType, userId, submitted]);
 
   if (!questions || questions.length === 0) {
     return (
@@ -55,8 +76,21 @@ export default function QuizBlock({ experimentId, quizType, questions = [] }) {
       if (!res.ok) {
         console.warn('Failed to record quiz attempt in analytics.');
       }
+      trackEvent({
+        category: 'experiment',
+        action: EVENTS.QUIZ_COMPLETED,
+        label: `${experimentId} - ${quizType}`,
+        vl_score_pct: Math.round((calculatedScore / questions.length) * 100),
+        vl_exp_id: experimentId,
+        vl_exp_name: experimentName,
+        vl_quiz_type: quizType,
+        vl_score: calculatedScore,
+        vl_max_score: questions.length,
+        vl_user_id: userId
+      });
     } catch (err) {
       console.error('Quiz record error:', err);
+      trackError('api_error', 'Failed to record quiz analytics', { experiment_id: experimentId, quiz_type: quizType });
     } finally {
       setLoading(false);
     }
@@ -180,17 +214,15 @@ export default function QuizBlock({ experimentId, quizType, questions = [] }) {
         ) : (
           <>
             <div className="flex items-center gap-3">
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white ${
-                (score / questions.length) >= 0.5 ? 'bg-emerald-500' : 'bg-red-500'
-              }`}>
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center text-white bg-blue-500">
                 {score}/{questions.length}
               </div>
               <div>
                 <h4 className="text-white font-bold text-sm">
-                  {(score / questions.length) >= 0.5 ? '🎉 You Passed!' : '😢 Try Again'}
+                  🎉 Quiz Completed!
                 </h4>
                 <p className="text-slate-400 text-xs">
-                  Your completion rate is {Math.round((score / questions.length) * 100)}%
+                  You scored {Math.round((score / questions.length) * 100)}%
                 </p>
               </div>
             </div>
