@@ -149,12 +149,18 @@ async function main() {
     }
   }
 
-  // 2. Clear existing subjects/labs/experiments if any to prevent duplicates on re-seed
-  // Order of deletion: Experiment -> Lab -> Subject
-  await prisma.experiment.deleteMany({});
-  await prisma.lab.deleteMany({});
-  await prisma.subject.deleteMany({});
-  console.log('🧹 Cleaned existing lab/experiment structures.');
+  // 2. Clear existing subjects/labs/experiments ONLY if explicitly forced
+  // WARNING: This deletes all lab content. Only run with SEED_FORCE=true when you
+  // intentionally want to reset lab data (e.g. fresh install / dev environment).
+  // In production, leave SEED_FORCE unset so existing lab data is preserved.
+  if (process.env.SEED_FORCE === 'true') {
+    await prisma.experiment.deleteMany({});
+    await prisma.lab.deleteMany({});
+    await prisma.subject.deleteMany({});
+    console.log('🧹 [SEED_FORCE] Cleaned existing lab/experiment structures.');
+  } else {
+    console.log('ℹ️  Skipping lab data wipe (set SEED_FORCE=true to reset lab data).');
+  }
 
   // 3. Define Seed Data
   const subjectsData = [

@@ -46,10 +46,10 @@ export default function Contact() {
               {[
                 {
                   Icon: MapPin, label: 'Address',
-                  content: 'Amrita Virtual Labs\nAmrita Vishwa Vidyapeetham, Amritapuri Campus\nKollam, Kerala — 690 525',
+                  content: 'Amrita Virtual Labs\nAmrita Vishwa Vidyapeetham\nAmritapuri Campus, Kollam\nKerala — 690 525',
                 },
-                { Icon: Mail,  label: 'Email',   content: 'support@vlabs.ac.in' },
-                { Icon: Phone, label: 'Phone',   content: '+91 22 2576 7062' },
+                { Icon: Mail,  label: 'Email',   content: 'virtual_labs@am.amrita.edu' },
+                { Icon: Phone, label: 'Phone',   content: '+91 422 268 5000' },
               ].map(({ Icon, label, content }) => (
                 <div key={label} className="flex gap-4 mb-6">
                   <div className="w-11 h-11 bg-primary-50 rounded-xl flex items-center justify-center flex-shrink-0">

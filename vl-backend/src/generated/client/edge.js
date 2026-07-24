@@ -399,7 +399,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "E:\\Virtual Lab\\Value @ Amrita-site\\vl-site\\vl-backend\\src\\generated\\client",
+      "value": "D:\\Anandi\\VL-newsite\\vl-site\\vl-backend\\src\\generated\\client",
       "fromEnvVar": null
     },
     "config": {
@@ -413,7 +413,7 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "E:\\Virtual Lab\\Value @ Amrita-site\\vl-site\\vl-backend\\prisma\\schema.prisma",
+    "sourceFilePath": "D:\\Anandi\\VL-newsite\\vl-site\\vl-backend\\prisma\\schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
@@ -427,6 +427,7 @@ const config = {
     "db"
   ],
   "activeProvider": "postgresql",
+  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {

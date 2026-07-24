@@ -362,9 +362,8 @@ function AppLayout() {
           <Route path="/workshop"            element={<Workshop />} />
           <Route path="/workshop/:id"        element={<WorkshopDetails />} />
           <Route path="/nodal-centres"       element={<NodalCentres />} />
-          <Route path="/nodal-centres/apply" element={<ComingSoon page="Apply as Nodal Centre" />} />
+          <Route path="/nodal-centres/apply" element={<Navigate to="/nodal-centres?tab=apply" replace />} />
           <Route path="/nodal-centres/list"  element={<NodalCentres />} />
-          <Route path="/nodal-centres/demo"  element={<ComingSoon page="Request a Demo" />} />
           <Route path="/news"                element={<News />} />
           <Route path="/publications"        element={<Publications />} />
           <Route path="/survey"              element={<Navigate to="/survey/student" replace />} />

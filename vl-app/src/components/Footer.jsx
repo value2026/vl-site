@@ -14,11 +14,11 @@ const quickLinks = [
 ];
 
 const labLinks = [
-  { label: 'Biotechnology', href: '/labs/biotechnology' },
-  { label: 'Chemical Sciences', href: '/labs/chemical-sciences' },
-  { label: 'Physical Sciences', href: '/labs/physical-sciences' },
-  { label: 'Computer Science', href: '/labs/computer-science' },
-  { label: 'Mechanical Engg.', href: '/labs/mechanical-engineering' },
+  { label: 'Physical Sciences', href: '/nodal-centres' },
+  { label: 'Chemical Sciences', href: '/nodal-centres' },
+  { label: 'Computer Science', href: '/nodal-centres' },
+  { label: 'Biological Sciences', href: '/nodal-centres' },
+  { label: 'Mechanical Engg.', href: '/nodal-centres' },
 ];
 
 const socials = [
@@ -113,21 +113,22 @@ export default function Footer() {
               <li className="flex gap-3">
                 <MapPin className="w-4 h-4 text-primary-400 flex-shrink-0 mt-0.5" />
                 <span>
-                  Virtual Labs Project<br />
-                  IIT Bombay, Powai<br />
-                  Mumbai — 400 076
+                  Amrita Virtual Labs<br />
+                  Amrita Vishwa Vidyapeetham<br />
+                  Amritapuri Campus, Kollam<br />
+                  Kerala — 690 525
                 </span>
               </li>
               <li className="flex items-center gap-3">
                 <Mail className="w-4 h-4 text-primary-400 flex-shrink-0" />
-                <a href="mailto:support@vlabs.ac.in" className="hover:text-white transition-colors">
-                  support@vlabs.ac.in
+                <a href="mailto:virtual_labs@am.amrita.edu" className="hover:text-white transition-colors">
+                  virtual_labs@am.amrita.edu
                 </a>
               </li>
               <li className="flex items-center gap-3">
                 <Phone className="w-4 h-4 text-primary-400 flex-shrink-0" />
-                <a href="tel:+912225767062" className="hover:text-white transition-colors">
-                  +91 22 2576 7062
+                <a href="tel:+914222685000" className="hover:text-white transition-colors">
+                  +91 422 268 5000
                 </a>
               </li>
             </ul>

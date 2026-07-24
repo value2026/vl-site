@@ -96,6 +96,7 @@ export default function LabCategories({ sectionTitle, sectionSubtitle, content =
           </div>
         )}
 
+        {/* View All Labs button hidden until /labs is ready
         <div className="mt-12 text-center">
           <Link to="/labs" className="btn-outline-primary">
             <FlaskConical className="w-4 h-4" />
@@ -103,6 +104,7 @@ export default function LabCategories({ sectionTitle, sectionSubtitle, content =
             <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
+        */}
       </div>
     </section>
   );
