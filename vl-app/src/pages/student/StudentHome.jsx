@@ -278,32 +278,6 @@ export default function StudentHome() {
                 </div>
               )}
 
-              {/* Performance Cards */}
-              <PerformanceCard 
-                icon={TrendingUp} 
-                iconColor="bg-emerald-100 text-emerald-600" 
-                label="Learning Progress" 
-                value={`${perfData?.analytics?.completionRate || 0}%`}
-                subText="Overall completion rate across all active laboratory modules this semester"
-                badgeText="Excellent"
-              />
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm text-center flex flex-col justify-center min-h-[140px] hover:border-blue-200 transition-colors">
-                  <div className="w-10 h-10 mx-auto bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center mb-3">
-                    <FlaskConical className="w-5 h-5" />
-                  </div>
-                  <div className="text-xl font-extrabold text-slate-900">{perfData?.analytics?.completedExperiments || 0}</div>
-                  <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mt-1">Exp. Finished</div>
-                </div>
-                <div className="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm text-center flex flex-col justify-center min-h-[140px] hover:border-purple-200 transition-colors">
-                  <div className="w-10 h-10 mx-auto bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center mb-3">
-                    <Award className="w-5 h-5" />
-                  </div>
-                  <div className="text-xl font-extrabold text-slate-900">{perfData?.analytics?.totalQuizAttempts || 0}</div>
-                  <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mt-1">Quiz Attempts</div>
-                </div>
-              </div>
 
               {/* Activity Logs (Recent 4) */}
               <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm">
@@ -337,100 +311,6 @@ export default function StudentHome() {
                 )}
               </div>
 
-              <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm">
-                <h2 className="text-slate-900 font-extrabold text-base flex items-center gap-2 mb-6 border-b border-slate-50 pb-4">
-                  <TrendingUp className="w-5 h-5 text-emerald-600" />
-                  My Performance
-                </h2>
-
-                {perfLoading ? (
-                  <div className="flex justify-center py-12 text-slate-400">
-                    <Loader2 className="w-6 h-6 animate-spin" />
-                  </div>
-                ) : (
-                  <div className="space-y-6">
-                    {/* Completion Rate circular chart widget */}
-                    <div className="flex flex-col items-center pb-6 border-b border-slate-50">
-                      <div className="relative inline-flex items-center justify-center">
-                        <svg className="w-28 h-28 transform -rotate-90">
-                          <circle
-                            cx="56"
-                            cy="56"
-                            r="46"
-                            stroke="#f1f5f9"
-                            strokeWidth="8"
-                            fill="transparent"
-                          />
-                          <circle
-                            cx="56"
-                            cy="56"
-                            r="46"
-                            stroke="#10b981"
-                            strokeWidth="8"
-                            fill="transparent"
-                            strokeDasharray={289}
-                            strokeDashoffset={289 - (289 * (perfData?.analytics?.completionRate || 0)) / 100}
-                            className="transition-all duration-1000 ease-out"
-                          />
-                        </svg>
-                        <div className="absolute flex flex-col items-center">
-                          <span className="text-2xl font-extrabold text-slate-900 leading-none">
-                            {perfData?.analytics?.completionRate}%
-                          </span>
-                          <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider mt-1.5">
-                            Progress
-                          </span>
-                        </div>
-                      </div>
-                      <h3 className="text-slate-800 font-bold text-sm mt-4">Module Completion Rate</h3>
-                      <p className="text-slate-400 text-[11px] mt-1.5 text-center max-w-[200px] leading-normal">
-                        Completed <strong>{perfData?.analytics?.uniqueVisitedCount || 0}</strong> of <strong>{perfData?.analytics?.totalActiveExps || 0}</strong> active experiments.
-                      </p>
-                    </div>
-
-                    {/* Curated Mini Performance Cards Grid */}
-                    <div className="grid grid-cols-1 gap-4">
-                      <PerformanceCard 
-                        icon={Clock} 
-                        iconColor="text-blue-600 bg-blue-50 border border-blue-100"
-                        label="Active Time" 
-                        value={`${perfData?.analytics?.totalTimeMinutes || 0}m`}
-                        badgeText="Simulator"
-                        subText="Total accumulated active training time in sessions."
-                      />
-                      <PerformanceCard 
-                        icon={Award} 
-                        iconColor="text-purple-600 bg-purple-50 border border-purple-100"
-                        label="Quiz Attempts" 
-                        value={`${perfData?.analytics?.quizAttemptsCount || 0}`}
-                        badgeText="Total"
-                        subText="Total number of quizzes attempted by the student."
-                      />
-                      <PerformanceCard 
-                        icon={CheckCircle} 
-                        iconColor="text-amber-600 bg-amber-50 border border-amber-100"
-                        label="Average Marks" 
-                        value={`${perfData?.analytics?.averageQuizScore || 0}%`}
-                        badgeText="All Quizzes"
-                        subText="Overall average marks scored across all quizzes."
-                      />
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Quick tips card */}
-              <div className="bg-indigo-50/50 border border-indigo-100 rounded-3xl p-6 shadow-sm">
-                <div className="flex items-start gap-4">
-                  <span className="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center flex-shrink-0 text-lg shadow-sm">💡</span>
-                  <div>
-                    <h4 className="text-indigo-900 font-bold text-sm">Pedagogical Process</h4>
-                    <p className="text-indigo-800 text-[11px] leading-relaxed mt-1">
-                      Virtual Labs are mapped to direct academic pedagogy. Be sure to perform Pretests to gauge initial understanding, read Procedures carefully, run Simulations dynamically, and complete Posttests to submit your record.
-                    </p>
-                  </div>
-                </div>
-              </div>
 
             </div>
           )}
