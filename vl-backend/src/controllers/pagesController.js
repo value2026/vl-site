@@ -227,6 +227,8 @@ async function getSections(req, res) {
         page = await seedStudentSurveyPage();
       } else if (slug === 'faculty-survey') {
         page = await seedFacultySurveyPage();
+      } else if (slug === 'nodal-centre-request') {
+        page = await seedNodalCentreRequestPage();
       } else {
         return res.status(404).json({ message: 'Page not found' });
       }
@@ -324,6 +326,7 @@ async function seedPage(req, res) {
     else if (slug === 'nodal-centres') page = await seedNodalCentresPage();
     else if (slug === 'student-survey') page = await seedStudentSurveyPage();
     else if (slug === 'faculty-survey') page = await seedFacultySurveyPage();
+    else if (slug === 'nodal-centre-request') page = await seedNodalCentreRequestPage();
     
     res.json(page.sections);
   } catch (err) {
@@ -676,6 +679,57 @@ async function seedFacultySurveyPage() {
 
   return prisma.page.findUnique({
     where: { slug: 'faculty-survey' },
+    include: { sections: { orderBy: { order: 'asc' } } },
+  });
+}
+
+async function seedNodalCentreRequestPage() {
+  const page = await prisma.page.upsert({
+    where: { slug: 'nodal-centre-request' },
+    update: { title: 'Nodal Centre Request' },
+    create: { slug: 'nodal-centre-request', title: 'Nodal Centre Request' },
+  });
+
+  const formSection = {
+    sectionKey: 'formSchema',
+    label: 'Request Form Schema',
+    order: 0,
+    title: 'Nodal Centre Request Form',
+    content: {
+      questions: [
+        { id: '1', text: 'Email', type: 'email', required: true, options: [] },
+        { id: '2', text: 'Name of the nodal centre (Note: If your institute is not listed, you must apply to become a nodal centre first)', type: 'text', required: true, options: [] },
+        { id: '3', text: 'Name of the faculty member', type: 'text', required: true, options: [] },
+        { id: '4', text: 'Designation', type: 'text', required: true, options: [] },
+        { id: '5', text: 'Department', type: 'text', required: true, options: [] },
+        { id: '6', text: 'Contact number', type: 'text', required: true, options: [] },
+        { id: '7', text: 'Select the department(s) those who are attending the workshop', type: 'checkbox', required: true, options: [
+          'Physics', 'Chemistry', 'Biotechnology', 'Mechanical Engineering', 'Civil Engineering', 'Computer Science', 'Electronics and communications', 'Electrical Engineering', 'Other'
+        ]},
+        { id: '8', text: 'Expected number of participants (including students and faculty members)', type: 'text', required: true, options: [] },
+        { id: '9', text: 'Select the mode of training', type: 'radio', required: true, options: ['Online', 'Offline'] },
+        { id: '10', text: 'Proposed Date for the training program', type: 'date', required: true, options: [] },
+        { id: '11', text: 'Proposed Time for the training program', type: 'time', required: true, options: [] }
+      ]
+    }
+  };
+
+  await prisma.pageSection.upsert({
+    where: { pageId_sectionKey: { pageId: page.id, sectionKey: formSection.sectionKey } },
+    update: {},
+    create: {
+      pageId: page.id,
+      sectionKey: formSection.sectionKey,
+      label: formSection.label,
+      title: formSection.title,
+      content: formSection.content,
+      isVisible: true,
+      order: formSection.order,
+    },
+  });
+
+  return prisma.page.findUnique({
+    where: { slug: 'nodal-centre-request' },
     include: { sections: { orderBy: { order: 'asc' } } },
   });
 }
