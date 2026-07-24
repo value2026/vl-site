@@ -51,7 +51,7 @@ export default function Hero({ content = {} }) {
             {/* Heading */}
             <h1
               id="hero-heading"
-              className="font-heading text-4xl sm:text-[3.75rem] lg:text-[4.75rem] font-extrabold leading-[1.05] mb-8 animate-fade-in-up tracking-tight"
+              className="font-heading text-4xl sm:text-[3.75rem] lg:text-[4rem] font-extrabold leading-[1.05] mb-8 animate-fade-in-up tracking-tight"
             >
               <span className="text-white block mb-3 font-bold drop-shadow-sm">Build Your Future with</span>
               <span className="bg-gradient-to-r from-yellow-200 via-[#f1c40f] to-amber-500 bg-clip-text text-transparent block font-black drop-shadow-md">Emerging Technologies</span>
