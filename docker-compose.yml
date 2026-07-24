@@ -44,29 +44,31 @@ services:
       DATABASE_URL: postgresql://vluser:vlpassword@db:5432/virtuallabs_db
       JWT_SECRET: ${JWT_SECRET:-vl-super-secret-change-this-in-production}
       PORT: 5000
-      FRONTEND_URL: ${FRONTEND_URL:-http://localhost}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:5173}
+    ports:
+      - "5000:5000"
     volumes:
       # Persist uploaded files (experiment content, etc.)
       - uploads_data:/app/uploads
     networks:
       - vl-network
-    # Backend is NOT exposed to host directly — the frontend container proxies it
 
   # ── React Frontend ──────────────────────────────────────────
   frontend:
     build:
       context: ./vl-app
       dockerfile: Dockerfile
-      args:
-        # Empty string lets the frontend append /api/... seamlessly relative to host
-        VITE_API_URL: ""
     container_name: vl-frontend
     restart: unless-stopped
     depends_on:
       - backend
+    environment:
+      - VITE_API_URL=http://localhost:5000/api
     ports:
-      - "80:80"        # HTTP — access at http://localhost
-      # - "443:443"    # Uncomment after adding SSL certificates
+      - "5173:5173"
+    volumes:
+      - ./vl-app:/app
+      - /app/node_modules
     networks:
       - vl-network
 
