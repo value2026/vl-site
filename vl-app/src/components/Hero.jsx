@@ -51,18 +51,18 @@ export default function Hero({ content = {} }) {
             {/* Heading */}
             <h1
               id="hero-heading"
-              className="font-heading text-4xl sm:text-[3.5rem] lg:text-[4.5rem] font-bold leading-[1.1] mb-8 animate-fade-in-up tracking-tight"
+              className="font-heading text-4xl sm:text-[3.75rem] lg:text-[4.75rem] font-extrabold leading-[1.05] mb-8 animate-fade-in-up tracking-tight"
             >
-              <span className="text-white block mb-2 font-medium">Build Your Future with</span>
-              <span className="text-[#f1c40f] block font-black">Emerging Technologies</span>
-              <span className="text-[#f1c40f] block font-black">and Create Impact</span>
+              <span className="text-white block mb-3 font-bold drop-shadow-sm">Build Your Future with</span>
+              <span className="bg-gradient-to-r from-yellow-200 via-[#f1c40f] to-amber-500 bg-clip-text text-transparent block font-black drop-shadow-md">Emerging Technologies</span>
+              <span className="bg-gradient-to-r from-yellow-200 via-[#f1c40f] to-amber-500 bg-clip-text text-transparent block font-black drop-shadow-md pb-2">and Create Impact</span>
             </h1>
 
 
 
             {/* Subheading */}
             <p
-              className="text-[17px] sm:text-[1.15rem] text-white/80 leading-relaxed mb-10 max-w-3xl animate-fade-in-up animate-delay-300"
+              className="text-[1.1rem] sm:text-[1.25rem] text-white/90 leading-relaxed mb-10 max-w-3xl animate-fade-in-up animate-delay-300 font-medium drop-shadow-sm"
               dangerouslySetInnerHTML={{ __html: d.subheading }}
             />
 
@@ -74,20 +74,20 @@ export default function Hero({ content = {} }) {
                     const id = (d.ctaPrimaryHref || '#labs-heading').substring(1);
                     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
                   }}
-                  className="bg-[#f1c40f] hover:bg-[#d4ac0d] text-gray-900 font-bold text-[15px] px-8 py-3.5 rounded-lg flex items-center justify-center gap-2 transition-all shadow-lg hover:-translate-y-0.5"
+                  className="bg-gradient-to-r from-[#f1c40f] to-amber-500 hover:from-amber-400 hover:to-amber-600 text-gray-900 font-extrabold text-[16px] px-9 py-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-xl hover:shadow-2xl hover:-translate-y-1"
                 >
                   {d.ctaPrimaryLabel || 'Explore Virtual Labs'}
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-5 h-5" />
                 </button>
               ) : (
-                <Link to={d.ctaPrimaryHref} className="bg-[#f1c40f] hover:bg-[#d4ac0d] text-gray-900 font-bold text-[15px] px-8 py-3.5 rounded-lg flex items-center justify-center gap-2 transition-all shadow-lg hover:-translate-y-0.5">
+                <Link to={d.ctaPrimaryHref} className="bg-gradient-to-r from-[#f1c40f] to-amber-500 hover:from-amber-400 hover:to-amber-600 text-gray-900 font-extrabold text-[16px] px-9 py-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-xl hover:shadow-2xl hover:-translate-y-1">
                   {d.ctaPrimaryLabel || 'Explore Virtual Labs'}
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-5 h-5" />
                 </Link>
               )}
               <button
                 onClick={() => setIsVideoOpen(true)}
-                className="bg-transparent border border-white/50 hover:bg-white/10 text-white font-bold text-[15px] px-8 py-3.5 rounded-lg flex items-center justify-center gap-2 transition-all shadow-lg hover:-translate-y-0.5"
+                className="bg-white/5 backdrop-blur-sm border-2 border-white/40 hover:bg-white/20 text-white font-extrabold text-[16px] px-9 py-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-xl hover:-translate-y-1"
               >
                 <PlayCircle className="w-5 h-5" />
                 {d.ctaSecondaryLabel || 'Watch Demo'}
