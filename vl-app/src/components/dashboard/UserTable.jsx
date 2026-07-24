@@ -295,17 +295,28 @@ export default function UserTable({ users, loading, onRefresh, hideActions = fal
                       }`}>
                         {u.name[0]?.toUpperCase()}
                       </div>
-                      {u.role === 'student' ? (
-                        <span
-                          onClick={() => setSelectedStudentId(u.id)}
-                          className="text-white text-sm font-medium hover:underline cursor-pointer text-blue-400"
-                          title="Click to view analytics"
-                        >
-                          {u.name}
-                        </span>
-                      ) : (
-                        <span className="text-white text-sm font-medium">{u.name}</span>
-                      )}
+                      <div>
+                        {u.role === 'student' ? (
+                          <span
+                            onClick={() => setSelectedStudentId(u.id)}
+                            className="text-white text-sm font-medium hover:underline cursor-pointer text-blue-400"
+                            title="Click to view analytics"
+                          >
+                            {u.name}
+                          </span>
+                        ) : (
+                          <span className="text-white text-sm font-medium">{u.name}</span>
+                        )}
+                        {(u.dept || u.facultyDept || u.org) && (
+                          <div className="text-[10px] text-slate-500 mt-0.5">
+                            {[
+                              u.role === 'teacher' && u.designation,
+                              u.facultyDept || u.dept,
+                              u.org
+                            ].filter(Boolean).join(' • ')}
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </td>
                   <td className="px-4 py-3 text-slate-400 text-sm">{u.email}</td>

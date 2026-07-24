@@ -8,15 +8,15 @@ import { useLocation } from 'react-router-dom';
 
 function StatCard({ icon: Icon, label, value, gradient }) {
   return (
-    <div className={`relative bg-gradient-to-br ${gradient} rounded-2xl p-6 overflow-hidden flex flex-col justify-between min-h-40 shadow-lg shadow-black/10`}>
+    <div className={`relative bg-gradient-to-br ${gradient} rounded-2xl p-6 overflow-hidden flex flex-col justify-between min-h-36 shadow-lg shadow-black/10`}>
       <div className="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full" />
       <div className="absolute -right-8 -bottom-8 w-32 h-32 bg-white/5 rounded-full" />
       <div className="relative z-10">
-        <div className="w-10 h-10 bg-white/20 backdrop-blur rounded-xl flex items-center justify-center mb-4">
+        <div className="w-10 h-10 bg-white/20 backdrop-blur rounded-xl flex items-center justify-center mb-3">
           <Icon className="w-5 h-5 text-white" />
         </div>
-        <div className="text-white/70 text-sm font-medium mb-1">{label}</div>
-        <div className="text-white text-4xl font-bold">{value ?? '—'}</div>
+        <div className="text-white/70 text-xs font-semibold uppercase tracking-wider mb-1">{label}</div>
+        <div className="text-white text-3xl font-extrabold">{value ?? '—'}</div>
       </div>
     </div>
   );
@@ -37,8 +37,8 @@ export default function NodalCentreDashboard() {
     setLoading(true);
     try {
       const [statsRes, usersRes] = await Promise.all([
-        fetch(`${API_URL}/users/stats`, { headers: { Authorization: `Bearer ${token}` } }),
-        fetch(`${API_URL}/users`,       { headers: { Authorization: `Bearer ${token}` } }),
+        fetch(`${API_URL}/analytics/dashboard`, { headers: { Authorization: `Bearer ${token}` } }),
+        fetch(`${API_URL}/users`,               { headers: { Authorization: `Bearer ${token}` } }),
       ]);
       const [statsData, usersData] = await Promise.all([statsRes.json(), usersRes.json()]);
       setStats(statsData);

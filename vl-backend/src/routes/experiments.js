@@ -24,7 +24,7 @@ router.delete('/:id',   verifyToken, requireRole('admin', 'nodal_centre', 'teach
 router.post(
   '/:id/upload-zip',
   verifyToken,
-  requireRole('admin', 'nodal_centre', 'teacher'),
+  requireRole('admin', 'content_admin'),
   upload.single('file'),
   uploadZip,
 );

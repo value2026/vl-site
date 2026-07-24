@@ -1,0 +1,41 @@
+{
+  "version": 2.0,
+  "questions": [
+    {
+      "question": "Molecular weight of non-volatile solute can be determined by ........",
+      "answers": {
+        "a": "Victor-Meyer's method",
+        "b": "Graham's law of diffusion",
+        "c": "Raoult's law",
+        "d": "Gay Lussac's law"
+      },
+      
+      "correctAnswer": "c",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "The depression of freezing point of a solution is .......",
+      "answers": {
+        "a": "Inversely proportional to molarity of solution",
+        "b": "Inversely proportional to molal concentration of solute",
+        "c": "Directly proportional to molal concentration of solute",
+        "d": "Directly proportional to molarity of solution"
+      },
+      
+      "correctAnswer": "c",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "Which one of the following solvent has highest freezing point?",
+      "answers": {
+        "a": "Chloroform",
+        "b": "Carbon Tetrachloride",
+        "c": "Carbon disulfide",
+        "d": "Benzene"
+      },
+      
+      "correctAnswer": "d",
+      "difficulty": "beginner"
+    }
+  ]
+}

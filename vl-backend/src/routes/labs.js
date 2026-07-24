@@ -9,9 +9,9 @@ const {
 router.get('/', getLabs);
 
 // Authenticated
-router.get('/all',    verifyToken, requireRole('admin', 'nodal_centre', 'teacher'), getAllLabs);
-router.post('/',      verifyToken, requireRole('admin', 'nodal_centre', 'teacher'), createLab);
-router.put('/:id',    verifyToken, requireRole('admin', 'nodal_centre', 'teacher'), updateLab);
-router.delete('/:id', verifyToken, requireRole('admin', 'nodal_centre', 'teacher'), deleteLab);
+router.get('/all',    verifyToken, requireRole('admin', 'content_admin'), getAllLabs);
+router.post('/',      verifyToken, requireRole('admin', 'content_admin'), createLab);
+router.put('/:id',    verifyToken, requireRole('admin', 'content_admin'), updateLab);
+router.delete('/:id', verifyToken, requireRole('admin', 'content_admin'), deleteLab);
 
 module.exports = router;

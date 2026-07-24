@@ -10,6 +10,9 @@ const {
   getAcademicReport,
   getStudentDetailsReport,
   getMyPerformance,
+  getQuizReport,
+  getFeedbackReport,
+  getPagewiseReport,
 } = require('../controllers/analyticsController');
 const { getGA4Stats } = require('../controllers/gaController');
 

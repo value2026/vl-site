@@ -1,0 +1,93 @@
+<Solutes>
+	<Solute ID="1">
+	  <name>Sodium chloride</name>
+	  <vfactor>2</vfactor>
+	  <molarmass>58.443</molarmass>
+	  <solvents>
+		<solvent id="1" vfactor="2">1</solvent>
+	  </solvents>
+	</Solute>
+	<Solute ID="2">
+	  <name>Calcium chloride</name>
+	  <vfactor>3</vfactor>
+	  <molarmass>110.984</molarmass>
+	  <solvents>
+		<solvent id="1" vfactor="3">1</solvent>
+	  </solvents>
+	</Solute>
+	<Solute ID="7">
+	  <name>Aluminium chloride</name>
+	  <vfactor>3</vfactor>
+	  <molarmass>133.341</molarmass>
+	  <solvents>
+		<solvent id="1" vfactor="4">1</solvent>
+	  </solvents>
+	</Solute>
+	<Solute ID="8">
+	  <name>Urea</name>
+	  <vfactor>3</vfactor>
+	  <molarmass>60.055</molarmass>
+	  <solvents>
+		<solvent id="1" vfactor="1">1</solvent>
+	  </solvents>
+	</Solute>
+	<Solute ID="9">
+	  <name>glucose</name>
+	  <vfactor>3</vfactor>
+	  <molarmass>180.156</molarmass>
+	  <solvents>
+		<solvent id="1" vfactor="1">1</solvent>
+	  </solvents>
+	</Solute>
+	<Solute ID="10">
+	  <name>Camphor</name>
+	  <vfactor>3</vfactor>
+	  <molarmass>152.233</molarmass>
+	  <solvents>
+	  <solvent id="4" vfactor="1">4</solvent>
+		<solvent id="2" vfactor="1">2</solvent>
+		<solvent id="5" vfactor="1">5</solvent>
+	  </solvents>
+	</Solute>
+	<Solute ID="11">
+	  <name>Benzamide</name>
+	  <vfactor>3</vfactor>
+	  <molarmass>121.140</molarmass>
+	  <solvents>
+		<solvent id="4" vfactor="1">4</solvent>
+		<solvent id="2" vfactor="1">2</solvent>
+		<solvent id="5" vfactor="1">5</solvent>
+	  </solvents>
+	</Solute>
+	<Solute ID="3">
+	  <name>Sulphur</name>
+	  <vfactor>1</vfactor>
+	  <molarmass>32.065</molarmass>
+	  <solvents>
+		<solvent id="4" vfactor="1">4</solvent>
+		<solvent id="5" vfactor="1">5</solvent>
+		<solvent id="3" vfactor="1">3</solvent>
+	  </solvents>
+	</Solute>
+	<Solute ID="4">
+	  <name>Magnesium Bromide</name>
+	  <vfactor>3</vfactor>
+	  <molarmass>184.113</molarmass>
+	  <solvents>
+	  </solvents>
+	</Solute>
+	<Solute ID="5">
+	  <name>Ammonium Nitrate</name>
+	  <vfactor>2</vfactor>
+	  <molarmass>80.043</molarmass>
+	  <solvents>
+	  </solvents>
+	</Solute>
+	<Solute ID="6">
+	  <name>Barium Hydroxide</name>
+	  <vfactor>3</vfactor>
+	  <molarmass>171.34</molarmass>
+	  <solvents>
+	 </solvents>
+	</Solute>
+</Solutes>

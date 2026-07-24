@@ -282,6 +282,21 @@ function AppLayout() {
           </ProtectedRoute>
         } />
 
+        {/* Content Admin */}
+        <Route path="/dashboard/content" element={
+          <ProtectedRoute allowedRole="content_admin"><AdminDashboard /></ProtectedRoute>
+        } />
+        <Route path="/dashboard/content/labs" element={
+          <ProtectedRoute allowedRole="content_admin">
+            <DashboardLayout title="Lab Management"><LabManagement /></DashboardLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/dashboard/content/analytics" element={
+          <ProtectedRoute allowedRole="content_admin">
+            <DashboardLayout title="Usage Analytics"><AnalyticsDashboard /></DashboardLayout>
+          </ProtectedRoute>
+        } />
+
         {/* Nodal Centre */}
         <Route path="/dashboard/nodal" element={
           <ProtectedRoute allowedRole="nodal_centre"><NodalCentreDashboard /></ProtectedRoute>
@@ -291,11 +306,6 @@ function AppLayout() {
         } />
         <Route path="/dashboard/nodal/students" element={
           <ProtectedRoute allowedRole="nodal_centre"><NodalCentreDashboard /></ProtectedRoute>
-        } />
-        <Route path="/dashboard/nodal/labs" element={
-          <ProtectedRoute allowedRole="nodal_centre">
-            <DashboardLayout title="Lab Management"><LabManagement /></DashboardLayout>
-          </ProtectedRoute>
         } />
         <Route path="/dashboard/nodal/analytics" element={
           <ProtectedRoute allowedRole="nodal_centre">
@@ -314,11 +324,6 @@ function AppLayout() {
         } />
         <Route path="/dashboard/teacher/students" element={
           <ProtectedRoute allowedRole="teacher"><TeacherDashboard /></ProtectedRoute>
-        } />
-        <Route path="/dashboard/teacher/labs" element={
-          <ProtectedRoute allowedRole="teacher">
-            <DashboardLayout title="Lab Management"><LabManagement /></DashboardLayout>
-          </ProtectedRoute>
         } />
         <Route path="/dashboard/teacher/analytics" element={
           <ProtectedRoute allowedRole="teacher">

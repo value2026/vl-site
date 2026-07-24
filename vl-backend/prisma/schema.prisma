@@ -12,6 +12,7 @@ datasource db {
 
 enum Role {
   admin
+  content_admin
   nodal_centre
   teacher
   student

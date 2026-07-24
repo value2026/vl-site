@@ -61,6 +61,11 @@ const getUsers = async (req, res) => {
         nodalCentreId: true,
         createdById:  true,
         createdAt:    true,
+        org:          true,
+        dept:         true,
+        designation:  true,
+        facultyDept:  true,
+        facultyInst:  true,
         nodalCentre:  { select: { name: true } },
         createdBy:    { select: { name: true } },
       },
@@ -315,11 +320,12 @@ const getStats = async (req, res) => {
     if (role === 'admin' || role === 'vl_manager') {
       const [totalAdmins, totalNodalCentres, totalTeachers, totalStudents] = await Promise.all([
         prisma.user.count({ where: { role: 'admin' } }),
+        prisma.user.count({ where: { role: 'content_admin' } }),
         prisma.user.count({ where: { role: 'nodal_centre' } }),
         prisma.user.count({ where: { role: 'teacher' } }),
         prisma.user.count({ where: { role: 'student' } }),
       ]);
-      res.json({ totalAdmins, totalNodalCentres, totalTeachers, totalStudents });
+      res.json({ totalAdmins, totalContentAdmins, totalNodalCentres, totalTeachers, totalStudents });
 
     } else if (role === 'nodal_centre') {
       const nodalAdmin = await prisma.user.findUnique({ where: { id }, select: { nodalCentreId: true } });
