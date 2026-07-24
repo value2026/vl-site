@@ -68,11 +68,11 @@ export default function NewsSection({ sectionTitle, sectionSubtitle, content = {
           </div>
           <Link
             to={viewAllHref}
-            className="group flex items-center gap-2 text-[#7A1632] font-semibold text-sm whitespace-nowrap pb-1 relative"
+            className="group flex items-center gap-2 text-primary-700 font-semibold text-sm whitespace-nowrap pb-1 relative"
           >
             <span className="relative">
               View All News
-              <span className="absolute left-0 bottom-0 w-full h-[2px] bg-[#7A1632] transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></span>
+              <span className="absolute left-0 bottom-0 w-full h-[2px] bg-primary-700 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></span>
             </span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </Link>
@@ -105,7 +105,7 @@ export default function NewsSection({ sectionTitle, sectionSubtitle, content = {
                 </p>
                 <button
                   onClick={() => setSelectedNews(items[0])}
-                  className="mt-auto inline-flex items-center gap-2 border-2 border-[#7A1632] text-[#7A1632] hover:bg-[#7A1632] hover:text-white font-semibold px-6 py-2.5 rounded-lg transition-all duration-300 group"
+                  className="mt-auto inline-flex items-center gap-2 border-2 border-primary-700 text-primary-700 hover:bg-primary-700 hover:text-white font-semibold px-6 py-2.5 rounded-lg transition-all duration-300 group"
                 >
                   Read Article
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -131,7 +131,7 @@ export default function NewsSection({ sectionTitle, sectionSubtitle, content = {
                       {item.category}
                     </span>
                   </div>
-                  <h4 className="font-semibold text-[#0F172A] text-base leading-snug mb-2 group-hover:text-[#7A1632] transition-colors">
+                  <h4 className="font-semibold text-[#0F172A] text-base leading-snug mb-2 group-hover:text-primary-700 transition-colors">
                     {item.title}
                   </h4>
                   <span className="flex items-center gap-1 text-[13px] text-slate-400 font-medium">

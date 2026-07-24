@@ -81,14 +81,14 @@ export default function Header() {
           {/* Custom Logo from Image */}
           <Link to="/" className="flex flex-col justify-center flex-shrink-0 group" aria-label="VALUE @ Amrita Home">
             <div className="flex items-baseline mt-1">
-              <span className="text-[#1e3a8a] text-[2rem] font-bold tracking-tight uppercase" style={{ fontFamily: 'Arial, sans-serif' }}>
+              <span className="text-primary-800 text-[2rem] font-black tracking-tighter uppercase font-heading">
                 VALUE
               </span>
-              <span className="text-[#4b5563] text-[2rem] italic ml-1.5" style={{ fontFamily: 'Georgia, serif' }}>
+              <span className="text-slate-600 text-[2rem] font-light ml-1.5 font-heading">
                 @ Amrita
               </span>
             </div>
-            <span className="text-[#6b7280] text-[13px] italic mt-0.5" style={{ fontFamily: 'Georgia, serif' }}>
+            <span className="text-slate-500 text-[12px] font-semibold tracking-wider mt-0.5 uppercase">
               Virtual Amrita Laboratories Universalizing Education
             </span>
           </Link>
@@ -179,7 +179,7 @@ export default function Header() {
                   </button>
                 </>
               ) : (
-                <Link to="/login" className="bg-primary-800 hover:bg-primary-900 text-white transition-all rounded-full px-6 py-2 font-bold text-[14px] whitespace-nowrap flex-shrink-0 shadow-sm">
+                <Link to="/login" className="bg-primary-800 hover:bg-primary-900 text-white transition-all rounded-full px-6 py-2 font-bold text-[14px] whitespace-nowrap flex-shrink-0 shadow-md hover:shadow-lg hover:-translate-y-0.5">
                   Sign In
                 </Link>
               )}
@@ -189,8 +189,8 @@ export default function Header() {
             <div className="flex xl:hidden justify-between w-full items-center">
               {/* Show compact logo on mobile nav bar when top banner is hidden on scroll */}
               <div className={`transition-opacity duration-300 ${scrolled ? 'opacity-100 visible' : 'opacity-0 invisible hidden'}`}>
-                <span className="font-heading font-bold text-[#202b78] text-lg tracking-tight whitespace-nowrap">
-                  VALUE @ Amrita
+                <span className="font-heading font-black text-primary-800 text-lg tracking-tighter whitespace-nowrap">
+                  VALUE <span className="font-light text-slate-600">@ Amrita</span>
                 </span>
               </div>
               <div className={scrolled ? '' : 'ml-auto'}>

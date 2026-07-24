@@ -41,7 +41,7 @@ export default {
         heading: ['Poppins', 'Inter', 'sans-serif'],
       },
       backgroundImage: {
-        'hero-gradient': 'linear-gradient(135deg, #4338ca 0%, #3730a3 50%, #1e1b4b 100%)',
+        'hero-gradient': 'radial-gradient(ellipse at top right, #3730a3 0%, #1e1b4b 50%, #0b0f19 100%)',
       },
       boxShadow: {
         card: '0 4px 24px rgba(0,0,0,0.08)',
