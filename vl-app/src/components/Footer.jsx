@@ -30,20 +30,20 @@ const socials = [
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-900 text-gray-400" aria-label="Site footer">
+    <footer className="bg-[#111622] text-slate-400" aria-label="Site footer">
       <div className="container-custom py-16">
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-10">
           {/* Brand column */}
           <div className="lg:col-span-1">
-            <div className="flex items-center gap-3 mb-5">
-              <div className="bg-white p-1.5 rounded-xl shadow-md flex items-center justify-center">
-                <img src="/amrita-icon.jpg" alt="Amrita Logo" className="w-8 h-8 object-contain rounded" />
+            <div className="flex items-center gap-3.5 mb-6">
+              <div className="bg-white p-2.5 rounded-[1.25rem] shadow-sm flex items-center justify-center flex-shrink-0">
+                <img src="/amrita-icon.jpg" alt="Amrita Logo" className="w-8 h-8 object-contain" />
               </div>
-              <div>
-                <span className="block text-white font-heading font-bold text-lg leading-none">
+              <div className="flex flex-col justify-center pt-1">
+                <span className="block text-white font-bold text-[1rem] leading-none tracking-wide" style={{ fontFamily: 'Arial, sans-serif' }}>
                   VALUE @ Amrita
                 </span>
-                <span className="block text-[10px] text-primary-300 font-semibold tracking-wider uppercase mt-0.5">
+                <span className="block text-[11px] text-[#A51C4A] font-bold tracking-[0.08em] uppercase mt-1.5">
                   Amrita Vishwa Vidyapeetham
                 </span>
               </div>
@@ -58,9 +58,9 @@ export default function Footer() {
                   key={label}
                   href={href}
                   aria-label={label}
-                  className="w-9 h-9 bg-white/5 hover:bg-primary-800 border border-white/10 rounded-lg flex items-center justify-center transition-colors duration-200"
+                  className="w-11 h-11 bg-transparent hover:bg-white/5 border border-slate-700/80 rounded-[0.85rem] flex items-center justify-center transition-colors duration-200 text-slate-400 hover:text-white"
                 >
-                  <Icon className="w-4 h-4" />
+                  <Icon className="w-4 h-4" strokeWidth={1.5} />
                 </a>
               ))}
             </div>

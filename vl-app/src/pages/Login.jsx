@@ -42,26 +42,33 @@ export default function Login() {
   };
 
   return (
-    <main className="pt-20 min-h-screen bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 flex items-center justify-center py-12 px-4">
-      {/* Background orbs */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl" />
-        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl" />
+    <main className="pt-20 min-h-screen bg-[#1c213f] flex items-center justify-center py-12 px-4 relative overflow-hidden">
+      {/* Subtle ambient lighting */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-[20%] left-[30%] w-[40rem] h-[40rem] bg-indigo-500/5 rounded-full blur-[120px]" />
       </div>
 
-      <div className="w-full max-w-md relative z-10">
-        {/* Logo */}
-        <div className="text-center mb-8">
-          <Link to="/" className="inline-flex items-center gap-3 mb-5">
-            <div className="bg-white p-2.5 rounded-2xl shadow-xl shadow-rose-950/40">
-              <img src="/amrita-logo.jpg" alt="Amrita Logo" className="h-10 w-auto object-contain rounded" />
+      <div className="w-full max-w-[26rem] relative z-10">
+        {/* Transparent Logo Construction */}
+        <div className="text-center mb-8 flex flex-col items-center">
+          <Link to="/" className="inline-flex items-center gap-3 mb-6 hover:opacity-90 transition-opacity">
+            <div className="bg-white p-1 rounded-full flex-shrink-0">
+              <img src="/amrita-icon.jpg" alt="Amrita Logo" className="h-10 w-10 object-contain rounded-full" />
+            </div>
+            <div className="flex flex-col justify-center text-left">
+              <span className="text-white font-serif text-3xl leading-none tracking-wide font-bold">
+                AMRITA
+              </span>
+              <span className="text-white text-[11px] tracking-[0.2em] leading-none mt-1.5 uppercase opacity-90">
+                Vishwa Vidyapeetham
+              </span>
             </div>
           </Link>
-          <h1 className="text-3xl font-bold text-white mb-1">Welcome Back</h1>
-          <p className="text-slate-400 text-sm">Sign in to your Amrita Virtual Labs account</p>
+          <h1 className="text-[1.75rem] font-bold text-white mb-2">Welcome Back</h1>
+          <p className="text-slate-400 text-[15px]">Sign in to your Amrita Virtual Labs account</p>
         </div>
 
-        <div className="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 shadow-2xl p-8">
+        <div className="bg-[#24294a] rounded-[1.5rem] border border-slate-600/30 shadow-2xl p-8">
 
           {/* Error */}
           {error && (
@@ -72,8 +79,8 @@ export default function Login() {
 
           <form onSubmit={handleSubmit} noValidate>
             {/* Email / Username */}
-            <div className="mb-4">
-              <label htmlFor="login-email" className="block text-sm font-medium text-slate-300 mb-1.5">
+            <div className="mb-5">
+              <label htmlFor="login-email" className="block text-[14px] font-semibold text-slate-200 mb-2">
                 Email or Username
               </label>
               <input
@@ -84,17 +91,17 @@ export default function Login() {
                 value={form.email}
                 onChange={handleChange}
                 placeholder="you@institution.edu or username"
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
+                className="w-full bg-[#2a3056] border border-slate-600/40 rounded-xl px-4 py-3.5 text-[15px] text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all"
               />
             </div>
 
             {/* Password */}
-            <div className="mb-6">
-              <div className="flex items-center justify-between mb-1.5">
-                <label htmlFor="login-password" className="text-sm font-medium text-slate-300">
+            <div className="mb-8">
+              <div className="flex items-center justify-between mb-2">
+                <label htmlFor="login-password" className="text-[14px] font-semibold text-slate-200">
                   Password
                 </label>
-                <Link to="/forgot-password" className="text-xs text-blue-400 hover:text-blue-300 hover:underline">
+                <Link to="/forgot-password" className="text-[13px] text-indigo-400 hover:text-indigo-300 hover:underline">
                   Forgot password?
                 </Link>
               </div>
@@ -107,7 +114,7 @@ export default function Login() {
                   value={form.password}
                   onChange={handleChange}
                   placeholder="••••••••"
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 pr-11 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
+                  className="w-full bg-[#2a3056] border border-slate-600/40 rounded-xl px-4 py-3.5 pr-12 text-[15px] text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all tracking-widest"
                 />
                 <button
                   type="button"
@@ -124,7 +131,7 @@ export default function Login() {
               type="submit"
               id="login-submit"
               disabled={loading}
-              className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold rounded-xl py-3.5 flex items-center justify-center gap-2 transition-all duration-200 shadow-lg shadow-blue-500/20 disabled:opacity-60 disabled:cursor-not-allowed"
+              className="w-full bg-[#5d63ec] hover:bg-[#4d53d8] text-white font-bold rounded-xl py-3.5 text-[15px] flex items-center justify-center gap-2 transition-colors shadow-lg shadow-indigo-600/20 disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <span className="flex items-center gap-2">
@@ -140,10 +147,10 @@ export default function Login() {
             </button>
           </form>
 
-          <div className="mt-6 pt-6 border-t border-white/10 text-center">
-            <p className="text-sm text-slate-400">
-              Don&apos;t have an account?{' '}
-              <Link to="/contact" className="text-blue-400 font-semibold hover:text-blue-300 hover:underline">
+          <div className="mt-8 pt-6 border-t border-slate-600/40 text-center">
+            <p className="text-[14px] text-slate-400">
+              Don't have an account?{' '}
+              <Link to="/contact" className="text-indigo-400 font-bold hover:text-indigo-300 hover:underline">
                 Contact your institution
               </Link>
             </p>
