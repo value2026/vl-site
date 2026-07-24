@@ -158,7 +158,7 @@ const DASHBOARD_PATHS = ['/dashboard', '/student'];
 
 function FloatingDashboardButton() {
   const { user } = useAuth();
-  if (!user) return null;
+  if (!user || user.role === 'student') return null;
   
   const dashMap = {
     admin:        '/dashboard/admin/pages',

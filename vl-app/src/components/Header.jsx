@@ -23,9 +23,9 @@ export default function Header() {
       vl_manager:   '/dashboard/vl-manager',
       nodal_centre: '/dashboard/nodal',
       teacher:      '/dashboard/teacher',
-      student:      '/dashboard/student',
+      student:      '/student',
     };
-    return map[user.role] || '/dashboard/student';
+    return map[user.role] || '/student';
   };
   const [scrolled, setScrolled]     = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
@@ -168,7 +168,7 @@ export default function Header() {
               {user ? (
                 <>
                   <Link to={getDashboardLink()} className="text-[14px] font-semibold text-gray-600 hover:text-primary-800 transition-colors px-2">
-                    Dashboard
+                    {user?.role === 'student' ? 'Student Platform' : 'Dashboard'}
                   </Link>
                   <button 
                     onClick={() => setShowSignOutModal(true)}
@@ -260,7 +260,7 @@ export default function Header() {
               {user ? (
                 <>
                   <Link to={getDashboardLink()} className="block px-4 py-3 rounded-xl text-[14px] font-semibold text-gray-700 hover:bg-gray-50 hover:text-primary-800 transition-colors">
-                    Dashboard
+                    {user?.role === 'student' ? 'Student Platform' : 'Dashboard'}
                   </Link>
                   <button 
                     onClick={() => setShowSignOutModal(true)}

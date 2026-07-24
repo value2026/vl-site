@@ -492,6 +492,22 @@ const getMyPerformance = async (req, res) => {
       if (uniqueRecentVisits.length >= 3) break;
     }
 
+    const recentVisitsMapped = visits.map(v => {
+      const experimentQuizzes = quizzes.filter(q => q.experimentId === v.experimentId);
+      return {
+        id: v.id,
+        experimentId: v.experimentId,
+        createdAt: v.createdAt,
+        duration: v.duration,
+        experiment: v.experiment,
+        quizScores: experimentQuizzes.map(q => ({
+          score: q.score,
+          maxScore: q.maxScore,
+          passed: q.passed
+        }))
+      };
+    });
+
     res.json({
       analytics: {
         uniqueVisitedCount,
@@ -503,7 +519,8 @@ const getMyPerformance = async (req, res) => {
         averageQuizScore: averageScore,
         feedbacksSubmitted: feedbacks,
       },
-      resumeExperiments: uniqueRecentVisits
+      resumeExperiments: uniqueRecentVisits,
+      recentVisits: recentVisitsMapped
     });
   } catch (err) {
     console.error('getMyPerformance error:', err);
