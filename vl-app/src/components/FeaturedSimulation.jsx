@@ -47,7 +47,7 @@ export default function FeaturedSimulation({ content = {} }) {
   };
 
   return (
-    <section className="py-24 bg-white" aria-labelledby="featured-sim-heading">
+    <section className="py-[100px] bg-white" aria-labelledby="featured-sim-heading">
       <div className="container-custom">
         {/* Section header */}
         <div className="text-center mb-16">
@@ -61,7 +61,7 @@ export default function FeaturedSimulation({ content = {} }) {
         </div>
 
         {/* Split card */}
-        <div className="bg-gradient-to-br from-primary-50 to-blue-50 rounded-3xl overflow-hidden shadow-card-hover">
+        <div className="bg-white rounded-[2rem] overflow-hidden shadow-2xl border border-[#E2E8F0] mt-[50px]">
           <div className="grid lg:grid-cols-2 gap-0">
             {/* Left — content */}
             <div className="p-10 lg:p-14 flex flex-col justify-center">

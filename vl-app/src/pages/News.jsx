@@ -36,7 +36,7 @@ export default function News() {
   }
 
   return (
-    <main className="pt-20">
+    <main>
       {/* Hero */}
       <section className="bg-hero-gradient py-20">
         <div className="container-custom text-center">

@@ -14,42 +14,44 @@ export default function SponsorsSection({ sectionTitle, sectionSubtitle, content
   const footerNote = content.footerNote  || '🇮🇳 A Government of India initiative to democratize quality STEM education';
 
   return (
-    <section className="py-20 bg-gray-900" aria-labelledby="sponsors-heading">
+    <section className="py-[100px] bg-white" aria-labelledby="sponsors-heading">
       <div className="container-custom">
-        <div className="text-center mb-12">
-          <span className="inline-block bg-white/10 text-white/80 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider mb-4">
+        <div className="text-center">
+          <span className="tag">
             {tag}
           </span>
-          <h2 id="sponsors-heading" className="font-heading text-3xl sm:text-4xl font-bold text-white mb-4">
+          <h2 id="sponsors-heading" className="section-title">
             {heading}
           </h2>
-          <p className="text-gray-400 text-lg max-w-2xl mx-auto">{subtitle}</p>
+          <p className="section-subtitle">{subtitle}</p>
         </div>
 
-        <div className="flex flex-wrap justify-center gap-5 mt-10">
+        <div className="flex flex-wrap justify-center gap-6 mt-[50px]">
           {sponsors.map(({ id, name, acronym, description, color, logoUrl }) => (
             <div
               key={id}
-              className="group flex items-center gap-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl px-6 py-5 transition-all duration-300 cursor-default"
+              className="premium-card flex flex-col items-center justify-center gap-3 rounded-2xl p-6 cursor-default w-[220px] text-center"
             >
-              <div className={`w-14 h-14 bg-gradient-to-br ${color} rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg overflow-hidden`}>
+              <div className="h-16 flex items-center justify-center mb-1">
                 {logoUrl ? (
-                  <img src={logoUrl} alt={name} className="w-full h-full object-cover" />
+                  <img src={logoUrl} alt={name} className="max-h-full max-w-full object-contain" />
                 ) : (
-                  <span className="text-white font-heading font-bold text-xs text-center leading-tight px-1">{acronym}</span>
+                  <div className={`w-14 h-14 bg-gradient-to-br ${color} rounded-xl flex items-center justify-center shadow-sm`}>
+                    <span className="text-white font-heading font-bold text-sm text-center px-1">{acronym}</span>
+                  </div>
                 )}
               </div>
               <div>
-                <div className="text-white font-semibold text-sm">{name}</div>
-                <div className="text-gray-500 text-xs mt-0.5">{description}</div>
+                <div className="text-[#0F172A] font-bold text-[15px] leading-tight mb-1">{name}</div>
+                <div className="text-[#64748B] text-xs font-medium">{description}</div>
               </div>
             </div>
           ))}
         </div>
 
         <div className="mt-14 text-center">
-          <div className="inline-flex items-center gap-3 bg-primary-900/50 border border-primary-700/50 rounded-xl px-6 py-4">
-            <span className="text-primary-300 text-sm font-medium">{footerNote}</span>
+          <div className="inline-flex items-center gap-3 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-6 py-4">
+            <span className="text-[#64748B] text-sm font-medium">{footerNote}</span>
           </div>
         </div>
       </div>

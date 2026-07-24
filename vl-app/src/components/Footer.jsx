@@ -30,7 +30,7 @@ const socials = [
 
 export default function Footer() {
   return (
-    <footer className="bg-[#111622] text-slate-400" aria-label="Site footer">
+    <footer className="bg-[#0F172A] text-slate-400" aria-labelledby="footer-heading">
       <div className="container-custom py-16">
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-10">
           {/* Brand column */}

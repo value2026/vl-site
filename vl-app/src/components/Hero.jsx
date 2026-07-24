@@ -27,7 +27,8 @@ export default function Hero({ content = {} }) {
   return (
     <div className="relative">
       <section
-        className="relative min-h-[85vh] lg:min-h-[800px] flex items-center overflow-hidden bg-gradient-to-r from-[#901a35] via-[#751228] to-[#390b16]"
+        className="relative min-h-[85vh] lg:min-h-[800px] flex items-center overflow-hidden"
+        style={{ background: 'linear-gradient(135deg, #7A1632 0%, #5A1025 55%, #2B0D18 100%)' }}
         aria-labelledby="hero-heading"
       >
         {/* Floating Icons (Right Side) */}
@@ -105,10 +106,10 @@ export default function Hero({ content = {} }) {
             {stats.map(({ n, label }, idx) => {
               const iconsList = [Landmark, FlaskConical, Users, User];
               const colorsList = [
-                'bg-rose-50 text-[#881326]',
-                'bg-[#fff7e6] text-[#334155]',
-                'bg-indigo-50 text-indigo-700',
-                'bg-emerald-50 text-emerald-700'
+                'bg-[#F5F7FA] text-[#7A1632]',
+                'bg-[#F5F7FA] text-[#2563EB]',
+                'bg-[#F5F7FA] text-[#10B981]',
+                'bg-[#F5F7FA] text-[#F4B400]'
               ];
               const Icon = iconsList[idx % iconsList.length];
               const colorClass = colorsList[idx % colorsList.length];
@@ -120,8 +121,8 @@ export default function Hero({ content = {} }) {
                        <Icon className="w-6 h-6" strokeWidth={1.5} />
                      </div>
                      <div className="text-left">
-                       <div className="text-3xl font-black text-[#881326] leading-none mb-1 tracking-tight">{n}</div>
-                       <div className="text-[14px] font-bold text-slate-600">{label}</div>
+                       <div className="text-3xl font-black text-[#0F172A] leading-none mb-1 tracking-tight">{n}</div>
+                       <div className="text-[14px] font-bold text-[#64748B]">{label}</div>
                      </div>
                   </div>
                 </div>

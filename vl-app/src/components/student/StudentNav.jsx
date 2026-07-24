@@ -60,11 +60,11 @@ export default function StudentNav({ breadcrumb = [] }) {
     <nav className="fixed top-0 left-0 right-0 z-50 h-14 bg-white border-b border-gray-200 flex items-center px-4 gap-4 shadow-sm">
       {/* Logo */}
       <Link to="/student" className="flex items-center gap-2.5 flex-shrink-0 group" aria-label="VALUE @ Amrita Home">
-        <div className="flex items-baseline mt-0.5">
+        <div className="flex items-baseline mt-0.5 ml-2">
           <span className="text-[#1e3a8a] text-[1.2rem] font-bold tracking-tight uppercase" style={{ fontFamily: 'Arial, sans-serif' }}>
             VALUE
           </span>
-          <span className="text-[#4b5563] text-[1.2rem] italic ml-1" style={{ fontFamily: 'Georgia, serif' }}>
+          <span className="text-[#4b5563] text-[1.2rem] italic ml-2" style={{ fontFamily: 'Georgia, serif' }}>
             @ Amrita
           </span>
         </div>

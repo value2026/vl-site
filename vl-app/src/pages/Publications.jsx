@@ -33,7 +33,7 @@ export default function Publications() {
   const years = [...new Set(pubItems.map((p) => p.year))].sort((a, b) => b - a);
 
   return (
-    <main className="pt-20">
+    <main>
       {/* Hero */}
       <section className="bg-hero-gradient py-20">
         <div className="container-custom text-center">
