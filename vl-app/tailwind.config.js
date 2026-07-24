@@ -8,18 +8,18 @@ export default {
     extend: {
       colors: {
         primary: {
-          DEFAULT: '#af0c3e',
-          50:  '#fdf2f4',
-          100: '#fbe5e9',
-          200: '#f7cfd7',
-          300: '#f09fb1',
-          400: '#e56482',
-          500: '#d5345b',
-          600: '#be1b44',
-          700: '#9e1137',
-          800: '#af0c3e',
-          900: '#6d0b28',
-          950: '#400314',
+          DEFAULT: '#4f46e5',
+          50:  '#eef2ff',
+          100: '#e0e7ff',
+          200: '#c7d2fe',
+          300: '#a5b4fc',
+          400: '#818cf8',
+          500: '#6366f1',
+          600: '#4f46e5',
+          700: '#4338ca',
+          800: '#3730a3',
+          900: '#312e81',
+          950: '#1e1b4b',
         },
         secondary: {
           DEFAULT: '#f4b400',
@@ -41,7 +41,7 @@ export default {
         heading: ['Poppins', 'Inter', 'sans-serif'],
       },
       backgroundImage: {
-        'hero-gradient': 'linear-gradient(135deg, #af0c3e 0%, #6d0b28 50%, #30020e 100%)',
+        'hero-gradient': 'radial-gradient(ellipse at top right, #3730a3 0%, #1e1b4b 50%, #0b0f19 100%)',
       },
       boxShadow: {
         card: '0 4px 24px rgba(0,0,0,0.08)',
