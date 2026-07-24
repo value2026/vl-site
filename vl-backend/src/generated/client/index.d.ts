@@ -8899,6 +8899,7 @@ export namespace Prisma {
     duration: number
     device: number
     browser: number
+    tabsVisited: number
     createdAt: number
     _all: number
   }
@@ -8939,6 +8940,7 @@ export namespace Prisma {
     duration?: true
     device?: true
     browser?: true
+    tabsVisited?: true
     createdAt?: true
     _all?: true
   }
@@ -9036,6 +9038,7 @@ export namespace Prisma {
     duration: number
     device: string | null
     browser: string | null
+    tabsVisited: string[]
     createdAt: Date
     _count: ExperimentVisitCountAggregateOutputType | null
     _avg: ExperimentVisitAvgAggregateOutputType | null
@@ -9065,6 +9068,7 @@ export namespace Prisma {
     duration?: boolean
     device?: boolean
     browser?: boolean
+    tabsVisited?: boolean
     createdAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
     experiment?: boolean | ExperimentDefaultArgs<ExtArgs>
@@ -9077,6 +9081,7 @@ export namespace Prisma {
     duration?: boolean
     device?: boolean
     browser?: boolean
+    tabsVisited?: boolean
     createdAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
     experiment?: boolean | ExperimentDefaultArgs<ExtArgs>
@@ -9089,6 +9094,7 @@ export namespace Prisma {
     duration?: boolean
     device?: boolean
     browser?: boolean
+    tabsVisited?: boolean
     createdAt?: boolean
   }
 
@@ -9114,6 +9120,7 @@ export namespace Prisma {
       duration: number
       device: string | null
       browser: string | null
+      tabsVisited: string[]
       createdAt: Date
     }, ExtArgs["result"]["experimentVisit"]>
     composites: {}
@@ -9516,6 +9523,7 @@ export namespace Prisma {
     readonly duration: FieldRef<"ExperimentVisit", 'Int'>
     readonly device: FieldRef<"ExperimentVisit", 'String'>
     readonly browser: FieldRef<"ExperimentVisit", 'String'>
+    readonly tabsVisited: FieldRef<"ExperimentVisit", 'String[]'>
     readonly createdAt: FieldRef<"ExperimentVisit", 'DateTime'>
   }
     
@@ -23766,6 +23774,7 @@ export namespace Prisma {
     duration: 'duration',
     device: 'device',
     browser: 'browser',
+    tabsVisited: 'tabsVisited',
     createdAt: 'createdAt'
   };
 
@@ -24696,6 +24705,7 @@ export namespace Prisma {
     duration?: IntFilter<"ExperimentVisit"> | number
     device?: StringNullableFilter<"ExperimentVisit"> | string | null
     browser?: StringNullableFilter<"ExperimentVisit"> | string | null
+    tabsVisited?: StringNullableListFilter<"ExperimentVisit">
     createdAt?: DateTimeFilter<"ExperimentVisit"> | Date | string
     user?: XOR<UserRelationFilter, UserWhereInput>
     experiment?: XOR<ExperimentRelationFilter, ExperimentWhereInput>
@@ -24708,6 +24718,7 @@ export namespace Prisma {
     duration?: SortOrder
     device?: SortOrderInput | SortOrder
     browser?: SortOrderInput | SortOrder
+    tabsVisited?: SortOrder
     createdAt?: SortOrder
     user?: UserOrderByWithRelationInput
     experiment?: ExperimentOrderByWithRelationInput
@@ -24723,6 +24734,7 @@ export namespace Prisma {
     duration?: IntFilter<"ExperimentVisit"> | number
     device?: StringNullableFilter<"ExperimentVisit"> | string | null
     browser?: StringNullableFilter<"ExperimentVisit"> | string | null
+    tabsVisited?: StringNullableListFilter<"ExperimentVisit">
     createdAt?: DateTimeFilter<"ExperimentVisit"> | Date | string
     user?: XOR<UserRelationFilter, UserWhereInput>
     experiment?: XOR<ExperimentRelationFilter, ExperimentWhereInput>
@@ -24735,6 +24747,7 @@ export namespace Prisma {
     duration?: SortOrder
     device?: SortOrderInput | SortOrder
     browser?: SortOrderInput | SortOrder
+    tabsVisited?: SortOrder
     createdAt?: SortOrder
     _count?: ExperimentVisitCountOrderByAggregateInput
     _avg?: ExperimentVisitAvgOrderByAggregateInput
@@ -24753,6 +24766,7 @@ export namespace Prisma {
     duration?: IntWithAggregatesFilter<"ExperimentVisit"> | number
     device?: StringNullableWithAggregatesFilter<"ExperimentVisit"> | string | null
     browser?: StringNullableWithAggregatesFilter<"ExperimentVisit"> | string | null
+    tabsVisited?: StringNullableListFilter<"ExperimentVisit">
     createdAt?: DateTimeWithAggregatesFilter<"ExperimentVisit"> | Date | string
   }
 
@@ -26410,6 +26424,7 @@ export namespace Prisma {
     duration?: number
     device?: string | null
     browser?: string | null
+    tabsVisited?: ExperimentVisitCreatetabsVisitedInput | string[]
     createdAt?: Date | string
     user: UserCreateNestedOneWithoutExperimentVisitsInput
     experiment: ExperimentCreateNestedOneWithoutExperimentVisitsInput
@@ -26422,6 +26437,7 @@ export namespace Prisma {
     duration?: number
     device?: string | null
     browser?: string | null
+    tabsVisited?: ExperimentVisitCreatetabsVisitedInput | string[]
     createdAt?: Date | string
   }
 
@@ -26430,6 +26446,7 @@ export namespace Prisma {
     duration?: IntFieldUpdateOperationsInput | number
     device?: NullableStringFieldUpdateOperationsInput | string | null
     browser?: NullableStringFieldUpdateOperationsInput | string | null
+    tabsVisited?: ExperimentVisitUpdatetabsVisitedInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutExperimentVisitsNestedInput
     experiment?: ExperimentUpdateOneRequiredWithoutExperimentVisitsNestedInput
@@ -26442,6 +26459,7 @@ export namespace Prisma {
     duration?: IntFieldUpdateOperationsInput | number
     device?: NullableStringFieldUpdateOperationsInput | string | null
     browser?: NullableStringFieldUpdateOperationsInput | string | null
+    tabsVisited?: ExperimentVisitUpdatetabsVisitedInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -26452,6 +26470,7 @@ export namespace Prisma {
     duration?: number
     device?: string | null
     browser?: string | null
+    tabsVisited?: ExperimentVisitCreatetabsVisitedInput | string[]
     createdAt?: Date | string
   }
 
@@ -26460,6 +26479,7 @@ export namespace Prisma {
     duration?: IntFieldUpdateOperationsInput | number
     device?: NullableStringFieldUpdateOperationsInput | string | null
     browser?: NullableStringFieldUpdateOperationsInput | string | null
+    tabsVisited?: ExperimentVisitUpdatetabsVisitedInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -26470,6 +26490,7 @@ export namespace Prisma {
     duration?: IntFieldUpdateOperationsInput | number
     device?: NullableStringFieldUpdateOperationsInput | string | null
     browser?: NullableStringFieldUpdateOperationsInput | string | null
+    tabsVisited?: ExperimentVisitUpdatetabsVisitedInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -28129,6 +28150,7 @@ export namespace Prisma {
     duration?: SortOrder
     device?: SortOrder
     browser?: SortOrder
+    tabsVisited?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -29950,6 +29972,10 @@ export namespace Prisma {
     update?: XOR<XOR<ExperimentUpdateToOneWithWhereWithoutQuizAttemptsInput, ExperimentUpdateWithoutQuizAttemptsInput>, ExperimentUncheckedUpdateWithoutQuizAttemptsInput>
   }
 
+  export type ExperimentVisitCreatetabsVisitedInput = {
+    set: string[]
+  }
+
   export type UserCreateNestedOneWithoutExperimentVisitsInput = {
     create?: XOR<UserCreateWithoutExperimentVisitsInput, UserUncheckedCreateWithoutExperimentVisitsInput>
     connectOrCreate?: UserCreateOrConnectWithoutExperimentVisitsInput
@@ -29960,6 +29986,11 @@ export namespace Prisma {
     create?: XOR<ExperimentCreateWithoutExperimentVisitsInput, ExperimentUncheckedCreateWithoutExperimentVisitsInput>
     connectOrCreate?: ExperimentCreateOrConnectWithoutExperimentVisitsInput
     connect?: ExperimentWhereUniqueInput
+  }
+
+  export type ExperimentVisitUpdatetabsVisitedInput = {
+    set?: string[]
+    push?: string | string[]
   }
 
   export type UserUpdateOneRequiredWithoutExperimentVisitsNestedInput = {
@@ -31269,6 +31300,7 @@ export namespace Prisma {
     duration?: number
     device?: string | null
     browser?: string | null
+    tabsVisited?: ExperimentVisitCreatetabsVisitedInput | string[]
     createdAt?: Date | string
     experiment: ExperimentCreateNestedOneWithoutExperimentVisitsInput
   }
@@ -31279,6 +31311,7 @@ export namespace Prisma {
     duration?: number
     device?: string | null
     browser?: string | null
+    tabsVisited?: ExperimentVisitCreatetabsVisitedInput | string[]
     createdAt?: Date | string
   }
 
@@ -31988,6 +32021,7 @@ export namespace Prisma {
     duration?: IntFilter<"ExperimentVisit"> | number
     device?: StringNullableFilter<"ExperimentVisit"> | string | null
     browser?: StringNullableFilter<"ExperimentVisit"> | string | null
+    tabsVisited?: StringNullableListFilter<"ExperimentVisit">
     createdAt?: DateTimeFilter<"ExperimentVisit"> | Date | string
   }
 
@@ -33117,6 +33151,7 @@ export namespace Prisma {
     duration?: number
     device?: string | null
     browser?: string | null
+    tabsVisited?: ExperimentVisitCreatetabsVisitedInput | string[]
     createdAt?: Date | string
     user: UserCreateNestedOneWithoutExperimentVisitsInput
   }
@@ -33127,6 +33162,7 @@ export namespace Prisma {
     duration?: number
     device?: string | null
     browser?: string | null
+    tabsVisited?: ExperimentVisitCreatetabsVisitedInput | string[]
     createdAt?: Date | string
   }
 
@@ -37506,6 +37542,7 @@ export namespace Prisma {
     duration?: number
     device?: string | null
     browser?: string | null
+    tabsVisited?: ExperimentVisitCreatetabsVisitedInput | string[]
     createdAt?: Date | string
   }
 
@@ -37966,6 +38003,7 @@ export namespace Prisma {
     duration?: IntFieldUpdateOperationsInput | number
     device?: NullableStringFieldUpdateOperationsInput | string | null
     browser?: NullableStringFieldUpdateOperationsInput | string | null
+    tabsVisited?: ExperimentVisitUpdatetabsVisitedInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     experiment?: ExperimentUpdateOneRequiredWithoutExperimentVisitsNestedInput
   }
@@ -37976,6 +38014,7 @@ export namespace Prisma {
     duration?: IntFieldUpdateOperationsInput | number
     device?: NullableStringFieldUpdateOperationsInput | string | null
     browser?: NullableStringFieldUpdateOperationsInput | string | null
+    tabsVisited?: ExperimentVisitUpdatetabsVisitedInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -37985,6 +38024,7 @@ export namespace Prisma {
     duration?: IntFieldUpdateOperationsInput | number
     device?: NullableStringFieldUpdateOperationsInput | string | null
     browser?: NullableStringFieldUpdateOperationsInput | string | null
+    tabsVisited?: ExperimentVisitUpdatetabsVisitedInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -38384,6 +38424,7 @@ export namespace Prisma {
     duration?: number
     device?: string | null
     browser?: string | null
+    tabsVisited?: ExperimentVisitCreatetabsVisitedInput | string[]
     createdAt?: Date | string
   }
 
@@ -38430,6 +38471,7 @@ export namespace Prisma {
     duration?: IntFieldUpdateOperationsInput | number
     device?: NullableStringFieldUpdateOperationsInput | string | null
     browser?: NullableStringFieldUpdateOperationsInput | string | null
+    tabsVisited?: ExperimentVisitUpdatetabsVisitedInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutExperimentVisitsNestedInput
   }
@@ -38440,6 +38482,7 @@ export namespace Prisma {
     duration?: IntFieldUpdateOperationsInput | number
     device?: NullableStringFieldUpdateOperationsInput | string | null
     browser?: NullableStringFieldUpdateOperationsInput | string | null
+    tabsVisited?: ExperimentVisitUpdatetabsVisitedInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -38449,6 +38492,7 @@ export namespace Prisma {
     duration?: IntFieldUpdateOperationsInput | number
     device?: NullableStringFieldUpdateOperationsInput | string | null
     browser?: NullableStringFieldUpdateOperationsInput | string | null
+    tabsVisited?: ExperimentVisitUpdatetabsVisitedInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 

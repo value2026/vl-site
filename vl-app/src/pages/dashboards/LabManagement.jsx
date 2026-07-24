@@ -85,10 +85,10 @@ function ConfirmDelete({ label, onConfirm, onCancel }) {
 }
 
 // ── Status toggle badge ───────────────────────────────────────
-const ActiveBadge = ({ active, onClick }) => (
+const ActiveBadge = ({ active, onClick, labels = ['Active', 'Inactive'] }) => (
   <button onClick={onClick} className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold border transition-all ${active ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20' : 'bg-slate-800 border-white/5 text-slate-400 hover:bg-slate-700'}`}>
     <span className={`w-1.5 h-1.5 rounded-full ${active ? 'bg-emerald-400 animate-pulse' : 'bg-slate-500'}`} />
-    {active ? 'Active' : 'Inactive'}
+    {active ? labels[0] : labels[1]}
   </button>
 );
 
@@ -301,7 +301,7 @@ function LabsTab() {
                 <div className="text-[10px] text-slate-500 mt-1">{l._count?.experiments || 0} Experiments · Created by {l.createdBy?.name}</div>
               </div>
               <div className="flex items-center gap-3 flex-shrink-0">
-                <ActiveBadge active={l.isActive} onClick={() => toggleActive(l)} />
+                <ActiveBadge active={l.isActive} onClick={() => toggleActive(l)} labels={['Published', 'Draft']} />
                 <div className="flex items-center gap-1 border-l border-white/5 pl-3">
                   <button onClick={() => openEdit(l)} className="p-1.5 text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
                   <button onClick={() => setDeleting(l)} className="p-1.5 text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
@@ -511,7 +511,7 @@ function ExperimentsTab({ role }) {
                 </div>
 
                 <div className="flex items-center gap-3 border-t sm:border-t-0 sm:border-l border-white/5 pt-4 sm:pt-0 sm:pl-4 flex-shrink-0 w-full sm:w-auto justify-between sm:justify-start">
-                  <ActiveBadge active={exp.isActive} onClick={() => toggleActive(exp)} />
+                  <ActiveBadge active={exp.isActive} onClick={() => toggleActive(exp)} labels={['Published', 'Draft']} />
                   <div className="flex items-center gap-1">
                     <button onClick={() => openEdit(exp)} className="p-1.5 text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
                     <button onClick={() => setDeleting(exp)} className="p-1.5 text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>

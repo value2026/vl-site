@@ -26,6 +26,7 @@ import AdminDashboard       from './pages/dashboards/AdminDashboard';
 import NodalCentreDashboard from './pages/dashboards/NodalCentreDashboard';
 import TeacherDashboard     from './pages/dashboards/TeacherDashboard';
 import ManagePages          from './pages/dashboards/ManagePages';
+import ContactMessages      from './pages/dashboards/ContactMessages';
 import VLManagerDashboard   from './pages/dashboards/VLManagerDashboard';
 import InstitutionsManagement from './pages/dashboards/InstitutionsManagement';
 import WorkshopsManagement    from './pages/dashboards/WorkshopsManagement';
@@ -133,16 +134,19 @@ function ProtectedRoute({ children, allowedRole }) {
 
   if (!user) return <Navigate to="/login" replace />;
 
-  if (allowedRole && user.role !== allowedRole) {
-    // Redirect to their correct dashboard
-    const dashMap = {
-      admin:        '/dashboard/admin',
-      vl_manager:   '/dashboard/vl-manager',
-      nodal_centre: '/dashboard/nodal',
-      teacher:      '/dashboard/teacher',
-      student:      '/student',
-    };
-    return <Navigate to={dashMap[user.role] || '/login'} replace />;
+  if (allowedRole) {
+    const roles = Array.isArray(allowedRole) ? allowedRole : [allowedRole];
+    if (!roles.includes(user.role)) {
+      // Redirect to their correct dashboard
+      const dashMap = {
+        admin:        '/dashboard/admin',
+        vl_manager:   '/dashboard/vl-manager',
+        nodal_centre: '/dashboard/nodal',
+        teacher:      '/dashboard/teacher',
+        student:      '/student',
+      };
+      return <Navigate to={dashMap[user.role] || '/login'} replace />;
+    }
   }
 
   return children;
@@ -219,6 +223,11 @@ function AppLayout() {
             <DashboardLayout title="Manage Pages"><ManagePages /></DashboardLayout>
           </ProtectedRoute>
         } />
+        <Route path="/dashboard/admin/messages" element={
+          <ProtectedRoute allowedRole="admin">
+            <DashboardLayout title="Contact Messages"><ContactMessages /></DashboardLayout>
+          </ProtectedRoute>
+        } />
         <Route path="/dashboard/admin/institutions" element={
           <ProtectedRoute allowedRole="admin">
             <DashboardLayout title="Institutions"><InstitutionsManagement /></DashboardLayout>
@@ -241,6 +250,11 @@ function AppLayout() {
         } />
         <Route path="/dashboard/vl-manager/users" element={
           <ProtectedRoute allowedRole="vl_manager"><VLManagerDashboard /></ProtectedRoute>
+        } />
+        <Route path="/dashboard/vl-manager/messages" element={
+          <ProtectedRoute allowedRole="vl_manager">
+            <DashboardLayout title="Contact Messages"><ContactMessages /></DashboardLayout>
+          </ProtectedRoute>
         } />
         <Route path="/dashboard/vl-manager/institutions" element={
           <ProtectedRoute allowedRole="vl_manager">
@@ -325,28 +339,28 @@ function AppLayout() {
 
         {/* Student learning platform */}
         <Route path="/dashboard/student" element={
-          <ProtectedRoute allowedRole="student"><Navigate to="/student" replace /></ProtectedRoute>
+          <ProtectedRoute><Navigate to="/student" replace /></ProtectedRoute>
         } />
         <Route path="/student" element={
-          <ProtectedRoute allowedRole="student"><StudentHome /></ProtectedRoute>
+          <ProtectedRoute><StudentHome /></ProtectedRoute>
         } />
         <Route path="/student/subject/:subjectId" element={
-          <ProtectedRoute allowedRole="student"><SubjectPage /></ProtectedRoute>
+          <ProtectedRoute><SubjectPage /></ProtectedRoute>
         } />
         <Route path="/student/lab/:labId" element={
-          <ProtectedRoute allowedRole="student"><LabPage /></ProtectedRoute>
+          <ProtectedRoute><LabPage /></ProtectedRoute>
         } />
         <Route path="/student/experiment/:expId" element={
-          <ProtectedRoute allowedRole="student"><ExperimentPage /></ProtectedRoute>
+          <ProtectedRoute><ExperimentPage /></ProtectedRoute>
         } />
         <Route path="/student/account" element={
-          <ProtectedRoute allowedRole="student"><StudentAccount /></ProtectedRoute>
+          <ProtectedRoute><StudentAccount /></ProtectedRoute>
         } />
         <Route path="/student/assignments" element={
-          <ProtectedRoute allowedRole="student"><StudentAssignments /></ProtectedRoute>
+          <ProtectedRoute><StudentAssignments /></ProtectedRoute>
         } />
         <Route path="/student/assignments/take/:id" element={
-          <ProtectedRoute allowedRole="student"><DoAssignment /></ProtectedRoute>
+          <ProtectedRoute><DoAssignment /></ProtectedRoute>
         } />
       </Routes>
     );

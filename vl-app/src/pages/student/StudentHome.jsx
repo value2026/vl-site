@@ -37,6 +37,7 @@ function PerformanceCard({ icon: Icon, iconColor, label, value, subText, badgeTe
 
 export default function StudentHome() {
   const { user } = useAuth();
+  const isStudent = user?.role === 'student';
 
   // 1. Fetch Subjects list
   const { data: subjects = [], isLoading: subjectsLoading } = useQuery({
@@ -44,16 +45,18 @@ export default function StudentHome() {
     queryFn: () => api.get('/subjects').then(r => r.json()),
   });
 
-  // 2. Fetch student performance/activities
+  // 2. Fetch student performance/activities (only if student)
   const { data: perfData, isLoading: perfLoading } = useQuery({
     queryKey: ['student-performance'],
     queryFn: () => api.get('/analytics/my-performance').then(r => r.json()),
+    enabled: isStudent,
   });
 
-  // 3. Fetch student assignments
+  // 3. Fetch upcoming assignments (only if student)
   const { data: assignments = [], isLoading: assignmentsLoading } = useQuery({
-    queryKey: ['student-assignments-home'],
+    queryKey: ['student-assignments'],
     queryFn: () => api.get('/assignments/my-assignments').then(r => r.json()),
+    enabled: isStudent,
   });
 
   const upcomingExams = Array.isArray(assignments)
@@ -69,56 +72,57 @@ export default function StudentHome() {
       {/* Main Container — Full page layout */}
       <main className="pt-14 pb-12 px-4 sm:px-6 lg:px-8 xl:px-12 w-full max-w-[1600px] mx-auto">
         
-        {/* Dynamic Curved Hero Banner */}
-        <div className="mt-6 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-950 rounded-3xl p-8 md:p-12 relative overflow-hidden shadow-lg shadow-indigo-950/20">
-          {/* Animated decorative orbs */}
-          <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-blue-600/10 rounded-full blur-3xl pointer-events-none translate-x-1/3 -translate-y-1/3" />
-          <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-indigo-500/10 rounded-full blur-3xl pointer-events-none -translate-x-1/4 translate-y-1/4" />
-
-          <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-8">
-            <div className="flex items-start gap-6 max-w-2xl">
-              <div className="w-16 h-16 bg-white/10 backdrop-blur border border-white/20 rounded-2xl flex items-center justify-center text-3xl shadow-xl flex-shrink-0 animate-pulse">
-                🔬
-              </div>
-              <div>
-                <div className="inline-flex items-center gap-1.5 bg-indigo-500/20 backdrop-blur border border-indigo-400/30 text-indigo-300 text-xs font-bold px-3 py-1 rounded-full mb-3">
-                  <Sparkles className="w-3.5 h-3.5" /> Virtual Learning Workspace
+        {/* Hero Section (Only for Students) */}
+        {isStudent && (
+          <div className="bg-slate-900 rounded-3xl p-8 md:p-10 shadow-2xl relative overflow-hidden mt-6 mb-8 border border-slate-800">
+            {/* Background elements */}
+            <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-br from-indigo-500/20 to-purple-600/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 opacity-60" />
+            
+            <div className="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-8">
+              <div className="flex flex-col md:flex-row items-start md:items-center gap-6 max-w-2xl">
+                <div className="w-16 h-16 bg-white/10 backdrop-blur border border-white/20 rounded-2xl flex items-center justify-center text-3xl shadow-xl flex-shrink-0 animate-pulse">
+                  🔬
                 </div>
-                <h1 className="text-white text-3xl md:text-4xl font-extrabold mb-2 tracking-tight">
-                  Welcome back, {user?.name?.split(' ')[0]}!
-                </h1>
-                <p className="text-slate-300 text-sm md:text-base leading-relaxed">
-                  Your personalized dashboard tracking active labs, completion records, and simulation analytics. Get started or continue your saved experiments.
-                </p>
+                <div>
+                  <div className="inline-flex items-center gap-1.5 bg-indigo-500/20 backdrop-blur border border-indigo-400/30 text-indigo-300 text-xs font-bold px-3 py-1 rounded-full mb-3">
+                    <Sparkles className="w-3.5 h-3.5" /> Virtual Learning Workspace
+                  </div>
+                  <h1 className="text-white text-3xl md:text-4xl font-extrabold mb-2 tracking-tight">
+                    Welcome back, {user?.name?.split(' ')[0]}!
+                  </h1>
+                  <p className="text-slate-300 text-sm md:text-base leading-relaxed">
+                    Your personalized dashboard tracking active labs, completion records, and simulation analytics. Get started or continue your saved experiments.
+                  </p>
+                </div>
               </div>
-            </div>
 
-            {/* Quick stats board in hero */}
-            <div className="flex flex-wrap md:flex-nowrap gap-4 flex-shrink-0">
-              <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-5 text-center min-w-[120px] flex-1 md:flex-initial">
-                <div className="text-white text-3xl font-extrabold">{subjects.length}</div>
-                <div className="text-slate-400 text-xs mt-1">Subjects</div>
-              </div>
-              <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-5 text-center min-w-[120px] flex-1 md:flex-initial">
-                <div className="text-white text-3xl font-extrabold">{totalLabs}</div>
-                <div className="text-slate-400 text-xs mt-1">Labs</div>
-              </div>
-              <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-5 text-center min-w-[120px] flex-1 md:flex-initial">
-                <div className="text-emerald-400 text-3xl font-extrabold">{perfData?.analytics?.completionRate || 0}%</div>
-                <div className="text-slate-400 text-xs mt-1">Completion</div>
+              {/* Quick stats board in hero */}
+              <div className="flex flex-wrap md:flex-nowrap gap-4 flex-shrink-0">
+                <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-5 text-center min-w-[120px] flex-1 md:flex-initial">
+                  <div className="text-white text-3xl font-extrabold">{subjects.length}</div>
+                  <div className="text-slate-400 text-xs mt-1">Subjects</div>
+                </div>
+                <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-5 text-center min-w-[120px] flex-1 md:flex-initial">
+                  <div className="text-white text-3xl font-extrabold">{totalLabs}</div>
+                  <div className="text-slate-400 text-xs mt-1">Labs</div>
+                </div>
+                <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-5 text-center min-w-[120px] flex-1 md:flex-initial">
+                  <div className="text-emerald-400 text-3xl font-extrabold">{perfData?.analytics?.completionRate || 0}%</div>
+                  <div className="text-slate-400 text-xs mt-1">Completion</div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* 2-Column Responsive Workspace Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 mt-8 items-start">
           
           {/* LEFT 3-COLUMNS AREA (Active Workspace, Resume and Subjects) */}
-          <div className="lg:col-span-3 space-y-8">
+          <div className={isStudent ? "lg:col-span-3 space-y-8" : "lg:col-span-4 space-y-8"}>
             
-            {/* Resume Experiments List */}
-            {!perfLoading && perfData?.resumeExperiments?.length > 0 && (
+            {/* Resume Experiments List (Only for Students) */}
+            {isStudent && !perfLoading && perfData?.resumeExperiments?.length > 0 && (
               <div className="bg-white border border-slate-100 rounded-3xl p-6 md:p-8 shadow-sm">
                 <div className="flex items-center justify-between mb-5">
                   <div>
@@ -237,169 +241,199 @@ export default function StudentHome() {
 
           </div>
 
-          {/* RIGHT 1-COLUMN AREA (Analytics Panel) */}
-          <div className="space-y-6">
-            
-            {/* Upcoming Exams Card */}
-            {!assignmentsLoading && upcomingExams.length > 0 && (
-              <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm">
-                <div className="mb-4 pb-4 border-b border-slate-50 flex items-center justify-between">
-                  <h2 className="text-slate-900 font-extrabold text-sm flex items-center gap-2">
-                    <ClipboardList className="w-4.5 h-4.5 text-indigo-600" />
-                    Upcoming Exams
-                  </h2>
-                  <Link
-                    to="/student/assignments"
-                    className="text-[10px] font-bold text-indigo-605 hover:underline"
-                  >
-                    View All
-                  </Link>
-                </div>
-
-                <div className="space-y-4">
-                  {upcomingExams.map((exam) => (
-                    <div
-                      key={exam.id}
-                      className="p-4 bg-slate-55/50 border border-slate-100 rounded-2xl hover:border-indigo-100 transition-colors"
-                    >
-                      <div className="flex justify-between items-start">
-                        <span className={`px-2 py-0.5 rounded text-[8px] font-extrabold uppercase tracking-wide border ${
-                          exam.status === 'active'
-                            ? 'bg-emerald-50 text-emerald-700 border-emerald-100'
-                            : 'bg-amber-50 text-amber-705 border-amber-100'
-                        }`}>
-                          {exam.status === 'active' ? 'Active Now' : 'Upcoming'}
-                        </span>
-                        <span className="text-[9px] text-slate-400 font-medium">
-                          {exam.questionCount} Qs
-                        </span>
-                      </div>
-                      <h4 className="text-slate-800 font-bold text-xs mt-2 line-clamp-2 leading-snug">
-                        {exam.title}
-                      </h4>
-                      <div className="flex items-center gap-1 text-[10px] text-slate-500 mt-2">
-                        <Clock className="w-3.5 h-3.5 text-slate-400" />
-                        <span>
-                          {new Date(exam.startTime).toLocaleDateString('en-IN', {
-                            day: '2-digit',
-                            month: 'short',
-                            hour: '2-digit',
-                            minute: '2-digit',
-                          })}
-                        </span>
-                      </div>
-
-                      {exam.status === 'active' && (
-                        <Link
-                          to={`/student/assignments/take/${exam.id}`}
-                          className="mt-3 w-full block text-center py-2 bg-indigo-600 text-white hover:bg-indigo-700 rounded-xl text-[10px] font-bold transition-all shadow-sm shadow-indigo-500/10"
-                        >
-                          Take Test
-                        </Link>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm">
-              <h2 className="text-slate-900 font-extrabold text-base flex items-center gap-2 mb-6 border-b border-slate-50 pb-4">
-                <TrendingUp className="w-5 h-5 text-emerald-600" />
-                My Performance
-              </h2>
-
-              {perfLoading ? (
-                <div className="flex justify-center py-12 text-slate-400">
-                  <Loader2 className="w-6 h-6 animate-spin" />
-                </div>
-              ) : (
-                <div className="space-y-6">
-                  {/* Completion Rate circular chart widget */}
-                  <div className="flex flex-col items-center pb-6 border-b border-slate-50">
-                    <div className="relative inline-flex items-center justify-center">
-                      <svg className="w-28 h-28 transform -rotate-90">
-                        <circle
-                          cx="56"
-                          cy="56"
-                          r="46"
-                          stroke="#f1f5f9"
-                          strokeWidth="8"
-                          fill="transparent"
-                        />
-                        <circle
-                          cx="56"
-                          cy="56"
-                          r="46"
-                          stroke="#10b981"
-                          strokeWidth="8"
-                          fill="transparent"
-                          strokeDasharray={289}
-                          strokeDashoffset={289 - (289 * (perfData?.analytics?.completionRate || 0)) / 100}
-                          className="transition-all duration-1000 ease-out"
-                        />
-                      </svg>
-                      <div className="absolute flex flex-col items-center">
-                        <span className="text-2xl font-extrabold text-slate-900 leading-none">
-                          {perfData?.analytics?.completionRate}%
-                        </span>
-                        <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider mt-1.5">
-                          Progress
-                        </span>
-                      </div>
-                    </div>
-                    <h3 className="text-slate-800 font-bold text-sm mt-4">Module Completion Rate</h3>
-                    <p className="text-slate-400 text-[11px] mt-1.5 text-center max-w-[200px] leading-normal">
-                      Completed <strong>{perfData?.analytics?.uniqueVisitedCount || 0}</strong> of <strong>{perfData?.analytics?.totalActiveExps || 0}</strong> active experiments.
-                    </p>
+          {/* RIGHT 1-COLUMN AREA (Analytics Panel - Only for students) */}
+          {isStudent && (
+            <div className="space-y-6">
+              
+              {/* Upcoming Exams Card */}
+              {!assignmentsLoading && upcomingExams.length > 0 && (
+                <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm">
+                  <div className="mb-4 pb-4 border-b border-slate-50 flex items-center justify-between">
+                    <h2 className="text-slate-900 font-extrabold text-sm flex items-center gap-2">
+                      <ClipboardList className="w-4.5 h-4.5 text-indigo-600" />
+                      Upcoming Exams
+                    </h2>
+                    <span className="bg-indigo-50 text-indigo-600 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">{upcomingExams.length}</span>
                   </div>
-
-                  {/* Curated Mini Performance Cards Grid */}
-                  <div className="grid grid-cols-1 gap-4">
-                    <PerformanceCard 
-                      icon={Clock} 
-                      iconColor="text-blue-600 bg-blue-50 border border-blue-100"
-                      label="Active Time" 
-                      value={`${perfData?.analytics?.totalTimeMinutes || 0}m`}
-                      badgeText="Simulator"
-                      subText="Total accumulated active training time in sessions."
-                    />
-                    <PerformanceCard 
-                      icon={Award} 
-                      iconColor="text-purple-600 bg-purple-50 border border-purple-100"
-                      label="Quiz Success" 
-                      value={`${perfData?.analytics?.quizPassRate || 0}%`}
-                      badgeText={`${perfData?.analytics?.quizAttemptsCount || 0} Tests`}
-                      subText="Success percentage computed based on passing marks."
-                    />
-                    <PerformanceCard 
-                      icon={CheckCircle} 
-                      iconColor="text-amber-600 bg-amber-50 border border-amber-100"
-                      label="Average Grade" 
-                      value={`${perfData?.analytics?.averageQuizScore || 0}%`}
-                      badgeText="All Quizzes"
-                      subText="Overall grade parsed from combined testing modules."
-                    />
+                  <div className="space-y-3">
+                    {upcomingExams.map((exam) => (
+                      <Link 
+                        key={exam.id}
+                        to={`/student/assignments/take/${exam.id}`}
+                        className="block bg-slate-50 rounded-2xl p-4 border border-slate-100 hover:border-indigo-200 hover:shadow-sm transition-all"
+                      >
+                        <h3 className="text-slate-900 font-bold text-sm mb-1">{exam.title}</h3>
+                        <p className="text-slate-500 text-xs mb-3 line-clamp-1">{exam.questionPaper?.title}</p>
+                        <div className="flex items-center justify-between">
+                          <span className="text-indigo-600 text-[10px] font-bold uppercase">
+                            {new Date(exam.startTime).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                          <span className="flex items-center justify-center w-6 h-6 bg-indigo-600 text-white rounded-full">
+                            <ArrowRight className="w-3 h-3" />
+                          </span>
+                        </div>
+                      </Link>
+                    ))}
                   </div>
-
                 </div>
               )}
-            </div>
 
-            {/* Quick tips card */}
-            <div className="bg-indigo-50/50 border border-indigo-100 rounded-3xl p-6 shadow-sm">
-              <div className="flex items-start gap-4">
-                <span className="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center flex-shrink-0 text-lg shadow-sm">💡</span>
-                <div>
-                  <h4 className="text-indigo-900 font-bold text-sm">Pedagogical Process</h4>
-                  <p className="text-indigo-800 text-[11px] leading-relaxed mt-1">
-                    Virtual Labs are mapped to direct academic pedagogy. Be sure to perform Pretests to gauge initial understanding, read Procedures carefully, run Simulations dynamically, and complete Posttests to submit your record.
-                  </p>
+              {/* Performance Cards */}
+              <PerformanceCard 
+                icon={TrendingUp} 
+                iconColor="bg-emerald-100 text-emerald-600" 
+                label="Learning Progress" 
+                value={`${perfData?.analytics?.completionRate || 0}%`}
+                subText="Overall completion rate across all active laboratory modules this semester"
+                badgeText="Excellent"
+              />
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm text-center flex flex-col justify-center min-h-[140px] hover:border-blue-200 transition-colors">
+                  <div className="w-10 h-10 mx-auto bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center mb-3">
+                    <FlaskConical className="w-5 h-5" />
+                  </div>
+                  <div className="text-xl font-extrabold text-slate-900">{perfData?.analytics?.completedExperiments || 0}</div>
+                  <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mt-1">Exp. Finished</div>
+                </div>
+                <div className="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm text-center flex flex-col justify-center min-h-[140px] hover:border-purple-200 transition-colors">
+                  <div className="w-10 h-10 mx-auto bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center mb-3">
+                    <Award className="w-5 h-5" />
+                  </div>
+                  <div className="text-xl font-extrabold text-slate-900">{perfData?.analytics?.totalQuizAttempts || 0}</div>
+                  <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mt-1">Quiz Attempts</div>
                 </div>
               </div>
-            </div>
 
-          </div>
+              {/* Activity Logs (Recent 4) */}
+              <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm">
+                <div className="mb-5 pb-5 border-b border-slate-50">
+                  <h2 className="text-slate-900 font-extrabold text-sm flex items-center gap-2">
+                    <Clock className="w-4.5 h-4.5 text-indigo-600" />
+                    Activity Log
+                  </h2>
+                </div>
+                {perfLoading ? (
+                  <div className="flex justify-center py-10"><Loader2 className="w-5 h-5 text-slate-400 animate-spin" /></div>
+                ) : perfData?.recentVisits?.length === 0 ? (
+                  <div className="text-center py-8 text-slate-400 text-xs italic">No recent activity</div>
+                ) : (
+                  <div className="space-y-4">
+                    {perfData?.recentVisits?.slice(0, 4).map((visit, i) => (
+                      <div key={i} className="flex gap-4">
+                        <div className="flex flex-col items-center">
+                          <div className="w-2 h-2 bg-indigo-500 rounded-full mt-1.5" />
+                          {i !== 3 && <div className="w-0.5 h-full bg-slate-100 mt-2" />}
+                        </div>
+                        <div className="pb-4">
+                          <div className="text-xs font-bold text-slate-900 line-clamp-1">{visit.experiment?.title}</div>
+                          <div className="text-[10px] text-slate-500 font-medium mt-0.5">
+                            {new Date(visit.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm">
+                <h2 className="text-slate-900 font-extrabold text-base flex items-center gap-2 mb-6 border-b border-slate-50 pb-4">
+                  <TrendingUp className="w-5 h-5 text-emerald-600" />
+                  My Performance
+                </h2>
+
+                {perfLoading ? (
+                  <div className="flex justify-center py-12 text-slate-400">
+                    <Loader2 className="w-6 h-6 animate-spin" />
+                  </div>
+                ) : (
+                  <div className="space-y-6">
+                    {/* Completion Rate circular chart widget */}
+                    <div className="flex flex-col items-center pb-6 border-b border-slate-50">
+                      <div className="relative inline-flex items-center justify-center">
+                        <svg className="w-28 h-28 transform -rotate-90">
+                          <circle
+                            cx="56"
+                            cy="56"
+                            r="46"
+                            stroke="#f1f5f9"
+                            strokeWidth="8"
+                            fill="transparent"
+                          />
+                          <circle
+                            cx="56"
+                            cy="56"
+                            r="46"
+                            stroke="#10b981"
+                            strokeWidth="8"
+                            fill="transparent"
+                            strokeDasharray={289}
+                            strokeDashoffset={289 - (289 * (perfData?.analytics?.completionRate || 0)) / 100}
+                            className="transition-all duration-1000 ease-out"
+                          />
+                        </svg>
+                        <div className="absolute flex flex-col items-center">
+                          <span className="text-2xl font-extrabold text-slate-900 leading-none">
+                            {perfData?.analytics?.completionRate}%
+                          </span>
+                          <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider mt-1.5">
+                            Progress
+                          </span>
+                        </div>
+                      </div>
+                      <h3 className="text-slate-800 font-bold text-sm mt-4">Module Completion Rate</h3>
+                      <p className="text-slate-400 text-[11px] mt-1.5 text-center max-w-[200px] leading-normal">
+                        Completed <strong>{perfData?.analytics?.uniqueVisitedCount || 0}</strong> of <strong>{perfData?.analytics?.totalActiveExps || 0}</strong> active experiments.
+                      </p>
+                    </div>
+
+                    {/* Curated Mini Performance Cards Grid */}
+                    <div className="grid grid-cols-1 gap-4">
+                      <PerformanceCard 
+                        icon={Clock} 
+                        iconColor="text-blue-600 bg-blue-50 border border-blue-100"
+                        label="Active Time" 
+                        value={`${perfData?.analytics?.totalTimeMinutes || 0}m`}
+                        badgeText="Simulator"
+                        subText="Total accumulated active training time in sessions."
+                      />
+                      <PerformanceCard 
+                        icon={Award} 
+                        iconColor="text-purple-600 bg-purple-50 border border-purple-100"
+                        label="Quiz Attempts" 
+                        value={`${perfData?.analytics?.quizAttemptsCount || 0}`}
+                        badgeText="Total"
+                        subText="Total number of quizzes attempted by the student."
+                      />
+                      <PerformanceCard 
+                        icon={CheckCircle} 
+                        iconColor="text-amber-600 bg-amber-50 border border-amber-100"
+                        label="Average Marks" 
+                        value={`${perfData?.analytics?.averageQuizScore || 0}%`}
+                        badgeText="All Quizzes"
+                        subText="Overall average marks scored across all quizzes."
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Quick tips card */}
+              <div className="bg-indigo-50/50 border border-indigo-100 rounded-3xl p-6 shadow-sm">
+                <div className="flex items-start gap-4">
+                  <span className="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center flex-shrink-0 text-lg shadow-sm">💡</span>
+                  <div>
+                    <h4 className="text-indigo-900 font-bold text-sm">Pedagogical Process</h4>
+                    <p className="text-indigo-800 text-[11px] leading-relaxed mt-1">
+                      Virtual Labs are mapped to direct academic pedagogy. Be sure to perform Pretests to gauge initial understanding, read Procedures carefully, run Simulations dynamically, and complete Posttests to submit your record.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          )}
 
         </div>
 

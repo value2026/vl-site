@@ -229,6 +229,11 @@ async function getSections(req, res) {
         page = await seedFacultySurveyPage();
       } else if (slug === 'nodal-centre-request') {
         page = await seedNodalCentreRequestPage();
+      } else if (slug === 'contact') {
+        // Create an empty page for contact messages so it doesn't 404
+        page = await prisma.page.create({
+          data: { slug: 'contact', title: 'Contact Messages' }
+        });
       } else {
         return res.status(404).json({ message: 'Page not found' });
       }

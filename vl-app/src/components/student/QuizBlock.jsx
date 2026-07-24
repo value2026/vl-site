@@ -214,17 +214,15 @@ export default function QuizBlock({ experimentId, experimentName, userId, quizTy
         ) : (
           <>
             <div className="flex items-center gap-3">
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white ${
-                (score / questions.length) >= 0.5 ? 'bg-emerald-500' : 'bg-red-500'
-              }`}>
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center text-white bg-blue-500">
                 {score}/{questions.length}
               </div>
               <div>
                 <h4 className="text-white font-bold text-sm">
-                  {(score / questions.length) >= 0.5 ? '🎉 You Passed!' : '😢 Try Again'}
+                  🎉 Quiz Completed!
                 </h4>
                 <p className="text-slate-400 text-xs">
-                  Your completion rate is {Math.round((score / questions.length) * 100)}%
+                  You scored {Math.round((score / questions.length) * 100)}%
                 </p>
               </div>
             </div>

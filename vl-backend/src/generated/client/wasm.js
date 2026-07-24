@@ -215,6 +215,7 @@ exports.Prisma.ExperimentVisitScalarFieldEnum = {
   duration: 'duration',
   device: 'device',
   browser: 'browser',
+  tabsVisited: 'tabsVisited',
   createdAt: 'createdAt'
 };
 

@@ -5,6 +5,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { api } from '../../utils/api';
+import UserTable from '../../components/dashboard/UserTable';
 
 // ── Custom SVG Sparkline for registration trends ───────────────
 function Sparkline({ data = [] }) {
@@ -113,6 +114,22 @@ export default function AnalyticsDashboard() {
   const [activeTab, setActiveTab] = useState('academic'); // 'academic' | 'google-analytics'
   const [gaStats, setGaStats] = useState(null);
   const [gaLoading, setGaLoading] = useState(false);
+  const [users, setUsers] = useState([]);
+  const [usersLoading, setUsersLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const res = await api.get('/users');
+        if (res.ok) setUsers(await res.json());
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setUsersLoading(false);
+      }
+    };
+    fetchUsers();
+  }, []);
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -356,6 +373,12 @@ export default function AnalyticsDashboard() {
                 </div>
               )}
             </div>
+          </div>
+
+          {/* Detailed User Analytics Table */}
+          <div className="bg-slate-900/25 border border-white/5 rounded-2xl p-5 mt-6">
+            <h4 className="text-white font-bold text-sm mb-4 uppercase tracking-wider text-slate-300">Individual Student Analytics</h4>
+            <UserTable users={users} loading={usersLoading} viewOnly={true} hideActions={true} />
           </div>
         </div>
       ) : (

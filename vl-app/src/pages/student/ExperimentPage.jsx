@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { FlaskConical, Star, Bug, Menu, X, ChevronLeft, CheckCircle, Circle, Loader2, Maximize2, Monitor } from 'lucide-react';
 import { api, fileUrl } from '../../utils/api';
@@ -271,16 +271,23 @@ export default function ExperimentPage() {
     vl_user_id: user?.id ?? undefined
   });
 
+  const [visitId, setVisitId] = useState(null);
+  const sessionStartTime = useRef(Date.now());
+
   // Log active visit on mount
   useEffect(() => {
     if (experiment) {
       const logVisit = async () => {
         try {
-          await api.post('/analytics/visit', {
+          const res = await api.post('/analytics/visit', {
             experimentId: expId,
             device: window.innerWidth < 640 ? 'mobile' : window.innerWidth < 1024 ? 'tablet' : 'desktop',
             browser: navigator.userAgent.toLowerCase().includes('firefox') ? 'firefox' : navigator.userAgent.toLowerCase().includes('safari') && !navigator.userAgent.toLowerCase().includes('chrome') ? 'safari' : 'chrome'
           });
+          if (res.ok) {
+            const data = await res.json();
+            setVisitId(data.id);
+          }
         } catch (err) {
           // Silent catch
         }
@@ -288,6 +295,30 @@ export default function ExperimentPage() {
       logVisit();
     }
   }, [experiment, expId]);
+
+  // Log active tab visits and periodically update duration
+  useEffect(() => {
+    if (!visitId) return;
+
+    // Log the current tab and the current duration immediately
+    if (active) {
+      const currentDuration = Math.round((Date.now() - sessionStartTime.current) / 1000);
+      api.put(`/analytics/visit/${visitId}`, { tabId: active, duration: currentDuration }).catch(() => {});
+    }
+
+    // Periodically update the total duration of this session (every 10s)
+    const interval = setInterval(() => {
+      const currentDuration = Math.round((Date.now() - sessionStartTime.current) / 1000);
+      api.put(`/analytics/visit/${visitId}`, { duration: currentDuration }).catch(() => {});
+    }, 10000);
+
+    return () => {
+      clearInterval(interval);
+      // Try to log the final duration when this effect cleans up (e.g., unmount or tab switch)
+      const finalDuration = Math.round((Date.now() - sessionStartTime.current) / 1000);
+      api.put(`/analytics/visit/${visitId}`, { duration: finalDuration }).catch(() => {});
+    };
+  }, [visitId, active]);
 
   // Listen for custom GA events coming from the simulation iframe via postMessage
   useEffect(() => {

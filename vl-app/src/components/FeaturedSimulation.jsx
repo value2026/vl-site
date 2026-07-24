@@ -38,10 +38,11 @@ export default function FeaturedSimulation({ content = {} }) {
       navigate(sim.href || '/login');
       return;
     }
-    if (user?.role === 'student') {
+    if (user) {
+      // All authenticated users (students, teachers, admins, etc.) can view
       navigate(experimentPath);
     } else {
-      // Redirect to login with return URL so they come back after login
+      // Only unauthenticated visitors are redirected to login
       navigate(`/login?redirect=${encodeURIComponent(experimentPath)}`);
     }
   };

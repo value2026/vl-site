@@ -26,6 +26,48 @@ const recordVisit = async (req, res) => {
   }
 };
 
+// PUT /api/analytics/visit/:id
+const updateVisit = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { tabId, duration } = req.body;
+    
+    const visit = await prisma.experimentVisit.findUnique({
+      where: { id }
+    });
+
+    if (!visit) {
+      return res.status(404).json({ message: 'Visit not found' });
+    }
+
+    const dataToUpdate = {};
+
+    if (tabId) {
+      const tabsVisited = Array.isArray(visit.tabsVisited) ? visit.tabsVisited : [];
+      if (!tabsVisited.includes(tabId)) {
+        tabsVisited.push(tabId);
+        dataToUpdate.tabsVisited = tabsVisited;
+      }
+    }
+
+    if (duration !== undefined) {
+      dataToUpdate.duration = parseInt(duration);
+    }
+
+    if (Object.keys(dataToUpdate).length > 0) {
+      await prisma.experimentVisit.update({
+        where: { id },
+        data: dataToUpdate
+      });
+    }
+    
+    res.status(200).json({ message: 'Visit updated' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
 // POST /api/analytics/quiz
 const recordQuizAttempt = async (req, res) => {
   try {
@@ -471,6 +513,7 @@ const getMyPerformance = async (req, res) => {
 
 module.exports = {
   recordVisit,
+  updateVisit,
   recordQuizAttempt,
   recordFeedback,
   getDashboardStats,
