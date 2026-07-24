@@ -99,16 +99,12 @@ export default function StudentHome() {
               {/* Quick stats board in hero */}
               <div className="flex flex-wrap md:flex-nowrap gap-4 flex-shrink-0">
                 <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-5 text-center min-w-[120px] flex-1 md:flex-initial">
-                  <div className="text-white text-3xl font-extrabold">{subjects.length}</div>
-                  <div className="text-slate-400 text-xs mt-1">Subjects</div>
-                </div>
-                <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-5 text-center min-w-[120px] flex-1 md:flex-initial">
                   <div className="text-white text-3xl font-extrabold">{totalLabs}</div>
                   <div className="text-slate-400 text-xs mt-1">Labs</div>
                 </div>
                 <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-5 text-center min-w-[120px] flex-1 md:flex-initial">
-                  <div className="text-emerald-400 text-3xl font-extrabold">{perfData?.analytics?.completionRate || 0}%</div>
-                  <div className="text-slate-400 text-xs mt-1">Completion</div>
+                  <div className="text-white text-3xl font-extrabold">{perfData?.analytics?.uniqueVisitedCount || 0}</div>
+                  <div className="text-slate-400 text-xs mt-1">Experiments Attempted</div>
                 </div>
               </div>
             </div>
@@ -293,20 +289,43 @@ export default function StudentHome() {
                   <div className="text-center py-8 text-slate-400 text-xs italic">No recent activity</div>
                 ) : (
                   <div className="space-y-4">
-                    {perfData?.recentVisits?.slice(0, 4).map((visit, i) => (
-                      <div key={i} className="flex gap-4">
-                        <div className="flex flex-col items-center">
-                          <div className="w-2 h-2 bg-indigo-500 rounded-full mt-1.5" />
-                          {i !== 3 && <div className="w-0.5 h-full bg-slate-100 mt-2" />}
-                        </div>
-                        <div className="pb-4">
-                          <div className="text-xs font-bold text-slate-900 line-clamp-1">{visit.experiment?.title}</div>
-                          <div className="text-[10px] text-slate-500 font-medium mt-0.5">
-                            {new Date(visit.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                    {perfData?.recentVisits?.slice(0, 4).map((visit, i) => {
+                      const formatDuration = (seconds) => {
+                        if (!seconds) return '0s';
+                        const m = Math.floor(seconds / 60);
+                        const s = seconds % 60;
+                        return m > 0 ? `${m}m ${s}s` : `${s}s`;
+                      };
+
+                      return (
+                        <div key={i} className="flex gap-4">
+                          <div className="flex flex-col items-center">
+                            <div className="w-2 h-2 bg-indigo-500 rounded-full mt-1.5" />
+                            {i !== 3 && <div className="w-0.5 h-full bg-slate-100 mt-2" />}
+                          </div>
+                          <div className="pb-4 flex-1">
+                            <div className="text-xs font-bold text-slate-900 line-clamp-1">{visit.experiment?.title}</div>
+                            <div className="text-[10px] text-slate-400 mt-0.5">
+                              {new Date(visit.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                            </div>
+                            <div className="mt-1.5 flex flex-wrap gap-1.5">
+                              <span className="inline-flex items-center text-[9px] font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-100 px-1.5 py-0.5 rounded uppercase tracking-wider">
+                                Time spent: {formatDuration(visit.duration)}
+                              </span>
+                              {visit.quizScores && visit.quizScores.length > 0 && visit.quizScores.map((qs, qIdx) => (
+                                <span key={qIdx} className={`inline-flex items-center text-[9px] font-extrabold border px-1.5 py-0.5 rounded uppercase tracking-wider ${
+                                  qs.passed 
+                                    ? 'bg-blue-50 text-blue-700 border-blue-100' 
+                                    : 'bg-amber-50 text-amber-700 border-amber-100'
+                                }`}>
+                                  Quiz: {qs.score}/{qs.maxScore}
+                                </span>
+                              ))}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
               </div>
