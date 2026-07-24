@@ -12,10 +12,10 @@ datasource db {
 
 enum Role {
   admin
+  content_admin
   nodal_centre
   teacher
   student
-  content_admin
   sim_admin
   vl_manager
 }
@@ -192,6 +192,7 @@ model ExperimentVisit {
   duration     Int        @default(0) // seconds spent
   device       String? // mobile, tablet, desktop
   browser      String? // chrome, firefox, safari
+  tabsVisited  String[]   @default([])
   createdAt    DateTime   @default(now())
 
   @@map("experiment_visits")

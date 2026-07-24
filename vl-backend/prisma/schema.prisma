@@ -16,7 +16,6 @@ enum Role {
   nodal_centre
   teacher
   student
-  content_admin
   sim_admin
   vl_manager
 }

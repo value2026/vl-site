@@ -124,7 +124,6 @@ export namespace $Enums {
   nodal_centre: 'nodal_centre',
   teacher: 'teacher',
   student: 'student',
-  content_admin: 'content_admin',
   sim_admin: 'sim_admin',
   vl_manager: 'vl_manager'
 };
