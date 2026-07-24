@@ -107,4 +107,97 @@ const deleteInstitution = async (req, res) => {
   }
 };
 
-module.exports = { getInstitutions, createInstitution, updateInstitution, deleteInstitution };
+// POST /api/institutions/bulk
+const bulkCreateInstitutions = async (req, res) => {
+  try {
+    const { institutions } = req.body;
+    if (!Array.isArray(institutions)) {
+      return res.status(400).json({ message: 'Institutions list must be an array' });
+    }
+
+    // Clean and validate
+    const validItems = [];
+    const skippedItems = [];
+
+    for (const item of institutions) {
+      const name = item.name ? item.name.trim() : null;
+      if (!name) {
+        skippedItems.push({ item, reason: 'Name is missing or empty' });
+        continue;
+      }
+      
+      const code = item.code ? item.code.trim() : null;
+      const oldCreatedAt = item.oldCreatedAt ? item.oldCreatedAt.toString().trim() : null;
+      
+      let legacyId = null;
+      if (item.legacyId !== undefined && item.legacyId !== null && item.legacyId !== '') {
+        const parsed = parseInt(item.legacyId, 10);
+        if (!isNaN(parsed)) {
+          legacyId = parsed;
+        }
+      }
+
+      validItems.push({
+        name,
+        code,
+        legacyId,
+        oldCreatedAt
+      });
+    }
+
+    if (validItems.length === 0) {
+      return res.status(400).json({
+        message: 'No valid institutions found in request',
+        createdCount: 0,
+        skippedCount: skippedItems.length,
+        skippedDetails: skippedItems
+      });
+    }
+
+    // Find duplicates in database
+    const namesToCheck = validItems.map(i => i.name);
+    const existing = await prisma.institution.findMany({
+      where: { name: { in: namesToCheck } },
+      select: { name: true }
+    });
+    const existingNames = new Set(existing.map(e => e.name));
+
+    // Filter out duplicates
+    const finalItemsToInsert = [];
+    for (const item of validItems) {
+      if (existingNames.has(item.name)) {
+        skippedItems.push({ item, reason: 'Institution name already exists in database' });
+      } else {
+        finalItemsToInsert.push({
+          name: item.name,
+          code: item.code,
+          legacyId: item.legacyId,
+          oldCreatedAt: item.oldCreatedAt,
+          createdById: req.user.id
+        });
+      }
+    }
+
+    let createdCount = 0;
+    if (finalItemsToInsert.length > 0) {
+      // Use createMany to insert in bulk
+      const result = await prisma.institution.createMany({
+        data: finalItemsToInsert,
+        skipDuplicates: true
+      });
+      createdCount = result.count;
+    }
+
+    res.status(201).json({
+      message: `Successfully processed ${institutions.length} rows. Created: ${createdCount}, Skipped: ${skippedItems.length}`,
+      createdCount,
+      skippedCount: skippedItems.length,
+      skippedDetails: skippedItems
+    });
+  } catch (err) {
+    console.error('Bulk create institutions error:', err);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+module.exports = { getInstitutions, createInstitution, updateInstitution, deleteInstitution, bulkCreateInstitutions };

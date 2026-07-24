@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Building2, Plus, RefreshCw, AlertCircle, Loader2, Save, X, Trash2 } from 'lucide-react';
+import { Building2, Plus, RefreshCw, AlertCircle, Loader2, Save, X, Trash2, Upload, Download } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 export default function InstitutionsManagement() {
@@ -14,6 +14,13 @@ export default function InstitutionsManagement() {
   const [submitting, setSubmitting] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
   const [actionLoading, setActionLoading] = useState(null);
+
+  // Bulk Import state
+  const [showBulkModal, setShowBulkModal] = useState(false);
+  const [bulkText, setBulkText] = useState('');
+  const [bulkData, setBulkData] = useState([]);
+  const [bulkImporting, setBulkImporting] = useState(false);
+  const [bulkResult, setBulkResult] = useState(null);
 
   const fetchInstitutions = useCallback(async () => {
     setLoading(true);
@@ -66,7 +73,7 @@ export default function InstitutionsManagement() {
 
   const confirmDeleteInstitution = async () => {
     if (!deleteConfirm) return;
-    const { id, name } = deleteConfirm;
+    const { id } = deleteConfirm;
     setDeleteConfirm(null);
     setActionLoading(id);
     
@@ -87,6 +94,154 @@ export default function InstitutionsManagement() {
     }
   };
 
+  // Bulk TSV/CSV parsing
+  const parseBulkInput = (rawText) => {
+    if (!rawText.trim()) {
+      setBulkData([]);
+      return;
+    }
+    const lines = rawText.split(/\r?\n/).filter(line => line.trim() !== '');
+    if (lines.length === 0) {
+      setBulkData([]);
+      return;
+    }
+
+    // Determine delimiter: tab or comma
+    const delimiter = lines[0].includes('\t') ? '\t' : ',';
+    
+    // Parse headers
+    const headerRow = lines[0].split(delimiter).map(h => h.trim().toLowerCase());
+    
+    let nameIdx = -1;
+    let codeIdx = -1;
+    let legacyIdIdx = -1;
+    let oldCreatedAtIdx = -1;
+
+    // Try mapping headers based on user description:
+    // Sl No | College ID | Institute Name | college abrivation | Created date
+    headerRow.forEach((h, idx) => {
+      if (h.includes('institute name') || h.includes('institution name') || h === 'name') {
+        nameIdx = idx;
+      } else if (h.includes('college id') || h.includes('institute id') || h.includes('legacy id') || h === 'id') {
+        legacyIdIdx = idx;
+      } else if (h.includes('abrivation') || h.includes('abbreviation') || h.includes('code')) {
+        codeIdx = idx;
+      } else if (h.includes('created date') || h.includes('date')) {
+        oldCreatedAtIdx = idx;
+      }
+    });
+
+    // Fallbacks to default TSV positions if headers not recognized
+    if (nameIdx === -1) {
+      if (headerRow.length >= 3) {
+        // Col 0: Sl No, Col 1: College ID, Col 2: Institute Name, Col 3: abrivation, Col 4: Created date
+        legacyIdIdx = 1;
+        nameIdx = 2;
+        codeIdx = 3;
+        oldCreatedAtIdx = 4;
+      } else {
+        nameIdx = 0;
+      }
+    }
+
+    const parsed = [];
+    const startIndex = 1; // skip header row
+
+    for (let i = startIndex; i < lines.length; i++) {
+      const columns = lines[i].split(delimiter).map(c => c.trim().replace(/^["']|["']$/g, ''));
+      if (columns.length === 0 || (columns.length === 1 && !columns[0])) continue;
+
+      const name = nameIdx !== -1 && columns[nameIdx] ? columns[nameIdx] : '';
+      const legacyId = legacyIdIdx !== -1 && columns[legacyIdIdx] ? columns[legacyIdIdx] : '';
+      const code = codeIdx !== -1 && columns[codeIdx] ? columns[codeIdx] : '';
+      const oldCreatedAt = oldCreatedAtIdx !== -1 && columns[oldCreatedAtIdx] ? columns[oldCreatedAtIdx] : '';
+
+      if (name) {
+        parsed.push({
+          name,
+          code: code || null,
+          legacyId: legacyId || null,
+          oldCreatedAt: oldCreatedAt || null,
+          status: 'Valid'
+        });
+      } else {
+        parsed.push({
+          name: '[Missing Name]',
+          code: code || '',
+          legacyId: legacyId || '',
+          oldCreatedAt: oldCreatedAt || '',
+          status: 'Invalid: Name is required'
+        });
+      }
+    }
+    setBulkData(parsed);
+  };
+
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const text = event.target.result;
+      setBulkText(text);
+      parseBulkInput(text);
+    };
+    reader.readAsText(file);
+  };
+
+  const downloadTemplate = () => {
+    const headers = ['Sl No', 'College ID', 'Institute Name', 'college abrivation', 'Created date'];
+    const rows = [
+      ['1', '2', 'VMKV Engineering College', 'vmkv', '2/3/2015'],
+      ['2', '5', 'MET Nashik', 'met', '01-05-2015'],
+      ['3', '6', 'Global Academy Of Technolgy', 'glat/gat', '8/3/2015']
+    ];
+    const content = [headers.join('\t'), ...rows.map(r => r.join('\t'))].join('\n');
+    const blob = new Blob([content], { type: 'text/tab-separated-values;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'colleges_template.tsv');
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleBulkSubmit = async () => {
+    const validRows = bulkData.filter(d => d.status === 'Valid');
+    if (validRows.length === 0) {
+      alert('No valid rows to import.');
+      return;
+    }
+    setBulkImporting(true);
+    try {
+      const res = await fetch(`${API_URL}/institutions/bulk`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ institutions: validRows })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Bulk upload failed');
+      setBulkResult(data);
+      fetchInstitutions();
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      setBulkImporting(false);
+    }
+  };
+
+  const closeBulkModal = () => {
+    setShowBulkModal(false);
+    setBulkText('');
+    setBulkData([]);
+    setBulkResult(null);
+  };
+
   return (
     <div className="bg-slate-900 border border-white/10 rounded-2xl overflow-hidden p-6">
       <div className="flex items-center justify-between mb-6">
@@ -103,6 +258,12 @@ export default function InstitutionsManagement() {
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 transition-all"
           >
             <RefreshCw className="w-4 h-4" /> Refresh
+          </button>
+          <button
+            onClick={() => setShowBulkModal(true)}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-300 bg-white/5 hover:bg-white/10 hover:text-white border border-white/10 transition-all"
+          >
+            <Upload className="w-4 h-4" /> Bulk Import
           </button>
           <button
             onClick={() => setShowModal(true)}
@@ -128,28 +289,27 @@ export default function InstitutionsManagement() {
           <table className="w-full">
             <thead>
               <tr className="bg-white/5 border-b border-white/10 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                <th className="px-4 py-3">College ID</th>
                 <th className="px-4 py-3">Institution Name</th>
-                <th className="px-4 py-3">Status</th>
+                <th className="px-4 py-3">Abbreviation / Code</th>
+                <th className="px-4 py-3">Created Date</th>
                 <th className="px-4 py-3 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
               {institutions.length === 0 ? (
                 <tr>
-                  <td colSpan={3} className="px-4 py-8 text-center text-slate-500 text-sm">
+                  <td colSpan={5} className="px-4 py-8 text-center text-slate-500 text-sm">
                     No institutions registered yet.
                   </td>
                 </tr>
               ) : (
                 institutions.map(inst => (
                   <tr key={inst.id} className="hover:bg-white/5 transition-colors">
+                    <td className="px-4 py-3 text-slate-300 text-sm">{inst.legacyId || '-'}</td>
                     <td className="px-4 py-3 font-medium text-white">{inst.name}</td>
-                    <td className="px-4 py-3">
-                      <span className={`inline-flex items-center gap-1.5 text-xs font-medium ${inst.isActive ? 'text-emerald-400' : 'text-slate-500'}`}>
-                        <span className={`w-1.5 h-1.5 rounded-full ${inst.isActive ? 'bg-emerald-400' : 'bg-slate-600'}`} />
-                        {inst.isActive ? 'Active' : 'Inactive'}
-                      </span>
-                    </td>
+                    <td className="px-4 py-3 text-slate-300 text-sm">{inst.code || '-'}</td>
+                    <td className="px-4 py-3 text-slate-400 text-xs">{inst.oldCreatedAt || '-'}</td>
                     <td className="px-4 py-3 text-right">
                       <button
                         onClick={() => requestDeleteInstitution(inst)}
@@ -211,6 +371,178 @@ export default function InstitutionsManagement() {
           </div>
         </div>
       )}
+
+      {/* Bulk Import Modal */}
+      {showBulkModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={closeBulkModal} />
+          <div className="relative w-full max-w-4xl bg-slate-900 border border-white/10 rounded-3xl p-6 shadow-2xl z-10 max-h-[90vh] flex flex-col">
+            <div className="flex items-center justify-between mb-4 flex-shrink-0">
+              <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                <Upload className="w-5 h-5 text-blue-400" />
+                Bulk Import Institutions
+              </h3>
+              <button onClick={closeBulkModal} className="text-slate-400 hover:text-white">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {bulkResult ? (
+              <div className="space-y-6 py-4 flex-1 overflow-y-auto">
+                <div className="p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl">
+                  <h4 className="text-emerald-400 font-bold mb-1">Import Completed Successfully</h4>
+                  <p className="text-slate-300 text-sm">{bulkResult.message}</p>
+                </div>
+                {bulkResult.skippedCount > 0 && (
+                  <div>
+                    <h5 className="text-amber-400 font-bold text-sm mb-3">Skipped Rows Details:</h5>
+                    <div className="overflow-x-auto border border-white/5 rounded-xl max-h-60">
+                      <table className="w-full text-xs text-left">
+                        <thead className="bg-white/5 text-slate-400 font-semibold uppercase">
+                          <tr>
+                            <th className="px-4 py-2.5">Row ID</th>
+                            <th className="px-4 py-2.5">Name</th>
+                            <th className="px-4 py-2.5">Abbreviation</th>
+                            <th className="px-4 py-2.5">Reason</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-white/5 text-slate-300">
+                          {bulkResult.skippedDetails.map((detail, idx) => (
+                            <tr key={idx} className="hover:bg-white/5">
+                              <td className="px-4 py-2">{detail.item?.legacyId || '-'}</td>
+                              <td className="px-4 py-2 font-medium text-white">{detail.item?.name || '-'}</td>
+                              <td className="px-4 py-2">{detail.item?.code || '-'}</td>
+                              <td className="px-4 py-2 text-amber-400">{detail.reason}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+                <div className="flex justify-end pt-4">
+                  <button
+                    onClick={closeBulkModal}
+                    className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-semibold transition-colors"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-4 flex-1 flex flex-col min-h-0">
+                <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex-shrink-0">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-bold text-blue-400 uppercase tracking-wider">TSV/CSV Format Requirements</span>
+                    <button
+                      onClick={downloadTemplate}
+                      className="flex items-center gap-1.5 text-xs font-semibold text-slate-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-lg transition-all"
+                    >
+                      <Download className="w-3.5 h-3.5" /> Download template.tsv
+                    </button>
+                  </div>
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    Upload a <strong>colleges.tsv</strong> file or copy-paste directly from Excel/Spreadsheet. Columns should be: 
+                    <code className="bg-black/40 px-1.5 py-0.5 rounded text-blue-300 mx-1">Sl No</code> | 
+                    <code className="bg-black/40 px-1.5 py-0.5 rounded text-blue-300 mx-1">College ID</code> | 
+                    <code className="bg-black/40 px-1.5 py-0.5 rounded text-blue-300 mx-1">Institute Name</code> | 
+                    <code className="bg-black/40 px-1.5 py-0.5 rounded text-blue-300 mx-1">college abrivation</code> | 
+                    <code className="bg-black/40 px-1.5 py-0.5 rounded text-blue-300 mx-1">Created date</code>.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 min-h-0 flex-1">
+                  <div className="flex flex-col h-full">
+                    <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 flex justify-between items-center">
+                      <span>Paste Raw Tab/Comma separated text</span>
+                      <span className="text-[10px] text-slate-500 font-normal">First row must contain headers</span>
+                    </label>
+                    <textarea
+                      value={bulkText}
+                      onChange={(e) => {
+                        setBulkText(e.target.value);
+                        parseBulkInput(e.target.value);
+                      }}
+                      placeholder={`Sl No\tCollege ID\tInstitute Name\tcollege abrivation\tCreated date\n1\t2\tVMKV Engineering College\tvmkv\t2/3/2015`}
+                      className="w-full flex-1 bg-white/5 border border-white/10 rounded-2xl p-4 text-xs font-mono text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 resize-none min-h-[200px]"
+                    />
+                    <div className="mt-2 flex items-center justify-between">
+                      <span className="text-slate-500 text-xs">Or select a file:</span>
+                      <input
+                        type="file"
+                        accept=".tsv,.csv,.txt"
+                        onChange={handleFileUpload}
+                        className="text-xs text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-blue-600/10 file:text-blue-400 hover:file:bg-blue-600/20 file:cursor-pointer"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col h-full min-h-0">
+                    <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 flex justify-between">
+                      <span>Preview ({bulkData.length} rows parsed)</span>
+                      <span>Valid: {bulkData.filter(d => d.status === 'Valid').length}</span>
+                    </div>
+                    <div className="flex-1 overflow-y-auto border border-white/10 rounded-2xl bg-white/5 max-h-[350px]">
+                      {bulkData.length === 0 ? (
+                        <div className="h-full flex items-center justify-center text-slate-500 text-xs italic p-4 text-center">
+                          Pasted data or uploaded file preview will show here.
+                        </div>
+                      ) : (
+                        <table className="w-full text-xs text-left">
+                          <thead className="bg-white/5 border-b border-white/10 text-slate-400 font-semibold uppercase sticky top-0">
+                            <tr>
+                              <th className="px-3 py-2">ID</th>
+                              <th className="px-3 py-2">Name</th>
+                              <th className="px-3 py-2">Abbr</th>
+                              <th className="px-3 py-2">Status</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-white/5 text-slate-300">
+                            {bulkData.map((row, idx) => (
+                              <tr key={idx} className="hover:bg-white/5">
+                                <td className="px-3 py-2">{row.legacyId || '-'}</td>
+                                <td className="px-3 py-2 font-medium text-white truncate max-w-[150px]" title={row.name}>{row.name}</td>
+                                <td className="px-3 py-2">{row.code || '-'}</td>
+                                <td className="px-3 py-2">
+                                  <span className={`px-2 py-0.5 rounded text-[10px] font-semibold ${
+                                    row.status === 'Valid' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'
+                                  }`}>
+                                    {row.status}
+                                  </span>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex gap-3 pt-4 border-t border-white/10 flex-shrink-0">
+                  <button
+                    type="button"
+                    onClick={closeBulkModal}
+                    className="flex-1 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-400 bg-white/5 hover:bg-white/10 border border-white/10"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleBulkSubmit}
+                    disabled={bulkImporting || bulkData.filter(d => d.status === 'Valid').length === 0}
+                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-lg disabled:opacity-50"
+                  >
+                    {bulkImporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                    Confirm & Import
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Custom Delete Confirmation Modal */}
       {deleteConfirm && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
