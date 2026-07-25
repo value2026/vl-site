@@ -1,5 +1,6 @@
-const BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-const FILES = import.meta.env.VITE_FILES_URL || 'http://localhost:5000/files';
+const API_ORIGIN = import.meta.env.VITE_API_URL || window.location.origin;
+const BASE = `${API_ORIGIN}/api`;
+const FILES = import.meta.env.VITE_FILES_URL || `${API_ORIGIN}/files`;
 
 const token = () => localStorage.getItem('vl_token');
 

@@ -3,7 +3,7 @@ import { ArrowRight, CheckCircle2, Calendar, Users, Loader2 } from 'lucide-react
 import { useQuery } from '@tanstack/react-query';
 
 async function fetchProjectSections() {
-  const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/pages/project/sections`);
+  const res = await fetch(`${import.meta.env.VITE_API_URL || window.location.origin}/api/pages/project/sections`);
   if (!res.ok) throw new Error('Failed to fetch project sections');
   return res.json();
 }

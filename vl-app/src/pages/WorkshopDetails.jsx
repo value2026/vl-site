@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import WorkshopRegistrationModal from '../components/public/WorkshopRegistrationModal';
 
 async function fetchWorkshop(id) {
-  const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/workshops/${id}`);
+  const res = await fetch(`${import.meta.env.VITE_API_URL || window.location.origin}/api/workshops/${id}`);
   if (!res.ok) throw new Error('Failed to fetch workshop');
   return res.json();
 }

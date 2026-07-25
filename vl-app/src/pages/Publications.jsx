@@ -2,7 +2,7 @@ import { ExternalLink, FileText, Download, Loader2 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 
 async function fetchPublicationsSections() {
-  const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/pages/publications/sections`);
+  const res = await fetch(`${import.meta.env.VITE_API_URL || window.location.origin}/api/pages/publications/sections`);
   if (!res.ok) throw new Error('Failed to fetch publications sections');
   return res.json();
 }

@@ -6,7 +6,7 @@ import WorkshopRegistrationModal from '../components/public/WorkshopRegistration
 import NodalCentreRequestModal from '../components/public/NodalCentreRequestModal';
 
 async function fetchWorkshops() {
-  const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/workshops`);
+  const res = await fetch(`${import.meta.env.VITE_API_URL || window.location.origin}/api/workshops`);
   if (!res.ok) throw new Error('Failed to fetch workshops');
   return res.json();
 }

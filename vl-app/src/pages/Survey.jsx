@@ -3,7 +3,7 @@ import { Loader2, ArrowRight, X, Check } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 
 async function fetchSurveySections(slug) {
-  const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/pages/${slug}/sections`);
+  const res = await fetch(`${import.meta.env.VITE_API_URL || window.location.origin}/api/pages/${slug}/sections`);
   if (!res.ok) throw new Error(`Failed to fetch ${slug} sections`);
   return res.json();
 }
@@ -26,7 +26,7 @@ export default function Survey({ slug }) {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/pages/${slug}/survey`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || window.location.origin}/api/pages/${slug}/survey`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
