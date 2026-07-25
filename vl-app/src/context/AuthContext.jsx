@@ -92,7 +92,7 @@ export function AuthProvider({ children }) {
                 Signing Out...
               </h3>
               <p className="text-slate-400 text-sm leading-relaxed mb-6">
-                Securing your account and saving workspace progress. See you next time!
+                Securing your account. See you next time!
               </p>
 
               {/* Progress bar animation */}
