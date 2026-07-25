@@ -50,6 +50,8 @@ services:
     volumes:
       # Persist uploaded files (experiment content, etc.)
       - uploads_data:/app/uploads
+      # Persist logs to the host machine so they can be viewed locally
+      - ./vl-backend/logs:/app/logs
     networks:
       - vl-network
 
