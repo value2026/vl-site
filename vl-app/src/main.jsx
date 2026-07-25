@@ -4,6 +4,9 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import './index.css'
 import App from './App.jsx'
 import { AuthProvider } from './context/AuthContext.jsx'
+import { setupErrorHandlers } from './utils/logger.js'
+
+setupErrorHandlers();
 
 const queryClient = new QueryClient({
   defaultOptions: {

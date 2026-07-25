@@ -401,7 +401,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "D:\\Anandi\\VL-newsite\\vl-site\\vl-backend\\src\\generated\\client",
+      "value": "E:\\Virtual Lab\\Value @ Amrita-site\\vl-site\\vl-backend\\src\\generated\\client",
       "fromEnvVar": null
     },
     "config": {
@@ -415,7 +415,7 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "D:\\Anandi\\VL-newsite\\vl-site\\vl-backend\\prisma\\schema.prisma",
+    "sourceFilePath": "E:\\Virtual Lab\\Value @ Amrita-site\\vl-site\\vl-backend\\prisma\\schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {

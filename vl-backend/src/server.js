@@ -3,6 +3,15 @@ const express = require('express');
 const cors    = require('cors');
 const path    = require('path');
 const fs      = require('fs');
+const { logError, logException, logRejection, logFrontendError, logAccess } = require('./utils/logger');
+
+// Override console.error to intercept all caught errors application-wide
+const originalConsoleError = console.error;
+console.error = function (...args) {
+  const err = args.find(arg => arg instanceof Error) || args.join(' ');
+  logError(err);
+  originalConsoleError.apply(console, args);
+};
 
 
 const authRoutes        = require('./routes/auth');
@@ -47,7 +56,17 @@ app.use(express.json());
 
 // Request logger middleware
 app.use((req, res, next) => {
-  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+  const start = Date.now();
+  res.on('finish', () => {
+    const duration = Date.now() - start;
+    logAccess({
+      method: req.method,
+      path: req.originalUrl,
+      status: res.statusCode,
+      duration: duration,
+      ip: req.ip || req.connection.remoteAddress
+    });
+  });
   next();
 });
 
@@ -98,7 +117,19 @@ app.post('/api/upload', imageUpload.single('file'), (req, res) => {
     res.json({ url: absoluteUrl });
   } catch (err) {
     console.error('❌ Media upload failed:', err);
+    logError(err);
     res.status(500).json({ message: 'Media upload failed' });
+  }
+});
+
+// Frontend error log endpoint
+app.post('/api/logs/frontend', (req, res) => {
+  try {
+    logFrontendError(req.body);
+    res.status(200).json({ success: true });
+  } catch (err) {
+    console.error('Failed to log frontend error:', err);
+    res.status(500).json({ success: false });
   }
 });
 
@@ -115,7 +146,19 @@ app.use((_req, res) => {
 // Global error handler
 app.use((err, _req, res, _next) => {
   console.error('Unhandled error:', err.message);
+  logError(err);
   res.status(err.status || 500).json({ message: err.message || 'Internal server error' });
+});
+
+// Process-level handlers to catch all remaining unhandled backend failures
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught Exception:', err);
+  logException(err);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  logRejection(reason);
 });
 
 // ── Start ─────────────────────────────────────────────────────
