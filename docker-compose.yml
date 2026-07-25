@@ -55,7 +55,7 @@ services:
     networks:
       - vl-network
 
-  # ── React Frontend ──────────────────────────────────────────
+  # ── React Frontend (Nginx + Production Build) ────────────────
   frontend:
     build:
       context: ./vl-app
@@ -64,13 +64,8 @@ services:
     restart: unless-stopped
     depends_on:
       - backend
-    environment:
-      - VITE_API_URL=http://localhost:5000/api
     ports:
-      - "5173:5173"
-    volumes:
-      - ./vl-app:/app
-      - /app/node_modules
+      - "80:80"
     networks:
       - vl-network
 
