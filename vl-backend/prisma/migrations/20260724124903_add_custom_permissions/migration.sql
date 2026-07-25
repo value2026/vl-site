@@ -1,9 +1,13 @@
 -- AlterEnum
+-- This migration adds more than one value to an enum.
+-- With PostgreSQL versions 11 and earlier, this is not possible
+-- in a single migration. This can be worked around by creating
+-- multiple migrations, each migration adding only one value to
+-- the enum.
+
+
 ALTER TYPE "Role" ADD VALUE 'sim_admin';
 ALTER TYPE "Role" ADD VALUE 'vl_manager';
-
--- AlterTable
-ALTER TABLE "users" ADD COLUMN "customPermissions" TEXT[] DEFAULT ARRAY[]::TEXT[];
 
 -- DropForeignKey
 ALTER TABLE "labs" DROP CONSTRAINT "labs_nodalCentreId_fkey";
@@ -13,6 +17,9 @@ ALTER TABLE "users" DROP CONSTRAINT "users_nodalCentreId_fkey";
 
 -- AlterTable
 ALTER TABLE "experiment_visits" ADD COLUMN     "tabsVisited" TEXT[] DEFAULT ARRAY[]::TEXT[];
+
+-- AlterTable
+ALTER TABLE "users" ADD COLUMN     "customPermissions" TEXT[] DEFAULT ARRAY[]::TEXT[];
 
 -- CreateTable
 CREATE TABLE "institutions" (

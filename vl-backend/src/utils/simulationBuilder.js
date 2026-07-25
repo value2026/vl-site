@@ -260,8 +260,8 @@ async function compileSimulation(zipFilePath, outputSubDir) {
   return outputSubDir.replace(/\\/g, '/');
 }
 
-// Pre-initialize workspace on boot/require
-ensureBuilderInitialized();
+// Pre-initialize workspace on boot/require has been removed to prevent blocking server startup
+// ensureBuilderInitialized();
 
 module.exports = {
   compileSimulation,
