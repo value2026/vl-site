@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, useLocation, Navigate, Link } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation, Navigate, Link, useParams } from 'react-router-dom';
 import { useEffect } from 'react';
 import ReactGA from 'react-ga4';
 import { LayoutDashboard } from 'lucide-react';
@@ -114,6 +114,12 @@ function ComingSoon({ page }) {
   );
 }
 
+function LegacyRedirect({ prefix }) {
+  const params = useParams();
+  const id = params.id || params.subjectId || params.labId || params.expId || '';
+  return <Navigate to={`${prefix}/${id}`} replace />;
+}
+
 /**
  * Redirects unauthenticated users to /login.
  * Redirects authenticated users to their dashboard if they try to access another role's dashboard.
@@ -154,7 +160,7 @@ function ProtectedRoute({ children, allowedRole }) {
 
 // ── Public layout (with header + footer) ─────────────────────
 
-const DASHBOARD_PATHS = ['/dashboard', '/student'];
+const DASHBOARD_PATHS = ['/dashboard', '/student', '/labs', '/subject', '/lab', '/experiment'];
 
 function FloatingDashboardButton() {
   const { user } = useAuth();
@@ -342,22 +348,22 @@ function AppLayout() {
           <ProtectedRoute allowedRole="teacher"><AssignmentReport /></ProtectedRoute>
         } />
 
-        {/* Student learning platform */}
-        <Route path="/dashboard/student" element={
-          <ProtectedRoute><Navigate to="/student" replace /></ProtectedRoute>
-        } />
-        <Route path="/student" element={
-          <ProtectedRoute><StudentHome /></ProtectedRoute>
-        } />
-        <Route path="/student/subject/:subjectId" element={
-          <ProtectedRoute><SubjectPage /></ProtectedRoute>
-        } />
-        <Route path="/student/lab/:labId" element={
-          <ProtectedRoute><LabPage /></ProtectedRoute>
-        } />
-        <Route path="/student/experiment/:expId" element={
-          <ProtectedRoute><ExperimentPage /></ProtectedRoute>
-        } />
+        {/* Public Virtual Labs Exploration (Accessible to any user without login redirect) */}
+        <Route path="/labs" element={<StudentHome />} />
+        <Route path="/subject/:subjectId" element={<SubjectPage />} />
+        <Route path="/lab/:labId" element={<LabPage />} />
+        <Route path="/experiment/:expId" element={<ExperimentPage />} />
+
+        {/* Legacy redirects from /student/... or /simulations/... to clean public routes */}
+        <Route path="/dashboard/student" element={<Navigate to="/labs" replace />} />
+        <Route path="/student" element={<Navigate to="/labs" replace />} />
+        <Route path="/student/subject/:subjectId" element={<LegacyRedirect prefix="/subject" />} />
+        <Route path="/student/lab/:labId" element={<LegacyRedirect prefix="/lab" />} />
+        <Route path="/student/experiment/:expId" element={<LegacyRedirect prefix="/experiment" />} />
+        <Route path="/student/experiments/:expId" element={<LegacyRedirect prefix="/experiment" />} />
+        <Route path="/simulations/:id" element={<LegacyRedirect prefix="/experiment" />} />
+
+        {/* Protected Student Account & Assignment Routes */}
         <Route path="/student/account" element={
           <ProtectedRoute><StudentAccount /></ProtectedRoute>
         } />
@@ -389,8 +395,6 @@ function AppLayout() {
           <Route path="/survey/faculty"      element={<Survey slug="faculty-survey" />} />
           <Route path="/survey/student"      element={<Survey slug="student-survey" />} />
           <Route path="/contact"             element={<Contact />} />
-          <Route path="/labs/:category"      element={<ComingSoon page="Lab Category" />} />
-          <Route path="/simulations/:id"     element={<ComingSoon page="Simulation" />} />
           <Route path="*"                    element={<ComingSoon page="Page Not Found" />} />
         </Routes>
       </div>

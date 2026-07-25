@@ -104,7 +104,7 @@ export default function SubjectPage() {
               {labs.map((lab) => (
                 <Link
                   key={lab.id}
-                  to={`/student/lab/${lab.id}`}
+                  to={`/lab/${lab.id}`}
                   className="group bg-white border border-gray-200 rounded-2xl p-6 hover:border-blue-300 hover:shadow-lg transition-all duration-300 flex flex-col"
                 >
                   <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform duration-200">

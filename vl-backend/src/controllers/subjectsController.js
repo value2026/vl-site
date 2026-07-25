@@ -78,10 +78,18 @@ const updateSubject = async (req, res) => {
 const deleteSubject = async (req, res) => {
   try {
     const { id } = req.params;
+    // Safely remove child experiments and labs first to prevent FK constraint failure
+    const labs = await prisma.lab.findMany({ where: { subjectId: id }, select: { id: true } });
+    const labIds = labs.map(l => l.id);
+    if (labIds.length > 0) {
+      await prisma.experiment.deleteMany({ where: { labId: { in: labIds } } });
+      await prisma.lab.deleteMany({ where: { subjectId: id } });
+    }
     await prisma.subject.delete({ where: { id } });
     res.json({ message: 'Subject deleted' });
   } catch (err) {
-    res.status(500).json({ message: 'Internal server error' });
+    console.error('Delete subject error:', err);
+    res.status(500).json({ message: err.message || 'Internal server error' });
   }
 };
 

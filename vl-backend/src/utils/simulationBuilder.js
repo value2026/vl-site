@@ -133,12 +133,49 @@ function ensureBuilderInitialized() {
  * @param {string} zipFilePath - Path to the uploaded zip file
  * @param {string} outputSubDir - Target sub-directory relative to uploads/ (e.g. experiments/{id}/simulation)
  */
+function ensureRootIndexHtml(dir) {
+  if (!fs.existsSync(dir)) return;
+  const rootIndex = path.join(dir, 'index.html');
+  if (fs.existsSync(rootIndex)) return;
+
+  const findIndexRecursive = (currentDir, depth = 0) => {
+    if (depth > 3) return null;
+    const items = fs.readdirSync(currentDir);
+    for (const item of items) {
+      if (item.toLowerCase() === 'index.html') {
+        return path.join(currentDir, item);
+      }
+    }
+    for (const item of items) {
+      const full = path.join(currentDir, item);
+      if (fs.statSync(full).isDirectory()) {
+        const found = findIndexRecursive(full, depth + 1);
+        if (found) return found;
+      }
+    }
+    return null;
+  };
+
+  const foundIndex = findIndexRecursive(dir);
+  if (foundIndex) {
+    const parentDir = path.dirname(foundIndex);
+    console.log(`📦 SimulationBuilder: Found index.html inside "${parentDir}". Moving contents up to root "${dir}"...`);
+    for (const item of fs.readdirSync(parentDir)) {
+      const src = path.join(parentDir, item);
+      const dst = path.join(dir, item);
+      if (src !== dst) {
+        fs.cpSync(src, dst, { recursive: true, force: true });
+      }
+    }
+  }
+}
+
 async function compileSimulation(zipFilePath, outputSubDir) {
   const zip = new AdmZip(zipFilePath);
   const targetDir = path.join(PUBLIC_UPLOADS, outputSubDir);
 
-  // Check if index.html is present in the root of the uploaded zip
-  const hasIndexHtml = zip.getEntries().some(e => e.entryName === 'index.html');
+  // Check if index.html is present anywhere in the uploaded zip (root or wrapper folder)
+  const hasIndexHtml = zip.getEntries().some(e => e.entryName.toLowerCase().endsWith('index.html'));
 
   if (hasIndexHtml) {
     console.log(`✅ SimulationBuilder: Pre-compiled static HTML simulation detected. Direct extraction to: ${targetDir}`);
@@ -148,6 +185,7 @@ async function compileSimulation(zipFilePath, outputSubDir) {
     fs.mkdirSync(targetDir, { recursive: true });
 
     zip.extractAllTo(targetDir, true);
+    ensureRootIndexHtml(targetDir);
     console.log('✅ SimulationBuilder: Static simulation deployed successfully!');
     return outputSubDir.replace(/\\/g, '/');
   }
@@ -255,6 +293,7 @@ async function compileSimulation(zipFilePath, outputSubDir) {
   // Copy dist contents to targetDir
   console.log(`🏗️ SimulationBuilder: Copying build assets from ${distDir} to ${targetDir}`);
   fs.cpSync(distDir, targetDir, { recursive: true });
+  ensureRootIndexHtml(targetDir);
   console.log('✅ SimulationBuilder: Simulation deployed successfully!');
   
   return outputSubDir.replace(/\\/g, '/');

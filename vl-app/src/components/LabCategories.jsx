@@ -62,7 +62,7 @@ export default function LabCategories({ sectionTitle, sectionSubtitle, content =
               return (
                 <Link
                   key={subject.id}
-                  to={`/student/subject/${subject.id}`}
+                  to={`/subject/${subject.id}`}
                   className={`border border-slate-200 transition-all duration-300 shadow-[0_12px_40px_rgba(15,23,42,0.04)] hover:shadow-[0_12px_40px_rgba(15,23,42,0.08)] hover:-translate-y-2 rounded-[20px] group p-7 flex flex-col h-[340px] ${theme.cardBg}`}
                 >
                   {/* Icon row */}

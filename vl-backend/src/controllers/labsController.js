@@ -87,9 +87,9 @@ const createLab = async (req, res) => {
 const updateLab = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, description, icon, isActive, coverPic } = req.body;
+    const { title, description, icon, isActive, coverPic, subjectId } = req.body;
 
-    if (req.user.role !== 'admin') {
+    if (req.user.role !== 'admin' && req.user.role !== 'vl_manager' && req.user.role !== 'content_admin') {
       const lab = await prisma.lab.findUnique({ where: { id } });
       if (!lab || lab.createdById !== req.user.id) {
         return res.status(403).json({ message: 'Insufficient permissions' });
@@ -101,11 +101,13 @@ const updateLab = async (req, res) => {
     if (description !== undefined) data.description = description;
     if (icon        !== undefined) data.icon        = icon;
     if (coverPic    !== undefined) data.coverPic    = coverPic;
+    if (subjectId   !== undefined) data.subjectId   = subjectId;
     if (typeof isActive === 'boolean') data.isActive = isActive;
 
     const lab = await prisma.lab.update({ where: { id }, data });
     res.json(lab);
   } catch (err) {
+    console.error('Update lab error:', err);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
@@ -115,17 +117,20 @@ const deleteLab = async (req, res) => {
   try {
     const { id } = req.params;
 
-    if (req.user.role !== 'admin') {
+    if (req.user.role !== 'admin' && req.user.role !== 'vl_manager' && req.user.role !== 'content_admin') {
       const lab = await prisma.lab.findUnique({ where: { id } });
       if (!lab || lab.createdById !== req.user.id) {
         return res.status(403).json({ message: 'Insufficient permissions' });
       }
     }
 
+    // Safely remove associated experiments first to prevent foreign key constraints error
+    await prisma.experiment.deleteMany({ where: { labId: id } });
     await prisma.lab.delete({ where: { id } });
     res.json({ message: 'Lab deleted' });
   } catch (err) {
-    res.status(500).json({ message: 'Internal server error' });
+    console.error('Delete lab error:', err);
+    res.status(500).json({ message: err.message || 'Internal server error' });
   }
 };
 

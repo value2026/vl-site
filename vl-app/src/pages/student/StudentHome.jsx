@@ -158,7 +158,7 @@ export default function StudentHome() {
                       <div className="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between">
                         <span className="text-[10px] text-slate-400">Last visited recently</span>
                         <Link
-                          to={`/student/experiment/${exp.id}`}
+                          to={`/experiment/${exp.id}`}
                           className="flex items-center gap-1.5 text-xs font-bold bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors shadow-sm"
                         >
                           Resume <Play className="w-3.5 h-3.5 fill-current" />
@@ -197,7 +197,7 @@ export default function StudentHome() {
                     return (
                       <Link
                         key={subject.id}
-                        to={`/student/subject/${subject.id}`}
+                        to={`/subject/${subject.id}`}
                         className="group relative bg-white border border-slate-100 rounded-2xl overflow-hidden hover:border-indigo-300 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 flex flex-col h-full"
                       >
                         {/* Colorful top gradient line */}

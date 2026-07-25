@@ -665,7 +665,7 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
                               difficulty:   x.difficulty || 'Intermediate',
                               institution:  'Amrita Vishwa Vidyapeetham',
                               experiments:  1,
-                              href:         `/student/experiment/${x.id}`,
+                              href:         `/experiment/${x.id}`,
                               imageUrl:     x.coverPic || x.lab?.coverPic || '',
                             }));
                           }}
@@ -725,7 +725,7 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <TextField label="No. of Experiments" value={content.experiments} onChange={v => setContentKey('experiments', v)} placeholder="1" />
-                <TextField label="Link URL (href)" value={content.href} onChange={v => setContentKey('href', v)} placeholder="/student/experiment/..." />
+                <TextField label="Link URL (href)" value={content.href} onChange={v => setContentKey('href', v)} placeholder="/experiment/..." />
               </div>
 
               <SectionDivider label="Preview Image" />

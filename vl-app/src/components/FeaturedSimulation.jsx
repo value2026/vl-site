@@ -21,30 +21,26 @@ export default function FeaturedSimulation({ content = {} }) {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  // Retroactive fix: rewrite legacy plural routes to matching singular route format
-  if (sim.href && sim.href.startsWith('/student/experiments/')) {
-    sim.href = sim.href.replace('/student/experiments/', '/student/experiment/');
+  // Retroactive fix: rewrite legacy student/plural routes to clean public route format
+  if (sim.href) {
+    sim.href = sim.href
+      .replace('/student/experiments/', '/experiment/')
+      .replace('/student/experiment/', '/experiment/');
   }
 
   // Derive experiment ID from href if possible
-  const experimentPath = sim.href?.startsWith('/student/experiment/')
+  const experimentPath = sim.href?.startsWith('/experiment/')
     ? sim.href
     : null;
 
   const handleTrySimulation = (e) => {
     e.preventDefault();
     if (!experimentPath) {
-      // Fallback for non-experiment hrefs
-      navigate(sim.href || '/login');
+      navigate(sim.href || '/labs');
       return;
     }
-    if (user) {
-      // All authenticated users (students, teachers, admins, etc.) can view
-      navigate(experimentPath);
-    } else {
-      // Only unauthenticated visitors are redirected to login
-      navigate(`/login?redirect=${encodeURIComponent(experimentPath)}`);
-    }
+    // Any user (admin, teacher, student, public visitor) can view experiments directly
+    navigate(experimentPath);
   };
 
   return (

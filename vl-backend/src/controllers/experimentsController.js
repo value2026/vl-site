@@ -140,9 +140,9 @@ const createExperiment = async (req, res) => {
 const updateExperiment = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, description, duration, difficulty, isActive, coverPic } = req.body;
+    const { title, description, duration, difficulty, isActive, coverPic, labId } = req.body;
 
-    if (req.user.role !== 'admin') {
+    if (req.user.role !== 'admin' && req.user.role !== 'vl_manager' && req.user.role !== 'content_admin') {
       const exp = await prisma.experiment.findUnique({ where: { id } });
       if (!exp || exp.createdById !== req.user.id) {
         return res.status(403).json({ message: 'Insufficient permissions' });
@@ -155,11 +155,13 @@ const updateExperiment = async (req, res) => {
     if (duration    !== undefined) data.duration    = duration;
     if (difficulty  !== undefined) data.difficulty  = difficulty;
     if (coverPic    !== undefined) data.coverPic    = coverPic;
+    if (labId       !== undefined) data.labId       = labId;
     if (typeof isActive === 'boolean') data.isActive = isActive;
 
     const exp = await prisma.experiment.update({ where: { id }, data });
     res.json(exp);
   } catch (err) {
+    console.error('Update experiment error:', err);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
@@ -169,7 +171,7 @@ const deleteExperiment = async (req, res) => {
   try {
     const { id } = req.params;
 
-    if (req.user.role !== 'admin') {
+    if (req.user.role !== 'admin' && req.user.role !== 'vl_manager' && req.user.role !== 'content_admin') {
       const exp = await prisma.experiment.findUnique({ where: { id } });
       if (!exp || exp.createdById !== req.user.id) {
         return res.status(403).json({ message: 'Insufficient permissions' });
@@ -179,7 +181,8 @@ const deleteExperiment = async (req, res) => {
     await prisma.experiment.delete({ where: { id } });
     res.json({ message: 'Experiment deleted' });
   } catch (err) {
-    res.status(500).json({ message: 'Internal server error' });
+    console.error('Delete experiment error:', err);
+    res.status(500).json({ message: err.message || 'Internal server error' });
   }
 };
 
@@ -243,52 +246,74 @@ const uploadZip = async (req, res) => {
       console.warn('Warning: Failed to delete temp uploaded zip file', e.message);
     }
 
+    // Remove unwanted metadata files/folders like __MACOSX or .DS_Store
+    const cleanMetadata = (dir) => {
+      if (!fs.existsSync(dir)) return;
+      for (const item of fs.readdirSync(dir)) {
+        if (item === '__MACOSX' || item === '.DS_Store' || item.startsWith('._')) {
+          fs.rmSync(path.join(dir, item), { recursive: true, force: true });
+        }
+      }
+    };
+    cleanMetadata(tempExtractDir);
+
+    // Detect and unwrap root wrapper directory if ZIP was created by zipping a container folder
+    const entries = fs.readdirSync(tempExtractDir).filter(e => !e.startsWith('.'));
+    let effectiveExtractDir = tempExtractDir;
+    if (entries.length === 1) {
+      const singlePath = path.join(tempExtractDir, entries[0]);
+      if (fs.statSync(singlePath).isDirectory() && entries[0].toLowerCase() !== 'simulation' && entries[0].toLowerCase() !== 'images') {
+        effectiveExtractDir = singlePath;
+        console.log(`📦 UploadZip: Detected root wrapper directory "${entries[0]}". Unwrapping...`);
+      }
+    }
+
     // ── Documentation files ────────────────────────────────────────────────────
-    // Copy doc files (*.md, *.json, images/) to content directory.
-    // Exclude non-doc directories like simulation/, template/, etc.
-    const DOC_FILES = new Set(['aim.md', 'theory.md', 'procedure.md', 'references.md', 'contributors.md', 'pretest.json', 'posttest.json', 'README.md', 'assignment.md', 'experiment-name.md']);
+    const DOC_FILES = new Set(['aim.md', 'theory.md', 'procedure.md', 'references.md', 'contributors.md', 'pretest.json', 'posttest.json', 'readme.md', 'assignment.md', 'experiment-name.md']);
     const DOC_DIRS  = new Set(['images']);
-    const SIM_DIRS  = new Set(['simulation', 'template']); // folders to skip in content
 
     if (fs.existsSync(absoluteContentDir)) {
       fs.rmSync(absoluteContentDir, { recursive: true, force: true });
     }
     fs.mkdirSync(absoluteContentDir, { recursive: true });
 
-    for (const entry of fs.readdirSync(tempExtractDir)) {
-      const src = path.join(tempExtractDir, entry);
-      const dst = path.join(absoluteContentDir, entry);
+    for (const entry of fs.readdirSync(effectiveExtractDir)) {
+      if (entry.startsWith('.')) continue;
+      const src = path.join(effectiveExtractDir, entry);
+      const dst = path.join(absoluteContentDir, entry.toLowerCase()); // normalize doc names to lowercase
       const stat = fs.statSync(src);
 
       if (stat.isDirectory()) {
         if (DOC_DIRS.has(entry.toLowerCase())) {
-          fs.cpSync(src, dst, { recursive: true });
+          fs.cpSync(src, path.join(absoluteContentDir, entry.toLowerCase()), { recursive: true });
         }
-        // Skip simulation/, template/, and other non-doc dirs
       } else {
-        // Copy all root-level files (md, json, etc.)
-        fs.copyFileSync(src, dst);
+        if (DOC_FILES.has(entry.toLowerCase()) || entry.toLowerCase().endsWith('.md') || entry.toLowerCase().endsWith('.json')) {
+          fs.copyFileSync(src, dst);
+        }
       }
     }
 
     // ── Simulation ─────────────────────────────────────────────────────────────
-    const tempSimPath = path.join(tempExtractDir, 'simulation');
+    const findFolderCaseInsensitive = (dir, targetName) => {
+      if (!fs.existsSync(dir)) return null;
+      const all = fs.readdirSync(dir);
+      const found = all.find(e => e.toLowerCase() === targetName.toLowerCase() && fs.statSync(path.join(dir, e)).isDirectory());
+      return found ? path.join(dir, found) : null;
+    };
+
+    const tempSimPath = findFolderCaseInsensitive(effectiveExtractDir, 'simulation');
     let finalSimPath = null;
 
-    if (fs.existsSync(tempSimPath)) {
-      // Detect whether the simulation/ folder has sibling dependency folders
-      // (e.g. template/ for Angular-based experiments that use ../template/... paths).
-      // These must be co-located alongside simulation/ so relative paths resolve.
-      const siblingDirs = fs.readdirSync(tempExtractDir).filter((entry) => {
-        const p = path.join(tempExtractDir, entry);
-        return fs.statSync(p).isDirectory() && entry !== 'simulation' && !DOC_DIRS.has(entry.toLowerCase());
+    if (tempSimPath) {
+      const siblingDirs = fs.readdirSync(effectiveExtractDir).filter((entry) => {
+        const p = path.join(effectiveExtractDir, entry);
+        return fs.statSync(p).isDirectory() && entry.toLowerCase() !== 'simulation' && !DOC_DIRS.has(entry.toLowerCase());
       });
 
       const hasSiblingDeps = siblingDirs.length > 0;
 
       if (hasSiblingDeps) {
-        // Format 2 (Angular/template-based): copy simulation/ AND all sibling dirs
-        // into a sim-root/ folder so ../template/ relative paths resolve correctly.
         const relativeSimRoot    = `${subjectSlug}/${labSlug}/${expSlug}/sim-root`;
         const absoluteSimRootDir = uploadsPath(subjectSlug, labSlug, expSlug, 'sim-root');
 
@@ -297,22 +322,18 @@ const uploadZip = async (req, res) => {
         }
         fs.mkdirSync(absoluteSimRootDir, { recursive: true });
 
-        // Copy simulation/ into sim-root/simulation/
         fs.cpSync(tempSimPath, path.join(absoluteSimRootDir, 'simulation'), { recursive: true });
 
-        // Copy each sibling dependency dir (template/ etc.) into sim-root/
         for (const dir of siblingDirs) {
-          const src = path.join(tempExtractDir, dir);
-          const dst = path.join(absoluteSimRootDir, dir);
+          const src = path.join(effectiveExtractDir, dir);
+          const dst = path.join(absoluteSimRootDir, dir.toLowerCase());
           fs.cpSync(src, dst, { recursive: true });
         }
 
-        // simulationPath points to the simulation subfolder inside sim-root
         finalSimPath = `${relativeSimRoot}/simulation`;
         console.log(`✅ UploadZip: Angular/template simulation deployed to: ${absoluteSimRootDir}`);
 
       } else {
-        // Format 1 (React/pre-compiled static): just use compileSimulation as before
         const relativeSimSubDir = `${subjectSlug}/${labSlug}/${expSlug}/simulation`;
         const tempSimZipPath = path.join(__dirname, '../../tmp', `temp-sim-${id}.zip`);
         const simZip = new AdmZip();

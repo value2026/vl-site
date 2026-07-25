@@ -1,1 +1,0 @@
-## Quantum Support Vector Machines (QSVM)
