@@ -423,6 +423,14 @@ async function main() {
     console.log('✅ Analytics events seeded successfully.');
   }
 
+  // Auto-link any uploaded content/simulations on disk
+  try {
+    const linkUploads = require('../uploads/link_uploads.js');
+    await linkUploads();
+  } catch (e) {
+    console.log('ℹ️ Auto-link uploads skipped or encountered non-critical notice:', e.message);
+  }
+
   console.log('✅ Seed complete successfully.');
 }
 
