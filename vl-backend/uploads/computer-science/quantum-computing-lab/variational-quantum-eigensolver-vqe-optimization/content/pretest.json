@@ -1,0 +1,175 @@
+{
+  "version": 2.0,
+  "questions": [
+    {
+      "question": "What type of computational problem does job scheduling primarily represent?",
+      "answers": {
+        "a": "Linear algebra problem",
+        "b": "Combinatorial optimization problem",
+        "c": "Sorting problem",
+        "d": "Data compression problem"
+      },
+      "explanations": {
+        "a": "Linear algebra supports many algorithms but job scheduling itself is not classified as a linear algebra problem.",
+        "b": "Correct. Job scheduling involves selecting the best arrangement from many possible combinations, which makes it a combinatorial optimization problem.",
+        "c": "Sorting only arranges elements in order and does not include constraint-based decision making.",
+        "d": "Scheduling problems are unrelated to data compression."
+      },
+      "correctAnswer": "b",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "How can quantum computing represent multiple scheduling configurations simultaneously?",
+      "answers": {
+        "a": "By storing schedules in classical memory",
+        "b": "By using qubits that can exist in superposition",
+        "c": "By duplicating processors",
+        "d": "By reducing the number of tasks"
+      },
+      "explanations": {
+        "a": "Classical memory stores only one state at a time.",
+        "b": "Correct. Qubits can exist in superposition, allowing a quantum system to represent many possible configurations at once.",
+        "c": "Processor duplication does not create simultaneous state representation.",
+        "d": "Reducing tasks does not create parallel configuration representation."
+      },
+      "correctAnswer": "b",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "If a quantum system contains N qubits, how many possible states can it represent?",
+      "answers": {
+        "a": "N states",
+        "b": "2N states",
+        "c": "N squared states",
+        "d": "2^N states"
+      },
+      "explanations": {
+        "a": "The number of states grows exponentially rather than linearly.",
+        "b": "Twice the number of states is incorrect.",
+        "c": "Quadratic growth does not describe quantum state space.",
+        "d": "Correct. A system with N qubits can represent 2^N possible states."
+      },
+      "correctAnswer": "d",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "How are constraints typically incorporated into quantum optimization problems?",
+      "answers": {
+        "a": "By removing invalid solutions from the system",
+        "b": "By encoding them as penalty terms in an energy function",
+        "c": "By increasing the number of qubits",
+        "d": "By storing them in classical memory"
+      },
+      "explanations": {
+        "a": "Quantum optimization usually does not explicitly remove invalid solutions.",
+        "b": "Correct. Constraints are converted into penalty terms within the Hamiltonian energy function.",
+        "c": "Adding qubits does not directly represent constraints.",
+        "d": "Constraints are encoded mathematically rather than stored separately."
+      },
+      "correctAnswer": "b",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "What does the Hamiltonian represent in many quantum optimization problems?",
+      "answers": {
+        "a": "The energy function describing the system",
+        "b": "The physical hardware of the quantum computer",
+        "c": "The dataset used for training",
+        "d": "The number of qubits"
+      },
+      "explanations": {
+        "a": "Correct. The Hamiltonian defines the energy of different quantum states and encodes optimization constraints.",
+        "b": "The Hamiltonian is a mathematical operator, not hardware.",
+        "c": "Datasets are unrelated to the Hamiltonian definition.",
+        "d": "The Hamiltonian does not represent qubit count."
+      },
+      "correctAnswer": "a",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "What effect do constraint violations typically have on the Hamiltonian energy?",
+      "answers": {
+        "a": "They decrease the energy",
+        "b": "They have no effect on energy",
+        "c": "They increase the energy through penalty terms",
+        "d": "They remove the quantum state"
+      },
+      "explanations": {
+        "a": "Correct solutions usually correspond to lower energy states.",
+        "b": "Violations change the energy of the system.",
+        "c": "Correct. Constraint violations increase the Hamiltonian energy due to penalty terms.",
+        "d": "States are not removed; they simply receive higher energy values."
+      },
+      "correctAnswer": "c",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "What is the purpose of a parameterized quantum circuit (ansatz)?",
+      "answers": {
+        "a": "To generate adjustable quantum states for optimization",
+        "b": "To store classical data",
+        "c": "To reduce the number of qubits",
+        "d": "To measure the quantum hardware"
+      },
+      "explanations": {
+        "a": "Correct. An ansatz circuit prepares quantum states using adjustable parameters that can be optimized.",
+        "b": "Classical data storage is not the purpose of an ansatz circuit.",
+        "c": "Ansatz circuits do not reduce qubit count.",
+        "d": "Measurement is a separate step in quantum computation."
+      },
+      "correctAnswer": "a",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "What is the role of rotation gates such as Rx(θ) in parameterized quantum circuits?",
+      "answers": {
+        "a": "They destroy quantum states",
+        "b": "They adjust the probability amplitudes of quantum states",
+        "c": "They remove qubits from the circuit",
+        "d": "They convert qubits to classical bits"
+      },
+      "explanations": {
+        "a": "Rotation gates transform states rather than destroying them.",
+        "b": "Correct. Rotation gates change the probability amplitudes of quantum states through adjustable parameters.",
+        "c": "Qubits remain part of the circuit.",
+        "d": "Measurement converts qubits to classical bits, not rotation gates."
+      },
+      "correctAnswer": "b",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "What is the primary objective of the Variational Quantum Eigensolver (VQE)?",
+      "answers": {
+        "a": "To maximize the Hamiltonian energy",
+        "b": "To find the lowest energy state of a Hamiltonian",
+        "c": "To generate new qubits",
+        "d": "To remove quantum noise"
+      },
+      "explanations": {
+        "a": "The goal of VQE is energy minimization, not maximization.",
+        "b": "Correct. VQE searches for the lowest energy state of the Hamiltonian, which corresponds to the optimal solution.",
+        "c": "Qubits are hardware resources and are not created by VQE.",
+        "d": "Noise reduction is not the main objective of VQE."
+      },
+      "correctAnswer": "b",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "In hybrid quantum algorithms like VQE, what is the role of classical optimization?",
+      "answers": {
+        "a": "To replace the quantum circuit",
+        "b": "To update circuit parameters in order to minimize energy",
+        "c": "To generate quantum states directly",
+        "d": "To remove constraints from the problem"
+      },
+      "explanations": {
+        "a": "The quantum circuit is still required to evaluate energy.",
+        "b": "Correct. A classical optimizer updates circuit parameters to reduce the Hamiltonian energy.",
+        "c": "Quantum states are prepared by quantum circuits.",
+        "d": "Constraints remain encoded in the Hamiltonian."
+      },
+      "correctAnswer": "b",
+      "difficulty": "beginner"
+    }
+  ]
+}
