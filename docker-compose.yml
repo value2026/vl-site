@@ -48,8 +48,8 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      # Persist uploaded files (experiment content, etc.)
-      - uploads_data:/app/uploads
+      # Use local Windows uploads directory directly so Docker and local dev share files
+      - ./vl-backend/uploads:/app/uploads
       # Persist logs to the host machine so they can be viewed locally
       - ./vl-backend/logs:/app/logs
     networks:

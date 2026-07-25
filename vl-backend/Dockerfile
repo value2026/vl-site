@@ -26,5 +26,5 @@ RUN mkdir -p uploads
 
 EXPOSE 5000
 
-# Run DB migrations + seed + start
-CMD ["sh", "-c", "npx prisma migrate deploy && node prisma/seed.js && node src/server.js"]
+# Run DB push (auto sync schema) + seed (if empty) + start
+CMD ["sh", "-c", "npx prisma db push --accept-data-loss && node prisma/seed.js && node src/server.js"]

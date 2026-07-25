@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowRight, FlaskConical, Loader2 } from 'lucide-react';
 import StudentNav from '../../components/student/StudentNav';
-import { api } from '../../utils/api';
+import { api, getSlug } from '../../utils/api';
 
 export default function SubjectPage() {
   const { subjectId } = useParams();

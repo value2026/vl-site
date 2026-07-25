@@ -162,6 +162,12 @@ async function main() {
     console.log('ℹ️  Skipping lab data wipe (set SEED_FORCE=true to reset lab data).');
   }
 
+  const existingSubCount = await prisma.subject.count();
+  if (existingSubCount > 0 && process.env.SEED_FORCE !== 'true') {
+    console.log('ℹ️  Subjects/Labs already exist in database. Skipping default subjects & experiments seed...');
+    return;
+  }
+
   // 3. Define Seed Data
   const subjectsData = [
     {

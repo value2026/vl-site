@@ -49,3 +49,13 @@ export const safeJson = async (res) => {
 };
 
 export const fileUrl = (path) => `${FILES}/${path}`;
+
+export const getSlug = (str) => {
+  if (!str) return '';
+  return str
+    .toString()
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
+};

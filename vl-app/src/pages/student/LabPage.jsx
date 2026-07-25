@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Clock, ChevronRight, Play, Loader2 } from 'lucide-react';
 import StudentNav from '../../components/student/StudentNav';
-import { api } from '../../utils/api';
+import { api, getSlug } from '../../utils/api';
 
 const DIFFICULTY_STYLE = {
   Beginner:     'bg-emerald-50 text-emerald-700 border-emerald-200',

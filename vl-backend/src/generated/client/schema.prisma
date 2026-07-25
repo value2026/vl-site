@@ -284,6 +284,7 @@ model PageSection {
 model Institution {
   id           String  @id @default(uuid())
   legacyId     Int?    @unique
+  collegeId    String? @unique
   name         String  @unique
   code         String?
   oldCreatedAt String?

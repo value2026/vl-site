@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight, FlaskConical, Loader2 } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { api } from '../utils/api';
+import { api, getSlug } from '../utils/api';
 
 const THEMES = [
   { icon: '💻', color: 'from-blue-500 to-indigo-600', cardBg: 'bg-[#F7FAFF]', badgeBg: 'bg-indigo-50', badgeText: 'text-indigo-600', badgeBorder: 'border-indigo-100', textColor: 'text-indigo-600' },

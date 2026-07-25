@@ -1,0 +1,90 @@
+{
+  "version": 2.0,
+  "questions": [
+    {
+      "question": "If a qubit is in the state |0⟩, what is the expectation value of the Pauli-Z operator (⟨Z⟩)?",
+      "answers": {
+        "a": "0",
+        "b": "1",
+        "c": "-1",
+        "d": "0.5"
+      },
+      "explanations": {
+        "a": "0 indicates an equal mix of states.",
+        "b": "An expectation value of ⟨Z⟩ = 1 signifies the qubit is completely in the |0⟩ state.",
+        "c": "-1 means the qubit is in the |1⟩ state.",
+        "d": "0.5 is not a possible result for state |0⟩ under measurement Z."
+      },
+      "correctAnswer": "b",
+      "difficulty": "intermediate"
+    },
+    {
+      "question": "What does an expectation value of ⟨Z⟩ = 0 imply about the qubit state?",
+      "answers": {
+        "a": "The qubit is purely in |0⟩.",
+        "b": "The qubit is purely in |1⟩.",
+        "c": "The qubit has equal probabilities of collapsing to |0⟩ or |1⟩ upon measurement.",
+        "d": "The qubit is in an invalid state."
+      },
+      "explanations": {
+        "a": "⟨Z⟩ = 1 corresponds to state |0⟩.",
+        "b": "⟨Z⟩ = -1 corresponds to state |1⟩.",
+        "c": "When the expectation value is 0, it means the average result is midway between +1 and -1, implying equal probabilities.",
+        "d": "The state is valid, but measurement results are balanced."
+      },
+      "correctAnswer": "c",
+      "difficulty": "intermediate"
+    },
+    {
+      "question": "Which Pauli matrix corresponds to the observable represented by [[0, 1], [1, 0]]?",
+      "answers": {
+        "a": "Pauli-Z",
+        "b": "Pauli-Y",
+        "c": "Pauli-X",
+        "d": "Identity Matrix"
+      },
+      "explanations": {
+        "a": "The matrix representation for Pauli-Z is [[1, 0], [0, -1]].",
+        "b": "The matrix representation for Pauli-Y involves complex numbers.",
+        "c": "The matrix representation for Pauli-X is exactly [[0, 1], [1, 0]].",
+        "d": "The identity matrix is [[1, 0], [0, 1]]."
+      },
+      "correctAnswer": "c",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "In quantum mechanics, what does the expectation value ⟨A⟩ signify?",
+      "answers": {
+        "a": "The result of a single measurement.",
+        "b": "The average value expected after many measurements on identically prepared systems.",
+        "c": "The maximum possible value that can be observed.",
+        "d": "The probability of the qubit collapsing."
+      },
+      "explanations": {
+        "a": "A single measurement always yields one of the eigenvalues, not the expectation value (unless the state is an eigenstate).",
+        "b": "Expectation value is defined as the statistical average of measurement outcomes.",
+        "c": "The maximum possible value is simply the largest eigenvalue.",
+        "d": "The expectation value is a mean, not a probability itself."
+      },
+      "correctAnswer": "b",
+      "difficulty": "advanced"
+    },
+    {
+      "question": "The Pauli-X operator measures the projection of the qubit spin along which axis of the Bloch sphere?",
+      "answers": {
+        "a": "Z-axis",
+        "b": "Y-axis",
+        "c": "X-axis",
+        "d": "All axes"
+      },
+      "explanations": {
+        "a": "Pauli-Z measures alignment along the Z-axis.",
+        "b": "Pauli-Y measures alignment along the Y-axis.",
+        "c": "Pauli-X measures whether the qubit is aligned along the X-axis (states |+⟩ and |-⟩).",
+        "d": "Each Pauli operator is dedicated to a specific principal axis."
+      },
+      "correctAnswer": "c",
+      "difficulty": "intermediate"
+    }
+  ]
+}
