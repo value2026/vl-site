@@ -234,63 +234,6 @@ async function main() {
           ]
         }
       ]
-    },
-    {
-      id: '22222222-2222-2222-2222-222222222222',
-      title: 'Chemistry',
-      icon: '🧪',
-      description: 'Interact with virtual retorts, acids, bases, and examine organic reactions.',
-      gradient: 'from-emerald-600 to-green-700',
-      labs: []
-    },
-    {
-      id: '33333333-3333-3333-3333-333333333333',
-      title: 'Physics',
-      icon: '⚛️',
-      description: 'Explore kinematic forces, optics, thermodynamics, and electromagnetism.',
-      gradient: 'from-amber-500 to-orange-600',
-      labs: []
-    },
-    {
-      id: '44444444-4444-4444-4444-444444444444',
-      title: 'Chemical Science',
-      icon: '🧪',
-      description: 'Explore chemical systems, molecular reactions, and physical chemistry principles.',
-      gradient: 'from-teal-500 to-cyan-600',
-      labs: [
-        {
-          id: '66666666-6666-6666-6666-666666666666',
-          title: 'Physical Chemistry Virtual Lab',
-          icon: '⚗️',
-          description: 'Explore spectrophotometry, cryoscopy, ebullioscopy and EMF measurement.',
-          experiments: [
-            {
-              title: 'Spectrophotometry',
-              description: 'Measure the absorption of light by a chemical substance as a function of wavelength.',
-              duration: '60 min',
-              difficulty: 'Intermediate',
-            },
-            {
-              title: 'Cryoscopy',
-              description: 'Determine the depression of freezing point to calculate molecular mass.',
-              duration: '60 min',
-              difficulty: 'Intermediate',
-            },
-            {
-              title: 'Ebullioscopy',
-              description: 'Determine the elevation of boiling point of a solvent due to a solute.',
-              duration: '60 min',
-              difficulty: 'Intermediate',
-            },
-            {
-              title: 'EMF Measurement',
-              description: 'Measure electromotive force of galvanic cells to study thermodynamics.',
-              duration: '60 min',
-              difficulty: 'Advanced',
-            }
-          ]
-        }
-      ]
     }
   ];
 
