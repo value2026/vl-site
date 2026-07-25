@@ -12,7 +12,7 @@ export default function NodalCentreRequestModal({ onClose }) {
   useEffect(() => {
     const fetchSchema = async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/pages/nodal-centre-request/sections`);
+        const res = await fetch(`${import.meta.env.VITE_API_URL || window.location.origin}/api/pages/nodal-centre-request/sections`);
         if (!res.ok) throw new Error('Failed to load application form');
         const sections = await res.json();
         const formSec = sections.find(s => s.sectionKey === 'formSchema');
@@ -49,7 +49,7 @@ export default function NodalCentreRequestModal({ onClose }) {
     setError('');
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/pages/nodal-centre-request/survey`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || window.location.origin}/api/pages/nodal-centre-request/survey`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)

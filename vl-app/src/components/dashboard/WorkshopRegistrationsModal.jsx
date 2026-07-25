@@ -15,7 +15,7 @@ export default function WorkshopRegistrationsModal({ workshop, onClose }) {
 
   const fetchRegistrations = async () => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/pages/workshop-${workshop.id}/survey/responses`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || window.location.origin}/api/pages/workshop-${workshop.id}/survey/responses`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       
@@ -37,7 +37,7 @@ export default function WorkshopRegistrationsModal({ workshop, onClose }) {
   };
 
   const handleDownloadCsv = () => {
-    window.open(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/pages/workshop-${workshop.id}/survey/responses?format=csv&token=${token}`, '_blank');
+    window.open(`${import.meta.env.VITE_API_URL || window.location.origin}/api/pages/workshop-${workshop.id}/survey/responses?format=csv&token=${token}`, '_blank');
   };
   
   // Helper to map submission data (keys are IDs) to an object with readable question text as keys

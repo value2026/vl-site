@@ -30,7 +30,7 @@ export default function WorkshopRegistrationModal({ workshop, onClose }) {
     setError('');
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/pages/workshop-${workshop.id}/survey`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || window.location.origin}/api/pages/workshop-${workshop.id}/survey`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ data: formData })

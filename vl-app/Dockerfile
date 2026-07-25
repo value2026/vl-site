@@ -1,19 +1,24 @@
 # ============================================================
-# Frontend Dockerfile — Development Mode (Vite Dev Server)
+# Frontend Dockerfile - Production static build served by Nginx
 # ============================================================
 
-FROM node:20-alpine
+FROM node:20-alpine AS build
 
 WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm install
+RUN npm ci
 
 COPY . .
 
-# Expose Vite dev server default port
-EXPOSE 5173
+RUN npm run build
 
-# Run Vite dev server bound to 0.0.0.0 for container access
-CMD ["npm", "run", "dev", "--", "--host"]
+FROM nginx:1.27-alpine
+
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=build /app/dist /usr/share/nginx/html
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
