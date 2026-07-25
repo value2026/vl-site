@@ -162,20 +162,39 @@ function ProtectedRoute({ children, allowedRole }) {
 
 const DASHBOARD_PATHS = ['/dashboard', '/student', '/labs', '/subject', '/lab', '/experiment'];
 
+function getDashboardLabel(path) {
+  if (path.includes('/labs')) return 'Back to Lab Management';
+  if (path.includes('/pages')) return 'Back to Manage Pages';
+  if (path.includes('/users')) return 'Back to User Management';
+  if (path.includes('/institutions')) return 'Back to Institutions';
+  if (path.includes('/workshops')) return 'Back to Workshops';
+  if (path.includes('/messages')) return 'Back to Contact Messages';
+  if (path.includes('/analytics')) return 'Back to Usage Analytics';
+  if (path.includes('/teachers')) return 'Back to Teachers';
+  if (path.includes('/students')) return 'Back to Students';
+  if (path.includes('/reports')) return 'Back to Academic Reports';
+  if (path.includes('/assignments')) return 'Back to Assignments';
+  if (path.includes('/profile')) return 'Back to Profile Settings';
+  if (path.startsWith('/student')) return 'Back to Learning Workspace';
+  return 'Back to Management Workspace';
+}
+
 function FloatingDashboardButton() {
   const { user } = useAuth();
-  if (!user || user.role === 'student') return null;
+  const { pathname } = useLocation();
+  if (!user || user.role === 'student' || pathname.startsWith('/dashboard')) return null;
   
-  const dashMap = {
-    admin:        '/dashboard/admin/pages',
+  const defaultMap = {
+    admin:        '/dashboard/admin',
     vl_manager:   '/dashboard/vl-manager',
     nodal_centre: '/dashboard/nodal',
     teacher:      '/dashboard/teacher',
     student:      '/dashboard/student',
   };
   
-  const link = dashMap[user.role] || '/login';
-  const label = user.role === 'admin' ? 'Back to Manage Pages' : 'Back to Dashboard';
+  const savedPath = sessionStorage.getItem('lastDashboardPath');
+  const link = (savedPath && savedPath.startsWith('/dashboard')) ? savedPath : (defaultMap[user.role] || '/login');
+  const label = getDashboardLabel(link);
   
   return (
     <Link 
@@ -189,13 +208,20 @@ function FloatingDashboardButton() {
 }
 
 function AppLayout() {
-  const { pathname } = useLocation();
+  const { pathname, search } = useLocation();
   const isDashboard  = DASHBOARD_PATHS.some((p) => pathname.startsWith(p));
   const hideShell    = isDashboard || pathname === '/login' || pathname === '/forgot-password' || pathname === '/reset-password';
 
+  useEffect(() => {
+    if (isDashboard) {
+      sessionStorage.setItem('lastDashboardPath', pathname + search);
+    }
+  }, [pathname, search, isDashboard]);
+
   if (hideShell) {
     return (
-      <Routes>
+      <>
+        <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
@@ -374,6 +400,8 @@ function AppLayout() {
           <ProtectedRoute><DoAssignment /></ProtectedRoute>
         } />
       </Routes>
+      <FloatingDashboardButton />
+    </>
     );
   }
 

@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FlaskConical, Search, User, LogOut, LayoutDashboard, ChevronDown, X, Bell, ClipboardList } from 'lucide-react';
+import { FlaskConical, Search, User, LogOut, LayoutDashboard, ChevronDown, X, Bell, ClipboardList, Globe } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { api } from '../../utils/api';
 
@@ -54,11 +54,12 @@ export default function StudentNav({ breadcrumb = [] }) {
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  const handleLogout = () => { logout(); navigate('/login'); };
+  const handleLogout = () => { logout(); };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 h-14 bg-white border-b border-gray-200 flex items-center px-4 gap-4 shadow-sm">
-      {/* Logo */}
+    <nav className="fixed top-0 left-0 right-0 z-50 h-14 bg-white border-b border-gray-200 shadow-sm">
+      <div className="w-full max-w-[1600px] mx-auto h-full px-4 sm:px-6 lg:px-8 xl:px-12 flex items-center gap-4">
+        {/* Logo */}
       <Link to="/" className="flex items-center gap-2.5 flex-shrink-0 group" aria-label="VALUE @ Amrita Home">
         <div className="flex items-baseline mt-0.5 ml-2">
           <span className="text-[#1e3a8a] text-[1.2rem] font-bold tracking-tight uppercase" style={{ fontFamily: 'Arial, sans-serif' }}>
@@ -88,6 +89,16 @@ export default function StudentNav({ breadcrumb = [] }) {
       )}
 
       <div className="flex-1" />
+
+      {/* Website Home Shortcut */}
+      <Link
+        to="/"
+        className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold text-gray-700 hover:text-blue-600 hover:bg-gray-100 transition-all border border-gray-200 hover:border-blue-200 shadow-sm"
+        title="Go to Website Home Page"
+      >
+        <Globe className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-600 flex-shrink-0" />
+        <span className="hidden sm:inline">Website Home</span>
+      </Link>
 
       {/* Search */}
       <button
@@ -209,6 +220,14 @@ export default function StudentNav({ breadcrumb = [] }) {
 
               {/* Menu items */}
               <div className="py-1">
+                <Link
+                  to="/"
+                  onClick={() => setDropOpen(false)}
+                  className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                >
+                  <Globe className="w-4 h-4 text-gray-400" />
+                  Website Home
+                </Link>
                 {user?.role !== 'student' ? (
                   <>
                     <Link
@@ -220,7 +239,7 @@ export default function StudentNav({ breadcrumb = [] }) {
                       className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors font-medium"
                     >
                       <LayoutDashboard className="w-4 h-4 text-blue-600" />
-                      Back to Dashboard
+                      Management Workspace
                     </Link>
                     <Link
                       to="/dashboard/profile"
@@ -238,8 +257,8 @@ export default function StudentNav({ breadcrumb = [] }) {
                       onClick={() => setDropOpen(false)}
                       className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                     >
-                      <LayoutDashboard className="w-4 h-4 text-gray-400" />
-                      My Account
+                      <User className="w-4 h-4 text-gray-400" />
+                      My Account / Profile
                     </Link>
                     <Link
                       to="/student/assignments"
@@ -248,14 +267,6 @@ export default function StudentNav({ breadcrumb = [] }) {
                     >
                       <ClipboardList className="w-4 h-4 text-gray-400" />
                       My Assignments
-                    </Link>
-                    <Link
-                      to="/student/account"
-                      onClick={() => setDropOpen(false)}
-                      className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                    >
-                      <User className="w-4 h-4 text-gray-400" />
-                      Profile
                     </Link>
                   </>
                 )}
@@ -274,6 +285,7 @@ export default function StudentNav({ breadcrumb = [] }) {
           )}
         </div>
       )}
+      </div>
 
       {/* Search overlay */}
       {searchOpen && (

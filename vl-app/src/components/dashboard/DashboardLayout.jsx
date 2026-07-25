@@ -23,7 +23,7 @@ const NAV = {
     { icon: Building2,       label: 'Institutions',    path: '/dashboard/vl-manager/institutions' },
     { icon: Presentation,    label: 'Workshops',       path: '/dashboard/vl-manager/workshops' },
     { icon: FlaskConical,    label: 'Lab Management',  path: '/dashboard/vl-manager/labs' },
-    { icon: BookOpen,        label: 'Student Platform',path: '/student' },
+    { icon: BookOpen,        label: 'Learning Workspace',path: '/student' },
     { icon: FileText,        label: 'Contact Messages', path: '/dashboard/vl-manager/messages' },
     { icon: TrendingUp,      label: 'Usage Analytics',  path: '/dashboard/vl-manager/analytics' },
   ],
@@ -31,8 +31,7 @@ const NAV = {
     { icon: LayoutDashboard, label: 'Overview',  path: '/dashboard/nodal' },
     { icon: GraduationCap,   label: 'Teachers',  path: '/dashboard/nodal/teachers' },
     { icon: BookOpen,        label: 'Students',  path: '/dashboard/nodal/students' },
-    { icon: FlaskConical,    label: 'Lab Management',  path: '/dashboard/nodal/labs' },
-    { icon: BookOpen,        label: 'Student Platform',path: '/student' },
+    { icon: BookOpen,        label: 'Learning Workspace',path: '/student' },
     { icon: TrendingUp,      label: 'Usage Analytics',  path: '/dashboard/nodal/analytics' },
     { icon: FileText,        label: 'Academic Reports', path: '/dashboard/nodal/reports' },
   ],
@@ -40,13 +39,12 @@ const NAV = {
     { icon: LayoutDashboard, label: 'Overview',    path: '/dashboard/teacher' },
     { icon: BookOpen,        label: 'My Students', path: '/dashboard/teacher/students' },
     { icon: ClipboardList,   label: 'Assignments', path: '/dashboard/teacher/assignments' },
-    { icon: FlaskConical,    label: 'Lab Management',  path: '/dashboard/teacher/labs' },
-    { icon: BookOpen,        label: 'Student Platform',path: '/student' },
+    { icon: BookOpen,        label: 'Learning Workspace',path: '/student' },
     { icon: TrendingUp,      label: 'Usage Analytics',  path: '/dashboard/teacher/analytics' },
     { icon: FileText,        label: 'Academic Reports', path: '/dashboard/teacher/reports' },
   ],
   student: [
-    { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard/student' },
+    { icon: LayoutDashboard, label: 'Learning Workspace', path: '/dashboard/student' },
   ],
 };
 
@@ -71,7 +69,6 @@ export default function DashboardLayout({ children, title }) {
   const handleLogout = () => {
     setShowSignOutConfirm(false);
     logout();
-    navigate('/login');
   };
 
   const SidebarContent = () => (

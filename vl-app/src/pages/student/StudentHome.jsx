@@ -85,7 +85,7 @@ export default function StudentHome() {
                 </div>
                 <div>
                   <div className="inline-flex items-center gap-1.5 bg-indigo-500/20 backdrop-blur border border-indigo-400/30 text-indigo-300 text-xs font-bold px-3 py-1 rounded-full mb-3">
-                    <Sparkles className="w-3.5 h-3.5" /> Virtual Learning Workspace
+                    <Sparkles className="w-3.5 h-3.5" /> Learning Workspace
                   </div>
                   <h1 className="text-white text-3xl md:text-4xl font-extrabold mb-2 tracking-tight">
                     Welcome back, {user?.name?.split(' ')[0]}!
