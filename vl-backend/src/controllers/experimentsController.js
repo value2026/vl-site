@@ -20,7 +20,7 @@ const getExperiments = async (req, res) => {
     const experiments = await prisma.experiment.findMany({
       where,
       include: {
-        lab: { select: { title: true } },
+        lab: { select: { id: true, title: true, subjectId: true, subject: { select: { id: true, title: true } } } },
       },
       orderBy: { createdAt: 'asc' },
     });
@@ -50,7 +50,7 @@ const getAllExperiments = async (req, res) => {
     const experiments = await prisma.experiment.findMany({
       where,
       include: {
-        lab: { select: { title: true, coverPic: true, subject: { select: { title: true } } } },
+        lab: { select: { id: true, title: true, subjectId: true, coverPic: true, subject: { select: { id: true, title: true } } } },
         createdBy: { select: { name: true, role: true } },
       },
       orderBy: { createdAt: 'desc' },
@@ -67,7 +67,7 @@ const getExperiment = async (req, res) => {
     const exp = await prisma.experiment.findUnique({
       where: { id: req.params.id },
       include: {
-        lab: { select: { title: true, subject: { select: { title: true, id: true, gradient: true } } } },
+        lab: { select: { id: true, title: true, subjectId: true, subject: { select: { title: true, id: true, gradient: true } } } },
         createdBy: { select: { name: true } },
       },
     });
@@ -193,37 +193,21 @@ const uploadZip = async (req, res) => {
 
     const { id } = req.params;
 
-    // Fetch experiment along with lab and subject to construct slug folders
+    // Fetch experiment
     const exp = await prisma.experiment.findUnique({
       where: { id },
-      include: {
-        lab: {
-          include: {
-            subject: true
-          }
-        }
-      }
+      include: { lab: true }
     });
 
     if (!exp) {
       return res.status(404).json({ message: 'Experiment not found' });
     }
 
-    const getSlug = (str) => {
-      return str.toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/(^-|-$)/g, '');
-    };
-
-    const subjectSlug = getSlug(exp.lab.subject.title);
-    const labSlug     = getSlug(exp.lab.title);
-    const expSlug     = getSlug(exp.title);
-
-    // Target sub-directories (relative to uploads/)
-    const relativeContentSubDir = `${subjectSlug}/${labSlug}/${expSlug}/content`;
+    // Target sub-directories (relative to uploads/) using ID-based directory naming grouped by lab
+    const relativeContentSubDir = `labs/${exp.labId}/${id}/content`;
 
     // Absolute directory paths
-    const absoluteContentDir = uploadsPath(subjectSlug, labSlug, expSlug, 'content');
+    const absoluteContentDir = uploadsPath('labs', exp.labId, id, 'content');
 
     // Create a temporary path for zip extraction
     const tempExtractDir = path.join(__dirname, '../../tmp', `extracted-${id}`);
@@ -314,8 +298,8 @@ const uploadZip = async (req, res) => {
       const hasSiblingDeps = siblingDirs.length > 0;
 
       if (hasSiblingDeps) {
-        const relativeSimRoot    = `${subjectSlug}/${labSlug}/${expSlug}/sim-root`;
-        const absoluteSimRootDir = uploadsPath(subjectSlug, labSlug, expSlug, 'sim-root');
+        const relativeSimRoot    = `labs/${exp.labId}/${id}/sim-root`;
+        const absoluteSimRootDir = uploadsPath('labs', exp.labId, id, 'sim-root');
 
         if (fs.existsSync(absoluteSimRootDir)) {
           fs.rmSync(absoluteSimRootDir, { recursive: true, force: true });
@@ -334,7 +318,7 @@ const uploadZip = async (req, res) => {
         console.log(`✅ UploadZip: Angular/template simulation deployed to: ${absoluteSimRootDir}`);
 
       } else {
-        const relativeSimSubDir = `${subjectSlug}/${labSlug}/${expSlug}/simulation`;
+        const relativeSimSubDir = `labs/${exp.labId}/${id}/simulation`;
         const tempSimZipPath = path.join(__dirname, '../../tmp', `temp-sim-${id}.zip`);
         const simZip = new AdmZip();
         simZip.addLocalFolder(tempSimPath);
@@ -356,6 +340,19 @@ const uploadZip = async (req, res) => {
       fs.rmSync(tempExtractDir, { recursive: true, force: true });
     } catch (e) {
       console.warn('Warning: Failed to delete temp extraction dir', e.message);
+    }
+
+    // Write human-readable meta.json for easy identification
+    try {
+      const labMetaDir = uploadsPath('labs', exp.labId);
+      if (!fs.existsSync(labMetaDir)) fs.mkdirSync(labMetaDir, { recursive: true });
+      fs.writeFileSync(path.join(labMetaDir, 'meta.json'), JSON.stringify({ labId: exp.labId, labTitle: exp.lab?.title || '' }, null, 2));
+
+      const expMetaDir = uploadsPath('labs', exp.labId, id);
+      if (!fs.existsSync(expMetaDir)) fs.mkdirSync(expMetaDir, { recursive: true });
+      fs.writeFileSync(path.join(expMetaDir, 'meta.json'), JSON.stringify({ experimentId: id, experimentTitle: exp.title, labId: exp.labId, labTitle: exp.lab?.title || '' }, null, 2));
+    } catch (e) {
+      console.warn('Warning: Could not write meta.json files:', e.message);
     }
 
     // Update experiment model

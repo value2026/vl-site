@@ -3,7 +3,6 @@
     "src/"
   ],
   "ignore": [
-    "simulation-builder/*",
     "uploads/*",
     "tmp/*",
     "inspect-imports.js",

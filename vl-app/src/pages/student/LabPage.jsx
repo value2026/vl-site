@@ -65,7 +65,7 @@ export default function LabPage() {
     <div className="min-h-screen bg-gray-50">
       <StudentNav
         breadcrumb={[
-          { label: subject?.title || 'Subject', to: `/subject/${subject?.id}` },
+          { label: subject?.title || 'Subject', to: `/subject/${lab.subjectId || subject?.id}` },
           { label: lab.title },
         ]}
       />

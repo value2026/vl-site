@@ -627,25 +627,42 @@ export default function ExperimentPage() {
           {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
 
-        <Link to="/labs" className="flex items-center gap-1.5 flex-shrink-0">
-          <div className="w-7 h-7 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-lg flex items-center justify-center">
-            <FlaskConical className="w-3.5 h-3.5 text-white" />
+        <Link to="/" className="flex items-center gap-2 flex-shrink-0 group" aria-label="VALUE @ Amrita Home">
+          <div className="flex items-baseline mt-0.5 ml-1">
+            <span className="text-[#1e3a8a] text-base md:text-[1.1rem] font-bold tracking-tight uppercase" style={{ fontFamily: 'Arial, sans-serif' }}>
+              VALUE
+            </span>
+            <span className="text-[#4b5563] text-base md:text-[1.1rem] italic ml-1.5" style={{ fontFamily: 'Georgia, serif' }}>
+              @ Amrita
+            </span>
           </div>
-          <span className="text-sm font-bold text-gray-800 hidden sm:block">VL</span>
         </Link>
 
-        <div className="w-px h-5 bg-gray-200 mx-1 hidden sm:block" />
+        <div className="w-px h-5 bg-gray-200 mx-1 hidden md:block" />
 
-        <button
-          onClick={() => navigate(-1)}
-          className="flex items-center gap-1 text-gray-400 hover:text-gray-600 text-xs transition-colors hidden sm:flex"
-        >
-          <ChevronLeft className="w-3.5 h-3.5" /> {lab?.title || 'Back'}
-        </button>
-
-        <div className="flex-1 min-w-0 text-center">
-          <h1 className="text-gray-900 font-semibold text-sm truncate">{experiment.title}</h1>
+        <div className="hidden md:flex items-center gap-1.5 text-xs lg:text-sm text-gray-500 overflow-hidden">
+          <Link to="/student" className="hover:text-blue-600 transition-colors flex-shrink-0">Home</Link>
+          <span className="text-gray-300">/</span>
+          {subject && (
+            <>
+              <Link to={`/subject/${lab?.subjectId || subject.id}`} className="hover:text-blue-600 transition-colors truncate max-w-[110px] lg:max-w-[140px]">
+                {subject.title}
+              </Link>
+              <span className="text-gray-300">/</span>
+            </>
+          )}
+          {lab && (
+            <>
+              <Link to={`/lab/${lab.id || experiment.labId}`} className="hover:text-blue-600 transition-colors truncate max-w-[120px] lg:max-w-[160px]">
+                {lab.title}
+              </Link>
+              <span className="text-gray-300">/</span>
+            </>
+          )}
+          <span className="text-gray-900 font-medium truncate max-w-[140px] lg:max-w-[200px]">{experiment.title}</span>
         </div>
+
+        <div className="flex-1" />
 
         <div className="flex items-center gap-2 flex-shrink-0">
           <button className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-50 text-amber-700 hover:bg-amber-100 text-xs font-semibold border border-amber-200 transition-colors">

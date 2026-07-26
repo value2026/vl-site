@@ -17,10 +17,9 @@ async function linkUploads() {
   try {
     console.log('🔗 Scanning uploads/ directory to auto-link content and simulations...');
 
-    const labId = '55555555-5555-5555-5555-555555555555';
-    const experiments = await prisma.experiment.findMany({ where: { labId } });
+    const experiments = await prisma.experiment.findMany({ include: { lab: true } });
 
-    console.log(`Found ${experiments.length} experiments in Quantum Computing Lab.`);
+    console.log(`Found ${experiments.length} total experiments in database.`);
 
     const uploadsDir = __dirname;
     
@@ -35,22 +34,59 @@ async function linkUploads() {
         const folderName = path.basename(dir);
         
         const match = experiments.find(exp => {
+          if (folderName === exp.id || relativePath.includes(exp.id)) return true;
           const titleSlug = slugify(exp.title);
           const folderSlug = slugify(folderName);
-          return titleSlug.includes(folderSlug) || folderSlug.includes(titleSlug) || exp.id === folderName;
+          const cleanTitle = titleSlug.replace(/-/g, '');
+          const cleanFolder = folderSlug.replace(/-/g, '');
+          return titleSlug.includes(folderSlug) || folderSlug.includes(titleSlug) || cleanTitle.includes(cleanFolder) || cleanFolder.includes(cleanTitle);
         });
 
         if (match) {
+          let targetRelPath = relativePath.replace(/\\/g, '/');
+          const cleanIdPath = `labs/${match.labId}/${match.id}`;
+          if (targetRelPath !== cleanIdPath) {
+            const targetAbsDir = path.join(uploadsDir, 'labs', match.labId, match.id);
+            console.log(`📦 Migrating folder "${targetRelPath}" -> "${cleanIdPath}"...`);
+            if (!fs.existsSync(targetAbsDir)) {
+              fs.mkdirSync(targetAbsDir, { recursive: true });
+            }
+            for (const item of fs.readdirSync(dir)) {
+              const src = path.join(dir, item);
+              const dst = path.join(targetAbsDir, item);
+              fs.cpSync(src, dst, { recursive: true, force: true });
+            }
+            try {
+              fs.rmSync(dir, { recursive: true, force: true });
+            } catch (e) {
+              console.warn('Warning: Could not remove old folder after migration:', e.message);
+            }
+            targetRelPath = cleanIdPath;
+          }
+
+          // Write human-readable meta.json files for easy identification
+          try {
+            const labMetaDir = path.join(uploadsDir, 'labs', match.labId);
+            if (!fs.existsSync(labMetaDir)) fs.mkdirSync(labMetaDir, { recursive: true });
+            fs.writeFileSync(path.join(labMetaDir, 'meta.json'), JSON.stringify({ labId: match.labId, labTitle: match.lab?.title || '' }, null, 2));
+
+            const expMetaDir = path.join(uploadsDir, 'labs', match.labId, match.id);
+            if (!fs.existsSync(expMetaDir)) fs.mkdirSync(expMetaDir, { recursive: true });
+            fs.writeFileSync(path.join(expMetaDir, 'meta.json'), JSON.stringify({ experimentId: match.id, experimentTitle: match.title, labId: match.labId, labTitle: match.lab?.title || '' }, null, 2));
+          } catch (e) {
+            console.warn('Warning: Could not write meta.json files:', e.message);
+          }
+
           const updateData = {};
           if (hasContent) {
-            updateData.contentPath = `${relativePath}/content`;
+            updateData.contentPath = `${targetRelPath}/content`;
           }
           if (hasSim) {
             const simFolderName = items.find(i => i.isDirectory() && (i.name === 'simulation' || i.name === 'sim-root')).name;
-            updateData.simulationPath = `${relativePath}/${simFolderName}`;
+            updateData.simulationPath = `${targetRelPath}/${simFolderName}`;
           }
 
-          console.log(`✅ Matched [${match.title}] to folder "${relativePath}" ->`, updateData);
+          console.log(`✅ Matched [${match.title}] to folder "${targetRelPath}" ->`, updateData);
           return { matchId: match.id, updateData };
         }
       }
@@ -79,6 +115,22 @@ async function linkUploads() {
         data: u.updateData
       });
     }
+
+    function removeEmptyDirs(dirPath) {
+      if (!fs.existsSync(dirPath)) return;
+      const files = fs.readdirSync(dirPath);
+      for (const file of files) {
+        const fullPath = path.join(dirPath, file);
+        if (fs.statSync(fullPath).isDirectory()) {
+          removeEmptyDirs(fullPath);
+        }
+      }
+      if (dirPath !== uploadsDir && fs.existsSync(dirPath) && fs.readdirSync(dirPath).length === 0) {
+        fs.rmdirSync(dirPath);
+        console.log(`🧹 Removed empty directory: ${path.relative(uploadsDir, dirPath)}`);
+      }
+    }
+    removeEmptyDirs(uploadsDir);
 
     console.log(`🎉 Auto-linking complete! Updated ${foundUpdates.length} experiments in database.`);
   } catch (err) {

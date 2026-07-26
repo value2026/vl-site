@@ -10,7 +10,7 @@ const getLabs = async (req, res) => {
     const labs = await prisma.lab.findMany({
       where,
       include: {
-        subject: { select: { title: true, gradient: true, icon: true } },
+        subject: { select: { id: true, title: true, gradient: true, icon: true } },
         _count: { select: { experiments: { where: { isActive: true } } } },
       },
       orderBy: { createdAt: 'asc' },
@@ -39,7 +39,7 @@ const getAllLabs = async (req, res) => {
     const labs = await prisma.lab.findMany({
       where,
       include: {
-        subject: { select: { title: true, icon: true } },
+        subject: { select: { id: true, title: true, icon: true } },
         createdBy: { select: { name: true, role: true } },
         _count: { select: { experiments: true } },
       },
@@ -74,7 +74,7 @@ const createLab = async (req, res) => {
         createdById:  req.user.id,
         nodalCentreId,
       },
-      include: { subject: { select: { title: true } } },
+      include: { subject: { select: { id: true, title: true } } },
     });
     res.status(201).json(lab);
   } catch (err) {

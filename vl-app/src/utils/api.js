@@ -1,5 +1,20 @@
-const BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-const FILES = import.meta.env.VITE_FILES_URL || 'http://localhost:5000/files';
+const getBaseUrl = () => {
+  if (import.meta.env.VITE_API_URL) return import.meta.env.VITE_API_URL;
+  if (typeof window !== 'undefined' && window.location.hostname) {
+    return `http://${window.location.hostname}:5000/api`;
+  }
+  return 'http://localhost:5000/api';
+};
+const getFilesUrl = () => {
+  if (import.meta.env.VITE_FILES_URL) return import.meta.env.VITE_FILES_URL;
+  if (typeof window !== 'undefined' && window.location.hostname) {
+    return `http://${window.location.hostname}:5000/files`;
+  }
+  return 'http://localhost:5000/files';
+};
+
+const BASE = getBaseUrl();
+const FILES = getFilesUrl();
 
 const token = () => localStorage.getItem('vl_token');
 
