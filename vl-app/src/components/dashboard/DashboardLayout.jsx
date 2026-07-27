@@ -25,6 +25,7 @@ const NAV = {
     { icon: FlaskConical,    label: 'Lab Management',  path: '/dashboard/vl-manager/labs' },
     { icon: BookOpen,        label: 'Learning Workspace',path: '/student' },
     { icon: FileText,        label: 'Contact Messages', path: '/dashboard/vl-manager/messages' },
+    { icon: Globe,           label: 'Manage Pages',    path: '/dashboard/vl-manager/pages' },
     { icon: TrendingUp,      label: 'Usage Analytics',  path: '/dashboard/vl-manager/analytics' },
   ],
   nodal_centre: [

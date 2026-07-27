@@ -309,6 +309,11 @@ function AppLayout() {
             <DashboardLayout title="Lab Management"><LabManagement /></DashboardLayout>
           </ProtectedRoute>
         } />
+        <Route path="/dashboard/vl-manager/pages" element={
+          <ProtectedRoute allowedRole="vl_manager">
+            <DashboardLayout title="Manage Pages"><ManagePages /></DashboardLayout>
+          </ProtectedRoute>
+        } />
         <Route path="/dashboard/vl-manager/analytics" element={
           <ProtectedRoute allowedRole="vl_manager">
             <DashboardLayout title="Usage Analytics"><AnalyticsDashboard /></DashboardLayout>
