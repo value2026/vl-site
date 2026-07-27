@@ -152,6 +152,7 @@ export default function NodalCentreRequestModal({ onClose }) {
                     <input
                       type={q.type}
                       required={q.required}
+                      min={q.type === 'date' ? new Date().toISOString().split('T')[0] : undefined}
                       onChange={(e) => handleInputChange(q.id, e.target.value)}
                       className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors shadow-inner"
                       placeholder={`Enter your ${q.type === 'email' ? 'email address' : 'answer'}...`}

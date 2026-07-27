@@ -173,16 +173,14 @@ export default function DashboardLayout({ children, title }) {
             <Menu className="w-5 h-5" />
           </button>
           <h1 className="text-white font-semibold text-lg flex-1">{title}</h1>
-          <a
-            href="/"
-            target="_blank"
-            rel="noreferrer"
+          <Link
+            to="/"
             className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-slate-200 hover:text-white hover:bg-white/10 transition-all duration-200 mr-3"
-            title="Open live home screen"
+            title="Go to Website Home"
           >
             <Home className="w-4 h-4" />
             <span className="text-sm font-medium">Live Home</span>
-          </a>
+          </Link>
           <button className="relative text-slate-400 hover:text-white transition-colors mr-3" aria-label="Notifications">
             <Bell className="w-5 h-5" />
           </button>

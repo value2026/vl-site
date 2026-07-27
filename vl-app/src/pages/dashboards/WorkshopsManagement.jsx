@@ -6,6 +6,7 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import WorkshopRegistrationsModal from '../../components/dashboard/WorkshopRegistrationsModal';
 import HostWorkshopRequestsManager from '../../components/dashboard/HostWorkshopRequestsManager';
+import WorkshopCalendar from '../../components/dashboard/WorkshopCalendar';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 export default function WorkshopsManagement() {
@@ -19,7 +20,7 @@ export default function WorkshopsManagement() {
   const [error, setError] = useState('');
   
   // UI State
-  const [mainTab, setMainTab] = useState('workshops'); // 'workshops' or 'host-requests'
+  const [mainTab, setMainTab] = useState('workshops'); // 'workshops', 'calendar', or 'host-requests'
   const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -161,7 +162,7 @@ export default function WorkshopsManagement() {
       </div>
 
       {/* Top Level Tabs */}
-      <div className="flex border-b border-slate-800/50 mb-2">
+      <div className="flex items-center border-b border-slate-800/50 mb-2">
         <button
           onClick={() => setMainTab('workshops')}
           className={`px-6 py-3 text-sm font-bold border-b-2 transition-colors ${
@@ -178,9 +179,20 @@ export default function WorkshopsManagement() {
         >
           Host Workshop Requests
         </button>
+        <div className="flex-1" />
+        <button
+          onClick={() => setMainTab('calendar')}
+          className={`px-6 py-3 text-sm font-bold border-b-2 transition-colors flex items-center gap-2 ${
+            mainTab === 'calendar' ? 'border-purple-500 text-purple-400' : 'border-transparent text-slate-400 hover:text-slate-200'
+          }`}
+        >
+          <Calendar className="w-4 h-4" /> Calendar
+        </button>
       </div>
 
-      {mainTab === 'host-requests' ? (
+      {mainTab === 'calendar' ? (
+        <WorkshopCalendar workshops={workshops} role={user?.role} />
+      ) : mainTab === 'host-requests' ? (
         <HostWorkshopRequestsManager />
       ) : (
       <>
