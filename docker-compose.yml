@@ -7,6 +7,8 @@
 #   docker-compose logs -f
 # ============================================================
 
+version: "3.9"
+
 services:
 
   # ── PostgreSQL Database ─────────────────────────────────────
@@ -42,9 +44,9 @@ services:
       DATABASE_URL: postgresql://vluser:vlpassword@db:5432/virtuallabs_db
       JWT_SECRET: ${JWT_SECRET:-vl-super-secret-change-this-in-production}
       PORT: 5000
-      FRONTEND_URL: ${FRONTEND_URL:-http://localhost}
-    expose:
-      - "5000"
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:5173}
+    ports:
+      - "5000:5000"
     volumes:
       # Use local Windows uploads directory directly so Docker and local dev share files
       - ./vl-backend/uploads:/app/uploads

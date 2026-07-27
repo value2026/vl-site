@@ -1,16 +1,16 @@
 const getBaseUrl = () => {
   if (import.meta.env.VITE_API_URL) return import.meta.env.VITE_API_URL;
-  if (typeof window !== 'undefined') {
-    return `${window.location.origin}/api`;
+  if (typeof window !== 'undefined' && window.location.hostname) {
+    return `http://${window.location.hostname}:5000/api`;
   }
-  return 'http://localhost/api';
+  return 'http://localhost:5000/api';
 };
 const getFilesUrl = () => {
   if (import.meta.env.VITE_FILES_URL) return import.meta.env.VITE_FILES_URL;
-  if (typeof window !== 'undefined') {
-    return `${window.location.origin}/files`;
+  if (typeof window !== 'undefined' && window.location.hostname) {
+    return `http://${window.location.hostname}:5000/files`;
   }
-  return 'http://localhost/files';
+  return 'http://localhost:5000/files';
 };
 
 const BASE = getBaseUrl();
