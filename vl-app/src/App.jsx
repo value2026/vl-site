@@ -126,6 +126,7 @@ function LegacyRedirect({ prefix }) {
  */
 function ProtectedRoute({ children, allowedRole }) {
   const { user, loading } = useAuth();
+  const location = useLocation();
 
   if (loading) {
     return (
@@ -138,7 +139,7 @@ function ProtectedRoute({ children, allowedRole }) {
     );
   }
 
-  if (!user) return <Navigate to="/login" replace />;
+  if (!user) return <Navigate to="/login" replace state={{ from: location }} />;
 
   if (allowedRole) {
     const roles = Array.isArray(allowedRole) ? allowedRole : [allowedRole];
@@ -374,11 +375,11 @@ function AppLayout() {
           <ProtectedRoute allowedRole="teacher"><AssignmentReport /></ProtectedRoute>
         } />
 
-        {/* Public Virtual Labs Exploration (Accessible to any user without login redirect) */}
+        {/* Public Virtual Labs Exploration */}
         <Route path="/labs" element={<StudentHome />} />
-        <Route path="/subject/:subjectId" element={<SubjectPage />} />
-        <Route path="/lab/:labId" element={<LabPage />} />
-        <Route path="/experiment/:expId" element={<ExperimentPage />} />
+        <Route path="/subject/:subjectId" element={<ProtectedRoute><SubjectPage /></ProtectedRoute>} />
+        <Route path="/lab/:labId" element={<ProtectedRoute><LabPage /></ProtectedRoute>} />
+        <Route path="/experiment/:expId" element={<ProtectedRoute><ExperimentPage /></ProtectedRoute>} />
 
         {/* Legacy redirects from /student/... or /simulations/... to clean public routes */}
         <Route path="/dashboard/student" element={<Navigate to="/labs" replace />} />

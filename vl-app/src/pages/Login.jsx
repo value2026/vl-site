@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { FlaskConical, Eye, EyeOff, ArrowRight } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -14,6 +14,7 @@ const DASHBOARD_MAP = {
 export default function Login() {
   const { login } = useAuth();
   const navigate  = useNavigate();
+  const location  = useLocation();
 
   const [form,   setForm]   = useState({ email: '', password: '' });
   const [showPw, setShowPw] = useState(false);
@@ -33,7 +34,11 @@ export default function Login() {
     setLoading(true);
     try {
       const user = await login(form.email, form.password);
-      navigate(DASHBOARD_MAP[user.role] || '/');
+      const source = location.state?.from;
+      const redirectTo = typeof source === 'string'
+        ? source
+        : source?.pathname + source?.search || DASHBOARD_MAP[user.role] || '/';
+      navigate(redirectTo, { replace: true });
     } catch (err) {
       setError(err.message || 'Login failed. Please try again.');
     } finally {

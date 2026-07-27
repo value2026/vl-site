@@ -119,8 +119,8 @@ const HOME_DEFAULTS = [
     sectionKey: 'lab_categories',
     label: 'Lab Categories',
     order: 5,
-    title: 'Explore by Discipline',
-    subtitle: 'From quantum physics to molecular biology — our labs span every branch of science and engineering.',
+    title: 'Explore Virtual Labs',
+    subtitle: 'Discover interactive virtual laboratories across science, engineering, and emerging technologies. Explore experiments, strengthen practical skills, and learn through immersive, hands-on experiences.',
     content: {
       sectionTag: 'Lab Categories',
     },

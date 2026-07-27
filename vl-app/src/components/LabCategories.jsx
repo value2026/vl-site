@@ -13,8 +13,8 @@ const THEMES = [
 ];
 
 export default function LabCategories({ sectionTitle, sectionSubtitle, content = {} }) {
-  const heading  = sectionTitle || 'Explore Virtual Labs by Discipline';
-  const subtitle = sectionSubtitle || 'Discover immersive virtual laboratories across engineering, science, and technology disciplines.';
+  const heading  = sectionTitle || 'Explore Virtual Labs';
+  const subtitle = sectionSubtitle || 'Discover interactive virtual laboratories across science, engineering, and emerging technologies. Explore experiments, strengthen practical skills, and learn through immersive, hands-on experiences.';
   const tag      = content.sectionTag || 'Disciplines';
 
   const [subjects, setSubjects] = useState([]);
@@ -38,11 +38,16 @@ export default function LabCategories({ sectionTitle, sectionSubtitle, content =
   }, []);
 
   return (
-    <section className="py-[72px]" style={{ background: 'radial-gradient(circle at top, #eef4ff 0, #ffffff 60%)' }} aria-labelledby="labs-heading">
+    <section
+      id="labs-heading"
+      className="py-[72px]"
+      style={{ background: 'radial-gradient(circle at top, #eef4ff 0, #ffffff 60%)', scrollMarginTop: '120px' }}
+      aria-labelledby="labs-heading-title"
+    >
       <div className="container-custom">
         <div className="text-center">
           <span className="tag">{tag}</span>
-          <h2 id="labs-heading" className="section-title mt-4">
+          <h2 id="labs-heading-title" className="section-title mt-4">
             {heading}
           </h2>
           <p className="section-subtitle">{subtitle}</p>

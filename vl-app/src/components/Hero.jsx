@@ -24,6 +24,12 @@ export default function Hero({ content = {} }) {
   const stats = d.stats?.length ? d.stats : DEFAULTS.stats;
   const [isVideoOpen, setIsVideoOpen] = useState(false);
 
+  const scrollToSection = (sectionId) => {
+    const el = document.getElementById(sectionId);
+    if (!el) return;
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
   return (
     <div className="relative">
       <section
@@ -71,7 +77,7 @@ export default function Hero({ content = {} }) {
                 <button 
                   onClick={() => {
                     const id = (d.ctaPrimaryHref || '#labs-heading').substring(1);
-                    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+                    scrollToSection(id);
                   }}
                   className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold text-[16px] px-9 py-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-xl hover:shadow-2xl hover:-translate-y-1"
                 >
