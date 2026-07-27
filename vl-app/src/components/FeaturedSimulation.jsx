@@ -21,37 +21,33 @@ export default function FeaturedSimulation({ content = {} }) {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  // Retroactive fix: rewrite legacy plural routes to matching singular route format
-  if (sim.href && sim.href.startsWith('/student/experiments/')) {
-    sim.href = sim.href.replace('/student/experiments/', '/student/experiment/');
+  // Retroactive fix: rewrite legacy student/plural routes to clean public route format
+  if (sim.href) {
+    sim.href = sim.href
+      .replace('/student/experiments/', '/experiment/')
+      .replace('/student/experiment/', '/experiment/');
   }
 
   // Derive experiment ID from href if possible
-  const experimentPath = sim.href?.startsWith('/student/experiment/')
+  const experimentPath = sim.href?.startsWith('/experiment/')
     ? sim.href
     : null;
 
   const handleTrySimulation = (e) => {
     e.preventDefault();
     if (!experimentPath) {
-      // Fallback for non-experiment hrefs
-      navigate(sim.href || '/login');
+      navigate(sim.href || '/labs');
       return;
     }
-    if (user) {
-      // All authenticated users (students, teachers, admins, etc.) can view
-      navigate(experimentPath);
-    } else {
-      // Only unauthenticated visitors are redirected to login
-      navigate(`/login?redirect=${encodeURIComponent(experimentPath)}`);
-    }
+    // Any user (admin, teacher, student, public visitor) can view experiments directly
+    navigate(experimentPath);
   };
 
   return (
-    <section className="py-[100px] bg-white" aria-labelledby="featured-sim-heading">
+    <section className="py-[50px] bg-white" aria-labelledby="featured-sim-heading">
       <div className="container-custom">
         {/* Section header */}
-        <div className="text-center mb-16">
+        <div className="text-center mb-8">
           <span className="tag">Spotlight</span>
           <h2 id="featured-sim-heading" className="section-title mt-4">
             Featured Simulation
@@ -62,7 +58,7 @@ export default function FeaturedSimulation({ content = {} }) {
         </div>
 
         {/* Split card */}
-        <div className="bg-white rounded-[2rem] overflow-hidden shadow-2xl border border-[#E2E8F0] mt-[50px]">
+        <div className="bg-white rounded-[2rem] overflow-hidden shadow-2xl border border-[#E2E8F0] mt-4">
           <div className="grid lg:grid-cols-2 gap-0">
             {/* Left — content */}
             <div className="p-10 lg:p-14 flex flex-col justify-center">

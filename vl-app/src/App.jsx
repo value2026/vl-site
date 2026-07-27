@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, useLocation, Navigate, Link } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation, Navigate, Link, useParams } from 'react-router-dom';
 import { useEffect } from 'react';
 import ReactGA from 'react-ga4';
 import { LayoutDashboard } from 'lucide-react';
@@ -114,12 +114,19 @@ function ComingSoon({ page }) {
   );
 }
 
+function LegacyRedirect({ prefix }) {
+  const params = useParams();
+  const id = params.id || params.subjectId || params.labId || params.expId || '';
+  return <Navigate to={`${prefix}/${id}`} replace />;
+}
+
 /**
  * Redirects unauthenticated users to /login.
  * Redirects authenticated users to their dashboard if they try to access another role's dashboard.
  */
 function ProtectedRoute({ children, allowedRole }) {
   const { user, loading } = useAuth();
+  const location = useLocation();
 
   if (loading) {
     return (
@@ -132,7 +139,7 @@ function ProtectedRoute({ children, allowedRole }) {
     );
   }
 
-  if (!user) return <Navigate to="/login" replace />;
+  if (!user) return <Navigate to="/login" replace state={{ from: location }} />;
 
   if (allowedRole) {
     const roles = Array.isArray(allowedRole) ? allowedRole : [allowedRole];
@@ -154,22 +161,41 @@ function ProtectedRoute({ children, allowedRole }) {
 
 // ── Public layout (with header + footer) ─────────────────────
 
-const DASHBOARD_PATHS = ['/dashboard', '/student'];
+const DASHBOARD_PATHS = ['/dashboard', '/student', '/labs', '/subject', '/lab', '/experiment'];
+
+function getDashboardLabel(path) {
+  if (path.includes('/labs')) return 'Back to Lab Management';
+  if (path.includes('/pages')) return 'Back to Manage Pages';
+  if (path.includes('/users')) return 'Back to User Management';
+  if (path.includes('/institutions')) return 'Back to Institutions';
+  if (path.includes('/workshops')) return 'Back to Workshops';
+  if (path.includes('/messages')) return 'Back to Contact Messages';
+  if (path.includes('/analytics')) return 'Back to Usage Analytics';
+  if (path.includes('/teachers')) return 'Back to Teachers';
+  if (path.includes('/students')) return 'Back to Students';
+  if (path.includes('/reports')) return 'Back to Academic Reports';
+  if (path.includes('/assignments')) return 'Back to Assignments';
+  if (path.includes('/profile')) return 'Back to Profile Settings';
+  if (path.startsWith('/student')) return 'Back to Learning Workspace';
+  return 'Back to Management Workspace';
+}
 
 function FloatingDashboardButton() {
   const { user } = useAuth();
-  if (!user || user.role === 'student') return null;
+  const { pathname } = useLocation();
+  if (!user || user.role === 'student' || pathname.startsWith('/dashboard')) return null;
   
-  const dashMap = {
-    admin:        '/dashboard/admin/pages',
+  const defaultMap = {
+    admin:        '/dashboard/admin',
     vl_manager:   '/dashboard/vl-manager',
     nodal_centre: '/dashboard/nodal',
     teacher:      '/dashboard/teacher',
     student:      '/dashboard/student',
   };
   
-  const link = dashMap[user.role] || '/login';
-  const label = user.role === 'admin' ? 'Back to Manage Pages' : 'Back to Dashboard';
+  const savedPath = sessionStorage.getItem('lastDashboardPath');
+  const link = (savedPath && savedPath.startsWith('/dashboard')) ? savedPath : (defaultMap[user.role] || '/login');
+  const label = getDashboardLabel(link);
   
   return (
     <Link 
@@ -183,13 +209,20 @@ function FloatingDashboardButton() {
 }
 
 function AppLayout() {
-  const { pathname } = useLocation();
+  const { pathname, search } = useLocation();
   const isDashboard  = DASHBOARD_PATHS.some((p) => pathname.startsWith(p));
   const hideShell    = isDashboard || pathname === '/login' || pathname === '/forgot-password' || pathname === '/reset-password';
 
+  useEffect(() => {
+    if (isDashboard) {
+      sessionStorage.setItem('lastDashboardPath', pathname + search);
+    }
+  }, [pathname, search, isDashboard]);
+
   if (hideShell) {
     return (
-      <Routes>
+      <>
+        <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
@@ -342,22 +375,22 @@ function AppLayout() {
           <ProtectedRoute allowedRole="teacher"><AssignmentReport /></ProtectedRoute>
         } />
 
-        {/* Student learning platform */}
-        <Route path="/dashboard/student" element={
-          <ProtectedRoute><Navigate to="/student" replace /></ProtectedRoute>
-        } />
-        <Route path="/student" element={
-          <ProtectedRoute><StudentHome /></ProtectedRoute>
-        } />
-        <Route path="/student/subject/:subjectId" element={
-          <ProtectedRoute><SubjectPage /></ProtectedRoute>
-        } />
-        <Route path="/student/lab/:labId" element={
-          <ProtectedRoute><LabPage /></ProtectedRoute>
-        } />
-        <Route path="/student/experiment/:expId" element={
-          <ProtectedRoute><ExperimentPage /></ProtectedRoute>
-        } />
+        {/* Public Virtual Labs Exploration */}
+        <Route path="/labs" element={<StudentHome />} />
+        <Route path="/subject/:subjectId" element={<ProtectedRoute><SubjectPage /></ProtectedRoute>} />
+        <Route path="/lab/:labId" element={<ProtectedRoute><LabPage /></ProtectedRoute>} />
+        <Route path="/experiment/:expId" element={<ProtectedRoute><ExperimentPage /></ProtectedRoute>} />
+
+        {/* Legacy redirects from /student/... or /simulations/... to clean public routes */}
+        <Route path="/dashboard/student" element={<Navigate to="/labs" replace />} />
+        <Route path="/student" element={<Navigate to="/labs" replace />} />
+        <Route path="/student/subject/:subjectId" element={<LegacyRedirect prefix="/subject" />} />
+        <Route path="/student/lab/:labId" element={<LegacyRedirect prefix="/lab" />} />
+        <Route path="/student/experiment/:expId" element={<LegacyRedirect prefix="/experiment" />} />
+        <Route path="/student/experiments/:expId" element={<LegacyRedirect prefix="/experiment" />} />
+        <Route path="/simulations/:id" element={<LegacyRedirect prefix="/experiment" />} />
+
+        {/* Protected Student Account & Assignment Routes */}
         <Route path="/student/account" element={
           <ProtectedRoute><StudentAccount /></ProtectedRoute>
         } />
@@ -368,6 +401,8 @@ function AppLayout() {
           <ProtectedRoute><DoAssignment /></ProtectedRoute>
         } />
       </Routes>
+      <FloatingDashboardButton />
+    </>
     );
   }
 
@@ -389,8 +424,6 @@ function AppLayout() {
           <Route path="/survey/faculty"      element={<Survey slug="faculty-survey" />} />
           <Route path="/survey/student"      element={<Survey slug="student-survey" />} />
           <Route path="/contact"             element={<Contact />} />
-          <Route path="/labs/:category"      element={<ComingSoon page="Lab Category" />} />
-          <Route path="/simulations/:id"     element={<ComingSoon page="Simulation" />} />
           <Route path="*"                    element={<ComingSoon page="Page Not Found" />} />
         </Routes>
       </div>

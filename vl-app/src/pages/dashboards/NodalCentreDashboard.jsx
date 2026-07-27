@@ -79,8 +79,8 @@ export default function NodalCentreDashboard() {
       {/* Stats - Only on Overview */}
       {isOverviewPage && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <StatCard icon={GraduationCap} label="Teachers"  value={stats?.totalTeachers} gradient="from-blue-600 to-indigo-700" />
-          <StatCard icon={BookOpen}      label="Students"  value={stats?.totalStudents}  gradient="from-emerald-500 to-green-600" />
+          <StatCard icon={GraduationCap} label="Teachers"  value={teachers.length} gradient="from-blue-600 to-indigo-700" />
+          <StatCard icon={BookOpen}      label="Students"  value={students.length}  gradient="from-emerald-500 to-green-600" />
         </div>
       )}
 

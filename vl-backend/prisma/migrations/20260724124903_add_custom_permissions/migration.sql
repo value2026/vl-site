@@ -5,9 +5,15 @@
 -- multiple migrations, each migration adding only one value to
 -- the enum.
 
-
-ALTER TYPE "Role" ADD VALUE 'sim_admin';
-ALTER TYPE "Role" ADD VALUE 'vl_manager';
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type t JOIN pg_enum e ON t.oid = e.enumtypid WHERE t.typname = 'Role' AND e.enumlabel = 'sim_admin') THEN
+    ALTER TYPE "Role" ADD VALUE 'sim_admin';
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_type t JOIN pg_enum e ON t.oid = e.enumtypid WHERE t.typname = 'Role' AND e.enumlabel = 'vl_manager') THEN
+    ALTER TYPE "Role" ADD VALUE 'vl_manager';
+  END IF;
+END $$;
 
 -- DropForeignKey
 ALTER TABLE "labs" DROP CONSTRAINT "labs_nodalCentreId_fkey";

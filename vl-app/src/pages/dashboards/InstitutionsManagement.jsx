@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Building2, Plus, RefreshCw, AlertCircle, Loader2, Save, X, Trash2, Upload, Download } from 'lucide-react';
+import { Building2, Plus, RefreshCw, AlertCircle, Loader2, Save, X, Trash2, Upload, Download, Edit2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 export default function InstitutionsManagement() {
@@ -10,7 +10,8 @@ export default function InstitutionsManagement() {
   
   // Modal state
   const [showModal, setShowModal] = useState(false);
-  const [form, setForm] = useState({ name: '' });
+  const [editingInst, setEditingInst] = useState(null);
+  const [form, setForm] = useState({ collegeId: '', name: '', code: '' });
   const [submitting, setSubmitting] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
   const [actionLoading, setActionLoading] = useState(null);
@@ -40,25 +41,49 @@ export default function InstitutionsManagement() {
     fetchInstitutions();
   }, [fetchInstitutions]);
 
-  const handleCreate = async (e) => {
+  const openAddModal = () => {
+    setEditingInst(null);
+    setForm({ collegeId: '', name: '', code: '' });
+    setShowModal(true);
+  };
+
+  const openEditModal = (inst) => {
+    setEditingInst(inst);
+    setForm({
+      collegeId: inst.collegeId || (inst.legacyId ? inst.legacyId.toString() : '') || '',
+      name: inst.name || '',
+      code: inst.code || ''
+    });
+    setShowModal(true);
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.name.trim()) return;
     setSubmitting(true);
     try {
-      const res = await fetch(`${API_URL}/institutions`, {
-        method: 'POST',
+      const url = editingInst ? `${API_URL}/institutions/${editingInst.id}` : `${API_URL}/institutions`;
+      const method = editingInst ? 'PUT' : 'POST';
+      const res = await fetch(url, {
+        method,
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify(form)
+        body: JSON.stringify({
+          name: form.name.trim(),
+          code: form.code.trim() || null,
+          collegeId: form.collegeId.trim() || null,
+          legacyId: form.collegeId.trim() && !isNaN(parseInt(form.collegeId.trim(), 10)) ? parseInt(form.collegeId.trim(), 10) : null
+        })
       });
       if (!res.ok) {
         const d = await res.json();
-        throw new Error(d.message || 'Failed to create institution');
+        throw new Error(d.message || `Failed to ${editingInst ? 'update' : 'create'} institution`);
       }
       setShowModal(false);
-      setForm({ name: '' });
+      setEditingInst(null);
+      setForm({ collegeId: '', name: '', code: '' });
       fetchInstitutions();
     } catch (err) {
       alert(err.message);
@@ -160,7 +185,8 @@ export default function InstitutionsManagement() {
         parsed.push({
           name,
           code: code || null,
-          legacyId: legacyId || null,
+          collegeId: legacyId || null,
+          legacyId: legacyId && !isNaN(parseInt(legacyId, 10)) ? parseInt(legacyId, 10) : null,
           oldCreatedAt: oldCreatedAt || null,
           status: 'Valid'
         });
@@ -168,6 +194,7 @@ export default function InstitutionsManagement() {
         parsed.push({
           name: '[Missing Name]',
           code: code || '',
+          collegeId: legacyId || '',
           legacyId: legacyId || '',
           oldCreatedAt: oldCreatedAt || '',
           status: 'Invalid: Name is required'
@@ -266,7 +293,7 @@ export default function InstitutionsManagement() {
             <Upload className="w-4 h-4" /> Bulk Import
           </button>
           <button
-            onClick={() => setShowModal(true)}
+            onClick={openAddModal}
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 shadow-lg shadow-blue-500/20 transition-all"
           >
             <Plus className="w-4 h-4" /> Add Institution
@@ -306,15 +333,23 @@ export default function InstitutionsManagement() {
               ) : (
                 institutions.map(inst => (
                   <tr key={inst.id} className="hover:bg-white/5 transition-colors">
-                    <td className="px-4 py-3 text-slate-300 text-sm">{inst.legacyId || '-'}</td>
+                    <td className="px-4 py-3 text-slate-300 text-sm">{inst.collegeId || inst.legacyId || '-'}</td>
                     <td className="px-4 py-3 font-medium text-white">{inst.name}</td>
                     <td className="px-4 py-3 text-slate-300 text-sm">{inst.code || '-'}</td>
                     <td className="px-4 py-3 text-slate-400 text-xs">{inst.oldCreatedAt || '-'}</td>
-                    <td className="px-4 py-3 text-right">
+                    <td className="px-4 py-3 text-right flex items-center justify-end gap-1">
+                      <button
+                        onClick={() => openEditModal(inst)}
+                        disabled={actionLoading === inst.id}
+                        className="text-slate-400 hover:text-blue-400 transition-colors p-1.5 rounded-lg hover:bg-white/5 disabled:opacity-50"
+                        title="Edit institution"
+                      >
+                        <Edit2 className="w-4 h-4" />
+                      </button>
                       <button
                         onClick={() => requestDeleteInstitution(inst)}
                         disabled={actionLoading === inst.id}
-                        className="text-slate-400 hover:text-red-400 transition-colors p-1 disabled:opacity-50"
+                        className="text-slate-400 hover:text-red-400 transition-colors p-1.5 rounded-lg hover:bg-white/5 disabled:opacity-50"
                         title="Delete institution"
                       >
                         {actionLoading === inst.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
@@ -333,20 +368,40 @@ export default function InstitutionsManagement() {
           <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setShowModal(false)} />
           <div className="relative w-full max-w-md bg-slate-900 border border-white/10 rounded-3xl p-6 shadow-2xl z-10">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-bold text-white">Add New Institution</h3>
+              <h3 className="text-xl font-bold text-white">{editingInst ? 'Edit Institution' : 'Add New Institution'}</h3>
               <button onClick={() => setShowModal(false)} className="text-slate-400 hover:text-white">
                 <X className="w-5 h-5" />
               </button>
             </div>
-            <form onSubmit={handleCreate} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">College ID</label>
+                <input
+                  type="text"
+                  value={form.collegeId}
+                  onChange={e => setForm({ ...form, collegeId: e.target.value })}
+                  placeholder="e.g. 101 or COL-01"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                />
+              </div>
               <div>
                 <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Institution Name *</label>
                 <input
                   type="text"
                   required
                   value={form.name}
-                  onChange={e => setForm({ name: e.target.value })}
+                  onChange={e => setForm({ ...form, name: e.target.value })}
                   placeholder="e.g. Amrita Vishwa Vidyapeetham"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Abbreviation / Code</label>
+                <input
+                  type="text"
+                  value={form.code}
+                  onChange={e => setForm({ ...form, code: e.target.value })}
+                  placeholder="e.g. AMRITA or AVV"
                   className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                 />
               </div>

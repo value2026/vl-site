@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight, FlaskConical, Loader2 } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { api } from '../utils/api';
+import { api, getSlug } from '../utils/api';
 
 const THEMES = [
   { icon: '💻', color: 'from-blue-500 to-indigo-600', cardBg: 'bg-[#F7FAFF]', badgeBg: 'bg-indigo-50', badgeText: 'text-indigo-600', badgeBorder: 'border-indigo-100', textColor: 'text-indigo-600' },
@@ -13,8 +13,8 @@ const THEMES = [
 ];
 
 export default function LabCategories({ sectionTitle, sectionSubtitle, content = {} }) {
-  const heading  = sectionTitle || 'Explore Virtual Labs by Discipline';
-  const subtitle = sectionSubtitle || 'Discover immersive virtual laboratories across engineering, science, and technology disciplines.';
+  const heading  = sectionTitle || 'Explore Virtual Labs';
+  const subtitle = sectionSubtitle || 'Discover interactive virtual laboratories across science, engineering, and emerging technologies. Explore experiments, strengthen practical skills, and learn through immersive, hands-on experiences.';
   const tag      = content.sectionTag || 'Disciplines';
 
   const [subjects, setSubjects] = useState([]);
@@ -38,11 +38,16 @@ export default function LabCategories({ sectionTitle, sectionSubtitle, content =
   }, []);
 
   return (
-    <section className="py-[72px]" style={{ background: 'radial-gradient(circle at top, #eef4ff 0, #ffffff 60%)' }} aria-labelledby="labs-heading">
+    <section
+      id="labs-heading"
+      className="py-[72px]"
+      style={{ background: 'radial-gradient(circle at top, #eef4ff 0, #ffffff 60%)', scrollMarginTop: '120px' }}
+      aria-labelledby="labs-heading-title"
+    >
       <div className="container-custom">
         <div className="text-center">
           <span className="tag">{tag}</span>
-          <h2 id="labs-heading" className="section-title mt-4">
+          <h2 id="labs-heading-title" className="section-title mt-4">
             {heading}
           </h2>
           <p className="section-subtitle">{subtitle}</p>
@@ -62,7 +67,7 @@ export default function LabCategories({ sectionTitle, sectionSubtitle, content =
               return (
                 <Link
                   key={subject.id}
-                  to={`/student/subject/${subject.id}`}
+                  to={`/subject/${subject.id}`}
                   className={`border border-slate-200 transition-all duration-300 shadow-[0_12px_40px_rgba(15,23,42,0.04)] hover:shadow-[0_12px_40px_rgba(15,23,42,0.08)] hover:-translate-y-2 rounded-[20px] group p-7 flex flex-col h-[340px] ${theme.cardBg}`}
                 >
                   {/* Icon row */}

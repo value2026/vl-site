@@ -3,6 +3,7 @@ const bcrypt        = require('bcryptjs');
 const jwt           = require('jsonwebtoken');
 const prisma        = require('../db');
 const { sendPasswordResetEmail } = require('../utils/mailer');
+const { logAudit, logError } = require('../utils/logger');
 
 // POST /api/auth/login
 const login = async (req, res) => {
@@ -53,6 +54,13 @@ const login = async (req, res) => {
       { expiresIn: '7d' }
     );
 
+    logAudit({
+      action: 'USER_LOGIN',
+      user: user.email,
+      details: { role: user.role },
+      ip: req.ip || req.connection.remoteAddress
+    });
+
     res.json({
       token,
       user: {
@@ -66,6 +74,7 @@ const login = async (req, res) => {
     });
   } catch (err) {
     console.error('Login error:', err);
+    logError(err);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
@@ -212,9 +221,16 @@ const changePassword = async (req, res) => {
       data: { password: hashed }
     });
 
+    logAudit({
+      action: 'PASSWORD_CHANGE',
+      user: user.email,
+      ip: req.ip || req.connection.remoteAddress
+    });
+
     res.json({ message: 'Password updated successfully' });
   } catch (err) {
     console.error('ChangePassword error:', err);
+    logError(err);
     res.status(500).json({ message: 'Internal server error' });
   }
 };

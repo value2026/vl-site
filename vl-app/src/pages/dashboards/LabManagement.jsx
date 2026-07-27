@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import {
   Plus, Pencil, Trash2, ToggleLeft, ToggleRight,
   Upload, CheckCircle2, AlertCircle, Loader2, X,
   Folder, Layers, Beaker, FileText, Check, ChevronRight
 } from 'lucide-react';
-import { api } from '../../utils/api';
+import { api, safeJson } from '../../utils/api';
 import { useAuth } from '../../context/AuthContext';
 import CloudinaryUploader from '../../components/dashboard/CloudinaryUploader';
 
@@ -23,12 +24,12 @@ const GRADIENTS = [
 const ICONS = ['💻','🧪','⚛️','🔬','📐','⚡','🌐','📚','🗂️','🔍','🖥️','⚗️','🧫','🎯','🔭','🔋','🦠','🧬','📊','💡','🔌','🌱','🏗️'];
 const DIFFICULTIES = ['Beginner', 'Intermediate', 'Advanced'];
 
-// ── Dark glassmorphism modal ───────────────────────────────────
+// ── Dark glassmorphism modal via React Portal ──────────────────
 function Modal({ title, onClose, children }) {
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
+  return createPortal(
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
       <div className="bg-slate-900 border border-white/10 rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-white/5">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-white/5 sticky top-0 bg-slate-900 z-10">
           <h3 className="font-bold text-white text-lg">{title}</h3>
           <button onClick={onClose} className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-all">
             <X className="w-4 h-4" />
@@ -36,7 +37,8 @@ function Modal({ title, onClose, children }) {
         </div>
         <div className="px-6 py-5">{children}</div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
@@ -65,10 +67,10 @@ const Select = ({ children, ...props }) => (
   </select>
 );
 
-// ── Confirmation dialog ───────────────────────────────────────
+// ── Confirmation dialog via React Portal ───────────────────────
 function ConfirmDelete({ label, onConfirm, onCancel }) {
-  return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-sm">
+  return createPortal(
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-sm">
       <div className="bg-slate-900 border border-white/10 rounded-2xl shadow-2xl w-full max-w-sm p-6 text-center">
         <div className="w-12 h-12 bg-red-500/10 border border-red-500/25 rounded-full flex items-center justify-center mx-auto mb-4">
           <Trash2 className="w-5 h-5 text-red-400" />
@@ -80,7 +82,8 @@ function ConfirmDelete({ label, onConfirm, onCancel }) {
           <button onClick={onConfirm} className="flex-1 py-2.5 bg-red-600 text-white rounded-xl text-sm font-semibold hover:bg-red-700 transition-colors shadow-lg shadow-red-600/25">Delete</button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
@@ -107,7 +110,7 @@ function SubjectsTab() {
   const load = async () => {
     setLoading(true);
     const res = await api.get('/subjects/all');
-    if (res.ok) setSubjects(await res.json());
+    if (res.ok) setSubjects(await safeJson(res));
     setLoading(false);
   };
   useEffect(() => { load(); }, []);
@@ -121,7 +124,7 @@ function SubjectsTab() {
     const isEdit = modal?.edit;
     const res = isEdit ? await api.put(`/subjects/${isEdit.id}`, form) : await api.post('/subjects', form);
     setSaving(false);
-    if (res.ok) { setModal(null); load(); } else { setError((await res.json()).message); }
+    if (res.ok) { setModal(null); load(); } else { setError((await safeJson(res)).message); }
   };
 
   const toggleActive = async (s) => {
@@ -219,7 +222,7 @@ function SubjectsTab() {
 // ════════════════════════════════════════════════════════════════
 //  LABS TAB
 // ════════════════════════════════════════════════════════════════
-function LabsTab() {
+function LabsTab({ onSelectLab }) {
   const [labs,     setLabs]     = useState([]);
   const [subjects, setSubjects] = useState([]);
   const [loading,  setLoading]  = useState(true);
@@ -233,8 +236,8 @@ function LabsTab() {
   const load = async () => {
     setLoading(true);
     const [lr, sr] = await Promise.all([api.get('/labs/all'), api.get('/subjects/all')]);
-    if (lr.ok) setLabs(await lr.json());
-    if (sr.ok) setSubjects(await sr.json());
+    if (lr.ok) setLabs(await safeJson(lr));
+    if (sr.ok) setSubjects(await safeJson(sr));
     setLoading(false);
   };
   useEffect(() => { load(); }, []);
@@ -250,7 +253,7 @@ function LabsTab() {
     const isEdit = modal?.edit;
     const res = isEdit ? await api.put(`/labs/${isEdit.id}`, form) : await api.post('/labs', form);
     setSaving(false);
-    if (res.ok) { setModal(null); load(); } else { setError((await res.json()).message); }
+    if (res.ok) { setModal(null); load(); } else { setError((await safeJson(res)).message); }
   };
 
   const toggleActive = async (l) => { await api.put(`/labs/${l.id}`, { isActive: !l.isActive }); load(); };
@@ -298,7 +301,14 @@ function LabsTab() {
                   </span>
                 </div>
                 <p className="text-slate-400 text-xs mt-0.5 truncate">{l.description || 'No description available'}</p>
-                <div className="text-[10px] text-slate-500 mt-1">{l._count?.experiments || 0} Experiments · Created by {l.createdBy?.name}</div>
+                <div className="text-[10px] text-slate-500 mt-1 flex items-center gap-3">
+                  <span>{l._count?.experiments || 0} Experiments · Created by {l.createdBy?.name || 'Admin'}</span>
+                  {onSelectLab && (
+                    <button onClick={() => onSelectLab(l.id)} className="text-blue-400 hover:text-blue-300 font-semibold underline flex items-center gap-1">
+                      View Experiments ➔
+                    </button>
+                  )}
+                </div>
               </div>
               <div className="flex items-center gap-3 flex-shrink-0">
                 <ActiveBadge active={l.isActive} onClick={() => toggleActive(l)} labels={['Published', 'Draft']} />
@@ -357,7 +367,7 @@ function LabsTab() {
 // ════════════════════════════════════════════════════════════════
 //  EXPERIMENTS TAB
 // ════════════════════════════════════════════════════════════════
-function ExperimentsTab({ role }) {
+function ExperimentsTab({ role, initialLabId = '' }) {
   const [experiments, setExperiments] = useState([]);
   const [labs,        setLabs]        = useState([]);
   const [subjects,    setSubjects]    = useState([]);
@@ -365,7 +375,7 @@ function ExperimentsTab({ role }) {
   const [modal,       setModal]       = useState(null);
   const [deleting,    setDeleting]    = useState(null);
   const [subjectFilter, setSubjectFilter] = useState('');
-  const [labFilter,   setLabFilter]   = useState('');
+  const [labFilter,   setLabFilter]   = useState(initialLabId);
   const [form,        setForm]        = useState({ title: '', description: '', duration: '60 min', difficulty: 'Beginner', labId: '', coverPic: '' });
   const [saving,      setSaving]      = useState(false);
   const [error,       setError]       = useState('');
@@ -379,12 +389,18 @@ function ExperimentsTab({ role }) {
       api.get('/labs/all'),
       api.get('/subjects/all')
     ]);
-    if (er.ok) setExperiments(await er.json());
-    if (lr.ok) setLabs(await lr.json());
-    if (sr.ok) setSubjects(await sr.json());
+    if (er.ok) setExperiments(await safeJson(er));
+    if (lr.ok) setLabs(await safeJson(lr));
+    if (sr.ok) setSubjects(await safeJson(sr));
     setLoading(false);
   };
   useEffect(() => { load(); }, []);
+
+  useEffect(() => {
+    if (initialLabId) {
+      setLabFilter(initialLabId);
+    }
+  }, [initialLabId]);
 
   const filtered = experiments.filter((e) => {
     const parentLab = labs.find((l) => l.id === e.labId);
@@ -393,7 +409,7 @@ function ExperimentsTab({ role }) {
     return true;
   });
 
-  const openAdd  = () => { setForm({ title: '', description: '', duration: '60 min', difficulty: 'Beginner', labId: labs[0]?.id || '', coverPic: '' }); setError(''); setModal('add'); };
+  const openAdd  = () => { setForm({ title: '', description: '', duration: '60 min', difficulty: 'Beginner', labId: labFilter || labs[0]?.id || '', coverPic: '' }); setError(''); setModal('add'); };
   const openEdit = (e) => { setForm({ title: e.title, description: e.description || '', duration: e.duration, difficulty: e.difficulty, labId: e.labId, coverPic: e.coverPic || '' }); setError(''); setModal({ edit: e }); };
 
   const save = async () => {
@@ -402,7 +418,7 @@ function ExperimentsTab({ role }) {
     const isEdit = modal?.edit;
     const res = isEdit ? await api.put(`/experiments/${isEdit.id}`, form) : await api.post('/experiments', form);
     setSaving(false);
-    if (res.ok) { setModal(null); load(); } else { setError((await res.json()).message); }
+    if (res.ok) { setModal(null); load(); } else { setError((await safeJson(res)).message); }
   };
 
   const toggleActive = async (e) => { await api.put(`/experiments/${e.id}`, { isActive: !e.isActive }); load(); };
@@ -413,13 +429,19 @@ function ExperimentsTab({ role }) {
     const key = `${expId}-${type}`;
     setUploading((u) => ({ ...u, [key]: true }));
     setUploadMsg((m) => ({ ...m, [key]: '' }));
-    const fd = new FormData();
-    fd.append('file', file);
-    const res = await api.upload(`/experiments/${expId}/upload-zip`, fd);
-    const data = await res.json();
-    setUploading((u) => ({ ...u, [key]: false }));
-    setUploadMsg((m) => ({ ...m, [key]: res.ok ? '✅ Done' : `❌ ${data.message}` }));
-    if (res.ok) load();
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      const res = await api.upload(`/experiments/${expId}/upload-zip`, fd);
+      const data = await safeJson(res);
+      setUploading((u) => ({ ...u, [key]: false }));
+      setUploadMsg((m) => ({ ...m, [key]: res.ok ? '✅ Done' : `❌ ${data.message || 'Upload failed'}` }));
+      if (res.ok) load();
+    } catch (err) {
+      console.error('Upload error:', err);
+      setUploading((u) => ({ ...u, [key]: false }));
+      setUploadMsg((m) => ({ ...m, [key]: `❌ ${err.message || 'Upload error'}` }));
+    }
   };
 
   const UploadBtn = ({ exp, type, label }) => {
@@ -460,15 +482,15 @@ function ExperimentsTab({ role }) {
       </div>
 
       {/* Two-Level Filters */}
-      <div className="flex flex-col sm:flex-row gap-3 max-w-xl">
-        <div className="flex-1">
+      <div className="flex flex-col sm:flex-row items-end gap-3 max-w-xl">
+        <div className="flex-1 w-full">
           <label className="block text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Subject Area</label>
           <Select value={subjectFilter} onChange={(e) => { setSubjectFilter(e.target.value); setLabFilter(''); }}>
             <option value="">All Subjects</option>
             {subjects.map((s) => <option key={s.id} value={s.id}>{s.icon} {s.title}</option>)}
           </Select>
         </div>
-        <div className="flex-1">
+        <div className="flex-1 w-full">
           <label className="block text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Laboratory</label>
           <Select value={labFilter} onChange={(e) => setLabFilter(e.target.value)}>
             <option value="">All Labs</option>
@@ -478,6 +500,11 @@ function ExperimentsTab({ role }) {
             }
           </Select>
         </div>
+        {(subjectFilter || labFilter) && (
+          <button onClick={() => { setSubjectFilter(''); setLabFilter(''); }} className="px-3 py-2.5 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-slate-300 text-xs font-semibold whitespace-nowrap transition-colors">
+            Clear Filters ✖
+          </button>
+        )}
       </div>
 
       {loading ? (
@@ -582,7 +609,8 @@ export default function LabManagement() {
     ? TABS
     : TABS.filter((t) => t.id !== 'subjects');
 
-  const [tab, setTab] = useState(role === 'admin' ? 'subjects' : 'labs');
+  const [tab, setTab] = useState('labs');
+  const [selectedLabId, setSelectedLabId] = useState('');
 
   return (
     <div className="space-y-6">
@@ -593,7 +621,10 @@ export default function LabManagement() {
           return (
             <button
               key={t.id}
-              onClick={() => setTab(t.id)}
+              onClick={() => {
+                if (t.id !== 'experiments') setSelectedLabId('');
+                setTab(t.id);
+              }}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${isActive ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/20' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}
             >
               {t.icon}
@@ -606,8 +637,8 @@ export default function LabManagement() {
       {/* Render selected view */}
       <div className="bg-slate-900/25 border border-white/5 rounded-2xl p-6 backdrop-blur-xl">
         {tab === 'subjects'    && <SubjectsTab />}
-        {tab === 'labs'        && <LabsTab />}
-        {tab === 'experiments' && <ExperimentsTab role={role} />}
+        {tab === 'labs'        && <LabsTab onSelectLab={(id) => { setSelectedLabId(id); setTab('experiments'); }} />}
+        {tab === 'experiments' && <ExperimentsTab role={role} initialLabId={selectedLabId} />}
       </div>
     </div>
   );
