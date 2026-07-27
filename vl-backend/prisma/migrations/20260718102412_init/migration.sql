@@ -6,8 +6,12 @@
   - A unique constraint covering the columns `[username]` on the table `users` will be added. If there are existing duplicate values, this will fail.
 
 */
--- AlterEnum
-ALTER TYPE "Role" ADD VALUE 'content_admin';
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type t JOIN pg_enum e ON t.oid = e.enumtypid WHERE t.typname = 'Role' AND e.enumlabel = 'content_admin') THEN
+    ALTER TYPE "Role" ADD VALUE 'content_admin';
+  END IF;
+END $$;
 
 -- DropForeignKey
 ALTER TABLE "scheduled_calls" DROP CONSTRAINT "scheduled_calls_inviteeId_fkey";

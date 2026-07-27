@@ -85,7 +85,7 @@ export default function StudentHome() {
                 </div>
                 <div>
                   <div className="inline-flex items-center gap-1.5 bg-indigo-500/20 backdrop-blur border border-indigo-400/30 text-indigo-300 text-xs font-bold px-3 py-1 rounded-full mb-3">
-                    <Sparkles className="w-3.5 h-3.5" /> Virtual Learning Workspace
+                    <Sparkles className="w-3.5 h-3.5" /> Learning Workspace
                   </div>
                   <h1 className="text-white text-3xl md:text-4xl font-extrabold mb-2 tracking-tight">
                     Welcome back, {user?.name?.split(' ')[0]}!
@@ -158,7 +158,7 @@ export default function StudentHome() {
                       <div className="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between">
                         <span className="text-[10px] text-slate-400">Last visited recently</span>
                         <Link
-                          to={`/student/experiment/${exp.id}`}
+                          to={`/experiment/${exp.id}`}
                           className="flex items-center gap-1.5 text-xs font-bold bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors shadow-sm"
                         >
                           Resume <Play className="w-3.5 h-3.5 fill-current" />
@@ -197,7 +197,7 @@ export default function StudentHome() {
                     return (
                       <Link
                         key={subject.id}
-                        to={`/student/subject/${subject.id}`}
+                        to={`/subject/${subject.id}`}
                         className="group relative bg-white border border-slate-100 rounded-2xl overflow-hidden hover:border-indigo-300 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 flex flex-col h-full"
                       >
                         {/* Colorful top gradient line */}

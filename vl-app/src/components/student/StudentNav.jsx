@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FlaskConical, Search, User, LogOut, LayoutDashboard, ChevronDown, X, Bell, ClipboardList } from 'lucide-react';
+import { FlaskConical, Search, User, LogOut, LayoutDashboard, ChevronDown, X, Bell, ClipboardList, Globe } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { api } from '../../utils/api';
 
@@ -54,11 +54,12 @@ export default function StudentNav({ breadcrumb = [] }) {
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  const handleLogout = () => { logout(); navigate('/login'); };
+  const handleLogout = () => { logout(); };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 h-14 bg-white border-b border-gray-200 flex items-center px-4 gap-4 shadow-sm">
-      {/* Logo */}
+    <nav className="fixed top-0 left-0 right-0 z-50 h-14 bg-white border-b border-gray-200 shadow-sm">
+      <div className="w-full max-w-[1600px] mx-auto h-full px-4 sm:px-6 lg:px-8 xl:px-12 flex items-center gap-4">
+        {/* Logo */}
       <Link to="/" className="flex items-center gap-2.5 flex-shrink-0 group" aria-label="VALUE @ Amrita Home">
         <div className="flex items-baseline mt-0.5 ml-2">
           <span className="text-[#1e3a8a] text-[1.2rem] font-bold tracking-tight uppercase" style={{ fontFamily: 'Arial, sans-serif' }}>
@@ -88,6 +89,16 @@ export default function StudentNav({ breadcrumb = [] }) {
       )}
 
       <div className="flex-1" />
+
+      {/* Website Home Shortcut */}
+      <Link
+        to="/"
+        className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold text-gray-700 hover:text-blue-600 hover:bg-gray-100 transition-all border border-gray-200 hover:border-blue-200 shadow-sm"
+        title="Go to Website Home Page"
+      >
+        <Globe className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-600 flex-shrink-0" />
+        <span className="hidden sm:inline">Website Home</span>
+      </Link>
 
       {/* Search */}
       <button
@@ -167,72 +178,113 @@ export default function StudentNav({ breadcrumb = [] }) {
         )}
       </div>
 
-      {/* Account dropdown */}
-      <div className="relative" ref={dropRef}>
-        <button
-          onClick={() => setDropOpen(!dropOpen)}
-          className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-gray-100 hover:bg-gray-200 transition-all"
+      {/* Account dropdown or Login button */}
+      {!user ? (
+        <Link
+          to="/login"
+          className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs shadow-sm transition-all"
         >
-          <div className="w-6 h-6 bg-gradient-to-br from-emerald-500 to-green-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
-            {user?.name?.[0]?.toUpperCase() || 'S'}
-          </div>
-          <span className="text-sm font-medium text-gray-700 hidden sm:block max-w-[100px] truncate">
-            {user?.name?.split(' ')[0]}
-          </span>
-          <ChevronDown className={`w-3.5 h-3.5 text-gray-400 transition-transform ${dropOpen ? 'rotate-180' : ''}`} />
-        </button>
+          <User className="w-3.5 h-3.5" />
+          Log In
+        </Link>
+      ) : (
+        <div className="relative" ref={dropRef}>
+          <button
+            onClick={() => setDropOpen(!dropOpen)}
+            className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-gray-100 hover:bg-gray-200 transition-all"
+          >
+            <div className="w-6 h-6 bg-gradient-to-br from-emerald-500 to-green-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
+              {user?.name?.[0]?.toUpperCase() || 'U'}
+            </div>
+            <span className="text-sm font-medium text-gray-700 hidden sm:block max-w-[100px] truncate">
+              {user?.name?.split(' ')[0]}
+            </span>
+            <ChevronDown className={`w-3.5 h-3.5 text-gray-400 transition-transform ${dropOpen ? 'rotate-180' : ''}`} />
+          </button>
 
-        {dropOpen && (
-          <div className="absolute right-0 top-full mt-2 w-52 bg-white border border-gray-200 rounded-2xl shadow-xl overflow-hidden z-50">
-            {/* User info */}
-            <div className="px-4 py-3 border-b border-gray-100">
-              <div className="text-sm font-semibold text-gray-900 truncate">{user?.name}</div>
-              <div className="text-xs text-gray-500 truncate">{user?.email}</div>
-              <div className="mt-1.5 inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 text-xs font-medium px-2 py-0.5 rounded-full">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                Student
+          {dropOpen && (
+            <div className="absolute right-0 top-full mt-2 w-52 bg-white border border-gray-200 rounded-2xl shadow-xl overflow-hidden z-50">
+              {/* User info */}
+              <div className="px-4 py-3 border-b border-gray-100">
+                <div className="text-sm font-semibold text-gray-900 truncate">{user?.name}</div>
+                <div className="text-xs text-gray-500 truncate">{user?.email}</div>
+                <div className="mt-1.5 inline-flex items-center gap-1 bg-blue-50 text-blue-700 text-xs font-medium px-2 py-0.5 rounded-full">
+                  <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                  {user?.role === 'admin' ? 'Super Admin'
+                    : user?.role === 'vl_manager' ? 'VL Manager'
+                    : user?.role === 'nodal_centre' ? 'Nodal Centre'
+                    : user?.role === 'teacher' ? 'Teacher'
+                    : 'Student'}
+                </div>
+              </div>
+
+              {/* Menu items */}
+              <div className="py-1">
+                <Link
+                  to="/"
+                  onClick={() => setDropOpen(false)}
+                  className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                >
+                  <Globe className="w-4 h-4 text-gray-400" />
+                  Website Home
+                </Link>
+                {user?.role !== 'student' ? (
+                  <>
+                    <Link
+                      to={user?.role === 'admin' ? '/dashboard/admin'
+                        : user?.role === 'vl_manager' ? '/dashboard/vl-manager'
+                        : user?.role === 'nodal_centre' ? '/dashboard/nodal'
+                        : '/dashboard/teacher'}
+                      onClick={() => setDropOpen(false)}
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors font-medium"
+                    >
+                      <LayoutDashboard className="w-4 h-4 text-blue-600" />
+                      Management Workspace
+                    </Link>
+                    <Link
+                      to="/dashboard/profile"
+                      onClick={() => setDropOpen(false)}
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                    >
+                      <User className="w-4 h-4 text-gray-400" />
+                      Profile Settings
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      to="/student/account"
+                      onClick={() => setDropOpen(false)}
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                    >
+                      <User className="w-4 h-4 text-gray-400" />
+                      My Account / Profile
+                    </Link>
+                    <Link
+                      to="/student/assignments"
+                      onClick={() => setDropOpen(false)}
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                    >
+                      <ClipboardList className="w-4 h-4 text-gray-400" />
+                      My Assignments
+                    </Link>
+                  </>
+                )}
+              </div>
+
+              <div className="border-t border-gray-100 py-1">
+                <button
+                  onClick={handleLogout}
+                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                >
+                  <LogOut className="w-4 h-4" />
+                  Sign Out
+                </button>
               </div>
             </div>
-
-            {/* Menu items */}
-            <div className="py-1">
-              <Link
-                to="/student/account"
-                onClick={() => setDropOpen(false)}
-                className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-              >
-                <LayoutDashboard className="w-4 h-4 text-gray-400" />
-                My Account
-              </Link>
-              <Link
-                to="/student/assignments"
-                onClick={() => setDropOpen(false)}
-                className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-              >
-                <ClipboardList className="w-4 h-4 text-gray-400" />
-                My Assignments
-              </Link>
-              <Link
-                to="/student/account"
-                onClick={() => setDropOpen(false)}
-                className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-              >
-                <User className="w-4 h-4 text-gray-400" />
-                Profile
-              </Link>
-            </div>
-
-            <div className="border-t border-gray-100 py-1">
-              <button
-                onClick={handleLogout}
-                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
-              >
-                <LogOut className="w-4 h-4" />
-                Sign Out
-              </button>
-            </div>
-          </div>
-        )}
+          )}
+        </div>
+      )}
       </div>
 
       {/* Search overlay */}

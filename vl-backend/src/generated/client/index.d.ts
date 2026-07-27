@@ -15731,6 +15731,7 @@ export namespace Prisma {
   export type InstitutionMinAggregateOutputType = {
     id: string | null
     legacyId: number | null
+    collegeId: string | null
     name: string | null
     code: string | null
     oldCreatedAt: string | null
@@ -15743,6 +15744,7 @@ export namespace Prisma {
   export type InstitutionMaxAggregateOutputType = {
     id: string | null
     legacyId: number | null
+    collegeId: string | null
     name: string | null
     code: string | null
     oldCreatedAt: string | null
@@ -15755,6 +15757,7 @@ export namespace Prisma {
   export type InstitutionCountAggregateOutputType = {
     id: number
     legacyId: number
+    collegeId: number
     name: number
     code: number
     oldCreatedAt: number
@@ -15777,6 +15780,7 @@ export namespace Prisma {
   export type InstitutionMinAggregateInputType = {
     id?: true
     legacyId?: true
+    collegeId?: true
     name?: true
     code?: true
     oldCreatedAt?: true
@@ -15789,6 +15793,7 @@ export namespace Prisma {
   export type InstitutionMaxAggregateInputType = {
     id?: true
     legacyId?: true
+    collegeId?: true
     name?: true
     code?: true
     oldCreatedAt?: true
@@ -15801,6 +15806,7 @@ export namespace Prisma {
   export type InstitutionCountAggregateInputType = {
     id?: true
     legacyId?: true
+    collegeId?: true
     name?: true
     code?: true
     oldCreatedAt?: true
@@ -15900,6 +15906,7 @@ export namespace Prisma {
   export type InstitutionGroupByOutputType = {
     id: string
     legacyId: number | null
+    collegeId: string | null
     name: string
     code: string | null
     oldCreatedAt: string | null
@@ -15931,6 +15938,7 @@ export namespace Prisma {
   export type InstitutionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     legacyId?: boolean
+    collegeId?: boolean
     name?: boolean
     code?: boolean
     oldCreatedAt?: boolean
@@ -15947,6 +15955,7 @@ export namespace Prisma {
   export type InstitutionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     legacyId?: boolean
+    collegeId?: boolean
     name?: boolean
     code?: boolean
     oldCreatedAt?: boolean
@@ -15960,6 +15969,7 @@ export namespace Prisma {
   export type InstitutionSelectScalar = {
     id?: boolean
     legacyId?: boolean
+    collegeId?: boolean
     name?: boolean
     code?: boolean
     oldCreatedAt?: boolean
@@ -15989,6 +15999,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       legacyId: number | null
+      collegeId: string | null
       name: string
       code: string | null
       oldCreatedAt: string | null
@@ -16394,6 +16405,7 @@ export namespace Prisma {
   interface InstitutionFieldRefs {
     readonly id: FieldRef<"Institution", 'String'>
     readonly legacyId: FieldRef<"Institution", 'Int'>
+    readonly collegeId: FieldRef<"Institution", 'String'>
     readonly name: FieldRef<"Institution", 'String'>
     readonly code: FieldRef<"Institution", 'String'>
     readonly oldCreatedAt: FieldRef<"Institution", 'String'>
@@ -23858,6 +23870,7 @@ export namespace Prisma {
   export const InstitutionScalarFieldEnum: {
     id: 'id',
     legacyId: 'legacyId',
+    collegeId: 'collegeId',
     name: 'name',
     code: 'code',
     oldCreatedAt: 'oldCreatedAt',
@@ -25166,6 +25179,7 @@ export namespace Prisma {
     NOT?: InstitutionWhereInput | InstitutionWhereInput[]
     id?: StringFilter<"Institution"> | string
     legacyId?: IntNullableFilter<"Institution"> | number | null
+    collegeId?: StringNullableFilter<"Institution"> | string | null
     name?: StringFilter<"Institution"> | string
     code?: StringNullableFilter<"Institution"> | string | null
     oldCreatedAt?: StringNullableFilter<"Institution"> | string | null
@@ -25181,6 +25195,7 @@ export namespace Prisma {
   export type InstitutionOrderByWithRelationInput = {
     id?: SortOrder
     legacyId?: SortOrderInput | SortOrder
+    collegeId?: SortOrderInput | SortOrder
     name?: SortOrder
     code?: SortOrderInput | SortOrder
     oldCreatedAt?: SortOrderInput | SortOrder
@@ -25196,6 +25211,7 @@ export namespace Prisma {
   export type InstitutionWhereUniqueInput = Prisma.AtLeast<{
     id?: string
     legacyId?: number
+    collegeId?: string
     name?: string
     AND?: InstitutionWhereInput | InstitutionWhereInput[]
     OR?: InstitutionWhereInput[]
@@ -25209,11 +25225,12 @@ export namespace Prisma {
     users?: UserListRelationFilter
     labs?: LabListRelationFilter
     createdBy?: XOR<UserNullableRelationFilter, UserWhereInput> | null
-  }, "id" | "legacyId" | "name">
+  }, "id" | "legacyId" | "collegeId" | "name">
 
   export type InstitutionOrderByWithAggregationInput = {
     id?: SortOrder
     legacyId?: SortOrderInput | SortOrder
+    collegeId?: SortOrderInput | SortOrder
     name?: SortOrder
     code?: SortOrderInput | SortOrder
     oldCreatedAt?: SortOrderInput | SortOrder
@@ -25234,6 +25251,7 @@ export namespace Prisma {
     NOT?: InstitutionScalarWhereWithAggregatesInput | InstitutionScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Institution"> | string
     legacyId?: IntNullableWithAggregatesFilter<"Institution"> | number | null
+    collegeId?: StringNullableWithAggregatesFilter<"Institution"> | string | null
     name?: StringWithAggregatesFilter<"Institution"> | string
     code?: StringNullableWithAggregatesFilter<"Institution"> | string | null
     oldCreatedAt?: StringNullableWithAggregatesFilter<"Institution"> | string | null
@@ -26889,6 +26907,7 @@ export namespace Prisma {
   export type InstitutionCreateInput = {
     id?: string
     legacyId?: number | null
+    collegeId?: string | null
     name: string
     code?: string | null
     oldCreatedAt?: string | null
@@ -26903,6 +26922,7 @@ export namespace Prisma {
   export type InstitutionUncheckedCreateInput = {
     id?: string
     legacyId?: number | null
+    collegeId?: string | null
     name: string
     code?: string | null
     oldCreatedAt?: string | null
@@ -26917,6 +26937,7 @@ export namespace Prisma {
   export type InstitutionUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     legacyId?: NullableIntFieldUpdateOperationsInput | number | null
+    collegeId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     oldCreatedAt?: NullableStringFieldUpdateOperationsInput | string | null
@@ -26931,6 +26952,7 @@ export namespace Prisma {
   export type InstitutionUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     legacyId?: NullableIntFieldUpdateOperationsInput | number | null
+    collegeId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     oldCreatedAt?: NullableStringFieldUpdateOperationsInput | string | null
@@ -26945,6 +26967,7 @@ export namespace Prisma {
   export type InstitutionCreateManyInput = {
     id?: string
     legacyId?: number | null
+    collegeId?: string | null
     name: string
     code?: string | null
     oldCreatedAt?: string | null
@@ -26957,6 +26980,7 @@ export namespace Prisma {
   export type InstitutionUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     legacyId?: NullableIntFieldUpdateOperationsInput | number | null
+    collegeId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     oldCreatedAt?: NullableStringFieldUpdateOperationsInput | string | null
@@ -26968,6 +26992,7 @@ export namespace Prisma {
   export type InstitutionUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     legacyId?: NullableIntFieldUpdateOperationsInput | number | null
+    collegeId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     oldCreatedAt?: NullableStringFieldUpdateOperationsInput | string | null
@@ -28463,6 +28488,7 @@ export namespace Prisma {
   export type InstitutionCountOrderByAggregateInput = {
     id?: SortOrder
     legacyId?: SortOrder
+    collegeId?: SortOrder
     name?: SortOrder
     code?: SortOrder
     oldCreatedAt?: SortOrder
@@ -28479,6 +28505,7 @@ export namespace Prisma {
   export type InstitutionMaxOrderByAggregateInput = {
     id?: SortOrder
     legacyId?: SortOrder
+    collegeId?: SortOrder
     name?: SortOrder
     code?: SortOrder
     oldCreatedAt?: SortOrder
@@ -28491,6 +28518,7 @@ export namespace Prisma {
   export type InstitutionMinOrderByAggregateInput = {
     id?: SortOrder
     legacyId?: SortOrder
+    collegeId?: SortOrder
     name?: SortOrder
     code?: SortOrder
     oldCreatedAt?: SortOrder
@@ -31045,6 +31073,7 @@ export namespace Prisma {
   export type InstitutionCreateWithoutUsersInput = {
     id?: string
     legacyId?: number | null
+    collegeId?: string | null
     name: string
     code?: string | null
     oldCreatedAt?: string | null
@@ -31058,6 +31087,7 @@ export namespace Prisma {
   export type InstitutionUncheckedCreateWithoutUsersInput = {
     id?: string
     legacyId?: number | null
+    collegeId?: string | null
     name: string
     code?: string | null
     oldCreatedAt?: string | null
@@ -31194,6 +31224,7 @@ export namespace Prisma {
   export type InstitutionCreateWithoutCreatedByInput = {
     id?: string
     legacyId?: number | null
+    collegeId?: string | null
     name: string
     code?: string | null
     oldCreatedAt?: string | null
@@ -31207,6 +31238,7 @@ export namespace Prisma {
   export type InstitutionUncheckedCreateWithoutCreatedByInput = {
     id?: string
     legacyId?: number | null
+    collegeId?: string | null
     name: string
     code?: string | null
     oldCreatedAt?: string | null
@@ -31778,6 +31810,7 @@ export namespace Prisma {
   export type InstitutionUpdateWithoutUsersInput = {
     id?: StringFieldUpdateOperationsInput | string
     legacyId?: NullableIntFieldUpdateOperationsInput | number | null
+    collegeId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     oldCreatedAt?: NullableStringFieldUpdateOperationsInput | string | null
@@ -31791,6 +31824,7 @@ export namespace Prisma {
   export type InstitutionUncheckedUpdateWithoutUsersInput = {
     id?: StringFieldUpdateOperationsInput | string
     legacyId?: NullableIntFieldUpdateOperationsInput | number | null
+    collegeId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     oldCreatedAt?: NullableStringFieldUpdateOperationsInput | string | null
@@ -31922,6 +31956,7 @@ export namespace Prisma {
     NOT?: InstitutionScalarWhereInput | InstitutionScalarWhereInput[]
     id?: StringFilter<"Institution"> | string
     legacyId?: IntNullableFilter<"Institution"> | number | null
+    collegeId?: StringNullableFilter<"Institution"> | string | null
     name?: StringFilter<"Institution"> | string
     code?: StringNullableFilter<"Institution"> | string | null
     oldCreatedAt?: StringNullableFilter<"Institution"> | string | null
@@ -32705,6 +32740,7 @@ export namespace Prisma {
   export type InstitutionCreateWithoutLabsInput = {
     id?: string
     legacyId?: number | null
+    collegeId?: string | null
     name: string
     code?: string | null
     oldCreatedAt?: string | null
@@ -32718,6 +32754,7 @@ export namespace Prisma {
   export type InstitutionUncheckedCreateWithoutLabsInput = {
     id?: string
     legacyId?: number | null
+    collegeId?: string | null
     name: string
     code?: string | null
     oldCreatedAt?: string | null
@@ -32939,6 +32976,7 @@ export namespace Prisma {
   export type InstitutionUpdateWithoutLabsInput = {
     id?: StringFieldUpdateOperationsInput | string
     legacyId?: NullableIntFieldUpdateOperationsInput | number | null
+    collegeId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     oldCreatedAt?: NullableStringFieldUpdateOperationsInput | string | null
@@ -32952,6 +32990,7 @@ export namespace Prisma {
   export type InstitutionUncheckedUpdateWithoutLabsInput = {
     id?: StringFieldUpdateOperationsInput | string
     legacyId?: NullableIntFieldUpdateOperationsInput | number | null
+    collegeId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     oldCreatedAt?: NullableStringFieldUpdateOperationsInput | string | null
@@ -37504,6 +37543,7 @@ export namespace Prisma {
   export type InstitutionCreateManyCreatedByInput = {
     id?: string
     legacyId?: number | null
+    collegeId?: string | null
     name: string
     code?: string | null
     oldCreatedAt?: string | null
@@ -37892,6 +37932,7 @@ export namespace Prisma {
   export type InstitutionUpdateWithoutCreatedByInput = {
     id?: StringFieldUpdateOperationsInput | string
     legacyId?: NullableIntFieldUpdateOperationsInput | number | null
+    collegeId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     oldCreatedAt?: NullableStringFieldUpdateOperationsInput | string | null
@@ -37905,6 +37946,7 @@ export namespace Prisma {
   export type InstitutionUncheckedUpdateWithoutCreatedByInput = {
     id?: StringFieldUpdateOperationsInput | string
     legacyId?: NullableIntFieldUpdateOperationsInput | number | null
+    collegeId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     oldCreatedAt?: NullableStringFieldUpdateOperationsInput | string | null
@@ -37918,6 +37960,7 @@ export namespace Prisma {
   export type InstitutionUncheckedUpdateManyWithoutCreatedByInput = {
     id?: StringFieldUpdateOperationsInput | string
     legacyId?: NullableIntFieldUpdateOperationsInput | number | null
+    collegeId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     oldCreatedAt?: NullableStringFieldUpdateOperationsInput | string | null

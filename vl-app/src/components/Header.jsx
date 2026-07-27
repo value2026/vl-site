@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, ChevronDown, FlaskConical, LogOut } from 'lucide-react';
+import { Menu, X, ChevronDown, FlaskConical, LogOut, LayoutDashboard } from 'lucide-react';
 import { navLinks } from '../data/navLinks';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../context/AuthContext';
@@ -164,17 +164,31 @@ export default function Header() {
             </nav>
 
             {/* Login/Dashboard Button */}
-            <div className="hidden xl:flex items-center gap-4">
+            <div className="hidden xl:flex items-center gap-3">
               {user ? (
                 <>
-                  <Link to={getDashboardLink()} className="text-[14px] font-semibold text-gray-600 hover:text-primary-800 transition-colors px-2">
-                    {user?.role === 'student' ? 'Student Platform' : 'Dashboard'}
+                  <Link 
+                    to={getDashboardLink()} 
+                    className="group relative inline-flex items-center gap-2.5 px-5 py-2 rounded-full bg-gradient-to-r from-indigo-600 via-primary-700 to-purple-600 text-white font-extrabold text-[14px] shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 hover:scale-[1.03] active:scale-[0.98] transition-all duration-300 overflow-hidden border border-white/20 whitespace-nowrap flex-shrink-0"
+                  >
+                    {/* Shimmer sweep effect */}
+                    <div className="absolute inset-0 w-1/2 h-full bg-white/20 skew-x-12 -translate-x-full group-hover:translate-x-[300%] transition-transform duration-1000 ease-out" />
+                    
+                    {/* Live pulse dot */}
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400 border border-white/40"></span>
+                    </span>
+
+                    <LayoutDashboard className="w-4 h-4 flex-shrink-0 group-hover:rotate-12 transition-transform duration-300" />
+                    <span className="tracking-wide">{user?.role === 'student' ? 'Learning Workspace' : 'Management Workspace'}</span>
                   </Link>
                   <button 
                     onClick={() => setShowSignOutModal(true)}
-                    className="bg-primary-800 hover:bg-primary-900 text-white transition-all rounded-full px-5 py-2 font-bold text-[14px] flex items-center gap-2 whitespace-nowrap flex-shrink-0 shadow-sm"
+                    className="group relative inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-gradient-to-r from-rose-50 to-red-50 hover:from-rose-500 hover:to-red-600 text-rose-700 hover:text-white font-bold text-[14px] border border-rose-200/80 hover:border-transparent shadow-sm hover:shadow-md hover:shadow-rose-500/20 transition-all duration-300 hover:scale-[1.03] active:scale-[0.98] whitespace-nowrap flex-shrink-0"
+                    title="Sign Out"
                   >
-                    <LogOut className="w-4 h-4 flex-shrink-0" />
+                    <LogOut className="w-4 h-4 flex-shrink-0 group-hover:-translate-x-0.5 transition-transform duration-300" />
                     <span>Sign Out</span>
                   </button>
                 </>
@@ -259,15 +273,23 @@ export default function Header() {
             <div className="pt-3 border-t border-slate-100 mt-2 space-y-2 pb-2">
               {user ? (
                 <>
-                  <Link to={getDashboardLink()} className="block px-4 py-3 rounded-xl text-[14px] font-semibold text-gray-700 hover:bg-gray-50 hover:text-primary-800 transition-colors">
-                    {user?.role === 'student' ? 'Student Platform' : 'Dashboard'}
+                  <Link 
+                    to={getDashboardLink()} 
+                    className="group relative w-full flex items-center justify-center gap-2.5 bg-gradient-to-r from-indigo-600 via-primary-700 to-purple-600 text-white shadow-lg shadow-indigo-500/25 rounded-xl py-3 text-[14px] font-extrabold overflow-hidden border border-white/20 transition-all active:scale-[0.98]"
+                  >
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400 border border-white/40"></span>
+                    </span>
+                    <LayoutDashboard className="w-4 h-4" />
+                    <span>{user?.role === 'student' ? 'Learning Workspace' : 'Management Workspace'}</span>
                   </Link>
                   <button 
                     onClick={() => setShowSignOutModal(true)}
-                    className="w-full flex items-center justify-center bg-primary-800 hover:bg-primary-900 text-white shadow-sm rounded-xl py-3 text-[14px] font-bold gap-2 transition-colors"
+                    className="group relative w-full flex items-center justify-center gap-2 bg-gradient-to-r from-rose-50 to-red-50 hover:from-rose-500 hover:to-red-600 text-rose-700 hover:text-white border border-rose-200/80 hover:border-transparent shadow-sm rounded-xl py-3 text-[14px] font-bold transition-all active:scale-[0.98]"
                   >
-                    <LogOut className="w-4 h-4" />
-                    Sign Out
+                    <LogOut className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
+                    <span>Sign Out</span>
                   </button>
                 </>
               ) : (

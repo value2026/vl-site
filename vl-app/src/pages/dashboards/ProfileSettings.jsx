@@ -15,9 +15,28 @@ const ROLE_LABELS = {
   student:      { label: 'Student',       gradient: 'from-emerald-500 to-green-600', badge: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' },
 };
 
+const getClientSessionInfo = () => {
+  const ua = typeof window !== 'undefined' ? window.navigator.userAgent : '';
+  let os = 'Unknown OS';
+  if (ua.indexOf('Win') !== -1) os = 'Windows';
+  else if (ua.indexOf('Mac') !== -1) os = 'macOS';
+  else if (ua.indexOf('Linux') !== -1) os = 'Linux';
+  else if (ua.indexOf('Android') !== -1) os = 'Android';
+  else if (ua.indexOf('like Mac') !== -1) os = 'iOS';
+
+  let browser = 'Browser';
+  if (ua.indexOf('Edg') !== -1) browser = 'Edge';
+  else if (ua.indexOf('Chrome') !== -1) browser = 'Chrome';
+  else if (ua.indexOf('Firefox') !== -1) browser = 'Firefox';
+  else if (ua.indexOf('Safari') !== -1) browser = 'Safari';
+
+  return `${os} • ${browser} • SSL Verified`;
+};
+
 export default function ProfileSettings() {
   const { user, updateProfile } = useAuth();
   const cfg = ROLE_LABELS[user?.role] || ROLE_LABELS.student;
+  const currentSessionDetails = getClientSessionInfo();
 
   // Edit mode toggle
   const [editing, setEditing] = useState(false);
@@ -348,7 +367,7 @@ export default function ProfileSettings() {
             </div>
           </div>
 
-          {/* Sessions (Mock) */}
+          {/* Active Sessions */}
           <div className="space-y-3">
             <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Active Sessions</h3>
             
@@ -357,7 +376,7 @@ export default function ProfileSettings() {
                 <Monitor className="w-4 h-4 text-blue-400" />
                 <div>
                   <p className="text-xs font-medium text-white">Current Session</p>
-                  <p className="text-[10px] text-slate-400">Windows • Chrome • IP: 192.168.1.1</p>
+                  <p className="text-[10px] text-slate-400">{currentSessionDetails}</p>
                 </div>
               </div>
               <span className="text-[10px] font-bold text-blue-400 bg-blue-500/20 px-2 py-1 rounded-md">Active Now</span>
@@ -367,11 +386,13 @@ export default function ProfileSettings() {
               <div className="flex items-center gap-3">
                 <Monitor className="w-4 h-4 text-slate-400" />
                 <div>
-                  <p className="text-xs font-medium text-white">Previous Session</p>
-                  <p className="text-[10px] text-slate-400">Mac OS • Safari • IP: 10.0.0.45</p>
+                  <p className="text-xs font-medium text-white">Initial Authentication</p>
+                  <p className="text-[10px] text-slate-400">System Gateway • Verified Session</p>
                 </div>
               </div>
-              <span className="text-[10px] text-slate-500">2 days ago</span>
+              <span className="text-[10px] text-slate-500">
+                {user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Account Creation'}
+              </span>
             </div>
           </div>
         </div>

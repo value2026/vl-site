@@ -56,7 +56,14 @@ async function main() {
   let primaryInstitution = null;
   
   for (const item of defaultInstitutions) {
-    let inst = await prisma.institution.findUnique({ where: { name: item.name } });
+    let inst = await prisma.institution.findFirst({
+      where: {
+        OR: [
+          { legacyId: item.legacyId },
+          { name: item.name }
+        ]
+      }
+    });
     if (!inst) {
       inst = await prisma.institution.create({
         data: {
@@ -72,6 +79,7 @@ async function main() {
       inst = await prisma.institution.update({
         where: { id: inst.id },
         data: {
+          name: item.name,
           code: item.code,
           legacyId: item.legacyId,
           oldCreatedAt: item.oldCreatedAt
@@ -162,124 +170,81 @@ async function main() {
     console.log('ℹ️  Skipping lab data wipe (set SEED_FORCE=true to reset lab data).');
   }
 
+  const existingSubCount = await prisma.subject.count();
+  if (existingSubCount > 0 && process.env.SEED_FORCE !== 'true') {
+    console.log('ℹ️  Subjects/Labs already exist in database. Skipping default subjects & experiments seed...');
+    return;
+  }
+
   // 3. Define Seed Data
   const subjectsData = [
     {
-      id: '11111111-1111-1111-1111-111111111111',
+      id: 'e1a2b3c4-d5e6-4f7a-8b9c-0d1e2f3a4b5c',
       title: 'Computer Science',
       icon: '💻',
       description: 'Explore programming, algorithms, data structures, and computer networking.',
       gradient: 'from-blue-600 to-indigo-700',
       labs: [
         {
-          id: '55555555-5555-5555-5555-555555555555',
+          id: 'f2b3c4d5-e6f7-4a8b-9c0d-1e2f3a4b5c6d',
           title: 'Quantum Computing Lab',
           icon: '⚛️',
           description: 'Hands-on simulations covering quantum state preparation, Shor\'s algorithm, VQE optimization, QSVM, and quantum machine learning.',
           experiments: [
             {
+              id: 'df1f65c6-7e0c-4c2c-bfc7-5e6ab330c46d',
               title: 'Expectation Value Calculation in Quantum Systems',
               description: 'Calculate expectation values of observables for various parameterized quantum state vectors.',
               duration: '60 min',
               difficulty: 'Intermediate',
             },
             {
+              id: '4a8d2e1b-9f3c-4b5a-8e7d-6c5b4a3f2e1d',
               title: 'Factorization Using Shor\'s Algorithm',
               description: 'Simulate Shor\'s period-finding quantum circuits to factor prime products.',
               duration: '90 min',
               difficulty: 'Advanced',
             },
             {
+              id: '7c9e1f2a-3d4b-4e6f-9a8b-1c2d3e4f5a6b',
               title: 'Variational Quantum Eigensolver (VQE) Optimization',
               description: 'Solve for the ground state energy of molecular Hamiltonians using parameterized ansatz circuits.',
               duration: '75 min',
               difficulty: 'Advanced',
             },
             {
+              id: '8b1d2e3f-4a5c-4b6d-7e8f-9a0b1c2d3e4f',
               title: 'Quantum Measurement and Result Interpretation',
               description: 'Observe quantum measurement collapse, state tomography, and evaluate probability distributions.',
               duration: '45 min',
               difficulty: 'Beginner',
             },
             {
+              id: '3f4e5d6c-7b8a-4901-8234-56789abcdef0',
               title: 'Quantum Linear Algebra – Matrix and Vector Operations',
               description: 'Explore quantum algorithms for systems of linear equations and state vector operations.',
               duration: '60 min',
               difficulty: 'Intermediate',
             },
             {
+              id: '6d5e4f3a-2b1c-4098-9876-543210fedcba',
               title: 'Applied Linear Algebra – Quantum Gates in Action',
               description: 'Apply Hadamard, Pauli, CNOT, and phase gates in quantum circuits to observe state rotations.',
               duration: '60 min',
               difficulty: 'Intermediate',
             },
             {
+              id: '9e8d7c6b-5a4f-4321-8765-43210fedcba9',
               title: 'Quantum Kernel Alignment in Machine Learning',
               description: 'Optimize quantum kernel parameters to increase data separability in high-dimensional feature spaces.',
               duration: '90 min',
               difficulty: 'Advanced',
             },
             {
+              id: '2a1b3c4d-5e6f-4789-9012-3456789abcde',
               title: 'Quantum Support Vector Machines (QSVM)',
               description: 'Classify complex data distributions using quantum-enhanced kernels and support vectors.',
               duration: '90 min',
-              difficulty: 'Advanced',
-            }
-          ]
-        }
-      ]
-    },
-    {
-      id: '22222222-2222-2222-2222-222222222222',
-      title: 'Chemistry',
-      icon: '🧪',
-      description: 'Interact with virtual retorts, acids, bases, and examine organic reactions.',
-      gradient: 'from-emerald-600 to-green-700',
-      labs: []
-    },
-    {
-      id: '33333333-3333-3333-3333-333333333333',
-      title: 'Physics',
-      icon: '⚛️',
-      description: 'Explore kinematic forces, optics, thermodynamics, and electromagnetism.',
-      gradient: 'from-amber-500 to-orange-600',
-      labs: []
-    },
-    {
-      id: '44444444-4444-4444-4444-444444444444',
-      title: 'Chemical Science',
-      icon: '🧪',
-      description: 'Explore chemical systems, molecular reactions, and physical chemistry principles.',
-      gradient: 'from-teal-500 to-cyan-600',
-      labs: [
-        {
-          id: '66666666-6666-6666-6666-666666666666',
-          title: 'Physical Chemistry Virtual Lab',
-          icon: '⚗️',
-          description: 'Explore spectrophotometry, cryoscopy, ebullioscopy and EMF measurement.',
-          experiments: [
-            {
-              title: 'Spectrophotometry',
-              description: 'Measure the absorption of light by a chemical substance as a function of wavelength.',
-              duration: '60 min',
-              difficulty: 'Intermediate',
-            },
-            {
-              title: 'Cryoscopy',
-              description: 'Determine the depression of freezing point to calculate molecular mass.',
-              duration: '60 min',
-              difficulty: 'Intermediate',
-            },
-            {
-              title: 'Ebullioscopy',
-              description: 'Determine the elevation of boiling point of a solvent due to a solute.',
-              duration: '60 min',
-              difficulty: 'Intermediate',
-            },
-            {
-              title: 'EMF Measurement',
-              description: 'Measure electromotive force of galvanic cells to study thermodynamics.',
-              duration: '60 min',
               difficulty: 'Advanced',
             }
           ]
@@ -336,12 +301,21 @@ async function main() {
         if (expId) {
           const fs = require('fs');
           const path = require('path');
-          const uploadsDir = path.join(__dirname, '../uploads/experiments', expId);
+          let uploadsDir = path.join(__dirname, '../uploads/experiments', expId);
           if (fs.existsSync(path.join(uploadsDir, 'content'))) {
             contentPath = `experiments/${expId}/content`;
           }
           if (fs.existsSync(path.join(uploadsDir, 'simulation'))) {
             simulationPath = `experiments/${expId}/simulation`;
+          }
+          if (!contentPath && !simulationPath) {
+            uploadsDir = path.join(__dirname, '../uploads', expId);
+            if (fs.existsSync(path.join(uploadsDir, 'content'))) {
+              contentPath = `${expId}/content`;
+            }
+            if (fs.existsSync(path.join(uploadsDir, 'simulation'))) {
+              simulationPath = `${expId}/simulation`;
+            }
           }
         }
 
@@ -472,6 +446,14 @@ async function main() {
       }
     }
     console.log('✅ Analytics events seeded successfully.');
+  }
+
+  // Auto-link any uploaded content/simulations on disk
+  try {
+    const linkUploads = require('../uploads/link_uploads.js');
+    await linkUploads();
+  } catch (e) {
+    console.log('ℹ️ Auto-link uploads skipped or encountered non-critical notice:', e.message);
   }
 
   console.log('✅ Seed complete successfully.');

@@ -17,7 +17,7 @@ const getInstitutions = async (req, res) => {
 // POST /api/institutions
 const createInstitution = async (req, res) => {
   try {
-    const { name, code, legacyId, oldCreatedAt } = req.body;
+    const { name, code, collegeId, legacyId, oldCreatedAt } = req.body;
     if (!name || !name.trim()) {
       return res.status(400).json({ message: 'Institution name is required' });
     }
@@ -30,13 +30,17 @@ const createInstitution = async (req, res) => {
       return res.status(409).json({ message: 'Institution already exists' });
     }
 
+    const cid = collegeId !== undefined && collegeId !== null && collegeId !== '' ? collegeId.toString().trim() : (legacyId !== undefined && legacyId !== null && legacyId !== '' ? legacyId.toString().trim() : null);
+    let parsedLegacy = legacyId !== undefined && legacyId !== null && legacyId !== '' ? parseInt(legacyId, 10) : (cid && !isNaN(parseInt(cid, 10)) ? parseInt(cid, 10) : null);
+
     const institution = await prisma.institution.create({
       data: {
         name: name.trim(),
         code: code ? code.trim() : null,
-        legacyId: legacyId ? parseInt(legacyId, 10) : null,
+        collegeId: cid || null,
+        legacyId: !isNaN(parsedLegacy) ? parsedLegacy : null,
         oldCreatedAt: oldCreatedAt ? oldCreatedAt.trim() : null,
-        createdById: req.user.id
+        createdById: req.user?.id || null
       }
     });
 
@@ -51,12 +55,21 @@ const createInstitution = async (req, res) => {
 const updateInstitution = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, code, legacyId, oldCreatedAt, isActive } = req.body;
+    const { name, code, collegeId, legacyId, oldCreatedAt, isActive } = req.body;
 
     const data = {};
     if (name) data.name = name.trim();
     if (code !== undefined) data.code = code ? code.trim() : null;
-    if (legacyId !== undefined) data.legacyId = legacyId ? parseInt(legacyId, 10) : null;
+    if (collegeId !== undefined) {
+      const cid = collegeId ? collegeId.toString().trim() : null;
+      data.collegeId = cid;
+      if (cid && !isNaN(parseInt(cid, 10))) {
+        data.legacyId = parseInt(cid, 10);
+      }
+    } else if (legacyId !== undefined) {
+      data.legacyId = legacyId ? parseInt(legacyId, 10) : null;
+      if (data.legacyId) data.collegeId = data.legacyId.toString();
+    }
     if (oldCreatedAt !== undefined) data.oldCreatedAt = oldCreatedAt ? oldCreatedAt.trim() : null;
     if (typeof isActive === 'boolean') data.isActive = isActive;
 
@@ -129,17 +142,21 @@ const bulkCreateInstitutions = async (req, res) => {
       const code = item.code ? item.code.trim() : null;
       const oldCreatedAt = item.oldCreatedAt ? item.oldCreatedAt.toString().trim() : null;
       
+      const cid = item.collegeId !== undefined && item.collegeId !== null && item.collegeId !== '' ? item.collegeId.toString().trim() : (item.legacyId !== undefined && item.legacyId !== null && item.legacyId !== '' ? item.legacyId.toString().trim() : null);
       let legacyId = null;
       if (item.legacyId !== undefined && item.legacyId !== null && item.legacyId !== '') {
         const parsed = parseInt(item.legacyId, 10);
         if (!isNaN(parsed)) {
           legacyId = parsed;
         }
+      } else if (cid && !isNaN(parseInt(cid, 10))) {
+        legacyId = parseInt(cid, 10);
       }
 
       validItems.push({
         name,
         code,
+        collegeId: cid || null,
         legacyId,
         oldCreatedAt
       });
@@ -171,9 +188,10 @@ const bulkCreateInstitutions = async (req, res) => {
         finalItemsToInsert.push({
           name: item.name,
           code: item.code,
+          collegeId: item.collegeId,
           legacyId: item.legacyId,
           oldCreatedAt: item.oldCreatedAt,
-          createdById: req.user.id
+          createdById: req.user?.id || null
         });
       }
     }

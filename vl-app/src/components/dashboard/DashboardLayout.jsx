@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   FlaskConical, LayoutDashboard, Users, GraduationCap, BookOpen,
-  LogOut, Menu, X, ChevronRight, Bell, TrendingUp, FileText, Globe, KeyRound, Building2, Presentation, ClipboardList
+  LogOut, Menu, X, ChevronRight, Bell, TrendingUp, FileText, Globe, KeyRound, Building2, Presentation, ClipboardList, Home
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -23,7 +23,7 @@ const NAV = {
     { icon: Building2,       label: 'Institutions',    path: '/dashboard/vl-manager/institutions' },
     { icon: Presentation,    label: 'Workshops',       path: '/dashboard/vl-manager/workshops' },
     { icon: FlaskConical,    label: 'Lab Management',  path: '/dashboard/vl-manager/labs' },
-    { icon: BookOpen,        label: 'Student Platform',path: '/student' },
+    { icon: BookOpen,        label: 'Learning Workspace',path: '/student' },
     { icon: FileText,        label: 'Contact Messages', path: '/dashboard/vl-manager/messages' },
     { icon: TrendingUp,      label: 'Usage Analytics',  path: '/dashboard/vl-manager/analytics' },
   ],
@@ -31,8 +31,7 @@ const NAV = {
     { icon: LayoutDashboard, label: 'Overview',  path: '/dashboard/nodal' },
     { icon: GraduationCap,   label: 'Teachers',  path: '/dashboard/nodal/teachers' },
     { icon: BookOpen,        label: 'Students',  path: '/dashboard/nodal/students' },
-    { icon: FlaskConical,    label: 'Lab Management',  path: '/dashboard/nodal/labs' },
-    { icon: BookOpen,        label: 'Student Platform',path: '/student' },
+    { icon: BookOpen,        label: 'Learning Workspace',path: '/student' },
     { icon: TrendingUp,      label: 'Usage Analytics',  path: '/dashboard/nodal/analytics' },
     { icon: FileText,        label: 'Academic Reports', path: '/dashboard/nodal/reports' },
   ],
@@ -40,13 +39,12 @@ const NAV = {
     { icon: LayoutDashboard, label: 'Overview',    path: '/dashboard/teacher' },
     { icon: BookOpen,        label: 'My Students', path: '/dashboard/teacher/students' },
     { icon: ClipboardList,   label: 'Assignments', path: '/dashboard/teacher/assignments' },
-    { icon: FlaskConical,    label: 'Lab Management',  path: '/dashboard/teacher/labs' },
-    { icon: BookOpen,        label: 'Student Platform',path: '/student' },
+    { icon: BookOpen,        label: 'Learning Workspace',path: '/student' },
     { icon: TrendingUp,      label: 'Usage Analytics',  path: '/dashboard/teacher/analytics' },
     { icon: FileText,        label: 'Academic Reports', path: '/dashboard/teacher/reports' },
   ],
   student: [
-    { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard/student' },
+    { icon: LayoutDashboard, label: 'Learning Workspace', path: '/dashboard/student' },
   ],
 };
 
@@ -71,7 +69,6 @@ export default function DashboardLayout({ children, title }) {
   const handleLogout = () => {
     setShowSignOutConfirm(false);
     logout();
-    navigate('/login');
   };
 
   const SidebarContent = () => (
@@ -176,7 +173,17 @@ export default function DashboardLayout({ children, title }) {
             <Menu className="w-5 h-5" />
           </button>
           <h1 className="text-white font-semibold text-lg flex-1">{title}</h1>
-          <button className="relative text-slate-400 hover:text-white transition-colors">
+          <a
+            href="/"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-slate-200 hover:text-white hover:bg-white/10 transition-all duration-200 mr-3"
+            title="Open live home screen"
+          >
+            <Home className="w-4 h-4" />
+            <span className="text-sm font-medium">Live Home</span>
+          </a>
+          <button className="relative text-slate-400 hover:text-white transition-colors mr-3" aria-label="Notifications">
             <Bell className="w-5 h-5" />
           </button>
           <div className={`w-8 h-8 bg-gradient-to-br ${cfg.gradient} rounded-lg flex items-center justify-center text-white text-xs font-bold`}>

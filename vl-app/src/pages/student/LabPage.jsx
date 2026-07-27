@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Clock, ChevronRight, Play, Loader2 } from 'lucide-react';
 import StudentNav from '../../components/student/StudentNav';
-import { api } from '../../utils/api';
+import { api, getSlug } from '../../utils/api';
 
 const DIFFICULTY_STYLE = {
   Beginner:     'bg-emerald-50 text-emerald-700 border-emerald-200',
@@ -53,7 +53,7 @@ export default function LabPage() {
         <div className="text-center">
           <div className="text-5xl mb-4">🔍</div>
           <h2 className="text-gray-900 font-bold text-xl mb-2">Lab Not Found</h2>
-          <Link to="/student" className="text-blue-600 hover:underline text-sm">← Back to Home</Link>
+          <Link to="/labs" className="text-blue-600 hover:underline text-sm">← Back to Home</Link>
         </div>
       </div>
     );
@@ -65,7 +65,7 @@ export default function LabPage() {
     <div className="min-h-screen bg-gray-50">
       <StudentNav
         breadcrumb={[
-          { label: subject?.title || 'Subject', to: `/student/subject/${subject?.id}` },
+          { label: subject?.title || 'Subject', to: `/subject/${lab.subjectId || subject?.id}` },
           { label: lab.title },
         ]}
       />
@@ -75,7 +75,7 @@ export default function LabPage() {
         <div className="bg-white border-b border-gray-200 px-6 py-10">
           <div className="max-w-5xl mx-auto">
             <Link
-              to={`/student/subject/${lab.subjectId}`}
+              to={`/subject/${lab.subjectId}`}
               className="inline-flex items-center gap-1.5 text-gray-400 hover:text-blue-600 text-sm mb-5 transition-colors"
             >
               ← Back to {subject?.title}
@@ -113,7 +113,7 @@ export default function LabPage() {
               {experiments.map((exp, index) => (
                 <Link
                   key={exp.id}
-                  to={`/student/experiment/${exp.id}`}
+                  to={`/experiment/${exp.id}`}
                   className="group flex items-center gap-5 bg-white border border-gray-200 rounded-2xl p-5 hover:border-blue-300 hover:shadow-md transition-all duration-200"
                 >
                   {/* Number */}
