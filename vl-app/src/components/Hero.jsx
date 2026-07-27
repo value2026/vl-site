@@ -99,7 +99,7 @@ export default function Hero({ content = {} }) {
       </section>
 
       {/* Floating Stats Block (White Card) */}
-      <div className="container-custom relative z-20 -mt-28 sm:-mt-32 mb-20 animate-fade-in-up animate-delay-400">
+      <div className="container-custom relative z-20 -mt-28 sm:-mt-32 mb-0 animate-fade-in-up animate-delay-400">
         <div className="bg-white rounded-[1.25rem] shadow-[0_15px_50px_rgba(0,0,0,0.12)] py-7 px-6 lg:px-10 border border-slate-100">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-0 lg:divide-x divide-slate-100/80">
             {stats.map(({ n, label }, idx) => {

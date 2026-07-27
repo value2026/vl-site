@@ -14,7 +14,7 @@ export default function SponsorsSection({ sectionTitle, sectionSubtitle, content
   const footerNote = content.footerNote  || '🇮🇳 A Government of India initiative to democratize quality STEM education';
 
   return (
-    <section className="py-[100px] bg-white" aria-labelledby="sponsors-heading">
+    <section className="py-20 lg:py-24 bg-white" aria-labelledby="sponsors-heading">
       <div className="container-custom">
         <div className="text-center">
           <span className="tag">
