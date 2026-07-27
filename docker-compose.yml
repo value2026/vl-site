@@ -27,8 +27,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    networks:
-      - vl-network
 
   # ── Node.js Backend ─────────────────────────────────────────
   backend:
@@ -52,8 +50,6 @@ services:
       - ./vl-backend/uploads:/app/uploads
       # Persist logs to the host machine so they can be viewed locally
       - ./vl-backend/logs:/app/logs
-    networks:
-      - vl-network
 
   # ── React Frontend (Nginx + Production Build) ────────────────
   frontend:
@@ -66,8 +62,6 @@ services:
       - backend
     ports:
       - "80:80"
-    networks:
-      - vl-network
 
 # ── Volumes ──────────────────────────────────────────────────
 volumes:
@@ -75,8 +69,3 @@ volumes:
     driver: local
   uploads_data:
     driver: local
-
-# ── Network ───────────────────────────────────────────────────
-networks:
-  vl-network:
-    driver: bridge
