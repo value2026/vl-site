@@ -80,16 +80,16 @@ export default function Survey({ slug }) {
   return (
     <main>
       {/* Hero */}
-      <section className="bg-hero-gradient py-20">
+      <section className="bg-hero-gradient py-12">
         <div className="container-custom text-center">
-          <span className="inline-block bg-white/10 text-white/80 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider mb-6">
+          <span className="inline-block bg-white/10 text-white/80 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider mb-4">
             Feedback
           </span>
-          <h1 className="font-heading text-5xl font-extrabold text-white mb-6">
+          <h1 className="font-heading text-4xl font-extrabold text-white mb-4">
             {pageTitle}
           </h1>
           <div 
-            className="text-xl text-white/70 max-w-2xl mx-auto leading-relaxed mb-10 [&>p]:mb-4 last:[&>p]:mb-0"
+            className="text-lg md:text-xl text-white/70 max-w-2xl mx-auto leading-relaxed mb-8 [&>p]:mb-4 last:[&>p]:mb-0"
             dangerouslySetInnerHTML={{ __html: pageSubtitle }}
           />
         </div>

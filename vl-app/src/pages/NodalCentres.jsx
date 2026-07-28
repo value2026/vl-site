@@ -280,15 +280,15 @@ export default function NodalCentres() {
   return (
     <main>
       {/* Hero */}
-      <section className="bg-hero-gradient py-20">
+      <section className="bg-hero-gradient py-12">
         <div className="container-custom text-center">
-          <span className="inline-block bg-white/10 text-white/80 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider mb-6">
+          <span className="inline-block bg-white/10 text-white/80 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider mb-4">
             Nodal Centres
           </span>
-          <h1 className="font-heading text-5xl font-extrabold text-white mb-6">
+          <h1 className="font-heading text-4xl font-extrabold text-white mb-4">
             Join the Virtual Labs Network
           </h1>
-          <p className="text-xl text-white/70 max-w-2xl mx-auto leading-relaxed mb-10">
+          <p className="text-lg md:text-xl text-white/70 max-w-2xl mx-auto leading-relaxed mb-8">
             Become a nodal centre and bring world-class virtual lab experiences to your students. Sponsored by MHRD (NME-ICT) — no registration fees, no hidden costs.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">

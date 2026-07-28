@@ -55,17 +55,17 @@ export default function WorkshopDetails() {
   return (
     <main className="pt-20 bg-gray-50 min-h-screen">
       {/* Hero */}
-      <section className="bg-hero-gradient py-20">
+      <section className="bg-hero-gradient py-12">
         <div className="container-custom relative">
           <Link to="/workshop" className="absolute -top-8 left-4 text-white/70 hover:text-white flex items-center gap-2 text-sm transition-colors">
             <ArrowLeft className="w-4 h-4" /> Back to all workshops
           </Link>
           
           <div className="max-w-4xl">
-            <span className={`inline-block text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider mb-6 ${workshop.status === 'approved' ? 'bg-emerald-500 text-white' : 'bg-amber-500 text-white'}`}>
+            <span className={`inline-block text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider mb-4 ${workshop.status === 'approved' ? 'bg-emerald-500 text-white' : 'bg-amber-500 text-white'}`}>
               {workshop.status || 'Active'}
             </span>
-            <h1 className="font-heading text-4xl md:text-5xl font-extrabold text-white mb-6 leading-tight">
+            <h1 className="font-heading text-3xl md:text-4xl font-extrabold text-white mb-4 leading-tight">
               {workshop.title}
             </h1>
             <div className="flex flex-wrap gap-4 text-white/80 text-sm md:text-base">

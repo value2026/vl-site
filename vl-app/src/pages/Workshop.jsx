@@ -34,15 +34,15 @@ export default function Workshop() {
     <main className="bg-slate-50 min-h-screen">
       
       {/* Page Header */}
-      <section className="bg-hero-gradient py-20">
+      <section className="bg-hero-gradient py-12">
         <div className="container-custom text-center">
-          <span className="inline-block bg-white/10 text-white/80 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider mb-6">
+          <span className="inline-block bg-white/10 text-white/80 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider mb-4">
             Workshops
           </span>
-          <h1 className="font-heading text-5xl font-extrabold text-white mb-6">
+          <h1 className="font-heading text-4xl font-extrabold text-white mb-4">
             Virtual Labs Workshops
           </h1>
-          <p className="text-xl text-white/70 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-lg md:text-xl text-white/70 max-w-2xl mx-auto leading-relaxed">
             Empowering educators and students through immersive, hands-on digital laboratory training.
           </p>
         </div>
