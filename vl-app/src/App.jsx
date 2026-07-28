@@ -146,11 +146,13 @@ function ProtectedRoute({ children, allowedRole }) {
     if (!roles.includes(user.role)) {
       // Redirect to their correct dashboard
       const dashMap = {
-        admin:        '/dashboard/admin',
-        vl_manager:   '/dashboard/vl-manager',
-        nodal_centre: '/dashboard/nodal',
-        teacher:      '/dashboard/teacher',
-        student:      '/student',
+        admin:         '/dashboard/admin',
+        vl_manager:    '/dashboard/vl-manager',
+        content_admin: '/dashboard/content',
+        sim_admin:     '/dashboard/content',
+        nodal_centre:  '/dashboard/nodal',
+        teacher:       '/dashboard/teacher',
+        student:       '/student',
       };
       return <Navigate to={dashMap[user.role] || '/login'} replace />;
     }
@@ -186,11 +188,13 @@ function FloatingDashboardButton() {
   if (!user || user.role === 'student' || pathname.startsWith('/dashboard')) return null;
   
   const defaultMap = {
-    admin:        '/dashboard/admin',
-    vl_manager:   '/dashboard/vl-manager',
-    nodal_centre: '/dashboard/nodal',
-    teacher:      '/dashboard/teacher',
-    student:      '/dashboard/student',
+    admin:         '/dashboard/admin',
+    vl_manager:    '/dashboard/vl-manager',
+    content_admin: '/dashboard/content',
+    sim_admin:     '/dashboard/content',
+    nodal_centre:  '/dashboard/nodal',
+    teacher:       '/dashboard/teacher',
+    student:       '/dashboard/student',
   };
   
   const savedPath = sessionStorage.getItem('lastDashboardPath');

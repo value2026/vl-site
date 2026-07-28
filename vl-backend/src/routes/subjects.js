@@ -8,10 +8,10 @@ const {
 // Public
 router.get('/',    getSubjects);
 
-// Admin only
-router.get('/all', verifyToken, requireRole('admin'), getAllSubjects);
-router.post('/',   verifyToken, requireRole('admin'), createSubject);
-router.put('/:id', verifyToken, requireRole('admin'), updateSubject);
-router.delete('/:id', verifyToken, requireRole('admin'), deleteSubject);
+// Admin + content managers
+router.get('/all', verifyToken, requireRole('admin', 'content_admin', 'vl_manager'), getAllSubjects);
+router.post('/',   verifyToken, requireRole('admin', 'content_admin', 'vl_manager'), createSubject);
+router.put('/:id', verifyToken, requireRole('admin', 'content_admin', 'vl_manager'), updateSubject);
+router.delete('/:id', verifyToken, requireRole('admin', 'content_admin', 'vl_manager'), deleteSubject);
 
 module.exports = router;

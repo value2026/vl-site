@@ -29,6 +29,25 @@ const apiFetch = async (endpoint, options = {}) => {
       ...(options.headers || {}),
     },
   });
+
+  // Auto-logout on token expiry or invalid token
+  if (res.status === 401 || (res.status === 403 && endpoint !== '/auth/login')) {
+    // Peek at the body to distinguish permission errors from token errors
+    const clone = res.clone();
+    try {
+      const data = await clone.json();
+      if (
+        data?.message === 'Invalid or expired token' ||
+        data?.message === 'Access token required'
+      ) {
+        localStorage.removeItem('vl_token');
+        window.location.href = '/login';
+      }
+    } catch (_) {
+      // ignore parse errors
+    }
+  }
+
   return res;
 };
 
