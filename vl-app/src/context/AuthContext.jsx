@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { ShieldCheck, Sparkles } from 'lucide-react';
 
 const AuthContext = createContext(null);
@@ -17,9 +17,14 @@ export function AuthProvider({ children }) {
   const [token,      setToken]      = useState(() => localStorage.getItem('vl_token'));
   const [loading,    setLoading]    = useState(true);
   const [signingOut, setSigningOut] = useState(false);
+  const [logoutReason, setLogoutReason] = useState(null);
+  const timeoutRef = useRef(null);
 
   const logout = useCallback((options) => {
     const showAnimation = options !== false && options?.animate !== false;
+    if (options?.reason) {
+      setLogoutReason(options.reason);
+    }
     if (showAnimation) {
       setSigningOut(true);
       setTimeout(() => {
@@ -27,21 +32,61 @@ export function AuthProvider({ children }) {
         setToken(null);
         setUser(null);
         setSigningOut(false);
+        setLogoutReason(null);
         if (window.location.pathname !== '/') {
           window.location.href = '/';
         }
-      }, 1500);
+      }, 2000); // slightly longer for reading "Session Expired"
     } else {
       localStorage.removeItem('vl_token');
       setToken(null);
       setUser(null);
       setSigningOut(false);
+      setLogoutReason(null);
     }
   }, []);
 
   const updateProfile = useCallback((newUserData) => {
     setUser(prev => ({ ...prev, ...newUserData }));
   }, []);
+
+  const resetTimeout = useCallback(() => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    
+    if (token) {
+      // 30 minutes inactivity timeout
+      timeoutRef.current = setTimeout(() => {
+        logout({ animate: true, reason: 'timeout' });
+      }, 30 * 60 * 1000);
+    }
+  }, [token, logout]);
+
+  useEffect(() => {
+    if (token) {
+      resetTimeout();
+      const events = ['mousedown', 'keydown', 'scroll', 'touchstart'];
+      const handleActivity = () => resetTimeout();
+      
+      events.forEach((event) => {
+        window.addEventListener(event, handleActivity, { passive: true });
+      });
+
+      const handleStorage = (e) => {
+        if (e.key === 'vl_token' && !e.newValue) {
+          logout({ animate: false });
+        }
+      };
+      window.addEventListener('storage', handleStorage);
+      
+      return () => {
+        if (timeoutRef.current) clearTimeout(timeoutRef.current);
+        events.forEach((event) => {
+          window.removeEventListener(event, handleActivity);
+        });
+        window.removeEventListener('storage', handleStorage);
+      };
+    }
+  }, [token, resetTimeout]);
 
   useEffect(() => {
     if (!token) { setLoading(false); return; }
@@ -96,10 +141,12 @@ export function AuthProvider({ children }) {
               </div>
 
               <h3 className="text-white font-extrabold text-xl tracking-tight mb-2">
-                Signing Out...
+                {logoutReason === 'timeout' ? 'Session Expired' : 'Signing Out...'}
               </h3>
               <p className="text-slate-400 text-sm leading-relaxed mb-6">
-                Securing your account. See you next time!
+                {logoutReason === 'timeout' 
+                  ? 'You have been logged out due to inactivity.'
+                  : 'Securing your account. See you next time!'}
               </p>
 
               {/* Progress bar animation */}
