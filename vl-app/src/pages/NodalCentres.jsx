@@ -288,24 +288,16 @@ export default function NodalCentres() {
           <h1 className="font-heading text-4xl font-extrabold text-white mb-4">
             Join the Virtual Labs Network
           </h1>
-          <p className="text-lg md:text-xl text-white/70 max-w-2xl mx-auto leading-relaxed mb-8">
+          <p className="text-lg md:text-xl text-white/70 max-w-2xl mx-auto leading-relaxed">
             Become a nodal centre and bring world-class virtual lab experiences to your students. Sponsored by MHRD (NME-ICT) — no registration fees, no hidden costs.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button onClick={() => setActiveTab('apply')} className="btn-secondary">
-              Apply Now <ArrowRight className="w-5 h-5" />
-            </button>
-            <button onClick={() => setFreeDemoOpen(true)} className="btn-outline">
-              Request Free Demo
-            </button>
-          </div>
         </div>
       </section>
 
       {/* Tab Navigation */}
       <div className="sticky top-20 z-30 bg-white border-b border-gray-200 shadow-sm">
         <div className="container-custom">
-          <div className="flex overflow-x-auto scrollbar-hide gap-0">
+          <div className="flex overflow-x-auto scrollbar-hide gap-1 md:justify-center">
             {TABS.map(({ id, label, icon: Icon }) => (
               <button
                 key={id}
@@ -390,7 +382,7 @@ export default function NodalCentres() {
                 </div>
                 <span className="text-sm text-gray-400">{centres.length} centres listed</span>
               </div>
-              <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+              <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                 {isLoading ? (
                   <div className="col-span-full flex justify-center py-10">
                     <Loader2 className="w-8 h-8 animate-spin text-primary-500" />
@@ -401,23 +393,25 @@ export default function NodalCentres() {
                   centres.map((c, i) => {
                     const isActive = c.active === true || c.active === 'true';
                     return (
-                      <div key={c.id || i} className="card p-6 border border-gray-100">
+                      <div key={c.id || i} className="card p-5 border border-gray-100 flex flex-col hover:border-primary-300 transition-all hover:shadow-md">
                         <div className="flex items-start justify-between mb-3">
-                          <div className="w-10 h-10 bg-primary-50 rounded-xl flex items-center justify-center">
-                            <Building className="w-5 h-5 text-primary-700" />
+                          <div className="w-9 h-9 bg-primary-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                            <Building className="w-4 h-4 text-primary-700" />
                           </div>
                           <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
                             {isActive ? 'Active' : 'Inactive'}
                           </span>
                         </div>
-                        <h3 className="font-semibold text-gray-900 text-sm mb-1">{c.name}</h3>
-                        <div className="flex items-center gap-1 text-xs text-gray-400">
-                          <MapPin className="w-3 h-3 flex-shrink-0" />
+                        <h3 className="font-semibold text-gray-900 text-sm mb-1 leading-snug line-clamp-2 flex-1">{c.name}</h3>
+                        <div className="flex items-start gap-1.5 text-xs text-gray-500 mt-1 mb-3 line-clamp-2">
+                          <MapPin className="w-3.5 h-3.5 flex-shrink-0 mt-0.5 text-gray-400" />
                           {c.location}
                         </div>
-                        <span className="mt-3 inline-block text-xs bg-primary-50 text-primary-700 px-2 py-0.5 rounded-full">
-                          {c.category}
-                        </span>
+                        <div className="mt-auto">
+                          <span className="inline-block text-[10px] bg-primary-50/50 border border-primary-100 text-primary-700 px-2 py-1 rounded-md font-medium truncate max-w-full">
+                            {c.category || 'Institution'}
+                          </span>
+                        </div>
                       </div>
                     );
                   })
@@ -487,7 +481,7 @@ export default function NodalCentres() {
               <FileText className="w-10 h-10 text-primary-700 mx-auto mb-4" />
               <h3 className="font-heading text-xl font-bold text-gray-900 mb-2">Expression of Interest Form</h3>
               <p className="text-gray-500 text-sm mb-6">Download and fill the EOI form, then send it to <strong>virtual_labs@am.amrita.edu</strong></p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <div className="flex justify-center">
                 <a
                   href="https://vlab.amrita.edu/userfiles/1/file/workshop_NodalCentre.PDF"
                   target="_blank"
@@ -495,9 +489,6 @@ export default function NodalCentres() {
                   className="btn-primary"
                 >
                   Download EOI Form <ArrowRight className="w-4 h-4" />
-                </a>
-                <a href="mailto:virtual_labs@am.amrita.edu" className="btn-outline">
-                  <Mail className="w-4 h-4" /> Email Us
                 </a>
               </div>
             </div>
