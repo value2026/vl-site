@@ -9,9 +9,9 @@ const {
 router.get('/',    getSubjects);
 
 // Admin + content managers
-router.get('/all', verifyToken, requireRole('admin', 'content_admin', 'vl_manager'), getAllSubjects);
-router.post('/',   verifyToken, requireRole('admin', 'content_admin', 'vl_manager'), createSubject);
-router.put('/:id', verifyToken, requireRole('admin', 'content_admin', 'vl_manager'), updateSubject);
-router.delete('/:id', verifyToken, requireRole('admin', 'content_admin', 'vl_manager'), deleteSubject);
+router.get('/all', verifyToken, requireRole('admin', 'content_admin', 'vl_manager', 'vl_coordinator'), getAllSubjects);
+router.post('/',   verifyToken, requireRole('admin', 'content_admin', 'vl_manager', 'vl_coordinator'), createSubject);
+router.put('/:id', verifyToken, requireRole('admin', 'content_admin', 'vl_manager', 'vl_coordinator'), updateSubject);
+router.delete('/:id', verifyToken, requireRole('admin', 'content_admin', 'vl_manager', 'vl_coordinator'), deleteSubject);
 
 module.exports = router;

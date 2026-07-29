@@ -4,8 +4,9 @@ import { useAuth } from '../../context/AuthContext';
 import CloudinaryUploader from './CloudinaryUploader';
 
 const CREATABLE_ROLES = {
-  admin:        ['admin', 'nodal_centre', 'teacher', 'student', 'content_admin', 'sim_admin', 'vl_manager'],
-  vl_manager:   ['nodal_centre', 'teacher', 'student'],
+  admin:        ['admin', 'nodal_centre', 'teacher', 'student', 'content_admin', 'sim_admin', 'vl_manager', 'vl_coordinator'],
+  vl_manager:   ['nodal_centre', 'teacher', 'student', 'vl_coordinator'],
+  vl_coordinator: ['nodal_centre', 'teacher', 'student'],
   nodal_centre: [],
   teacher:      ['student'],
 };
@@ -18,6 +19,7 @@ const ROLE_LABELS = {
   content_admin: 'Content Admin',
   sim_admin:     'Simulation Admin',
   vl_manager:    'VL Manager',
+  vl_coordinator:'VL Co-ordinator',
 };
 
 // Default permissions that are pre-ticked for each role.
@@ -27,6 +29,7 @@ const ROLE_DEFAULT_PERMISSIONS = {
   content_admin: ['manage_content'],
   sim_admin:     ['manage_simulations'],
   vl_manager:    ['manage_simulations', 'manage_institutions', 'manage_workshops'],
+  vl_coordinator:['manage_institutions', 'manage_workshops'],
   teacher:       [],
   student:       [],
   admin:         [],

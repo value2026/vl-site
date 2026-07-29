@@ -34,8 +34,8 @@ const createWorkshop = async (req, res) => {
         mode: mode || 'Online',
         seats: seats ? parseInt(seats) : null,
         createdById: req.user.id,
-        // vl_manager creates pending workshops; admin creates approved ones
-        status: req.user.role === 'admin' ? 'approved' : 'pending'
+        // vl_manager and admin create approved workshops; coordinator creates pending
+        status: (req.user.role === 'admin' || req.user.role === 'vl_manager') ? 'approved' : 'pending'
       }
     });
 
@@ -60,7 +60,7 @@ const updateWorkshop = async (req, res) => {
       return res.status(404).json({ message: 'Workshop not found' });
     }
 
-    if (req.user.role !== 'admin' && existingWorkshop.createdById !== req.user.id) {
+    if (req.user.role !== 'admin' && req.user.role !== 'vl_manager' && existingWorkshop.createdById !== req.user.id) {
       return res.status(403).json({ message: 'Insufficient permissions to update this workshop' });
     }
 
@@ -73,8 +73,8 @@ const updateWorkshop = async (req, res) => {
     if (seats !== undefined) data.seats = parseInt(seats);
     if (formSchema !== undefined) data.formSchema = formSchema;
     
-    // Only admins can approve/reject workshops, or change status
-    if (status && req.user.role === 'admin') {
+    // Admins and VL Managers can approve/reject workshops
+    if (status && (req.user.role === 'admin' || req.user.role === 'vl_manager')) {
         data.status = status;
     }
 
@@ -103,7 +103,7 @@ const deleteWorkshop = async (req, res) => {
       return res.status(404).json({ message: 'Workshop not found' });
     }
 
-    if (req.user.role !== 'admin' && existingWorkshop.createdById !== req.user.id) {
+    if (req.user.role !== 'admin' && req.user.role !== 'vl_manager' && existingWorkshop.createdById !== req.user.id) {
       return res.status(403).json({ message: 'Insufficient permissions to delete this workshop' });
     }
 

@@ -4,8 +4,9 @@ const { sendWelcomeEmail } = require('../utils/mailer');
 
 // Which roles each role is allowed to create
 const CREATION_RULES = {
-  admin:        ['admin', 'nodal_centre', 'teacher', 'student', 'content_admin', 'sim_admin', 'vl_manager'],
-  vl_manager:   ['nodal_centre', 'teacher', 'student'],
+  admin:        ['admin', 'nodal_centre', 'teacher', 'student', 'content_admin', 'sim_admin', 'vl_manager', 'vl_coordinator'],
+  vl_manager:   ['nodal_centre', 'teacher', 'student', 'vl_coordinator'],
+  vl_coordinator: ['nodal_centre', 'teacher', 'student'],
   nodal_centre: [],
   teacher:      ['student'],
   student:      [],
@@ -30,7 +31,7 @@ const getUsers = async (req, res) => {
 
     let where = {};
 
-    if (role === 'admin' || role === 'vl_manager') {
+    if (role === 'admin' || role === 'vl_manager' || role === 'vl_coordinator') {
       where = { ...searchFilter, ...roleFilter };
     } else if (role === 'nodal_centre') {
       const nodalAdmin = await prisma.user.findUnique({ where: { id }, select: { nodalCentreId: true } });
@@ -245,21 +246,27 @@ const updateUser = async (req, res) => {
 
     // Permission check — self-edit always allowed; otherwise scope-check
     if (callerId !== targetId && callerRole !== 'admin' && callerRole !== 'vl_manager') {
-      const caller = await prisma.user.findUnique({
-        where: { id: callerId },
-        select: { nodalCentreId: true },
-      });
-
-      if (callerRole === 'nodal_centre') {
-        if (!caller?.nodalCentreId || target.nodalCentreId !== caller.nodalCentreId) {
-          return res.status(403).json({ message: 'Insufficient permissions' });
-        }
-      } else if (callerRole === 'teacher') {
-        if (target.nodalCentreId !== caller?.nodalCentreId) {
-          return res.status(403).json({ message: 'Insufficient permissions' });
-        }
+      if (callerRole === 'vl_coordinator') {
+         if (target.role === 'admin' || target.role === 'vl_manager' || target.role === 'vl_coordinator') {
+            return res.status(403).json({ message: 'Insufficient permissions to update higher-level roles' });
+         }
       } else {
-        return res.status(403).json({ message: 'Insufficient permissions' });
+        const caller = await prisma.user.findUnique({
+          where: { id: callerId },
+          select: { nodalCentreId: true },
+        });
+
+        if (callerRole === 'nodal_centre') {
+          if (!caller?.nodalCentreId || target.nodalCentreId !== caller.nodalCentreId) {
+            return res.status(403).json({ message: 'Insufficient permissions' });
+          }
+        } else if (callerRole === 'teacher') {
+          if (target.nodalCentreId !== caller?.nodalCentreId) {
+            return res.status(403).json({ message: 'Insufficient permissions' });
+          }
+        } else {
+          return res.status(403).json({ message: 'Insufficient permissions' });
+        }
       }
     }
 
@@ -300,8 +307,12 @@ const deleteUser = async (req, res) => {
     if (!target) return res.status(404).json({ message: 'User not found' });
 
     // Permission check
-    if (callerRole !== 'admin' && callerRole !== 'vl_manager') {
-      return res.status(403).json({ message: 'Only administrators and VL Managers can delete users' });
+    if (callerRole !== 'admin' && callerRole !== 'vl_manager' && callerRole !== 'vl_coordinator') {
+      return res.status(403).json({ message: 'Only administrators, VL Managers, and Co-ordinators can delete users' });
+    }
+    
+    if (callerRole === 'vl_coordinator' && (target.role === 'admin' || target.role === 'vl_manager' || target.role === 'vl_coordinator')) {
+      return res.status(403).json({ message: 'Co-ordinators cannot delete admins or managers' });
     }
 
     await prisma.user.delete({ where: { id: targetId } });
@@ -317,7 +328,7 @@ const getStats = async (req, res) => {
   try {
     const { role, id } = req.user;
 
-    if (role === 'admin' || role === 'vl_manager') {
+    if (role === 'admin' || role === 'vl_manager' || role === 'vl_coordinator') {
       const [totalAdmins, totalContentAdmins, totalNodalCentres, totalTeachers, totalStudents] = await Promise.all([
         prisma.user.count({ where: { role: 'admin' } }),
         prisma.user.count({ where: { role: 'content_admin' } }),
@@ -373,8 +384,8 @@ const bulkCreateStudents = async (req, res) => {
       return res.status(400).json({ message: 'students must be a non-empty array' });
     }
 
-    // Only Admin, VL Manager, and Teacher can bulk add students
-    if (!['admin', 'vl_manager', 'teacher'].includes(callerRole)) {
+    // Only Admin, VL Manager, Co-ordinator, and Teacher can bulk add students
+    if (!['admin', 'vl_manager', 'vl_coordinator', 'teacher'].includes(callerRole)) {
       return res.status(403).json({ message: 'Insufficient permissions to bulk add users' });
     }
 
@@ -392,8 +403,8 @@ const bulkCreateStudents = async (req, res) => {
         select: { nodalCentreId: true },
       });
       centreId = teacher?.nodalCentreId ?? null;
-    } else if (callerRole === 'admin' || callerRole === 'vl_manager') {
-      // Admin and VL Manager can specify the institution explicitly
+    } else if (callerRole === 'admin' || callerRole === 'vl_manager' || callerRole === 'vl_coordinator') {
+      // Admin, VL Manager, and Coordinator can specify the institution explicitly
       centreId = nodalCentreId || null;
     }
 

@@ -28,6 +28,7 @@ import TeacherDashboard     from './pages/dashboards/TeacherDashboard';
 import ManagePages          from './pages/dashboards/ManagePages';
 import ContactMessages      from './pages/dashboards/ContactMessages';
 import VLManagerDashboard   from './pages/dashboards/VLManagerDashboard';
+import VLCoordinatorDashboard from './pages/dashboards/VLCoordinatorDashboard';
 import InstitutionsManagement from './pages/dashboards/InstitutionsManagement';
 import WorkshopsManagement    from './pages/dashboards/WorkshopsManagement';
 import WorkshopEditor         from './pages/dashboards/WorkshopEditor';
@@ -148,6 +149,7 @@ function ProtectedRoute({ children, allowedRole }) {
       const dashMap = {
         admin:         '/dashboard/admin',
         vl_manager:    '/dashboard/vl-manager',
+        vl_coordinator:'/dashboard/vl-coordinator',
         content_admin: '/dashboard/content',
         sim_admin:     '/dashboard/content',
         nodal_centre:  '/dashboard/nodal',
@@ -188,8 +190,9 @@ function FloatingDashboardButton() {
   if (!user || user.role === 'student' || pathname.startsWith('/dashboard')) return null;
   
   const defaultMap = {
-    admin:         '/dashboard/admin',
-    vl_manager:    '/dashboard/vl-manager',
+    admin:        '/dashboard/admin',
+    vl_manager:   '/dashboard/vl-manager',
+    vl_coordinator:'/dashboard/vl-coordinator',
     content_admin: '/dashboard/content',
     sim_admin:     '/dashboard/content',
     nodal_centre:  '/dashboard/nodal',
@@ -320,6 +323,39 @@ function AppLayout() {
         } />
         <Route path="/dashboard/vl-manager/analytics" element={
           <ProtectedRoute allowedRole="vl_manager">
+            <DashboardLayout title="Usage Analytics"><AnalyticsDashboard /></DashboardLayout>
+          </ProtectedRoute>
+        } />
+
+        {/* VL Co-ordinator */}
+        <Route path="/dashboard/vl-coordinator" element={
+          <ProtectedRoute allowedRole="vl_coordinator"><VLCoordinatorDashboard /></ProtectedRoute>
+        } />
+        <Route path="/dashboard/vl-coordinator/users" element={
+          <ProtectedRoute allowedRole="vl_coordinator"><VLCoordinatorDashboard /></ProtectedRoute>
+        } />
+        <Route path="/dashboard/vl-coordinator/institutions" element={
+          <ProtectedRoute allowedRole="vl_coordinator">
+            <DashboardLayout title="Institutions"><InstitutionsManagement /></DashboardLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/dashboard/vl-coordinator/workshops" element={
+          <ProtectedRoute allowedRole="vl_coordinator">
+            <DashboardLayout title="Workshops"><WorkshopsManagement /></DashboardLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/dashboard/vl-coordinator/workshops/:id" element={
+          <ProtectedRoute allowedRole="vl_coordinator">
+            <DashboardLayout title="Workshop Editor"><WorkshopEditor /></DashboardLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/dashboard/vl-coordinator/labs" element={
+          <ProtectedRoute allowedRole="vl_coordinator">
+            <DashboardLayout title="Lab Management"><LabManagement /></DashboardLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/dashboard/vl-coordinator/analytics" element={
+          <ProtectedRoute allowedRole="vl_coordinator">
             <DashboardLayout title="Usage Analytics"><AnalyticsDashboard /></DashboardLayout>
           </ProtectedRoute>
         } />

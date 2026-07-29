@@ -125,7 +125,8 @@ export namespace $Enums {
   teacher: 'teacher',
   student: 'student',
   sim_admin: 'sim_admin',
-  vl_manager: 'vl_manager'
+  vl_manager: 'vl_manager',
+  vl_coordinator: 'vl_coordinator'
 };
 
 export type Role = (typeof Role)[keyof typeof Role]

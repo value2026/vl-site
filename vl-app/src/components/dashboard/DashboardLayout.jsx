@@ -28,6 +28,15 @@ const NAV = {
     { icon: Globe,           label: 'Manage Pages',    path: '/dashboard/vl-manager/pages' },
     { icon: TrendingUp,      label: 'Usage Analytics',  path: '/dashboard/vl-manager/analytics' },
   ],
+  vl_coordinator: [
+    { icon: LayoutDashboard, label: 'Overview',        path: '/dashboard/vl-coordinator' },
+    { icon: Users,           label: 'User Management', path: '/dashboard/vl-coordinator/users' },
+    { icon: Building2,       label: 'Institutions',    path: '/dashboard/vl-coordinator/institutions' },
+    { icon: Presentation,    label: 'Workshops',       path: '/dashboard/vl-coordinator/workshops' },
+    { icon: FlaskConical,    label: 'Lab Management',  path: '/dashboard/vl-coordinator/labs' },
+    { icon: BookOpen,        label: 'Learning Workspace',path: '/student' },
+    { icon: TrendingUp,      label: 'Usage Analytics',  path: '/dashboard/vl-coordinator/analytics' },
+  ],
   nodal_centre: [
     { icon: LayoutDashboard, label: 'Overview',  path: '/dashboard/nodal' },
     { icon: GraduationCap,   label: 'Teachers',  path: '/dashboard/nodal/teachers' },
@@ -52,6 +61,7 @@ const NAV = {
 const ROLE_CONFIG = {
   admin:        { label: 'Administrator', gradient: 'from-red-500 to-rose-600',     badge: 'bg-red-500/20 text-red-300 border-red-500/30' },
   vl_manager:   { label: 'VL Manager',    gradient: 'from-pink-500 to-rose-500',    badge: 'bg-pink-500/20 text-pink-300 border-pink-500/30' },
+  vl_coordinator:{ label: 'Co-ordinator', gradient: 'from-purple-500 to-indigo-500',badge: 'bg-purple-500/20 text-purple-300 border-purple-500/30' },
   nodal_centre: { label: 'Nodal Centre',  gradient: 'from-orange-500 to-amber-500', badge: 'bg-orange-500/20 text-orange-300 border-orange-500/30' },
   teacher:      { label: 'Teacher',       gradient: 'from-blue-500 to-indigo-600',  badge: 'bg-blue-500/20 text-blue-300 border-blue-500/30' },
   student:      { label: 'Student',       gradient: 'from-emerald-500 to-green-600',badge: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' },
