@@ -89,7 +89,7 @@ const updateLab = async (req, res) => {
     const { id } = req.params;
     const { title, description, icon, isActive, coverPic, subjectId } = req.body;
 
-    if (req.user.role !== 'admin' && req.user.role !== 'vl_manager' && req.user.role !== 'content_admin') {
+    if (req.user.role !== 'admin' && req.user.role !== 'vl_manager' && req.user.role !== 'vl_coordinator' && req.user.role !== 'content_admin') {
       const lab = await prisma.lab.findUnique({ where: { id } });
       if (!lab || lab.createdById !== req.user.id) {
         return res.status(403).json({ message: 'Insufficient permissions' });
@@ -117,7 +117,7 @@ const deleteLab = async (req, res) => {
   try {
     const { id } = req.params;
 
-    if (req.user.role !== 'admin' && req.user.role !== 'vl_manager' && req.user.role !== 'content_admin') {
+    if (req.user.role !== 'admin' && req.user.role !== 'vl_manager' && req.user.role !== 'vl_coordinator' && req.user.role !== 'content_admin') {
       const lab = await prisma.lab.findUnique({ where: { id } });
       if (!lab || lab.createdById !== req.user.id) {
         return res.status(403).json({ message: 'Insufficient permissions' });

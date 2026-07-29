@@ -29,15 +29,15 @@ export default function Project() {
   return (
     <main>
       {/* Hero */}
-      <section className="bg-hero-gradient py-20">
+      <section className="bg-hero-gradient py-12">
         <div className="container-custom text-center">
-          <span className="inline-block bg-white/10 text-white/80 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider mb-6">
+          <span className="inline-block bg-white/10 text-white/80 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider mb-4">
             About the Project
           </span>
-          <h1 className="font-heading text-5xl font-extrabold text-white mb-6">
+          <h1 className="font-heading text-4xl font-extrabold text-white mb-4">
             The Virtual Labs Project
           </h1>
-          <p className="text-xl text-white/70 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-lg md:text-xl text-white/70 max-w-3xl mx-auto leading-relaxed">
             A Ministry of Education initiative to provide remote access to labs in science and
             engineering disciplines through a web-based platform — free for all students in India.
           </p>

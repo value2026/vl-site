@@ -14,7 +14,7 @@ Alternatively, you can run the entire stack using **Docker** and **Docker Compos
 
 ---
 
-## 🛠 Option 1: Local Development Setup (Manual)
+## Option 1: Local Development Setup (Manual)
 
 ### 1. Database & Backend Setup
 
@@ -64,7 +64,7 @@ Alternatively, you can run the entire stack using **Docker** and **Docker Compos
 
 ---
 
-## 🐳 Option 2: Docker Setup (Production/Quick Start)
+## Docker Setup (Production/Quick Start)
 
 The easiest way to get the platform running with zero configuration is using Docker. This will automatically spin up PostgreSQL, the Node.js backend, and the React frontend.
 
@@ -82,28 +82,55 @@ The easiest way to get the platform running with zero configuration is using Doc
    docker-compose up -d --build
    ```
 
-   # (The database migrations and seed script will automatically run when the container starts)
+   (The database migrations and seed script will automatically run when the container starts)
 
 3. Access the platform:
    Open your browser and navigate to `http://localhost`
 
 ---
 
-## 🔑 Default Credentials
+## Default Credentials
 
 After running `npm run db:seed`, the following default accounts are available:
 
-| Role             | Email                    | Password         |
-| ---------------- | ------------------------ | ---------------- |
-| **Super Admin**  | `admin@virtuallabs.in`   | `VLAdmin@2024`   |
-| **VL Manager**   | `manager@virtuallabs.in` | `VLManager@2024` |
-| **Nodal Centre** | `nodal@amrita.edu`       | `VLNodal@2024`   |
-| **Teacher**      | `teacher@virtuallabs.in` | `VLTeacher@2024` |
-| **Student**      | `student@virtuallabs.in` | `VLStudent@2024` |
+| Role             | Email                    | Password         | Dashboard Access                                                                 |
+| ---------------- | ------------------------ | ---------------- | -------------------------------------------------------------------------------- |
+| **Super Admin**  | `admin@virtuallabs.in`   | `VLAdmin@2024`   | User Management, Institutions, Workshops, Lab Management, Contact Messages, Usage Analytics, Manage Pages |
+| **VL Manager**   | `manager@virtuallabs.in` | `VLManager@2024` | User Management, Institutions, Workshops, Lab Management, Contact Messages, Usage Analytics, Learning Workspace |
+| **Nodal Centre** | `nodal@amrita.edu`       | `VLNodal@2024`   | Teachers, Students, Learning Workspace, Usage Analytics, Academic Reports |
+| **Teacher**      | `teacher@virtuallabs.in` | `VLTeacher@2024` | My Students, Assignments, Learning Workspace, Usage Analytics, Academic Reports |
+| **Student**      | `student@virtuallabs.in` | `VLStudent@2024` | Learning Workspace (labs, experiments, quizzes)                                  |
 
 _Note: It is highly recommended to change these passwords after your first login._
 
-## 📂 Project Structure
+### Additional Test Students
+
+The seed script also creates extra student accounts for testing analytics and reports:
+
+| Name           | Email                    | Password         |
+| -------------- | ------------------------ | ---------------- |
+| Alice Johnson  | `alice@virtuallabs.in`   | `VLStudent@2024` |
+| Bob Roberts    | `bob@virtuallabs.in`     | `VLStudent@2024` |
+| Charlie Brown  | `charlie@virtuallabs.in` | `VLStudent@2024` |
+
+---
+
+## Role-Based Access Control
+
+Each role has restricted sidebar navigation and route protection. Users attempting to access unauthorized routes are automatically redirected to their own dashboard.
+
+| Role            | Sidebar Sections                                                           |
+| --------------- | -------------------------------------------------------------------------- |
+| **admin**       | Overview, User Management, Institutions, Workshops, Lab Management, Contact Messages, Usage Analytics, Manage Pages |
+| **vl_manager**  | Overview, User Management, Institutions, Workshops, Lab Management, Learning Workspace, Contact Messages, Usage Analytics |
+| **content_admin** | Overview, Lab Management, Usage Analytics                                |
+| **nodal_centre** | Overview, Teachers, Students, Learning Workspace, Usage Analytics, Academic Reports |
+| **teacher**     | Overview, My Students, Assignments, Learning Workspace, Usage Analytics, Academic Reports |
+| **student**     | Learning Workspace                                                         |
+
+---
+
+## Project Structure
 
 - `vl-app/` - React frontend (Vite, TailwindCSS, Lucide Icons)
 - `vl-backend/` - Express backend (Prisma, PostgreSQL, Multer for zip uploads)

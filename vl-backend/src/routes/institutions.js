@@ -11,10 +11,10 @@ const {
 // Public route for registration dropdown
 router.get('/', getInstitutions);
 
-// Only admins and vl_managers can create or update institutions
-router.post('/bulk', verifyToken, requireRole('admin', 'vl_manager'), require('../controllers/institutionsController').bulkCreateInstitutions);
-router.post('/', verifyToken, requireRole('admin', 'vl_manager'), createInstitution);
-router.put('/:id', verifyToken, requireRole('admin', 'vl_manager'), updateInstitution);
-router.delete('/:id', verifyToken, requireRole('admin', 'vl_manager'), deleteInstitution);
+// Only admins, vl_managers, and vl_coordinators can create or update institutions
+router.post('/bulk', verifyToken, requireRole('admin', 'vl_manager', 'vl_coordinator'), require('../controllers/institutionsController').bulkCreateInstitutions);
+router.post('/', verifyToken, requireRole('admin', 'vl_manager', 'vl_coordinator'), createInstitution);
+router.put('/:id', verifyToken, requireRole('admin', 'vl_manager', 'vl_coordinator'), updateInstitution);
+router.delete('/:id', verifyToken, requireRole('admin', 'vl_manager', 'vl_coordinator'), deleteInstitution);
 
 module.exports = router;

@@ -142,7 +142,7 @@ const updateExperiment = async (req, res) => {
     const { id } = req.params;
     const { title, description, duration, difficulty, isActive, coverPic, labId } = req.body;
 
-    if (req.user.role !== 'admin' && req.user.role !== 'vl_manager' && req.user.role !== 'content_admin') {
+    if (req.user.role !== 'admin' && req.user.role !== 'vl_manager' && req.user.role !== 'vl_coordinator' && req.user.role !== 'content_admin') {
       const exp = await prisma.experiment.findUnique({ where: { id } });
       if (!exp || exp.createdById !== req.user.id) {
         return res.status(403).json({ message: 'Insufficient permissions' });
@@ -171,7 +171,7 @@ const deleteExperiment = async (req, res) => {
   try {
     const { id } = req.params;
 
-    if (req.user.role !== 'admin' && req.user.role !== 'vl_manager' && req.user.role !== 'content_admin') {
+    if (req.user.role !== 'admin' && req.user.role !== 'vl_manager' && req.user.role !== 'vl_coordinator' && req.user.role !== 'content_admin') {
       const exp = await prisma.experiment.findUnique({ where: { id } });
       if (!exp || exp.createdById !== req.user.id) {
         return res.status(403).json({ message: 'Insufficient permissions' });

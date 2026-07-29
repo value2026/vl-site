@@ -42,6 +42,8 @@ services:
       JWT_SECRET: ${JWT_SECRET:-vl-super-secret-change-this-in-production}
       PORT: 5000
       FRONTEND_URL: ${FRONTEND_URL:-http://localhost:5173}
+    env_file:
+      - ./vl-backend/.env
     ports:
       - "5000:5000"
     volumes:

@@ -23,15 +23,22 @@ const NAV = {
     { icon: Building2,       label: 'Institutions',    path: '/dashboard/vl-manager/institutions' },
     { icon: Presentation,    label: 'Workshops',       path: '/dashboard/vl-manager/workshops' },
     { icon: FlaskConical,    label: 'Lab Management',  path: '/dashboard/vl-manager/labs' },
-    { icon: BookOpen,        label: 'Learning Workspace',path: '/student' },
     { icon: FileText,        label: 'Contact Messages', path: '/dashboard/vl-manager/messages' },
+    { icon: Globe,           label: 'Manage Pages',    path: '/dashboard/vl-manager/pages' },
     { icon: TrendingUp,      label: 'Usage Analytics',  path: '/dashboard/vl-manager/analytics' },
+  ],
+  vl_coordinator: [
+    { icon: LayoutDashboard, label: 'Overview',        path: '/dashboard/vl-coordinator' },
+    { icon: Users,           label: 'User Management', path: '/dashboard/vl-coordinator/users' },
+    { icon: Building2,       label: 'Institutions',    path: '/dashboard/vl-coordinator/institutions' },
+    { icon: Presentation,    label: 'Workshops',       path: '/dashboard/vl-coordinator/workshops' },
+    { icon: FlaskConical,    label: 'Lab Management',  path: '/dashboard/vl-coordinator/labs' },
+    { icon: TrendingUp,      label: 'Usage Analytics',  path: '/dashboard/vl-coordinator/analytics' },
   ],
   nodal_centre: [
     { icon: LayoutDashboard, label: 'Overview',  path: '/dashboard/nodal' },
     { icon: GraduationCap,   label: 'Teachers',  path: '/dashboard/nodal/teachers' },
     { icon: BookOpen,        label: 'Students',  path: '/dashboard/nodal/students' },
-    { icon: BookOpen,        label: 'Learning Workspace',path: '/student' },
     { icon: TrendingUp,      label: 'Usage Analytics',  path: '/dashboard/nodal/analytics' },
     { icon: FileText,        label: 'Academic Reports', path: '/dashboard/nodal/reports' },
   ],
@@ -39,7 +46,6 @@ const NAV = {
     { icon: LayoutDashboard, label: 'Overview',    path: '/dashboard/teacher' },
     { icon: BookOpen,        label: 'My Students', path: '/dashboard/teacher/students' },
     { icon: ClipboardList,   label: 'Assignments', path: '/dashboard/teacher/assignments' },
-    { icon: BookOpen,        label: 'Learning Workspace',path: '/student' },
     { icon: TrendingUp,      label: 'Usage Analytics',  path: '/dashboard/teacher/analytics' },
     { icon: FileText,        label: 'Academic Reports', path: '/dashboard/teacher/reports' },
   ],
@@ -51,6 +57,7 @@ const NAV = {
 const ROLE_CONFIG = {
   admin:        { label: 'Administrator', gradient: 'from-red-500 to-rose-600',     badge: 'bg-red-500/20 text-red-300 border-red-500/30' },
   vl_manager:   { label: 'VL Manager',    gradient: 'from-pink-500 to-rose-500',    badge: 'bg-pink-500/20 text-pink-300 border-pink-500/30' },
+  vl_coordinator:{ label: 'Co-ordinator', gradient: 'from-purple-500 to-indigo-500',badge: 'bg-purple-500/20 text-purple-300 border-purple-500/30' },
   nodal_centre: { label: 'Nodal Centre',  gradient: 'from-orange-500 to-amber-500', badge: 'bg-orange-500/20 text-orange-300 border-orange-500/30' },
   teacher:      { label: 'Teacher',       gradient: 'from-blue-500 to-indigo-600',  badge: 'bg-blue-500/20 text-blue-300 border-blue-500/30' },
   student:      { label: 'Student',       gradient: 'from-emerald-500 to-green-600',badge: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' },
@@ -173,16 +180,14 @@ export default function DashboardLayout({ children, title }) {
             <Menu className="w-5 h-5" />
           </button>
           <h1 className="text-white font-semibold text-lg flex-1">{title}</h1>
-          <a
-            href="/"
-            target="_blank"
-            rel="noreferrer"
+          <Link
+            to="/"
             className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-slate-200 hover:text-white hover:bg-white/10 transition-all duration-200 mr-3"
-            title="Open live home screen"
+            title="Go to Website Home"
           >
             <Home className="w-4 h-4" />
             <span className="text-sm font-medium">Live Home</span>
-          </a>
+          </Link>
           <button className="relative text-slate-400 hover:text-white transition-colors mr-3" aria-label="Notifications">
             <Bell className="w-5 h-5" />
           </button>

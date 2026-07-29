@@ -111,6 +111,18 @@ export default function WorkshopEditor() {
       setActiveTab('details');
       return;
     }
+    
+    // Only validate past dates for new workshops (existing ones might already be in the past)
+    if (isNew) {
+      const selectedDate = new Date(details.date);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      if (selectedDate < today) {
+        setError("Workshop date cannot be in the past.");
+        setActiveTab('details');
+        return;
+      }
+    }
 
     setSaving(true);
     setError('');
@@ -253,14 +265,14 @@ export default function WorkshopEditor() {
               
               <div>
                 <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Workshop Title <span className="text-red-500">*</span></label>
-                <input
-                  type="text"
-                  required
-                  value={details.title}
-                  onChange={e => setDetails({ ...details, title: e.target.value })}
-                  placeholder="e.g. Virtual Labs Nodal Centre Training"
-                  className="w-full bg-slate-950 border border-slate-800 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all font-medium text-lg placeholder:text-slate-700 shadow-inner"
-                />
+                    <input
+                      type="date"
+                      required
+                      min={new Date().toISOString().split('T')[0]}
+                      value={details.date}
+                      onChange={e => setDetails({ ...details, date: e.target.value })}
+                      className="w-full bg-slate-950 border border-slate-800 rounded-2xl pl-12 pr-5 py-4 text-white focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all shadow-inner [color-scheme:dark]"
+                    />
               </div>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -271,6 +283,7 @@ export default function WorkshopEditor() {
                     <input
                       type="date"
                       required
+                      min={new Date().toISOString().split('T')[0]}
                       value={details.date}
                       onChange={e => setDetails({ ...details, date: e.target.value })}
                       className="w-full bg-slate-950 border border-slate-800 rounded-2xl pl-12 pr-5 py-4 text-white focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all shadow-inner [color-scheme:dark]"

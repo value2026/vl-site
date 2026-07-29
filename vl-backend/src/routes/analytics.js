@@ -24,9 +24,9 @@ router.post('/feedback',       verifyToken, recordFeedback);
 router.get('/my-performance', verifyToken, getMyPerformance);
 
 // Viewing dashboard stats (staff only)
-router.get('/dashboard',        verifyToken, requireRole('admin', 'nodal_centre', 'teacher'), getDashboardStats);
-router.get('/google-analytics', verifyToken, requireRole('admin', 'nodal_centre', 'teacher'), getGA4Stats);
-router.get('/reports/academic', verifyToken, requireRole('admin', 'nodal_centre', 'teacher'), getAcademicReport);
-router.get('/student/:userId',  verifyToken, requireRole('admin', 'nodal_centre', 'teacher'), getStudentDetailsReport);
+router.get('/dashboard',        verifyToken, requireRole('admin', 'vl_manager', 'vl_coordinator', 'content_admin', 'nodal_centre', 'teacher'), getDashboardStats);
+router.get('/google-analytics', verifyToken, requireRole('admin', 'vl_manager', 'vl_coordinator', 'content_admin', 'nodal_centre', 'teacher'), getGA4Stats);
+router.get('/reports/academic', verifyToken, requireRole('admin', 'vl_manager', 'vl_coordinator', 'content_admin', 'nodal_centre', 'teacher'), getAcademicReport);
+router.get('/student/:userId',  verifyToken, requireRole('admin', 'vl_manager', 'vl_coordinator', 'content_admin', 'nodal_centre', 'teacher'), getStudentDetailsReport);
 
 module.exports = router;

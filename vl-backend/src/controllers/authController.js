@@ -51,7 +51,7 @@ const login = async (req, res) => {
         customPermissions: user.customPermissions || [],
       },
       process.env.JWT_SECRET,
-      { expiresIn: '7d' }
+      { expiresIn: '1d' } // 24-hour JWT lifespan (coupled with frontend 30-min inactivity timeout)
     );
 
     logAudit({

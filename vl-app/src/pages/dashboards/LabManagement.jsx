@@ -605,7 +605,7 @@ export default function LabManagement() {
   const { user } = useAuth();
   const role = user?.role || 'student';
 
-  const tabs = role === 'admin'
+  const tabs = ['admin', 'vl_manager', 'content_admin'].includes(role)
     ? TABS
     : TABS.filter((t) => t.id !== 'subjects');
 
