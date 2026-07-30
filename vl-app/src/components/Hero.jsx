@@ -33,7 +33,7 @@ export default function Hero({ content = {} }) {
   return (
     <div className="relative">
       <section
-        className="relative min-h-[85vh] lg:min-h-[800px] flex items-center overflow-hidden bg-hero-gradient"
+        className="relative pt-20 pb-16 lg:pt-28 lg:pb-24 overflow-hidden bg-hero-gradient"
         aria-labelledby="hero-heading"
       >
         {/* Floating Icons (Right Side) */}
@@ -51,7 +51,7 @@ export default function Hero({ content = {} }) {
         </div>
 
         {/* Main Content */}
-        <div className="container-custom relative z-10 w-full flex justify-center mt-8">
+        <div className="container-custom relative z-10 w-full flex justify-center">
           <div className="w-full max-w-5xl">
             {/* Heading */}
             <h1
