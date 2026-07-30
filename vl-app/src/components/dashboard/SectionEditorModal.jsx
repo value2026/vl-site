@@ -6,7 +6,7 @@ import Placeholder from '@tiptap/extension-placeholder';
 import {
   X, Save, Plus, Trash2, ChevronDown, ChevronUp,
   Bold, Italic, List, Heading2, Link2, Undo, Redo, Image as ImageIcon,
-  Search, FlaskConical, Check, Loader2
+  Search, FlaskConical, Check, Loader2, CheckCircle2
 } from 'lucide-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import CloudinaryUploader from './CloudinaryUploader';
@@ -351,6 +351,7 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
   const [experiments, setExperiments] = useState([]);
   const [expSearch,   setExpSearch]   = useState('');
   const [expLoading,  setExpLoading]  = useState(false);
+  const [successMsg,  setSuccessMsg]  = useState('');
 
   useEffect(() => {
     if (section.sectionKey === 'featured_simulation') {
@@ -392,8 +393,12 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
     onSuccess: () => {
       queryClient.invalidateQueries([`${pageSlug}-sections`]);
       queryClient.invalidateQueries(['admin-page-sections', pageSlug]);
-      onSaved?.();
-      onClose();
+      setSuccessMsg('Saved successfully!');
+      setTimeout(() => {
+        setSuccessMsg('');
+        onSaved?.();
+        onClose();
+      }, 1500);
     },
   });
 
@@ -1016,6 +1021,14 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
 
         {mutation.isError && (
           <p className="text-red-400 text-xs text-center pb-3">Failed to save. Please try again.</p>
+        )}
+        
+        {successMsg && (
+          <div className="flex justify-center pb-3">
+            <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl px-4 py-2 text-sm text-emerald-400 flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4" /> {successMsg}
+            </div>
+          </div>
         )}
       </div>
     </div>
