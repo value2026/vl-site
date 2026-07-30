@@ -380,7 +380,7 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
   const mutation = useMutation({
     mutationFn: async (payload) => {
       const res = await fetch(`${API_URL}/pages/${pageSlug}/sections/${section.id}`, {
-        method:  'PUT',
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization:  `Bearer ${token}`,

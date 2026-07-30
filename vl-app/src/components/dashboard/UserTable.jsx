@@ -69,7 +69,7 @@ export default function UserTable({ users, loading, onRefresh, hideActions = fal
   const toggleActive = async (userId, current) => {
     setActionLoading(userId + '_toggle');
     try {
-      const res = await api.put(`/users/${userId}`, { isActive: !current });
+      const res = await api.post(`/users/${userId}/update`, { isActive: !current });
       if (!res.ok) {
         const data = await safeJson(res);
         throw new Error(data.message || 'Unable to update user status');
@@ -96,7 +96,7 @@ export default function UserTable({ users, loading, onRefresh, hideActions = fal
     setDeleteConfirm(null);
     setActionLoading(userId + '_delete');
     try {
-      const res = await api.delete(`/users/${userId}`);
+      const res = await api.post(`/users/${userId}/delete`);
       if (!res.ok) {
         const data = await safeJson(res);
         throw new Error(data.message || `Unable to delete ${name}`);
@@ -130,7 +130,7 @@ export default function UserTable({ users, loading, onRefresh, hideActions = fal
       // Delete sequentially to avoid overwhelming the server
       for (const id of arr) {
         try {
-          const res = await api.delete(`/users/${id}`);
+          const res = await api.post(`/users/${id}/delete`);
           if (!res.ok) {
             const data = await safeJson(res);
             throw new Error(data.message || `Unable to delete user`);

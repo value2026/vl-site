@@ -96,7 +96,7 @@ export default function HostWorkshopRequestsManager() {
     setSavingForm(true);
     try {
       const res = await fetch(`${API_URL}/pages/nodal-centre-request/sections/${formSectionId}`, {
-        method: 'PUT',
+        method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ content: { questions } })
       });

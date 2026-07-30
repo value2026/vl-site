@@ -113,8 +113,8 @@ export default function InstitutionsManagement() {
     setActionLoading(id);
     
     try {
-      const res = await fetch(`${API_URL}/institutions/${id}`, {
-        method: 'DELETE',
+      const res = await fetch(`${API_URL}/institutions/${id}/delete`, {
+        method: 'POST',
         headers: { Authorization: `Bearer ${token}` }
       });
       

@@ -56,8 +56,8 @@ export default function WorkshopsManagement() {
   const updateStatus = async (id, status) => {
     if (!window.confirm(`Are you sure you want to ${status} this workshop?`)) return;
     try {
-      const res = await fetch(`${API_URL}/workshops/${id}`, {
-        method: 'PUT',
+      const res = await fetch(`${API_URL}/workshops/${id}/update`, {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
@@ -83,8 +83,8 @@ export default function WorkshopsManagement() {
     setActionLoading(id);
     
     try {
-      const res = await fetch(`${API_URL}/workshops/${id}`, {
-        method: 'DELETE',
+      const res = await fetch(`${API_URL}/workshops/${id}/delete`, {
+        method: 'POST',
         headers: { Authorization: `Bearer ${token}` }
       });
       

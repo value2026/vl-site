@@ -11,7 +11,7 @@ router.get('/stats', requireRole('admin', 'vl_manager', 'vl_coordinator', 'nodal
 router.get('/',      requireRole('admin', 'vl_manager', 'vl_coordinator', 'nodal_centre', 'teacher'), getUsers);
 router.post('/',     requireRole('admin', 'vl_manager', 'vl_coordinator', 'nodal_centre', 'teacher'), createUser);
 router.post('/bulk', requireRole('admin', 'vl_manager', 'vl_coordinator', 'nodal_centre', 'teacher'), bulkCreateStudents);
-router.put('/:id',   updateUser); // any logged in user can update their own profile
-router.delete('/:id', requireRole('admin', 'vl_manager', 'vl_coordinator', 'nodal_centre', 'teacher'), deleteUser);
+router.post('/:id/update',   updateUser); // any logged in user can update their own profile
+router.post('/:id/delete', requireRole('admin', 'vl_manager', 'vl_coordinator', 'nodal_centre', 'teacher'), deleteUser);
 
 module.exports = router;

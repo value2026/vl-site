@@ -17,8 +17,8 @@ router.get('/:id/content/:section', getExperimentSection);
 // Staff
 router.get('/all/list', verifyToken, requireRole('admin', 'vl_manager', 'vl_coordinator', 'content_admin', 'nodal_centre', 'teacher'), getAllExperiments);
 router.post('/',        verifyToken, requireRole('admin', 'vl_manager', 'vl_coordinator', 'content_admin', 'nodal_centre', 'teacher'), createExperiment);
-router.put('/:id',      verifyToken, requireRole('admin', 'vl_manager', 'vl_coordinator', 'content_admin', 'nodal_centre', 'teacher'), updateExperiment);
-router.delete('/:id',   verifyToken, requireRole('admin', 'vl_manager', 'vl_coordinator', 'content_admin', 'nodal_centre', 'teacher'), deleteExperiment);
+router.post('/:id/update',      verifyToken, requireRole('admin', 'vl_manager', 'vl_coordinator', 'content_admin', 'nodal_centre', 'teacher'), updateExperiment);
+router.post('/:id/delete',   verifyToken, requireRole('admin', 'vl_manager', 'vl_coordinator', 'content_admin', 'nodal_centre', 'teacher'), deleteExperiment);
 
 // File uploads
 router.post(

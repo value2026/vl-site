@@ -11,6 +11,6 @@ router.post('/logout', recordLogout); // Log logout reason
 // Password recovery and changes
 router.post('/forgot-password', forgotPassword);
 router.post('/reset-password',  resetPassword);
-router.put('/change-password',  verifyToken, changePassword);
+router.post('/change-password',  verifyToken, changePassword);
 
 module.exports = router;

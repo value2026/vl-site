@@ -51,7 +51,7 @@ export default function UpdateProfileModal({ isOpen, onClose }) {
       };
 
       // Since Nodal Centres/Teachers are updating their own profile:
-      const res = await api.put(`/users/${user.id}`, payload);
+      const res = await api.post(`/users/${user.id}/update`, payload);
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Failed to update profile.');
       
