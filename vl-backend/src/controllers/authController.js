@@ -51,7 +51,7 @@ const login = async (req, res) => {
         customPermissions: user.customPermissions || [],
       },
       process.env.JWT_SECRET,
-      { expiresIn: '30m' }
+      { expiresIn: '8h' }
     );
     const refreshToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '7d' });
     await prisma.user.update({ where: { id: user.id }, data: { refreshToken } });

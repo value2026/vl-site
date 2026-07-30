@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Calendar, MapPin, Users, ArrowRight, Loader2, ArrowLeft, Video, Clock, CheckCircle2 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
-import WorkshopRegistrationModal from '../components/public/WorkshopRegistrationModal';
 
 async function fetchWorkshop(id) {
   const res = await fetch(`${import.meta.env.VITE_API_URL || window.location.origin}/api/workshops/${id}`);
@@ -18,14 +17,7 @@ const modeColor = {
 
 export default function WorkshopDetails() {
   const { id } = useParams();
-  const [registeringWorkshop, setRegisteringWorkshop] = useState(null);
-  const [isRegistered, setIsRegistered] = useState(false);
 
-  useEffect(() => {
-    if (localStorage.getItem(`registered-workshop-${id}`)) {
-      setIsRegistered(true);
-    }
-  }, [id, registeringWorkshop]); // re-run when registeringWorkshop closes (might have just registered)
 
   const { data: workshop, isLoading, error } = useQuery({
     queryKey: ['workshop', id],
@@ -77,10 +69,6 @@ export default function WorkshopDetails() {
                 <MapPin className="w-5 h-5 text-primary-200" />
                 {workshop.location || 'Virtual Labs Platform'}
               </div>
-              <div className="flex items-center gap-2">
-                <Users className="w-5 h-5 text-primary-200" />
-                {workshop.seats ? `${workshop.seats} seats available` : 'Open Registration'}
-              </div>
             </div>
           </div>
         </div>
@@ -131,32 +119,7 @@ export default function WorkshopDetails() {
                       <p className="text-sm text-gray-500">{new Date(workshop.date).toLocaleDateString()}</p>
                     </div>
                   </li>
-                  <li className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-full bg-primary-50 flex items-center justify-center flex-shrink-0">
-                      <Users className="w-4 h-4 text-primary-600" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-gray-900">Availability</p>
-                      <p className="text-sm text-gray-500">{workshop.seats ? `${workshop.seats} maximum participants` : 'Unlimited seats'}</p>
-                    </div>
-                  </li>
                 </ul>
-
-                {isRegistered ? (
-                  <button 
-                    disabled
-                    className="w-full py-3 flex justify-center items-center gap-2 text-base rounded-xl font-semibold bg-green-50 text-green-600 border border-green-200 cursor-not-allowed"
-                  >
-                    <CheckCircle2 className="w-5 h-5" /> Registered
-                  </button>
-                ) : (
-                  <button 
-                    onClick={() => setRegisteringWorkshop(workshop)}
-                    className="btn-primary w-full py-3 flex justify-center items-center gap-2 text-base shadow-lg shadow-primary-500/20"
-                  >
-                    Register Now <ArrowRight className="w-5 h-5" />
-                  </button>
-                )}
               </div>
             </div>
 
@@ -164,12 +127,6 @@ export default function WorkshopDetails() {
         </div>
       </section>
 
-      {registeringWorkshop && (
-        <WorkshopRegistrationModal 
-          workshop={registeringWorkshop} 
-          onClose={() => setRegisteringWorkshop(null)} 
-        />
-      )}
     </main>
   );
 }

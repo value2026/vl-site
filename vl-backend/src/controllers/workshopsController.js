@@ -50,7 +50,7 @@ const createWorkshop = async (req, res) => {
 const updateWorkshop = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, description, date, status, location, mode, seats, formSchema } = req.body;
+    const { title, description, date, status, location, mode, seats } = req.body;
 
     const existingWorkshop = await prisma.workshop.findUnique({
       where: { id }
@@ -71,7 +71,7 @@ const updateWorkshop = async (req, res) => {
     if (location !== undefined) data.location = location;
     if (mode !== undefined) data.mode = mode;
     if (seats !== undefined) data.seats = parseInt(seats);
-    if (formSchema !== undefined) data.formSchema = formSchema;
+
     
     // Admins and VL Managers can approve/reject workshops
     if (status && (req.user.role === 'admin' || req.user.role === 'vl_manager')) {

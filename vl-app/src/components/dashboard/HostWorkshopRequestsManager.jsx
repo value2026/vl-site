@@ -1,9 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { FileText, Users, Eye, GripVertical, ChevronLeft, Plus, Trash2, Save, X, Loader2, AlertCircle } from 'lucide-react';
+import { FileText, Users, Eye, GripVertical, ChevronLeft, Plus, Trash2, Save, X, Loader2, AlertCircle, Play } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 export default function HostWorkshopRequestsManager() {
   const { token, API_URL } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const rolePath = location.pathname.split('/')[2];
   
   const [activeTab, setActiveTab] = useState('requests'); // 'requests', 'form'
   const [error, setError] = useState('');
@@ -131,6 +135,31 @@ export default function HostWorkshopRequestsManager() {
     return '-';
   };
 
+  const handleProceed = () => {
+    if (!viewingRequest) return;
+    const readable = getReadableData(viewingRequest.data);
+    const instName = extractField(readable, ['institution', 'college', 'university', 'name']);
+    const contactEmail = extractField(readable, ['email', 'mail', 'contact']);
+    const phone = extractField(readable, ['phone', 'mobile', 'number']);
+    
+    const prefillTitle = instName !== '-' ? `${instName} Workshop` : 'New Workshop';
+    let prefillDesc = '';
+    if (contactEmail !== '-' || phone !== '-') {
+      prefillDesc = `Contact Information from Request:\n`;
+      if (contactEmail !== '-') prefillDesc += `- Email: ${contactEmail}\n`;
+      if (phone !== '-') prefillDesc += `- Phone: ${phone}\n`;
+    }
+
+    navigate(`/dashboard/${rolePath}/workshops/new`, {
+      state: {
+        prefill: {
+          title: prefillTitle,
+          description: prefillDesc
+        }
+      }
+    });
+  };
+
   return (
     <div className="bg-slate-900/50 backdrop-blur-xl border border-slate-800 rounded-3xl overflow-hidden shadow-2xl flex flex-col min-h-[600px]">
       {/* Internal Tabs */}
@@ -179,11 +208,20 @@ export default function HostWorkshopRequestsManager() {
                 <ChevronLeft className="w-4 h-4" /> Back to List
               </button>
               <div className="bg-slate-900 border border-slate-700/50 rounded-2xl p-6 shadow-xl">
-                <div className="mb-6 pb-4 border-b border-slate-800 flex justify-between items-center">
-                  <h3 className="text-xl font-bold text-white">Host Workshop Request Details</h3>
-                  <span className="text-xs text-slate-500 bg-slate-800 px-3 py-1 rounded-full font-semibold">
-                    {new Date(viewingRequest.createdAt).toLocaleString()}
-                  </span>
+                <div className="mb-6 pb-4 border-b border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div>
+                    <h3 className="text-xl font-bold text-white">Host Workshop Request Details</h3>
+                    <span className="text-xs text-slate-500 bg-slate-800 px-3 py-1 rounded-full font-semibold mt-2 inline-block">
+                      {new Date(viewingRequest.createdAt).toLocaleString()}
+                    </span>
+                  </div>
+                  <button 
+                    onClick={handleProceed}
+                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 shadow-lg shadow-emerald-500/25 transition-all transform hover:-translate-y-0.5"
+                  >
+                    <Play className="w-4 h-4 fill-current" />
+                    Proceed & Create Workshop
+                  </button>
                 </div>
                 <div className="space-y-5">
                   {Object.entries(getReadableData(viewingRequest.data)).map(([q, a], i) => (

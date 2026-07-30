@@ -4,7 +4,7 @@ import {
   Calendar, MapPin, Clock, MoreVertical, LayoutGrid, List, ChevronRight, BarChart3, GraduationCap
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import WorkshopRegistrationsModal from '../../components/dashboard/WorkshopRegistrationsModal';
+
 import HostWorkshopRequestsManager from '../../components/dashboard/HostWorkshopRequestsManager';
 import WorkshopCalendar from '../../components/dashboard/WorkshopCalendar';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -25,7 +25,7 @@ export default function WorkshopsManagement() {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
 
-  const [viewingRegistrations, setViewingRegistrations] = useState(null);
+
   const [deleteConfirm, setDeleteConfirm] = useState(null);
   const [actionLoading, setActionLoading] = useState(null);
 
@@ -126,7 +126,7 @@ export default function WorkshopsManagement() {
             Workshop Management
           </h1>
           <p className="text-slate-400 mt-2 max-w-xl">
-            Create, schedule, and manage platform workshops. Review participant registrations, handle approvals, and track attendance.
+            Create, schedule, and manage platform workshops. Handle approvals, and track details.
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -274,7 +274,7 @@ export default function WorkshopsManagement() {
                   user={user} 
                   onEdit={() => openEditModal(w)}
                   onDelete={() => requestDeleteWorkshop(w)}
-                  onViewRegistrations={() => setViewingRegistrations(w)}
+
                   onStatusUpdate={(status) => updateStatus(w.id, status)}
                   actionLoading={actionLoading}
                 />
@@ -299,7 +299,7 @@ export default function WorkshopsManagement() {
                       user={user}
                       onEdit={() => openEditModal(w)}
                       onDelete={() => requestDeleteWorkshop(w)}
-                      onViewRegistrations={() => setViewingRegistrations(w)}
+
                       onStatusUpdate={(status) => updateStatus(w.id, status)}
                       actionLoading={actionLoading}
                     />
@@ -325,7 +325,7 @@ export default function WorkshopsManagement() {
               <div>
                 <h3 className="text-xl font-bold text-white mb-2">Delete Workshop?</h3>
                 <p className="text-sm text-slate-300 leading-relaxed mb-6">
-                  You are about to permanently delete <strong className="text-white">{deleteConfirm.title}</strong>. This action cannot be undone and all associated registrations will be lost.
+                  You are about to permanently delete <strong className="text-white">{deleteConfirm.title}</strong>. This action cannot be undone.
                 </p>
                 <div className="flex gap-3">
                   <button
@@ -345,14 +345,6 @@ export default function WorkshopsManagement() {
             </div>
           </div>
         </div>
-      )}
-
-      {/* Registrations Modal */}
-      {viewingRegistrations && (
-        <WorkshopRegistrationsModal
-          workshop={viewingRegistrations}
-          onClose={() => setViewingRegistrations(null)}
-        />
       )}
     </div>
   );
@@ -381,7 +373,7 @@ function StatCard({ title, value, icon: Icon, color }) {
   );
 }
 
-function WorkshopCard({ workshop, user, onEdit, onDelete, onViewRegistrations, onStatusUpdate, actionLoading }) {
+function WorkshopCard({ workshop, user, onEdit, onDelete, onStatusUpdate, actionLoading }) {
   const dateObj = new Date(workshop.date);
   const isPast = dateObj < new Date();
   
@@ -448,9 +440,7 @@ function WorkshopCard({ workshop, user, onEdit, onDelete, onViewRegistrations, o
             )}
             {(user?.role === 'admin' || workshop.createdBy?.id === user?.id) && (
               <>
-                <button onClick={onViewRegistrations} className="px-3 py-2 rounded-xl bg-purple-500/10 text-purple-400 hover:bg-purple-500/20 text-xs font-bold transition-colors flex items-center gap-1.5 flex-1 justify-center">
-                  <Users className="w-4 h-4" /> Registrations
-                </button>
+
                 <button onClick={onEdit} className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors" title="Edit">
                   <Edit className="w-4 h-4" />
                 </button>
@@ -471,7 +461,7 @@ function WorkshopCard({ workshop, user, onEdit, onDelete, onViewRegistrations, o
   );
 }
 
-function WorkshopListItem({ workshop, user, onEdit, onDelete, onViewRegistrations, onStatusUpdate, actionLoading }) {
+function WorkshopListItem({ workshop, user, onEdit, onDelete, onStatusUpdate, actionLoading }) {
   const dateObj = new Date(workshop.date);
   
   const statusStyles = {
@@ -531,9 +521,7 @@ function WorkshopListItem({ workshop, user, onEdit, onDelete, onViewRegistration
               )}
               {(user?.role === 'admin' || workshop.createdBy?.id === user?.id) && (
                 <>
-                  <button onClick={onViewRegistrations} className="p-2 rounded-xl text-purple-400 hover:bg-purple-500/10 transition-colors flex items-center gap-1.5 text-xs font-bold" title="View Registrations">
-                    <Users className="w-4 h-4" /> <span className="hidden xl:inline">Registrations</span>
-                  </button>
+
                   <div className="w-px h-6 bg-slate-700 mx-1"></div>
                   <button onClick={onEdit} className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors" title="Edit">
                     <Edit className="w-4 h-4" />
