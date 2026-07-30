@@ -809,6 +809,19 @@ const getSurveyResponses = async (req, res) => {
   }
 };
 
+const deleteSurveyResponse = async (req, res) => {
+  const { id } = req.params;
+  try {
+    await prisma.surveyResponse.delete({
+      where: { id }
+    });
+    res.json({ success: true, message: 'Response deleted' });
+  } catch (error) {
+    console.error('Failed to delete survey response:', error);
+    res.status(500).json({ error: 'Failed to delete response' });
+  }
+};
+
 module.exports = {
   getSections,
   updateSection,
@@ -817,4 +830,5 @@ module.exports = {
   seedPage,
   submitSurveyResponse,
   getSurveyResponses,
+  deleteSurveyResponse,
 };
