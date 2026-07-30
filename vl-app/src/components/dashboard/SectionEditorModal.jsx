@@ -435,7 +435,7 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
         <div className="flex-1 overflow-y-auto p-6 space-y-6">
 
           {/* ── Common section meta ──────────────────────── */}
-          {!pageSlug.includes('survey') && (
+          {!pageSlug.includes('survey') && section.sectionKey !== 'hero' && (
             <>
               <SectionDivider label="Section Header" />
               <TextField label="Section Title" value={title} onChange={setTitle} placeholder="Section heading…" />
@@ -450,7 +450,35 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
               {!pageSlug.includes('survey') && (
                 <TextField label="Badge Text" value={content.badge} onChange={v => setContentKey('badge', v)} placeholder="Ministry of Education Initiative · NMEICT" />
               )}
-              <TextField label="Main Heading" value={content.heading} onChange={v => setContentKey('heading', v)} placeholder="Learn Science Without Limits" />
+              <TextField label="Main Heading (Use *asterisks* for blue gradient)" value={content.heading} onChange={v => setContentKey('heading', v)} placeholder={"Build Your Future with\n*Emerging Technologies*\nand Create Impact."} multiline />
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium text-slate-300 block mb-2">Content Alignment</label>
+                  <select 
+                    value={content.contentAlignment || 'left'} 
+                    onChange={e => setContentKey('contentAlignment', e.target.value)}
+                    className="w-full bg-slate-800 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-red-500/50"
+                  >
+                    <option value="left">Left Align</option>
+                    <option value="center">Center Align</option>
+                    <option value="right">Right Align</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-slate-300 block mb-2">Highlight Gradient</label>
+                  <select 
+                    value={content.headingGradient || 'cyan-blue'} 
+                    onChange={e => setContentKey('headingGradient', e.target.value)}
+                    className="w-full bg-slate-800 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-red-500/50"
+                  >
+                    <option value="cyan-blue">Cyan to Blue</option>
+                    <option value="purple-pink">Purple to Pink</option>
+                    <option value="orange-red">Orange to Red</option>
+                    <option value="emerald-teal">Emerald to Teal</option>
+                  </select>
+                </div>
+              </div>
 
               <div>
                 <label className="text-sm font-medium text-slate-300 block mb-2">Subheading (rich text — supports bold, links)</label>

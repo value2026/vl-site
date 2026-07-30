@@ -96,15 +96,16 @@
 }
 
 /* Tiptap prose styles inside dark editor */
-.ProseMirror {
+.prose .ProseMirror {
   color: #e2e8f0;
   min-height: 120px;
 }
-.ProseMirror:focus { outline: none; }
-.ProseMirror strong { color: #f1f5f9; }
-.ProseMirror a { color: #f87171; text-decoration: underline; }
-.ProseMirror ul { list-style-type: disc; padding-left: 1.25rem; }
-.ProseMirror h2 { font-size: 1.2rem; font-weight: 700; margin-bottom: 0.5rem; color: #f1f5f9; }
+.prose .ProseMirror:focus { outline: none; }
+.prose .ProseMirror p { color: #e2e8f0; }
+.prose .ProseMirror strong { color: #f1f5f9; }
+.prose .ProseMirror a { color: #f87171; text-decoration: underline; }
+.prose .ProseMirror ul { list-style-type: disc; padding-left: 1.25rem; }
+.prose .ProseMirror h2 { font-size: 1.2rem; font-weight: 700; margin-bottom: 0.5rem; color: #f1f5f9; }
 
 /* Custom prose styles for compiled markdown contents */
 .prose h1 {

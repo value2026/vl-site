@@ -11,8 +11,8 @@ const HOME_DEFAULTS = [
     subtitle: 'Access 1,800+ virtual experiments across 700 labs from IITs, NITs, and leading institutions — free, anywhere, anytime.',
     content: {
       badge: 'Ministry of Education Initiative · NMEICT',
-      heading: 'Learn Science Without Limits',
-      subheading: 'Access <strong>1,800+ virtual experiments</strong> across 700 labs from IITs, NITs, and leading institutions — free, anywhere, anytime.',
+      heading: 'Build Your Future with\n*Emerging Technologies*\nand Create Impact.',
+      subheading: 'Access <strong class="text-white">1,800+ virtual experiments</strong> across 700 labs from IITs, NITs, and leading institutions — free, anywhere, anytime.',
       ctaPrimaryLabel: 'Explore Labs',
       ctaPrimaryHref: '#labs-heading',
       ctaSecondaryLabel: 'Watch Demo',
@@ -353,7 +353,11 @@ async function seedHomePage() {
   for (const sec of HOME_DEFAULTS) {
     await prisma.pageSection.upsert({
       where: { pageId_sectionKey: { pageId: page.id, sectionKey: sec.sectionKey } },
-      update: {},  // Don't overwrite existing edits on re-seed
+      update: {
+        title: sec.title,
+        subtitle: sec.subtitle,
+        content: sec.content,
+      },
       create: {
         pageId: page.id,
         sectionKey: sec.sectionKey,
