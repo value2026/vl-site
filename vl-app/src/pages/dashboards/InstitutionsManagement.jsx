@@ -67,8 +67,8 @@ export default function InstitutionsManagement() {
     if (!form.name.trim()) return;
     setSubmitting(true);
     try {
-      const url = editingInst ? `${API_URL}/institutions/${editingInst.id}` : `${API_URL}/institutions`;
-      const method = editingInst ? 'PUT' : 'POST';
+      const url = editingInst ? `${API_URL}/institutions/${editingInst.id}/update` : `${API_URL}/institutions`;
+      const method = 'POST';
       const res = await fetch(url, {
         method,
         headers: {
