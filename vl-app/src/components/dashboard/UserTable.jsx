@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Search, Trash2, ToggleLeft, ToggleRight, ChevronUp, ChevronDown, Eye, Loader2, AlertCircle } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { api, safeJson } from '../../utils/api';
 import StudentAnalyticsModal from './StudentAnalyticsModal';
 
 const ROLE_BADGE = {
@@ -19,7 +20,7 @@ const ROLE_LABELS = {
 };
 
 export default function UserTable({ users, loading, onRefresh, hideActions = false, viewOnly = false }) {
-  const { token, API_URL, user: self } = useAuth();
+  const { user: self } = useAuth();
   const [search, setSearch]   = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -66,13 +67,9 @@ export default function UserTable({ users, loading, onRefresh, hideActions = fal
   const toggleActive = async (userId, current) => {
     setActionLoading(userId + '_toggle');
     try {
-      const res = await fetch(`${API_URL}/users/${userId}`, {
-        method:  'PUT',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body:    JSON.stringify({ isActive: !current }),
-      });
+      const res = await api.put(`/users/${userId}`, { isActive: !current });
       if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
+        const data = await safeJson(res);
         throw new Error(data.message || 'Unable to update user status');
       }
       onRefresh?.();
@@ -92,12 +89,9 @@ export default function UserTable({ users, loading, onRefresh, hideActions = fal
     setDeleteConfirm(null);
     setActionLoading(userId + '_delete');
     try {
-      const res = await fetch(`${API_URL}/users/${userId}`, {
-        method:  'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await api.delete(`/users/${userId}`);
       if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
+        const data = await safeJson(res);
         throw new Error(data.message || `Unable to delete ${name}`);
       }
       setSelectedIds(prev => { const n = new Set(prev); n.delete(userId); return n; });
@@ -121,12 +115,9 @@ export default function UserTable({ users, loading, onRefresh, hideActions = fal
       const arr = Array.from(selectedIds);
       // Delete sequentially to avoid overwhelming the server
       for (const id of arr) {
-        const res = await fetch(`${API_URL}/users/${id}`, {
-          method: 'DELETE',
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        const res = await api.delete(`/users/${id}`);
         if (!res.ok) {
-          const data = await res.json().catch(() => ({}));
+          const data = await safeJson(res);
           throw new Error(data.message || `Unable to delete user ${id}`);
         }
       }
