@@ -95,7 +95,7 @@ export default function HostWorkshopRequestsManager() {
     if (!formSectionId) return;
     setSavingForm(true);
     try {
-      const res = await fetch(`${API_URL}/pages/nodal-centre-request/sections/${formSectionId}`, {
+      const res = await fetch(`${API_URL}/pages/nodal-centre-request/sections/${formSectionId}/update`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ content: { questions } })
