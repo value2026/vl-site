@@ -16,32 +16,79 @@ const getFilesUrl = () => {
 const BASE = getBaseUrl();
 const FILES = getFilesUrl();
 
-const token = () => localStorage.getItem('vl_token');
+let isRefreshing = false;
+let failedQueue = [];
+
+const processQueue = (error, token = null) => {
+  failedQueue.forEach(prom => {
+    if (error) prom.reject(error);
+    else prom.resolve(token);
+  });
+  failedQueue = [];
+};
 
 const apiFetch = async (endpoint, options = {}) => {
-  const t = token();
-  const isFormData = options.body instanceof FormData;
-  const res = await fetch(`${BASE}${endpoint}`, {
-    ...options,
-    headers: {
-      ...(t ? { Authorization: `Bearer ${t}` } : {}),
-      ...(!isFormData ? { 'Content-Type': 'application/json' } : {}),
-      ...(options.headers || {}),
-    },
+  const getHeaders = (t) => ({
+    ...(t ? { Authorization: `Bearer ${t}` } : {}),
+    ...(!(options.body instanceof FormData) ? { 'Content-Type': 'application/json' } : {}),
+    ...(options.headers || {}),
   });
 
-  // Auto-logout on token expiry or invalid token
+  const doRequest = (t) => fetch(`${BASE}${endpoint}`, { ...options, headers: getHeaders(t) });
+
+  const res = await doRequest(localStorage.getItem('vl_token'));
+
   if (res.status === 401 || (res.status === 403 && endpoint !== '/auth/login')) {
-    // Peek at the body to distinguish permission errors from token errors
     const clone = res.clone();
     try {
       const data = await clone.json();
-      if (
-        data?.message === 'Invalid or expired token' ||
-        data?.message === 'Access token required'
-      ) {
-        localStorage.removeItem('vl_token');
-        window.location.href = '/login';
+      
+      if (data?.message === 'Invalid or expired token') {
+        const refreshToken = localStorage.getItem('vl_refresh_token');
+        if (!refreshToken) {
+          window.dispatchEvent(new CustomEvent('vl_session_expired', { detail: { reason: 'TOKEN_EXPIRED' } }));
+          return res;
+        }
+
+        if (isRefreshing) {
+          try {
+            const token = await new Promise((resolve, reject) => {
+              failedQueue.push({ resolve, reject });
+            });
+            return await doRequest(token);
+          } catch (e) {
+            return res;
+          }
+        }
+
+        isRefreshing = true;
+        try {
+          const refreshRes = await fetch(`${BASE}/auth/refresh`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ refreshToken })
+          });
+          const refreshData = await refreshRes.json();
+
+          if (refreshRes.ok && refreshData.token) {
+            localStorage.setItem('vl_token', refreshData.token);
+            if (refreshData.refreshToken) {
+              localStorage.setItem('vl_refresh_token', refreshData.refreshToken);
+            }
+            isRefreshing = false;
+            processQueue(null, refreshData.token);
+            return await doRequest(refreshData.token);
+          } else {
+            throw new Error('Refresh failed');
+          }
+        } catch (err) {
+          isRefreshing = false;
+          processQueue(err, null);
+          window.dispatchEvent(new CustomEvent('vl_session_expired', { detail: { reason: 'TOKEN_EXPIRED' } }));
+          return res;
+        }
+      } else if (data?.message === 'Access token required') {
+        window.dispatchEvent(new CustomEvent('vl_session_expired', { detail: { reason: 'INVALID_TOKEN' } }));
       }
     } catch (_) {
       // ignore parse errors

@@ -92,8 +92,14 @@ function TiptapEditor({ content, onChange, placeholder = 'Start writing…' }) {
 
 // ── Repeatable rows ───────────────────────────────────────────
 function RepeatableList({ label, items = [], onChange, fields }) {
+  // Ensure items have stable IDs for React keys
+  const stableItems = items.map(item => {
+    if (!item._id) return { ...item, _id: Math.random().toString(36).substring(2, 9) };
+    return item;
+  });
+
   const add = () => {
-    const blank = {};
+    const blank = { _id: Math.random().toString(36).substring(2, 9) };
     fields.forEach(f => {
       blank[f.key] = '';
       if (f.key === 'date') {
@@ -101,15 +107,15 @@ function RepeatableList({ label, items = [], onChange, fields }) {
         blank[f.key] = today.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
       }
     });
-    onChange([...items, blank]);
+    onChange([blank, ...stableItems]);
   };
-  const remove = (i) => onChange(items.filter((_, idx) => idx !== i));
+  const remove = (i) => onChange(stableItems.filter((_, idx) => idx !== i));
   const update = (i, key, val) => {
-    const next = items.map((item, idx) => idx === i ? { ...item, [key]: val } : item);
+    const next = stableItems.map((item, idx) => idx === i ? { ...item, [key]: val } : item);
     onChange(next);
   };
   const move = (i, dir) => {
-    const next = [...items];
+    const next = [...stableItems];
     const j = i + dir;
     if (j < 0 || j >= next.length) return;
     [next[i], next[j]] = [next[j], next[i]];
@@ -129,15 +135,15 @@ function RepeatableList({ label, items = [], onChange, fields }) {
         </button>
       </div>
       <div className="space-y-3">
-        {items.map((item, i) => (
-          <div key={i} className="p-3 rounded-xl bg-white/5 border border-white/10 space-y-2">
+        {stableItems.map((item, i) => (
+          <div key={item._id} className="p-3 rounded-xl bg-white/5 border border-white/10 space-y-2 animate-in fade-in slide-in-from-top-4 duration-300">
             <div className="flex items-center justify-between mb-1">
               <span className="text-xs text-slate-500 font-mono">#{i + 1}</span>
               <div className="flex items-center gap-1">
                 <button type="button" onClick={() => move(i, -1)} className="p-1 text-slate-500 hover:text-white rounded" disabled={i === 0}>
                   <ChevronUp className="w-3.5 h-3.5" />
                 </button>
-                <button type="button" onClick={() => move(i, 1)} className="p-1 text-slate-500 hover:text-white rounded" disabled={i === items.length - 1}>
+                <button type="button" onClick={() => move(i, 1)} className="p-1 text-slate-500 hover:text-white rounded" disabled={i === stableItems.length - 1}>
                   <ChevronDown className="w-3.5 h-3.5" />
                 </button>
                 <button type="button" onClick={() => remove(i)} className="p-1 text-red-400 hover:text-red-300 rounded ml-1">

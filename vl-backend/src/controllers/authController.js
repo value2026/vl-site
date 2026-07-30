@@ -51,8 +51,10 @@ const login = async (req, res) => {
         customPermissions: user.customPermissions || [],
       },
       process.env.JWT_SECRET,
-      { expiresIn: '1d' } // 24-hour JWT lifespan (coupled with frontend 30-min inactivity timeout)
+      { expiresIn: '30m' }
     );
+    const refreshToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+    await prisma.user.update({ where: { id: user.id }, data: { refreshToken } });
 
     logAudit({
       action: 'USER_LOGIN',
@@ -63,6 +65,7 @@ const login = async (req, res) => {
 
     res.json({
       token,
+      refreshToken,
       user: {
         id:           user.id,
         name:         user.name,
@@ -235,4 +238,79 @@ const changePassword = async (req, res) => {
   }
 };
 
-module.exports = { login, getMe, forgotPassword, resetPassword, changePassword };
+// POST /api/auth/logout
+const recordLogout = async (req, res) => {
+  try {
+    const { reason } = req.body;
+    let userEmail = 'Unknown';
+    let userId = 'Unknown';
+    
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+    
+    if (token) {
+      try {
+        const decoded = jwt.decode(token);
+        if (decoded && decoded.email) {
+          userEmail = decoded.email;
+          userId = decoded.id;
+        }
+      } catch (e) {
+        // Ignore decode errors
+      }
+    }
+
+    logAudit({
+      action: 'USER_LOGOUT',
+      user: userEmail,
+      details: { reason: reason || 'USER_LOGOUT', userId },
+      ip: req.ip || req.connection.remoteAddress
+    });
+
+    res.json({ message: 'Logged out successfully' });
+  } catch (err) {
+    console.error('Logout logging error:', err);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+// POST /api/auth/refresh
+const refreshTokenEndpoint = async (req, res) => {
+  try {
+    const { refreshToken } = req.body;
+    if (!refreshToken) return res.status(401).json({ message: 'Refresh token required' });
+
+    let decoded;
+    try {
+      decoded = jwt.verify(refreshToken, process.env.JWT_SECRET);
+    } catch (e) {
+      return res.status(403).json({ message: 'Invalid or expired refresh token' });
+    }
+
+    const user = await prisma.user.findFirst({
+      where: { id: decoded.id, refreshToken }
+    });
+
+    if (!user) return res.status(403).json({ message: 'Invalid refresh token' });
+    if (!user.isActive) return res.status(403).json({ message: 'Account deactivated' });
+
+    const token = jwt.sign({
+      id: user.id, email: user.email, role: user.role, name: user.name,
+      nodalCentreId: user.nodalCentreId, customPermissions: user.customPermissions || [],
+    }, process.env.JWT_SECRET, { expiresIn: '30m' });
+
+    const newRefreshToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { refreshToken: newRefreshToken }
+    });
+
+    res.json({ token, refreshToken: newRefreshToken });
+  } catch (err) {
+    console.error('Refresh token error:', err);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+module.exports = { login, getMe, forgotPassword, resetPassword, changePassword, recordLogout, refreshTokenEndpoint };

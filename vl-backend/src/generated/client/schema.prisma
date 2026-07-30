@@ -52,6 +52,7 @@ model User {
   // Password reset fields
   resetToken       String?
   resetTokenExpiry DateTime?
+  refreshToken     String?
 
   // Hierarchy: who created this user
   createdById  String?
