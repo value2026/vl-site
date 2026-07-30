@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import CloudinaryUploader from './CloudinaryUploader';
+import ConfirmModal from './ConfirmModal';
 import { useAuth } from '../../context/AuthContext';
 import { api } from '../../utils/api';
 
@@ -91,7 +92,7 @@ function TiptapEditor({ content, onChange, placeholder = 'Start writing…' }) {
 }
 
 // ── Repeatable rows ───────────────────────────────────────────
-function RepeatableList({ label, items = [], onChange, fields }) {
+function RepeatableList({ label, items = [], onChange, fields, onConfirmRequest }) {
   // Ensure items have stable IDs for React keys
   const stableItems = items.map(item => {
     if (!item._id) return { ...item, _id: Math.random().toString(36).substring(2, 9) };
@@ -109,7 +110,13 @@ function RepeatableList({ label, items = [], onChange, fields }) {
     });
     onChange([blank, ...stableItems]);
   };
-  const remove = (i) => onChange(stableItems.filter((_, idx) => idx !== i));
+  const remove = (i) => {
+    if (onConfirmRequest) {
+      onConfirmRequest({ title: 'Remove Item', message: 'Are you sure you want to remove this item?', onConfirm: () => onChange(stableItems.filter((_, idx) => idx !== i)) });
+    } else if (window.confirm('Are you sure you want to remove this item?')) {
+      onChange(stableItems.filter((_, idx) => idx !== i));
+    }
+  };
   const update = (i, key, val) => {
     const next = stableItems.map((item, idx) => idx === i ? { ...item, [key]: val } : item);
     onChange(next);
@@ -352,6 +359,7 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
   const [expSearch,   setExpSearch]   = useState('');
   const [expLoading,  setExpLoading]  = useState(false);
   const [successMsg,  setSuccessMsg]  = useState('');
+  const [confirmConfig, setConfirmConfig] = useState(null);
 
   useEffect(() => {
     if (section.sectionKey === 'featured_simulation') {
@@ -482,9 +490,11 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
                           <button
                             type="button"
                             onClick={() => {
-                              const newQs = [...content.questions];
-                              newQs.splice(idx, 1);
-                              setContentKey('questions', newQs);
+                              setConfirmConfig({ title: 'Remove Question', message: 'Are you sure you want to remove this question?', onConfirm: () => {
+                                const newQs = [...content.questions];
+                                newQs.splice(idx, 1);
+                                setContentKey('questions', newQs);
+                              } })
                             }}
                             className="absolute top-3 right-3 text-slate-500 hover:text-red-500"
                             title="Remove Question"
@@ -596,6 +606,7 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
                     items={content.stats || []}
                     onChange={v => setContentKey('stats', v)}
                     fields={REPEATABLE_CONFIGS.hero.stats.fields}
+                onConfirmRequest={setConfirmConfig}
                   />
                 </>
               )}
@@ -764,6 +775,7 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
                 items={content.cards || []}
                 onChange={v => setContentKey('cards', v)}
                 fields={REPEATABLE_CONFIGS.cta.cards.fields}
+                onConfirmRequest={setConfirmConfig}
               />
             </>
           )}
@@ -784,6 +796,7 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
                 items={content.sponsors || []}
                 onChange={v => setContentKey('sponsors', v)}
                 fields={REPEATABLE_CONFIGS.sponsors.sponsors.fields}
+                onConfirmRequest={setConfirmConfig}
               />
             </>
           )}
@@ -832,14 +845,28 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
               </div>
 
               <SectionDivider label="News Articles (each can have a thumbnail)" />
-              <p className="text-slate-500 text-xs -mt-2">
+              <p className="text-slate-500 text-xs mt-1 mb-3">
                 💡 The first item is displayed as a large featured card. Items 2–4 appear as a side list.
               </p>
+              <div className="flex gap-4 mb-4">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setConfirmConfig({ title: 'Delete All news items', message: 'Are you sure you want to delete all news items? This cannot be undone.', onConfirm: () => {
+                      setContentKey('items', []);
+                    } })
+                  }}
+                  className="px-4 py-2 rounded-lg text-sm font-medium text-red-400 bg-red-400/10 hover:bg-red-400/20 transition-all border border-red-500/20"
+                >
+                  Delete All News Items
+                </button>
+              </div>
               <RepeatableList
                 label="News Items"
                 items={content.items || []}
                 onChange={v => setContentKey('items', v)}
                 fields={REPEATABLE_CONFIGS.news.items.fields}
+                onConfirmRequest={setConfirmConfig}
               />
             </>
           )}
@@ -851,14 +878,28 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
               <TextField label="Section Tag" value={content.sectionTag} onChange={v => setContentKey('sectionTag', v)} placeholder="Media" />
 
               <SectionDivider label="Videos Grid (Add/Edit Videos)" />
-              <p className="text-slate-500 text-xs -mt-2">
+              <p className="text-slate-500 text-xs mt-1 mb-3">
                 💡 Add multiple videos to showcase them side-by-side in a responsive grid layout.
               </p>
+              <div className="flex gap-4 mb-4">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setConfirmConfig({ title: 'Delete All videos', message: 'Are you sure you want to delete all videos? This cannot be undone.', onConfirm: () => {
+                      setContentKey('videos', []);
+                    } })
+                  }}
+                  className="px-4 py-2 rounded-lg text-sm font-medium text-red-400 bg-red-400/10 hover:bg-red-400/20 transition-all border border-red-500/20"
+                >
+                  Delete All Videos
+                </button>
+              </div>
               <RepeatableList
                 label="Videos list shown on Home page"
                 items={content.videos || []}
                 onChange={v => setContentKey('videos', v)}
                 fields={REPEATABLE_CONFIGS.media.videos.fields}
+                onConfirmRequest={setConfirmConfig}
               />
             </>
           )}
@@ -871,9 +912,9 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
                 <button
                   type="button"
                   onClick={() => {
-                    if (window.confirm('Are you sure you want to delete all publications? This cannot be undone.')) {
+                    setConfirmConfig({ title: 'Delete All publications', message: 'Are you sure you want to delete all publications? This cannot be undone.', onConfirm: () => {
                       setContentKey('items', []);
-                    }
+                    } })
                   }}
                   className="px-4 py-2 rounded-lg text-sm font-medium text-red-400 bg-red-400/10 hover:bg-red-400/20 transition-all border border-red-500/20"
                 >
@@ -890,6 +931,7 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
                 items={content.items || []}
                 onChange={v => setContentKey('items', v)}
                 fields={REPEATABLE_CONFIGS.publications_list.items.fields}
+                onConfirmRequest={setConfirmConfig}
               />
             </>
           )}
@@ -902,9 +944,9 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
                 <button
                   type="button"
                   onClick={() => {
-                    if (window.confirm('Are you sure you want to delete all timeline entries?')) {
+                    setConfirmConfig({ title: 'Delete All timeline entries', message: 'Are you sure you want to delete all timeline entries?', onConfirm: () => {
                       setContentKey('items', []);
-                    }
+                    } })
                   }}
                   className="px-4 py-2 rounded-lg text-sm font-medium text-red-400 bg-red-400/10 hover:bg-red-400/20 transition-all border border-red-500/20"
                 >
@@ -916,6 +958,7 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
                 items={content.items || []}
                 onChange={v => setContentKey('items', v)}
                 fields={REPEATABLE_CONFIGS.project_timeline.items.fields}
+                onConfirmRequest={setConfirmConfig}
               />
             </>
           )}
@@ -927,9 +970,9 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
                 <button
                   type="button"
                   onClick={() => {
-                    if (window.confirm('Are you sure you want to delete all objectives?')) {
+                    setConfirmConfig({ title: 'Delete All objectives', message: 'Are you sure you want to delete all objectives?', onConfirm: () => {
                       setContentKey('items', []);
-                    }
+                    } })
                   }}
                   className="px-4 py-2 rounded-lg text-sm font-medium text-red-400 bg-red-400/10 hover:bg-red-400/20 transition-all border border-red-500/20"
                 >
@@ -941,6 +984,7 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
                 items={content.items || []}
                 onChange={v => setContentKey('items', v)}
                 fields={REPEATABLE_CONFIGS.project_objectives.items.fields}
+                onConfirmRequest={setConfirmConfig}
               />
             </>
           )}
@@ -955,9 +999,9 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
                 <button
                   type="button"
                   onClick={() => {
-                    if (window.confirm('Are you sure you want to delete all benefits?')) {
+                    setConfirmConfig({ title: 'Delete All benefits', message: 'Are you sure you want to delete all benefits?', onConfirm: () => {
                       setContentKey('items', []);
-                    }
+                    } })
                   }}
                   className="px-4 py-2 rounded-lg text-sm font-medium text-red-400 bg-red-400/10 hover:bg-red-400/20 transition-all border border-red-500/20"
                 >
@@ -969,6 +1013,7 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
                 items={content.items || []}
                 onChange={v => setContentKey('items', v)}
                 fields={REPEATABLE_CONFIGS.nc_benefits.items.fields}
+                onConfirmRequest={setConfirmConfig}
               />
             </>
           )}
@@ -980,9 +1025,9 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
                 <button
                   type="button"
                   onClick={() => {
-                    if (window.confirm('Are you sure you want to delete all registered centres?')) {
+                    setConfirmConfig({ title: 'Delete All registered centres', message: 'Are you sure you want to delete all registered centres?', onConfirm: () => {
                       setContentKey('items', []);
-                    }
+                    } })
                   }}
                   className="px-4 py-2 rounded-lg text-sm font-medium text-red-400 bg-red-400/10 hover:bg-red-400/20 transition-all border border-red-500/20"
                 >
@@ -994,6 +1039,7 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
                 items={content.items || []}
                 onChange={v => setContentKey('items', v)}
                 fields={REPEATABLE_CONFIGS.nc_list.items.fields}
+                onConfirmRequest={setConfirmConfig}
               />
             </>
           )}
@@ -1031,6 +1077,7 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
           </div>
         )}
       </div>
+      <ConfirmModal isOpen={!!confirmConfig} {...(confirmConfig || {})} onClose={() => setConfirmConfig(null)} />
     </div>
   );
 }
