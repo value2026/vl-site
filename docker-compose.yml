@@ -43,8 +43,11 @@ services:
       JWT_SECRET: ${JWT_SECRET:-vl-super-secret-change-this-in-production}
       PORT: 5000
       FRONTEND_URL: ${FRONTEND_URL:-http://localhost:5173}
-    env_file:
-      - ./vl-backend/.env
+      SMTP_HOST: smtp.gmail.com
+      SMTP_PORT: 587
+      SMTP_USER: "anandik44@gmail.com"
+      SMTP_PASS: "vwdbmldxufjapety"
+      SMTP_FROM: '"Virtual Labs Admin" <anandik44@gmail.com>'
     ports:
       - "5000:5000"
     volumes:
