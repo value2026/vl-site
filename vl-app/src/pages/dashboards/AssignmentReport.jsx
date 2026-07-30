@@ -39,7 +39,7 @@ export default function AssignmentReport() {
 
   const handlePublishResults = async () => {
     try {
-      const res = await api.put(`/assignments/publish/${id}`);
+      const res = await api.post(`/assignments/publish/${id}/update`);
       if (res.ok) {
         alert('Student scores published successfully!');
         fetchReport();
@@ -53,7 +53,7 @@ export default function AssignmentReport() {
     if (!window.confirm('Are you sure you want to reset/delete this student attempt? This log will be permanently deleted and they will be allowed to re-take the exam.')) return;
     setActionId(attemptId);
     try {
-      const res = await api.delete(`/assignments/attempts/${attemptId}`);
+      const res = await api.post(`/assignments/attempts/${attemptId}/delete`);
       if (res.ok) {
         fetchReport();
       }

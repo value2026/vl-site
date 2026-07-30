@@ -19,8 +19,8 @@ router.use(verifyToken);
 router.post('/', requireRole('admin', 'vl_manager', 'vl_coordinator'), createWorkshop);
 
 // Admins/vl_managers can update/approve, vl_coordinators can update their own
-router.put('/:id', requireRole('admin', 'vl_manager', 'vl_coordinator'), updateWorkshop);
+router.post('/:id/update', requireRole('admin', 'vl_manager', 'vl_coordinator'), updateWorkshop);
 
-router.delete('/:id', requireRole('admin', 'vl_manager', 'vl_coordinator'), deleteWorkshop);
+router.post('/:id/delete', requireRole('admin', 'vl_manager', 'vl_coordinator'), deleteWorkshop);
 
 module.exports = router;

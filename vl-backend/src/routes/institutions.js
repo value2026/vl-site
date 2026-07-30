@@ -14,7 +14,7 @@ router.get('/', getInstitutions);
 // Only admins, vl_managers, and vl_coordinators can create or update institutions
 router.post('/bulk', verifyToken, requireRole('admin', 'vl_manager', 'vl_coordinator'), require('../controllers/institutionsController').bulkCreateInstitutions);
 router.post('/', verifyToken, requireRole('admin', 'vl_manager', 'vl_coordinator'), createInstitution);
-router.put('/:id', verifyToken, requireRole('admin', 'vl_manager', 'vl_coordinator'), updateInstitution);
-router.delete('/:id', verifyToken, requireRole('admin', 'vl_manager', 'vl_coordinator'), deleteInstitution);
+router.post('/:id/update', verifyToken, requireRole('admin', 'vl_manager', 'vl_coordinator'), updateInstitution);
+router.post('/:id/delete', verifyToken, requireRole('admin', 'vl_manager', 'vl_coordinator'), deleteInstitution);
 
 module.exports = router;

@@ -177,7 +177,7 @@ export default function TeacherAssignments() {
   const handleDeletePaper = async (id) => {
     if (!window.confirm('Are you sure you want to delete this question paper? This cannot be undone.')) return;
     try {
-      const res = await api.delete(`/assignments/papers/${id}`);
+      const res = await api.post(`/assignments/papers/${id}/delete`);
       if (res.ok) {
         setSuccess('Question paper deleted.');
         fetchData();
@@ -237,7 +237,7 @@ export default function TeacherAssignments() {
   // Publish manual results
   const handlePublishResults = async (id) => {
     try {
-      const res = await api.put(`/assignments/publish/${id}`);
+      const res = await api.post(`/assignments/publish/${id}/update`);
       if (res.ok) {
         setSuccess('Student results published successfully!');
         fetchData();

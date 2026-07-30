@@ -26,17 +26,17 @@ router.get('/my-assignments', requireRole('student'), getMyAssignments);
 router.get('/take/:id', requireRole('student'), takeAssignment);
 router.post('/submit/:id', requireRole('student'), submitAssignment);
 router.get('/notifications', getNotifications);
-router.put('/notifications/read-all', markAllNotificationsRead);
+router.post('/notifications/read-all', markAllNotificationsRead);
 
 // Teacher specific routes
 router.get('/papers', requireRole('teacher'), getPapers);
 router.post('/papers', requireRole('teacher'), createPaper);
-router.delete('/papers/:id', requireRole('teacher'), deletePaper);
+router.post('/papers/:id/delete', requireRole('teacher'), deletePaper);
 router.get('/active-assignments', requireRole('teacher'), getActiveAssignments);
 router.post('/schedule', requireRole('teacher'), scheduleAssignment);
 router.post('/remind/:id', requireRole('teacher'), sendReminder);
-router.put('/publish/:id', requireRole('teacher'), publishResults);
+router.post('/publish/:id/update', requireRole('teacher'), publishResults);
 router.get('/report/:id', requireRole('teacher'), getAssignmentReport);
-router.delete('/attempts/:attemptId', requireRole('teacher'), resetAttempt);
+router.post('/attempts/:attemptId/delete', requireRole('teacher'), resetAttempt);
 
 module.exports = router;

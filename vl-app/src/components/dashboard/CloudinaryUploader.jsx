@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { Upload, X, ImageIcon, Loader2 } from 'lucide-react';
 import { api } from '../../utils/api';
+import ConfirmModal from './ConfirmModal';
 
 /**
  * CloudinaryUploader — direct browser-to-Cloudinary upload.
@@ -17,6 +18,7 @@ import { api } from '../../utils/api';
 export default function CloudinaryUploader({ value, onChange, label = 'Upload Image' }) {
   const [uploading, setUploading] = useState(false);
   const [error, setError]         = useState('');
+  const [confirmConfig, setConfirmConfig] = useState(null);
   const inputRef                  = useRef(null);
 
   const CLOUD_NAME    = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
@@ -95,7 +97,13 @@ export default function CloudinaryUploader({ value, onChange, label = 'Upload Im
             </button>
             <button
               type="button"
-              onClick={() => onChange('')}
+              onClick={() => {
+                setConfirmConfig({
+                  title: 'Remove Image',
+                  message: 'Are you sure you want to remove this image?',
+                  onConfirm: () => onChange('')
+                });
+              }}
               className="flex items-center gap-2 px-3 py-2 bg-red-500/30 hover:bg-red-500/50 border border-red-400/30 rounded-lg text-red-300 text-sm transition-colors"
             >
               <X className="w-4 h-4" />
@@ -141,6 +149,7 @@ export default function CloudinaryUploader({ value, onChange, label = 'Upload Im
         className="hidden"
         onChange={(e) => handleFile(e.target.files[0])}
       />
+      <ConfirmModal isOpen={!!confirmConfig} {...(confirmConfig || {})} onClose={() => setConfirmConfig(null)} />
     </div>
   );
 }

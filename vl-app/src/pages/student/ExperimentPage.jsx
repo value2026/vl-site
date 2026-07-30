@@ -303,20 +303,20 @@ export default function ExperimentPage() {
     // Log the current tab and the current duration immediately
     if (active) {
       const currentDuration = Math.round((Date.now() - sessionStartTime.current) / 1000);
-      api.put(`/analytics/visit/${visitId}`, { tabId: active, duration: currentDuration }).catch(() => {});
+      api.post(`/analytics/visit/${visitId}/update`, { tabId: active, duration: currentDuration }).catch(() => {});
     }
 
     // Periodically update the total duration of this session (every 10s)
     const interval = setInterval(() => {
       const currentDuration = Math.round((Date.now() - sessionStartTime.current) / 1000);
-      api.put(`/analytics/visit/${visitId}`, { duration: currentDuration }).catch(() => {});
+      api.post(`/analytics/visit/${visitId}/update`, { duration: currentDuration }).catch(() => {});
     }, 10000);
 
     return () => {
       clearInterval(interval);
       // Try to log the final duration when this effect cleans up (e.g., unmount or tab switch)
       const finalDuration = Math.round((Date.now() - sessionStartTime.current) / 1000);
-      api.put(`/analytics/visit/${visitId}`, { duration: finalDuration }).catch(() => {});
+      api.post(`/analytics/visit/${visitId}/update`, { duration: finalDuration }).catch(() => {});
     };
   }, [visitId, active]);
 

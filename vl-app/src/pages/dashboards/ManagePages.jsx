@@ -160,7 +160,7 @@ export default function ManagePages() {
     mutationFn: async (section) => {
       setSavingId(section.id);
       const res = await fetch(`${API_URL}/pages/${pageSlug}/sections/${section.id}/visibility`, {
-        method:  'PATCH',
+        method:  'POST',
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) throw new Error('Failed to toggle');
@@ -183,7 +183,7 @@ export default function ManagePages() {
   const reorderMutation = useMutation({
     mutationFn: async (items) => {
       const res = await fetch(`${API_URL}/pages/${pageSlug}/sections/reorder`, {
-        method:  'PUT',
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization:  `Bearer ${token}`,

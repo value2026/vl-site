@@ -35,7 +35,7 @@ export default function StudentNav({ breadcrumb = [] }) {
 
   const markNotificationsRead = async () => {
     try {
-      const res = await api.put('/assignments/notifications/read-all');
+      const res = await api.post('/assignments/notifications/read-all');
       if (res.ok) fetchNotifications();
     } catch (e) {
       console.error(e);

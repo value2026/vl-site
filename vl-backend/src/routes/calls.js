@@ -16,6 +16,6 @@ router.get('/contacts', getContacts);
 router.get('/chat/:peerId', getChatHistory);
 router.post('/schedule', scheduleCall);
 router.get('/scheduled', getScheduledCalls);
-router.put('/schedule/:id', updateScheduledCallStatus);
+router.post('/schedule/:id/update', updateScheduledCallStatus);
 
 module.exports = router;

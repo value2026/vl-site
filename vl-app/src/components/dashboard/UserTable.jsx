@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Search, Trash2, ToggleLeft, ToggleRight, ChevronUp, ChevronDown, Eye, Loader2, AlertCircle } from 'lucide-react';
+import { Search, Trash2, ToggleLeft, ToggleRight, ChevronUp, ChevronDown, Eye, Loader2, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { api, safeJson } from '../../utils/api';
 import StudentAnalyticsModal from './StudentAnalyticsModal';
@@ -26,6 +26,8 @@ export default function UserTable({ users, loading, onRefresh, hideActions = fal
   const [statusFilter, setStatusFilter] = useState('all');
   const [sortKey, setSortKey] = useState('createdAt');
   const [sortDir, setSortDir] = useState('desc');
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [actionLoading, setActionLoading] = useState(null);
   const [selectedStudentId, setSelectedStudentId] = useState(null);
   const [selectedIds, setSelectedIds] = useState(new Set());
@@ -67,14 +69,19 @@ export default function UserTable({ users, loading, onRefresh, hideActions = fal
   const toggleActive = async (userId, current) => {
     setActionLoading(userId + '_toggle');
     try {
-      const res = await api.put(`/users/${userId}`, { isActive: !current });
+      const res = await api.post(`/users/${userId}/update`, { isActive: !current });
       if (!res.ok) {
         const data = await safeJson(res);
         throw new Error(data.message || 'Unable to update user status');
       }
       onRefresh?.();
+      setSuccess(`User ${current ? 'deactivated' : 'activated'} successfully.`);
+      setError('');
+      setTimeout(() => setSuccess(''), 5000);
     } catch (err) {
-      alert(err.message);
+      setError(err.message);
+      setSuccess('');
+      setTimeout(() => setError(''), 5000);
     } finally {
       setActionLoading(null);
     }
@@ -89,15 +96,20 @@ export default function UserTable({ users, loading, onRefresh, hideActions = fal
     setDeleteConfirm(null);
     setActionLoading(userId + '_delete');
     try {
-      const res = await api.delete(`/users/${userId}`);
+      const res = await api.post(`/users/${userId}/delete`);
       if (!res.ok) {
         const data = await safeJson(res);
         throw new Error(data.message || `Unable to delete ${name}`);
       }
       setSelectedIds(prev => { const n = new Set(prev); n.delete(userId); return n; });
       onRefresh?.();
+      setSuccess('User deleted successfully.');
+      setError('');
+      setTimeout(() => setSuccess(''), 5000);
     } catch (err) {
-      alert(err.message);
+      setError(err.message);
+      setSuccess('');
+      setTimeout(() => setError(''), 5000);
     } finally {
       setActionLoading(null);
     }
@@ -111,22 +123,44 @@ export default function UserTable({ users, loading, onRefresh, hideActions = fal
   const confirmBulkDelete = async () => {
     setDeleteConfirm(null);
     setBulkDeleting(true);
+    let successCount = 0;
+    let errors = [];
     try {
       const arr = Array.from(selectedIds);
       // Delete sequentially to avoid overwhelming the server
       for (const id of arr) {
-        const res = await api.delete(`/users/${id}`);
-        if (!res.ok) {
-          const data = await safeJson(res);
-          throw new Error(data.message || `Unable to delete user ${id}`);
+        try {
+          const res = await api.post(`/users/${id}/delete`);
+          if (!res.ok) {
+            const data = await safeJson(res);
+            throw new Error(data.message || `Unable to delete user`);
+          }
+          successCount++;
+        } catch (err) {
+          errors.push(err.message);
         }
       }
+      
       setSelectedIds(new Set());
       setBulkDeleteMode(false);
       onRefresh?.();
+      
+      if (errors.length > 0) {
+        const uniqueErrors = [...new Set(errors)];
+        setError(`Failed to delete ${errors.length} user(s): ${uniqueErrors[0]}${uniqueErrors.length > 1 ? ' (and more)' : ''}`);
+        setSuccess(successCount > 0 ? `Successfully deleted ${successCount} user(s).` : '');
+        setTimeout(() => setError(''), 5000);
+        if (successCount > 0) setTimeout(() => setSuccess(''), 5000);
+      } else {
+        setSuccess(`Successfully deleted ${successCount} user(s).`);
+        setError('');
+        setTimeout(() => setSuccess(''), 5000);
+      }
     } catch (err) {
       console.error("Bulk delete failed:", err);
-      alert(err.message || "An error occurred during bulk deletion. Please refresh the page.");
+      setError(err.message || "An error occurred during bulk deletion. Please try again.");
+      setSuccess('');
+      setTimeout(() => setError(''), 5000);
     } finally {
       setBulkDeleting(false);
     }
@@ -152,6 +186,18 @@ export default function UserTable({ users, loading, onRefresh, hideActions = fal
 
   return (
     <div className="bg-slate-900 border border-white/10 rounded-2xl overflow-hidden">
+      {error && (
+        <div className="m-4 bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3 text-sm text-red-400 flex items-center gap-2">
+          <AlertCircle className="w-4 h-4" /> {error}
+        </div>
+      )}
+
+      {success && (
+        <div className="m-4 bg-emerald-500/10 border border-emerald-500/30 rounded-xl px-4 py-3 text-sm text-emerald-400 flex items-center gap-2">
+          <CheckCircle2 className="w-4 h-4" /> {success}
+        </div>
+      )}
+      
       {/* Toolbar */}
       <div className="p-4 border-b border-white/10 flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">

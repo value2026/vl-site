@@ -18,7 +18,7 @@ const { getGA4Stats } = require('../controllers/gaController');
 
 // Recording stats (public for student role)
 router.post('/visit',          verifyToken, recordVisit);
-router.put('/visit/:id',       verifyToken, updateVisit);
+router.post('/visit/:id/update',       verifyToken, updateVisit);
 router.post('/quiz',           verifyToken, recordQuizAttempt);
 router.post('/feedback',       verifyToken, recordFeedback);
 router.get('/my-performance', verifyToken, getMyPerformance);

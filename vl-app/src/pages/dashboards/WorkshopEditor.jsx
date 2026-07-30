@@ -133,8 +133,8 @@ export default function WorkshopEditor() {
         formSchema: questions
       };
 
-      const url = !isNew ? `${API_URL}/workshops/${id}` : `${API_URL}/workshops`;
-      const method = !isNew ? 'PUT' : 'POST';
+      const url = !isNew ? `${API_URL}/workshops/${id}/update` : `${API_URL}/workshops`;
+      const method = 'POST';
 
       const res = await fetch(url, {
         method,
