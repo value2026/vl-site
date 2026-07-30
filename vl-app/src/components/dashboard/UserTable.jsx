@@ -66,12 +66,18 @@ export default function UserTable({ users, loading, onRefresh, hideActions = fal
   const toggleActive = async (userId, current) => {
     setActionLoading(userId + '_toggle');
     try {
-      await fetch(`${API_URL}/users/${userId}`, {
+      const res = await fetch(`${API_URL}/users/${userId}`, {
         method:  'PUT',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body:    JSON.stringify({ isActive: !current }),
       });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.message || 'Unable to update user status');
+      }
       onRefresh?.();
+    } catch (err) {
+      alert(err.message);
     } finally {
       setActionLoading(null);
     }
@@ -86,12 +92,18 @@ export default function UserTable({ users, loading, onRefresh, hideActions = fal
     setDeleteConfirm(null);
     setActionLoading(userId + '_delete');
     try {
-      await fetch(`${API_URL}/users/${userId}`, {
+      const res = await fetch(`${API_URL}/users/${userId}`, {
         method:  'DELETE',
         headers: { Authorization: `Bearer ${token}` },
       });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.message || `Unable to delete ${name}`);
+      }
       setSelectedIds(prev => { const n = new Set(prev); n.delete(userId); return n; });
       onRefresh?.();
+    } catch (err) {
+      alert(err.message);
     } finally {
       setActionLoading(null);
     }
@@ -109,17 +121,21 @@ export default function UserTable({ users, loading, onRefresh, hideActions = fal
       const arr = Array.from(selectedIds);
       // Delete sequentially to avoid overwhelming the server
       for (const id of arr) {
-        await fetch(`${API_URL}/users/${id}`, {
+        const res = await fetch(`${API_URL}/users/${id}`, {
           method: 'DELETE',
           headers: { Authorization: `Bearer ${token}` }
         });
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}));
+          throw new Error(data.message || `Unable to delete user ${id}`);
+        }
       }
       setSelectedIds(new Set());
       setBulkDeleteMode(false);
       onRefresh?.();
     } catch (err) {
       console.error("Bulk delete failed:", err);
-      alert("An error occurred during bulk deletion. Please refresh the page.");
+      alert(err.message || "An error occurred during bulk deletion. Please refresh the page.");
     } finally {
       setBulkDeleting(false);
     }

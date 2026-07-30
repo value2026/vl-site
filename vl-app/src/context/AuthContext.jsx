@@ -1,16 +1,10 @@
 import { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { ShieldCheck, Sparkles } from 'lucide-react';
+import { getApiBaseUrl } from '../utils/url';
 
 const AuthContext = createContext(null);
 
-const getApiUrl = () => {
-  if (import.meta.env.VITE_API_URL) return import.meta.env.VITE_API_URL;
-  if (typeof window !== 'undefined' && window.location.origin) {
-    return `${window.location.origin}/api`;
-  }
-  return 'http://localhost:5000/api';
-};
-const API_URL = getApiUrl();
+const API_URL = getApiBaseUrl();
 
 export function AuthProvider({ children }) {
   const [user,       setUser]       = useState(null);
