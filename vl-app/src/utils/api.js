@@ -1,20 +1,7 @@
-const getBaseUrl = () => {
-  if (import.meta.env.VITE_API_URL) return import.meta.env.VITE_API_URL;
-  if (typeof window !== 'undefined' && window.location.origin) {
-    return `${window.location.origin}/api`;
-  }
-  return 'http://localhost:5000/api';
-};
-const getFilesUrl = () => {
-  if (import.meta.env.VITE_FILES_URL) return import.meta.env.VITE_FILES_URL;
-  if (typeof window !== 'undefined' && window.location.origin) {
-    return `${window.location.origin}/files`;
-  }
-  return 'http://localhost:5000/files';
-};
+import { getApiBaseUrl, getFilesBaseUrl } from './url';
 
-const BASE = getBaseUrl();
-const FILES = getFilesUrl();
+const BASE = getApiBaseUrl();
+const FILES = getFilesBaseUrl();
 
 let isRefreshing = false;
 let failedQueue = [];

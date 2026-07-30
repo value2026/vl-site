@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Search, Trash2, ToggleLeft, ToggleRight, ChevronUp, ChevronDown, Eye, Loader2, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { api, safeJson } from '../../utils/api';
 import StudentAnalyticsModal from './StudentAnalyticsModal';
 
 const ROLE_BADGE = {
@@ -19,7 +20,7 @@ const ROLE_LABELS = {
 };
 
 export default function UserTable({ users, loading, onRefresh, hideActions = false, viewOnly = false }) {
-  const { token, API_URL, user: self } = useAuth();
+  const { user: self } = useAuth();
   const [search, setSearch]   = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -68,14 +69,10 @@ export default function UserTable({ users, loading, onRefresh, hideActions = fal
   const toggleActive = async (userId, current) => {
     setActionLoading(userId + '_toggle');
     try {
-      const res = await fetch(`${API_URL}/users/${userId}`, {
-        method:  'PUT',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body:    JSON.stringify({ isActive: !current }),
-      });
+      const res = await api.put(`/users/${userId}`, { isActive: !current });
       if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.message || 'Failed to update user status');
+        const data = await safeJson(res);
+        throw new Error(data.message || 'Unable to update user status');
       }
       onRefresh?.();
       setSuccess(`User ${current ? 'deactivated' : 'activated'} successfully.`);
@@ -99,13 +96,10 @@ export default function UserTable({ users, loading, onRefresh, hideActions = fal
     setDeleteConfirm(null);
     setActionLoading(userId + '_delete');
     try {
-      const res = await fetch(`${API_URL}/users/${userId}`, {
-        method:  'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await api.delete(`/users/${userId}`);
       if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.message || 'Failed to delete user');
+        const data = await safeJson(res);
+        throw new Error(data.message || `Unable to delete ${name}`);
       }
       setSelectedIds(prev => { const n = new Set(prev); n.delete(userId); return n; });
       onRefresh?.();
@@ -130,25 +124,41 @@ export default function UserTable({ users, loading, onRefresh, hideActions = fal
     setDeleteConfirm(null);
     setBulkDeleting(true);
     let successCount = 0;
+    let errors = [];
     try {
       const arr = Array.from(selectedIds);
       // Delete sequentially to avoid overwhelming the server
       for (const id of arr) {
-        const res = await fetch(`${API_URL}/users/${id}`, {
-          method: 'DELETE',
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        if (res.ok) successCount++;
+        try {
+          const res = await api.delete(`/users/${id}`);
+          if (!res.ok) {
+            const data = await safeJson(res);
+            throw new Error(data.message || `Unable to delete user`);
+          }
+          successCount++;
+        } catch (err) {
+          errors.push(err.message);
+        }
       }
+      
       setSelectedIds(new Set());
       setBulkDeleteMode(false);
       onRefresh?.();
-      setSuccess(`Successfully deleted ${successCount} user(s).`);
-      setError('');
-      setTimeout(() => setSuccess(''), 5000);
+      
+      if (errors.length > 0) {
+        const uniqueErrors = [...new Set(errors)];
+        setError(`Failed to delete ${errors.length} user(s): ${uniqueErrors[0]}${uniqueErrors.length > 1 ? ' (and more)' : ''}`);
+        setSuccess(successCount > 0 ? `Successfully deleted ${successCount} user(s).` : '');
+        setTimeout(() => setError(''), 5000);
+        if (successCount > 0) setTimeout(() => setSuccess(''), 5000);
+      } else {
+        setSuccess(`Successfully deleted ${successCount} user(s).`);
+        setError('');
+        setTimeout(() => setSuccess(''), 5000);
+      }
     } catch (err) {
       console.error("Bulk delete failed:", err);
-      setError("An error occurred during bulk deletion. Please try again.");
+      setError(err.message || "An error occurred during bulk deletion. Please try again.");
       setSuccess('');
       setTimeout(() => setError(''), 5000);
     } finally {
