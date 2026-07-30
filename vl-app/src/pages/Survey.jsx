@@ -22,6 +22,11 @@ export default function Survey({ slug }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
+  const getTodayLocal = () => {
+    const tzOffset = (new Date()).getTimezoneOffset() * 60000;
+    return new Date(Date.now() - tzOffset).toISOString().split('T')[0];
+  };
+
   const handleCustomSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -160,8 +165,16 @@ export default function Survey({ slug }) {
                               {idx + 1}. {q.label} {q.required && <span className="text-red-500 ml-1">*</span>}
                             </label>
                             
-                            {q.type === 'text' && (
-                              <input required={q.required} type="text" className="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all shadow-sm" placeholder="Your answer here..." onChange={e => setFormData({...formData, [q.id]: e.target.value})} />
+                            {['text', 'email'].includes(q.type) && (
+                              <input required={q.required} type={q.type} className="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all shadow-sm" placeholder={q.type === 'email' ? "Email address..." : "Your answer here..."} onChange={e => setFormData({...formData, [q.id]: e.target.value})} />
+                            )}
+                            
+                            {q.type === 'date' && (
+                              <input required={q.required} type="date" min={getTodayLocal()} className="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all shadow-sm" onChange={e => setFormData({...formData, [q.id]: e.target.value})} />
+                            )}
+
+                            {q.type === 'time' && (
+                              <input required={q.required} type="time" className="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all shadow-sm" onChange={e => setFormData({...formData, [q.id]: e.target.value})} />
                             )}
                             
                             {q.type === 'textarea' && (
@@ -181,6 +194,33 @@ export default function Survey({ slug }) {
                                   </label>
                                 ))}
                               </div>
+                            )}
+                            
+                            {q.type === 'checkbox' && (
+                              <div className="space-y-3 pl-2">
+                                {q.options?.map((opt, i) => (
+                                  <label key={i} className="flex items-center gap-3 cursor-pointer group">
+                                    <input required={q.required && !(formData[q.id] && formData[q.id].length > 0)} type="checkbox" value={opt} className="w-5 h-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500" onChange={e => {
+                                      const current = formData[q.id] || [];
+                                      if (e.target.checked) {
+                                        setFormData({...formData, [q.id]: [...current, opt]});
+                                      } else {
+                                        setFormData({...formData, [q.id]: current.filter(o => o !== opt)});
+                                      }
+                                    }} />
+                                    <span className="text-gray-700 font-medium">{opt}</span>
+                                  </label>
+                                ))}
+                              </div>
+                            )}
+                            
+                            {q.type === 'select' && (
+                              <select required={q.required} className="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all shadow-sm" onChange={e => setFormData({...formData, [q.id]: e.target.value})}>
+                                <option value="">Select an option...</option>
+                                {q.options?.map((opt, i) => (
+                                  <option key={i} value={opt}>{opt}</option>
+                                ))}
+                              </select>
                             )}
                             
                             {q.type === 'rating' && (

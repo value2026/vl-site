@@ -12,6 +12,11 @@ export default function WorkshopEditor() {
   const navigate = useNavigate();
   const location = useLocation();
   
+  const getTodayLocal = () => {
+    const tzOffset = (new Date()).getTimezoneOffset() * 60000;
+    return new Date(Date.now() - tzOffset).toISOString().split('T')[0];
+  };
+
   const isNew = id === 'new';
   const rolePath = location.pathname.split('/')[2];
   
@@ -30,6 +35,8 @@ export default function WorkshopEditor() {
   });
 
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -114,6 +121,27 @@ export default function WorkshopEditor() {
     }
   };
 
+  const handleDelete = async () => {
+    setDeleting(true);
+    setError('');
+    try {
+      const res = await fetch(`${API_URL}/workshops/${id}/delete`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.message || 'Failed to delete workshop');
+      }
+      navigate(`/dashboard/${rolePath}/workshops`);
+    } catch (err) {
+      setError(err.message);
+      setShowDeleteConfirm(false);
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   if (loadingInit) {
     return (
       <div className="flex justify-center items-center h-96">
@@ -144,7 +172,16 @@ export default function WorkshopEditor() {
             <p className="text-sm text-slate-400 mt-1">Configure event details and registration requirements.</p>
           </div>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-wrap justify-end">
+          {!isNew && (user?.role === 'admin' || workshop?.createdBy?.id === user?.id) && (
+            <button 
+              onClick={() => setShowDeleteConfirm(true)}
+              className="px-4 py-3 rounded-xl text-sm font-bold text-red-400 hover:text-white bg-red-500/10 hover:bg-red-500 border border-red-500/20 transition-all flex items-center gap-2"
+            >
+              <Trash2 className="w-4 h-4" />
+              <span className="hidden sm:inline">Delete</span>
+            </button>
+          )}
           <button 
             onClick={() => navigate(`/dashboard/${rolePath}/workshops`)} 
             className="px-6 py-3 rounded-xl text-sm font-bold text-slate-300 bg-slate-800 hover:bg-slate-700 border border-slate-700 transition-all"
@@ -190,7 +227,7 @@ export default function WorkshopEditor() {
                     required
                     value={details.title}
                     onChange={e => setDetails({ ...details, title: e.target.value })}
-                    placeholder="e.g., Quantum Computing Basics"
+                    placeholder="e.g. Virtual Labs Nodal Centre Training"
                     className="w-full bg-slate-950 border border-slate-800 rounded-2xl pl-12 pr-5 py-4 text-white focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all shadow-inner placeholder:text-slate-700"
                   />
                 </div>
@@ -204,7 +241,7 @@ export default function WorkshopEditor() {
                     <input
                       type="date"
                       required
-                      min={new Date().toISOString().split('T')[0]}
+                      min={getTodayLocal()}
                       value={details.date}
                       onChange={e => setDetails({ ...details, date: e.target.value })}
                       className="w-full bg-slate-950 border border-slate-800 rounded-2xl pl-12 pr-5 py-4 text-white focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all shadow-inner [color-scheme:dark]"
@@ -283,6 +320,43 @@ export default function WorkshopEditor() {
             </div>
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm" onClick={() => !deleting && setShowDeleteConfirm(false)} />
+          <div className="relative bg-slate-900 border border-slate-700 rounded-2xl p-6 w-full max-w-md shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 rounded-full bg-red-500/20 flex items-center justify-center flex-shrink-0 border border-red-500/30">
+                <Trash2 className="w-6 h-6 text-red-500" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-white mb-2">Delete Workshop?</h3>
+                <p className="text-sm text-slate-300 leading-relaxed mb-6">
+                  You are about to permanently delete <strong className="text-white">{details.title}</strong>. This action cannot be undone.
+                </p>
+                <div className="flex gap-3">
+                  <button
+                    disabled={deleting}
+                    onClick={() => setShowDeleteConfirm(false)}
+                    className="flex-1 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-300 bg-slate-800 hover:bg-slate-700 transition-colors disabled:opacity-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    disabled={deleting}
+                    onClick={handleDelete}
+                    className="flex-1 px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-red-500 hover:bg-red-600 shadow-lg shadow-red-500/20 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+                  >
+                    {deleting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

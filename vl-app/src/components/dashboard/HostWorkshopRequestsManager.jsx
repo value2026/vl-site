@@ -22,6 +22,8 @@ export default function HostWorkshopRequestsManager() {
   const [requests, setRequests] = useState([]);
   const [loadingReq, setLoadingReq] = useState(false);
   const [viewingRequest, setViewingRequest] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
+  const [requestToDelete, setRequestToDelete] = useState(null);
 
   // --- Fetch Form Schema ---
   const fetchFormSchema = useCallback(async () => {
@@ -72,6 +74,34 @@ export default function HostWorkshopRequestsManager() {
       fetchRequests();
     }
   }, [activeTab, fetchFormSchema, fetchRequests]);
+
+  const requestDelete = (req) => {
+    setRequestToDelete(req);
+  };
+
+  const deleteRequest = async () => {
+    if (!requestToDelete) return;
+    
+    const id = requestToDelete.id;
+    setDeletingId(id);
+    try {
+      const res = await fetch(`${API_URL}/pages/nodal-centre-request/survey/responses/${id}/delete`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.message || 'Failed to delete request');
+      }
+      setRequests(requests.filter(r => r.id !== id));
+      setRequestToDelete(null);
+    } catch (err) {
+      console.error(err);
+      setError('Failed to delete request');
+    } finally {
+      setDeletingId(null);
+    }
+  };
 
   // --- Form Builder Handlers ---
   const addQuestion = () => setQuestions([...questions, { id: Date.now().toString(), text: 'New Question', type: 'text', required: true, options: [] }]);
@@ -265,12 +295,22 @@ export default function HostWorkshopRequestsManager() {
                             </div>
                           </td>
                           <td className="px-6 py-4 text-right">
-                            <button
-                              onClick={() => setViewingRequest(req)}
-                              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-purple-500/10 text-purple-400 hover:bg-purple-500/20 text-xs font-bold transition-colors"
-                            >
-                              <Eye className="w-4 h-4" /> View Application
-                            </button>
+                            <div className="flex items-center justify-end gap-2">
+                              <button
+                                onClick={() => setViewingRequest(req)}
+                                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-purple-500/10 text-purple-400 hover:bg-purple-500/20 text-xs font-bold transition-colors"
+                              >
+                                <Eye className="w-4 h-4" /> View Application
+                              </button>
+                              <button
+                                onClick={() => requestDelete(req)}
+                                disabled={deletingId === req.id}
+                                className="p-2 rounded-xl text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-colors disabled:opacity-50"
+                                title="Delete Request"
+                              >
+                                {deletingId === req.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       );
@@ -395,6 +435,43 @@ export default function HostWorkshopRequestsManager() {
           )
         )}
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {requestToDelete && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm" onClick={() => !deletingId && setRequestToDelete(null)} />
+          <div className="relative bg-slate-900 border border-slate-700 rounded-2xl p-6 w-full max-w-md shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 rounded-full bg-red-500/20 flex items-center justify-center flex-shrink-0 border border-red-500/30">
+                <Trash2 className="w-6 h-6 text-red-500" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-white mb-2">Delete Request?</h3>
+                <p className="text-sm text-slate-300 leading-relaxed mb-6">
+                  Are you sure you want to delete this host workshop request? This action cannot be undone.
+                </p>
+                <div className="flex gap-3">
+                  <button
+                    disabled={deletingId === requestToDelete.id}
+                    onClick={() => setRequestToDelete(null)}
+                    className="flex-1 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-300 bg-slate-800 hover:bg-slate-700 transition-colors disabled:opacity-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    disabled={deletingId === requestToDelete.id}
+                    onClick={deleteRequest}
+                    className="flex-1 px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-red-500 hover:bg-red-600 shadow-lg shadow-red-500/20 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+                  >
+                    {deletingId === requestToDelete.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
