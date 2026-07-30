@@ -53,7 +53,8 @@ const login = async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: '30m' }
     );
-    const refreshToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+    const refreshSecret = process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET;
+    const refreshToken = jwt.sign({ id: user.id }, refreshSecret, { expiresIn: '7d' });
     await prisma.user.update({ where: { id: user.id }, data: { refreshToken } });
 
     logAudit({
@@ -179,7 +180,8 @@ const resetPassword = async (req, res) => {
       data: {
         password: hashed,
         resetToken: null,
-        resetTokenExpiry: null
+        resetTokenExpiry: null,
+        refreshToken: null
       }
     });
 
@@ -221,7 +223,7 @@ const changePassword = async (req, res) => {
 
     await prisma.user.update({
       where: { id: userId },
-      data: { password: hashed }
+      data: { password: hashed, refreshToken: null }
     });
 
     logAudit({
@@ -254,6 +256,12 @@ const recordLogout = async (req, res) => {
         if (decoded && decoded.email) {
           userEmail = decoded.email;
           userId = decoded.id;
+          
+          // Invalidate the session in the database
+          await prisma.user.update({
+            where: { id: userId },
+            data: { refreshToken: null }
+          }).catch(err => console.error('Failed to clear refresh token:', err));
         }
       } catch (e) {
         // Ignore decode errors
@@ -280,9 +288,10 @@ const refreshTokenEndpoint = async (req, res) => {
     const { refreshToken } = req.body;
     if (!refreshToken) return res.status(401).json({ message: 'Refresh token required' });
 
+    const refreshSecret = process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET;
     let decoded;
     try {
-      decoded = jwt.verify(refreshToken, process.env.JWT_SECRET);
+      decoded = jwt.verify(refreshToken, refreshSecret);
     } catch (e) {
       return res.status(403).json({ message: 'Invalid or expired refresh token' });
     }
@@ -299,7 +308,7 @@ const refreshTokenEndpoint = async (req, res) => {
       nodalCentreId: user.nodalCentreId, customPermissions: user.customPermissions || [],
     }, process.env.JWT_SECRET, { expiresIn: '30m' });
 
-    const newRefreshToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+    const newRefreshToken = jwt.sign({ id: user.id }, refreshSecret, { expiresIn: '7d' });
 
     await prisma.user.update({
       where: { id: user.id },
