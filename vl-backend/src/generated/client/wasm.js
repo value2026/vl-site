@@ -149,6 +149,7 @@ exports.Prisma.UserScalarFieldEnum = {
   facultyInst: 'facultyInst',
   resetToken: 'resetToken',
   resetTokenExpiry: 'resetTokenExpiry',
+  refreshToken: 'refreshToken',
   createdById: 'createdById',
   nodalCentreId: 'nodalCentreId',
   createdAt: 'createdAt',

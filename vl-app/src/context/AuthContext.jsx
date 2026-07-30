@@ -1,16 +1,10 @@
 import { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { ShieldCheck, Sparkles } from 'lucide-react';
+import { getApiBaseUrl } from '../utils/url';
 
 const AuthContext = createContext(null);
 
-const getApiUrl = () => {
-  if (import.meta.env.VITE_API_URL) return import.meta.env.VITE_API_URL;
-  if (typeof window !== 'undefined' && window.location.origin) {
-    return `${window.location.origin}/api`;
-  }
-  return 'http://localhost:5000/api';
-};
-const API_URL = getApiUrl();
+const API_URL = getApiBaseUrl();
 
 export function AuthProvider({ children }) {
   const [user,       setUser]       = useState(null);
@@ -20,29 +14,52 @@ export function AuthProvider({ children }) {
   const [logoutReason, setLogoutReason] = useState(null);
   const timeoutRef = useRef(null);
 
+  const isLoggingOutRef = useRef(false);
+
   const logout = useCallback((options) => {
+    // Prevent duplicate logout calls locally without breaking cross-tab synchronization
+    if (isLoggingOutRef.current) return;
+    isLoggingOutRef.current = true;
+
     const showAnimation = options !== false && options?.animate !== false;
-    if (options?.reason) {
-      setLogoutReason(options.reason);
+    const finalReason = options?.reason || 'USER_LOGOUT';
+    setLogoutReason(finalReason);
+    
+    const currentToken = localStorage.getItem('vl_token');
+
+    // Always remove from storage immediately so other tabs sync ASAP
+    localStorage.removeItem('vl_token');
+    localStorage.removeItem('vl_refresh_token');
+
+    if (currentToken) {
+      fetch(`${API_URL}/auth/logout`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${currentToken}`
+        },
+        body: JSON.stringify({ reason: finalReason })
+      }).catch(() => {});
     }
+
     if (showAnimation) {
       setSigningOut(true);
       setTimeout(() => {
-        localStorage.removeItem('vl_token');
         setToken(null);
         setUser(null);
         setSigningOut(false);
         setLogoutReason(null);
+        isLoggingOutRef.current = false;
         if (window.location.pathname !== '/') {
           window.location.href = '/';
         }
       }, 2000); // slightly longer for reading "Session Expired"
     } else {
-      localStorage.removeItem('vl_token');
       setToken(null);
       setUser(null);
       setSigningOut(false);
       setLogoutReason(null);
+      isLoggingOutRef.current = false;
     }
   }, []);
 
@@ -54,10 +71,10 @@ export function AuthProvider({ children }) {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     
     if (token) {
-      // 30 minutes inactivity timeout
+      // 20 minutes inactivity timeout
       timeoutRef.current = setTimeout(() => {
-        logout({ animate: true, reason: 'timeout' });
-      }, 30 * 60 * 1000);
+        logout({ animate: true, reason: 'SESSION_TIMEOUT' });
+      }, 20 * 60 * 1000);
     }
   }, [token, logout]);
 
@@ -76,7 +93,14 @@ export function AuthProvider({ children }) {
           logout({ animate: false });
         }
       };
+      
+      const handleSessionExpired = (e) => {
+        const reason = e.detail?.reason || 'TOKEN_EXPIRED';
+        logout({ animate: true, reason });
+      };
+
       window.addEventListener('storage', handleStorage);
+      window.addEventListener('vl_session_expired', handleSessionExpired);
       
       return () => {
         if (timeoutRef.current) clearTimeout(timeoutRef.current);
@@ -84,6 +108,7 @@ export function AuthProvider({ children }) {
           window.removeEventListener(event, handleActivity);
         });
         window.removeEventListener('storage', handleStorage);
+        window.removeEventListener('vl_session_expired', handleSessionExpired);
       };
     }
   }, [token, resetTimeout]);
@@ -110,7 +135,11 @@ export function AuthProvider({ children }) {
     if (!res.ok) throw new Error(data.message || 'Login failed');
 
     localStorage.removeItem('vl_token');
+    localStorage.removeItem('vl_refresh_token');
     localStorage.setItem('vl_token', data.token);
+    if (data.refreshToken) {
+      localStorage.setItem('vl_refresh_token', data.refreshToken);
+    }
     setToken(data.token);
     setUser(data.user);
     return data.user;
@@ -141,11 +170,13 @@ export function AuthProvider({ children }) {
               </div>
 
               <h3 className="text-white font-extrabold text-xl tracking-tight mb-2">
-                {logoutReason === 'timeout' ? 'Session Expired' : 'Signing Out...'}
+                {logoutReason === 'SESSION_TIMEOUT' || logoutReason === 'TOKEN_EXPIRED' ? 'Session Expired' : 'Signing Out...'}
               </h3>
               <p className="text-slate-400 text-sm leading-relaxed mb-6">
-                {logoutReason === 'timeout' 
+                {logoutReason === 'SESSION_TIMEOUT' 
                   ? 'You have been logged out due to inactivity.'
+                  : logoutReason === 'TOKEN_EXPIRED'
+                  ? 'Your session has expired.'
                   : 'Securing your account. See you next time!'}
               </p>
 
