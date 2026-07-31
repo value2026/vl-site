@@ -51,7 +51,7 @@ const login = async (req, res) => {
         customPermissions: user.customPermissions || [],
       },
       process.env.JWT_SECRET,
-      { expiresIn: '8h' }
+      { expiresIn: '15m' }
     );
     const refreshSecret = process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET;
     const refreshToken = jwt.sign({ id: user.id }, refreshSecret, { expiresIn: '7d' });
@@ -306,7 +306,7 @@ const refreshTokenEndpoint = async (req, res) => {
     const token = jwt.sign({
       id: user.id, email: user.email, role: user.role, name: user.name,
       nodalCentreId: user.nodalCentreId, customPermissions: user.customPermissions || [],
-    }, process.env.JWT_SECRET, { expiresIn: '30m' });
+    }, process.env.JWT_SECRET, { expiresIn: '15m' });
 
     const newRefreshToken = jwt.sign({ id: user.id }, refreshSecret, { expiresIn: '7d' });
 

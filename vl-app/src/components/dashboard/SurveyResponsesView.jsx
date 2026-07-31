@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Eye, ChevronLeft, Calendar, User, Mail, Database, DownloadCloud, Loader2, Trash2 } from 'lucide-react';
+import { Eye, ChevronLeft, Calendar, User, Mail, Database, DownloadCloud, Loader2, Trash2, ClipboardList } from 'lucide-react';
 
 export default function SurveyResponsesView({ pageSlug, token, API_URL }) {
   const [responses, setResponses] = useState([]);
@@ -91,11 +91,26 @@ export default function SurveyResponsesView({ pageSlug, token, API_URL }) {
   return (
     <div className="bg-slate-900/50 backdrop-blur-xl border border-slate-800 rounded-2xl w-full flex flex-col shadow-2xl overflow-hidden mt-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-6 border-b border-white/10 bg-slate-800/50">
-        <div>
-          <h3 className="text-xl font-bold text-white mb-1">
-            {pageSlug === 'student-survey' ? 'Student Survey Responses' : 'Faculty Survey Responses'}
-          </h3>
-          <p className="text-slate-400 text-sm">Review all submitted feedback and evaluations.</p>
+        <div className="flex items-center gap-4">
+          <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+            pageSlug === 'contact' ? 'bg-blue-500/20' : 'bg-emerald-500/20'
+          }`}>
+            {pageSlug === 'contact' ? (
+              <Mail className="w-6 h-6 text-blue-400" />
+            ) : (
+              <ClipboardList className="w-6 h-6 text-emerald-400" />
+            )}
+          </div>
+          <div>
+            <h3 className="text-xl font-bold text-white mb-1">
+              {pageSlug === 'student-survey' ? 'Student Survey Responses' :
+               pageSlug === 'contact' ? 'Contact Messages' :
+               'Faculty Survey Responses'}
+            </h3>
+            <p className="text-slate-400 text-sm">
+              {pageSlug === 'contact' ? 'Review messages submitted through the contact us form.' : 'Review all submitted feedback and evaluations.'}
+            </p>
+          </div>
         </div>
         <div className="flex items-center gap-4 mt-4 sm:mt-0">
           <button
