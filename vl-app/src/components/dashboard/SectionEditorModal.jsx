@@ -118,20 +118,45 @@ function RepeatableList({ label, items = [], onChange, fields, onConfirmRequest,
   };
 
   const handleBulkImport = () => {
+    if (!bulkJson.trim()) return;
     try {
-      const parsed = JSON.parse(bulkJson);
-      if (!Array.isArray(parsed)) throw new Error("JSON must be an array of objects");
+      let newItems = [];
+      const text = bulkJson.trim();
       
-      const newItems = parsed.map(item => ({
-        ...item,
-        _id: Math.random().toString(36).substring(2, 9)
-      }));
+      if (text.startsWith('[')) {
+        // Parse as JSON
+        const parsed = JSON.parse(text);
+        if (!Array.isArray(parsed)) throw new Error("JSON must be an array of objects");
+        newItems = parsed.map(item => ({ ...item, _id: Math.random().toString(36).substring(2, 9) }));
+      } else {
+        // Parse as TSV or CSV
+        const lines = text.split('\n');
+        if (lines.length < 2) throw new Error("Need at least a header row and one data row for CSV/TSV");
+        const delimiter = lines[0].includes('\t') ? '\t' : ',';
+        const headers = lines[0].split(delimiter).map(h => h.trim());
+        const fieldKeys = fields.map(f => f.key);
+        
+        newItems = lines.slice(1).map(line => {
+          if (!line.trim()) return null;
+          const values = line.split(delimiter);
+          const obj = { _id: Math.random().toString(36).substring(2, 9) };
+          headers.forEach((header, idx) => {
+            if (fieldKeys.includes(header)) {
+              obj[header] = values[idx]?.trim() || '';
+            }
+          });
+          fieldKeys.forEach(fk => {
+             if (obj[fk] === undefined) obj[fk] = '';
+          });
+          return obj;
+        }).filter(Boolean);
+      }
       
       onChange([...newItems, ...stableItems]);
       setShowBulkImport(false);
       setBulkJson('');
     } catch (err) {
-      alert("Invalid JSON format: " + err.message);
+      alert("Invalid format: " + err.message);
     }
   };
 
@@ -141,6 +166,12 @@ function RepeatableList({ label, items = [], onChange, fields, onConfirmRequest,
       exampleItem[f.key] = f.placeholder || `value`;
     });
     setBulkJson(JSON.stringify([exampleItem], null, 2));
+  };
+
+  const loadExampleCsv = () => {
+    const headers = fields.map(f => f.key).join('\t');
+    const values = fields.map(f => f.placeholder || 'value').join('\t');
+    setBulkJson(`${headers}\n${values}`);
   };
 
   const remove = (i) => {
@@ -325,18 +356,27 @@ function RepeatableList({ label, items = [], onChange, fields, onConfirmRequest,
         <div className="mb-4 p-5 rounded-xl bg-blue-500/5 border border-blue-500/20 animate-in fade-in slide-in-from-top-2 duration-200">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-3 gap-2">
             <div>
-              <h4 className="text-sm font-bold text-blue-300">Bulk Import via JSON</h4>
+              <h4 className="text-sm font-bold text-blue-300">Bulk Import (JSON / CSV / Excel)</h4>
               <p className="text-xs text-blue-200/70 mt-0.5">
-                Paste an array of objects to instantly add multiple items.
+                Paste an array of JSON objects, or just paste directly from Excel (TSV/CSV).
               </p>
             </div>
-            <button
-              type="button"
-              onClick={loadExampleJson}
-              className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 transition-colors"
-            >
-              Load Example Format
-            </button>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={loadExampleJson}
+                className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 transition-colors"
+              >
+                JSON Example
+              </button>
+              <button
+                type="button"
+                onClick={loadExampleCsv}
+                className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 transition-colors"
+              >
+                Excel/CSV Example
+              </button>
+            </div>
           </div>
           
           <textarea

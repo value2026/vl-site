@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { Search, Trash2, ToggleLeft, ToggleRight, ChevronUp, ChevronDown, Eye, Loader2, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Search, Trash2, ToggleLeft, ToggleRight, ChevronUp, ChevronDown, Eye, Loader2, AlertCircle, CheckCircle2, Download } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { api, safeJson } from '../../utils/api';
+import { exportToCSV } from '../../utils/exportToCSV';
 import StudentAnalyticsModal from './StudentAnalyticsModal';
 
 const ROLE_BADGE = {
@@ -57,6 +58,23 @@ export default function UserTable({ users, loading, onRefresh, hideActions = fal
   const toggleSort = (key) => {
     if (sortKey === key) setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'));
     else { setSortKey(key); setSortDir('asc'); }
+  };
+
+  const handleExportCSV = () => {
+    if (filtered.length === 0) return;
+    const exportData = filtered.map(u => ({
+      Name: u.name,
+      Email: u.email,
+      Role: ROLE_LABELS[u.role] || u.role,
+      Status: u.isActive ? 'Active' : 'Inactive',
+      Joined: new Date(u.createdAt).toLocaleDateString(),
+      'Labs Visited': u.uniqueLabsVisited ?? 'N/A',
+      'Time Spent (min)': u.totalTimeSpentMinutes ?? 'N/A',
+      'Quiz Attempts': u.quizAttemptsCount ?? 'N/A',
+      'Quiz Pass Rate (%)': u.quizPassRate ?? 'N/A',
+      'Avg Quiz Score (%)': u.averageQuizScore ?? 'N/A'
+    }));
+    exportToCSV(exportData, `academic_report_${new Date().toISOString().split('T')[0]}.csv`);
   };
 
   const SortIcon = ({ col }) => {
@@ -210,6 +228,16 @@ export default function UserTable({ users, loading, onRefresh, hideActions = fal
             className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
           />
         </div>
+        
+        {viewOnly && (
+          <button 
+            onClick={handleExportCSV}
+            className="flex items-center gap-2 px-4 py-2.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/20 rounded-xl text-sm font-semibold transition-all shadow-sm whitespace-nowrap"
+          >
+            <Download className="w-4 h-4" /> Export CSV
+          </button>
+        )}
+
         {!hideActions && !viewOnly && (
           <div className="flex items-center gap-3">
             <select

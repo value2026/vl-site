@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import {
   X, Loader2, Calendar, Mail, BookOpen, Clock,
-  Award, Star, AlertCircle, Laptop, Smartphone, Tv
+  Award, Star, AlertCircle, Laptop, Smartphone, Tv, Download
 } from 'lucide-react';
 import { api } from '../../utils/api';
+import { exportToCSV } from '../../utils/exportToCSV';
 
 const DEVICE_ICONS = { desktop: Laptop, mobile: Smartphone, tablet: Tv };
 
@@ -57,6 +58,38 @@ export default function StudentAnalyticsModal({ userId, onClose }) {
   const totalScorePct = quizzes.reduce((sum, q) => sum + (q.score / q.maxScore) * 100, 0);
   const avgMarks = quizzes.length > 0 ? Math.round(totalScorePct / quizzes.length) : 0;
 
+  const handleExportCSV = () => {
+    if (activeTab === 'activity') {
+      const exportData = visits.map(v => ({
+        Experiment: v.experiment?.title,
+        'Pages Visited': v.tabsVisited?.join(', ') || 'Not tracked',
+        'Duration (sec)': v.duration,
+        Device: v.device,
+        Date: new Date(v.createdAt).toLocaleString()
+      }));
+      exportToCSV(exportData, `${student.name.replace(/\s+/g, '_')}_activity.csv`);
+    } else if (activeTab === 'quizzes') {
+      const exportData = quizzes.map(q => ({
+        Experiment: q.experiment?.title,
+        'Quiz Type': q.quizType,
+        Score: q.score,
+        'Max Score': q.maxScore,
+        Passed: q.passed ? 'Yes' : 'No',
+        Date: new Date(q.createdAt).toLocaleString()
+      }));
+      exportToCSV(exportData, `${student.name.replace(/\s+/g, '_')}_quizzes.csv`);
+    } else if (activeTab === 'feedback') {
+      const exportData = feedbacks.map(f => ({
+        Experiment: f.experiment?.title,
+        Rating: f.rating,
+        'Technical Issue': f.technicalIssue ? 'Yes' : 'No',
+        Comments: f.comments || '',
+        Date: new Date(f.createdAt).toLocaleString()
+      }));
+      exportToCSV(exportData, `${student.name.replace(/\s+/g, '_')}_feedback.csv`);
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md">
       <div className="bg-slate-900 border border-white/10 rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden">
@@ -99,21 +132,31 @@ export default function StudentAnalyticsModal({ userId, onClose }) {
             ))}
           </div>
 
-          {/* Sub-tab selection */}
-          <div className="flex gap-1.5 bg-white/5 border border-white/10 p-1 rounded-xl w-fit">
-            {[
-              { id: 'activity', label: 'Activity Logs' },
-              { id: 'quizzes',  label: 'Quiz Scores' },
-              { id: 'feedback', label: 'Reviews submitted' },
-            ].map(tab => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition-all ${activeTab === tab.id ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-md shadow-blue-500/10' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}
-              >
-                {tab.label}
-              </button>
-            ))}
+          {/* Sub-tab selection and export */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex gap-1.5 bg-white/5 border border-white/10 p-1 rounded-xl w-fit">
+              {[
+                { id: 'activity', label: 'Activity Logs' },
+                { id: 'quizzes',  label: 'Quiz Scores' },
+                { id: 'feedback', label: 'Reviews submitted' },
+              ].map(tab => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition-all ${activeTab === tab.id ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-md shadow-blue-500/10' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+            
+            <button 
+              onClick={handleExportCSV}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/20 rounded-xl text-xs font-semibold transition-all shadow-sm w-fit"
+            >
+              <Download className="w-3.5 h-3.5" /> 
+              Export {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
+            </button>
           </div>
 
           {/* Render Active Tab Lists */}
