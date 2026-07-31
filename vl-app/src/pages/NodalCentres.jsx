@@ -272,9 +272,22 @@ export default function NodalCentres() {
   const approvedWorkshops = (workshops || []).filter(w => w.status === 'approved');
 
   let centres = [];
+  let benefits = BENEFITS;
+  let inaugurations = INAUGURATION_EVENTS;
+  let heroSec = null;
+  let benefitsSec = null;
+  let listSec = null;
+  let inaugSec = null;
+
   if (sections) {
-    const listSec = sections.find(s => s.sectionKey === 'nc_list');
+    listSec = sections.find(s => s.sectionKey === 'nc_list');
+    benefitsSec = sections.find(s => s.sectionKey === 'nc_benefits');
+    heroSec = sections.find(s => s.sectionKey === 'nc_hero');
+    inaugSec = sections.find(s => s.sectionKey === 'nc_inaugurations');
+
     if (listSec?.content?.items) centres = listSec.content.items;
+    if (benefitsSec?.content?.items) benefits = benefitsSec.content.items.map(b => b.text || b);
+    if (inaugSec?.content?.items) inaugurations = inaugSec.content.items;
   }
 
   return (
@@ -283,13 +296,13 @@ export default function NodalCentres() {
       <section className="bg-hero-gradient py-12">
         <div className="container-custom text-center">
           <span className="inline-block bg-white/10 text-white/80 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider mb-4">
-            Nodal Centres
+            {heroSec?.content?.tag || 'Nodal Centres'}
           </span>
           <h1 className="font-heading text-4xl font-extrabold text-white mb-4">
-            Join the Virtual Labs Network
+            {heroSec?.title || 'Join the Virtual Labs Network'}
           </h1>
           <p className="text-lg md:text-xl text-white/70 max-w-2xl mx-auto leading-relaxed">
-            Become a nodal centre and bring world-class virtual lab experiences to your students. Sponsored by MHRD (NME-ICT) — no registration fees, no hidden costs.
+            {heroSec?.subtitle || 'Become a nodal centre and bring world-class virtual lab experiences to your students. Sponsored by MHRD (NME-ICT) — no registration fees, no hidden costs.'}
           </p>
         </div>
       </section>
@@ -353,11 +366,11 @@ export default function NodalCentres() {
           <section className="py-20 bg-gray-50">
             <div className="container-custom">
               <div className="text-center mb-12">
-                <span className="tag">Why Join</span>
-                <h2 className="section-title mt-4">Benefits of Becoming a Nodal Centre</h2>
+                <span className="tag">{benefitsSec?.content?.tag || 'Why Join'}</span>
+                <h2 className="section-title mt-4">{benefitsSec?.title || 'Benefits of Becoming a Nodal Centre'}</h2>
               </div>
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-5xl mx-auto">
-                {BENEFITS.map((text, i) => (
+                {benefits.map((text, i) => (
                   <div key={i} className="card p-6 border border-gray-100 flex gap-3">
                     <CheckCircle2 className="w-5 h-5 text-primary-700 flex-shrink-0 mt-0.5" />
                     <p className="text-gray-700 text-sm leading-relaxed">{text}</p>
@@ -377,8 +390,8 @@ export default function NodalCentres() {
             <div className="container-custom">
               <div className="flex items-end justify-between mb-10">
                 <div>
-                  <span className="tag">Network</span>
-                  <h2 className="section-title mt-4 mb-0">Registered Nodal Centres</h2>
+                  <span className="tag">{listSec?.content?.tag || 'Network'}</span>
+                  <h2 className="section-title mt-4 mb-0">{listSec?.title || 'Registered Nodal Centres'}</h2>
                 </div>
                 <span className="text-sm text-gray-400">{centres.length} centres listed</span>
               </div>
@@ -557,10 +570,10 @@ export default function NodalCentres() {
         <section className="py-20 bg-white">
           <div className="container-custom max-w-4xl">
             <div className="text-center mb-14">
-              <span className="tag">Events</span>
-              <h2 className="section-title mt-4">Nodal Centre Inaugurations</h2>
+              <span className="tag">{inaugSec?.content?.tag || 'Events'}</span>
+              <h2 className="section-title mt-4">{inaugSec?.title || 'Nodal Centre Inaugurations'}</h2>
               <p className="section-subtitle">
-                Celebrating the launch of new nodal centres across India. Each inauguration marks a milestone in expanding quality STEM education.
+                {inaugSec?.subtitle || 'Celebrating the launch of new nodal centres across India. Each inauguration marks a milestone in expanding quality STEM education.'}
               </p>
             </div>
 
@@ -569,7 +582,7 @@ export default function NodalCentres() {
               <div className="absolute left-8 top-0 bottom-0 w-px bg-gray-200 hidden sm:block" />
 
               <div className="space-y-8">
-                {INAUGURATION_EVENTS.map((event, i) => (
+                {inaugurations.map((event, i) => (
                   <div key={i} className="relative flex gap-6">
                     {/* Year bubble */}
                     <div className="hidden sm:flex w-16 h-16 rounded-full bg-primary-700 text-white flex-shrink-0 items-center justify-center font-heading font-bold text-sm z-10 shadow-lg">

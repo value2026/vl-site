@@ -28,8 +28,10 @@ const GRADIENTS = {
   'emerald-teal': 'from-emerald-300 to-teal-500',
 };
 
-export default function Hero({ content = {} }) {
+export default function Hero({ sectionTitle, sectionSubtitle, content = {} }) {
   const d = { ...DEFAULTS, ...content };
+  const heading = sectionTitle || d.heading;
+  const subheading = sectionSubtitle || d.subheading;
   const stats = d.stats?.length ? d.stats : DEFAULTS.stats;
   const [isVideoOpen, setIsVideoOpen] = useState(false);
   
@@ -71,7 +73,7 @@ export default function Hero({ content = {} }) {
               id="hero-heading"
               className={`font-heading text-4xl sm:text-[3rem] lg:text-[4rem] font-extrabold leading-[1.15] mb-6 animate-fade-in-up text-white tracking-tight ${alignClass}`}
             >
-              {d.heading.split('\n').map((line, lineIdx) => (
+              {heading.split('\n').map((line, lineIdx) => (
                 <span key={lineIdx}>
                   {line.split(/\*(.*?)\*/g).map((part, partIdx) => (
                     partIdx % 2 === 1 ? (
@@ -82,7 +84,7 @@ export default function Hero({ content = {} }) {
                       <span key={partIdx}>{part}</span>
                     )
                   ))}
-                  {lineIdx < d.heading.split('\n').length - 1 && <br />}
+                  {lineIdx < heading.split('\n').length - 1 && <br />}
                 </span>
               ))}
             </h1>
@@ -92,7 +94,7 @@ export default function Hero({ content = {} }) {
             {/* Subheading */}
             <p
               className={`text-[1.1rem] sm:text-[1.25rem] text-white/90 leading-relaxed mb-10 max-w-3xl animate-fade-in-up animate-delay-300 font-medium drop-shadow-sm ${alignClass} ${d.contentAlignment === 'center' ? 'mx-auto' : d.contentAlignment === 'right' ? 'ml-auto' : ''}`}
-              dangerouslySetInnerHTML={{ __html: d.subheading }}
+              dangerouslySetInnerHTML={{ __html: subheading }}
             />
 
             {/* CTAs */}

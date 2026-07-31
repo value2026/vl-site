@@ -474,7 +474,30 @@ async function seedProjectPage() {
     }
   };
 
-  for (const sec of [timelineSection, objectivesSection]) {
+  const heroSection = {
+    sectionKey: 'project_hero',
+    label: 'Project Hero',
+    order: -2,
+    title: 'The Virtual Labs Project',
+    subtitle: 'A Ministry of Education initiative to provide remote access to labs in science and engineering disciplines through a web-based platform — free for all students in India.',
+    content: {
+      tag: 'About the Project'
+    }
+  };
+
+  const overviewSection = {
+    sectionKey: 'project_overview',
+    label: 'Project Overview',
+    order: -1,
+    title: 'What is Amrita Virtual Labs?',
+    content: {
+      tag: 'Overview',
+      paragraph1: 'Amrita Virtual Labs is a major initiative by Amrita Vishwa Vidyapeetham funded by the Ministry of Education under the National Mission on Education through ICT (NMEICT). It provides interactive simulation-based online experiment environments across engineering and sciences.',
+      paragraph2: 'The platform provides students access to over 700 virtual labs and 1,800+ experiments spanning core science and engineering disciplines — accessible anytime, anywhere without requiring physical lab equipment.'
+    }
+  };
+
+  for (const sec of [heroSection, overviewSection, timelineSection, objectivesSection]) {
     await prisma.pageSection.upsert({
       where: { pageId_sectionKey: { pageId: page.id, sectionKey: sec.sectionKey } },
       update: {},
@@ -537,7 +560,33 @@ async function seedNodalCentresPage() {
     }
   };
 
-  for (const sec of [benefitsSection, listSection]) {
+  const heroSection = {
+    sectionKey: 'nc_hero',
+    label: 'Nodal Centres Hero',
+    order: -1,
+    title: 'Join the Virtual Labs Network',
+    subtitle: 'Become a nodal centre and bring world-class virtual lab experiences to your students. Sponsored by MHRD (NME-ICT) — no registration fees, no hidden costs.',
+    content: { tag: 'Nodal Centres' }
+  };
+
+  const inaugSection = {
+    sectionKey: 'nc_inaugurations',
+    label: 'Inaugurations',
+    order: 2,
+    title: 'Nodal Centre Inaugurations',
+    subtitle: 'Celebrating the launch of new nodal centres across India. Each inauguration marks a milestone in expanding quality STEM education.',
+    content: {
+      tag: 'Events',
+      items: [
+        { year: '2024', title: 'Nodal Centre Inauguration – Amrita Coimbatore', location: 'Coimbatore, Tamil Nadu', description: 'Launch of Virtual Labs Nodal Centre at the School of Engineering, Amrita Vishwa Vidyapeetham.', attendees: '200+' },
+        { year: '2023', title: 'Virtual Labs Expansion – Southern Consortium', location: 'Bengaluru, Karnataka', description: 'Formal inauguration ceremony for the southern consortium nodal centres, expanding access to 12 new institutions.', attendees: '350+' },
+        { year: '2023', title: 'NMEICT Nodal Centre Drive', location: 'New Delhi', description: 'National launch event for the 2023 wave of nodal centre registrations under the MHRD NMEICT initiative.', attendees: '500+' },
+        { year: '2022', title: 'North India Expansion Launch', location: 'Lucknow, Uttar Pradesh', description: 'Inauguration of 8 new nodal centres across Uttar Pradesh, Bihar, and Madhya Pradesh.', attendees: '280+' },
+      ]
+    }
+  };
+
+  for (const sec of [heroSection, benefitsSection, listSection, inaugSection]) {
     await prisma.pageSection.upsert({
       where: { pageId_sectionKey: { pageId: page.id, sectionKey: sec.sectionKey } },
       update: {},

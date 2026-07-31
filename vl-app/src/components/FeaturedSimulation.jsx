@@ -16,8 +16,10 @@ const DEFAULTS = {
   href: '/simulations/pendulum',
 };
 
-export default function FeaturedSimulation({ content = {} }) {
+export default function FeaturedSimulation({ sectionTitle, sectionSubtitle, content = {} }) {
   const sim = { ...DEFAULTS, ...content };
+  const heading = sectionTitle || 'Featured Simulation';
+  const subtitle = sectionSubtitle || 'Hand-picked by our academic council for exceptional learning outcomes.';
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -50,10 +52,10 @@ export default function FeaturedSimulation({ content = {} }) {
         <div className="text-center mb-8">
           <span className="tag">Spotlight</span>
           <h2 id="featured-sim-heading" className="section-title mt-4">
-            Featured Simulation
+            {heading}
           </h2>
           <p className="section-subtitle">
-            Hand-picked by our academic council for exceptional learning outcomes.
+            {subtitle}
           </p>
         </div>
 
