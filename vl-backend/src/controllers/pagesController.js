@@ -578,10 +578,10 @@ async function seedNodalCentresPage() {
     content: {
       tag: 'Events',
       items: [
-        { year: '2024', title: 'Nodal Centre Inauguration – Amrita Coimbatore', location: 'Coimbatore, Tamil Nadu', description: 'Launch of Virtual Labs Nodal Centre at the School of Engineering, Amrita Vishwa Vidyapeetham.', attendees: '200+' },
-        { year: '2023', title: 'Virtual Labs Expansion – Southern Consortium', location: 'Bengaluru, Karnataka', description: 'Formal inauguration ceremony for the southern consortium nodal centres, expanding access to 12 new institutions.', attendees: '350+' },
-        { year: '2023', title: 'NMEICT Nodal Centre Drive', location: 'New Delhi', description: 'National launch event for the 2023 wave of nodal centre registrations under the MHRD NMEICT initiative.', attendees: '500+' },
-        { year: '2022', title: 'North India Expansion Launch', location: 'Lucknow, Uttar Pradesh', description: 'Inauguration of 8 new nodal centres across Uttar Pradesh, Bihar, and Madhya Pradesh.', attendees: '280+' },
+        { year: '2024', title: 'Nodal Centre Inauguration – Amrita Coimbatore', location: 'Coimbatore, Tamil Nadu', description: 'Launch of Virtual Labs Nodal Centre at the School of Engineering, Amrita Vishwa Vidyapeetham.', attendees: '200+', status: 'Completed' },
+        { year: '2023', title: 'Virtual Labs Expansion – Southern Consortium', location: 'Bengaluru, Karnataka', description: 'Formal inauguration ceremony for the southern consortium nodal centres, expanding access to 12 new institutions.', attendees: '350+', status: 'Completed' },
+        { year: '2023', title: 'NMEICT Nodal Centre Drive', location: 'New Delhi', description: 'National launch event for the 2023 wave of nodal centre registrations under the MHRD NMEICT initiative.', attendees: '500+', status: 'Completed' },
+        { year: '2022', title: 'North India Expansion Launch', location: 'Lucknow, Uttar Pradesh', description: 'Inauguration of 8 new nodal centres across Uttar Pradesh, Bihar, and Madhya Pradesh.', attendees: '280+', status: 'Completed' },
       ]
     }
   };
