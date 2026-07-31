@@ -235,6 +235,8 @@ export default function TeacherAssignments() {
     try {
       const payload = {
         ...scheduleForm,
+        startTime: new Date(scheduleForm.startTime).toISOString(),
+        endTime: new Date(scheduleForm.endTime).toISOString(),
         questionPaperId: selectedPaper.id,
         studentIds: selectedStudentIds
       };

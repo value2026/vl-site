@@ -6,7 +6,7 @@ import Placeholder from '@tiptap/extension-placeholder';
 import {
   X, Save, Plus, Trash2, ChevronDown, ChevronUp,
   Bold, Italic, List, Heading2, Link2, Undo, Redo, Image as ImageIcon,
-  Search, FlaskConical, Check, Loader2, CheckCircle2
+  Search, FlaskConical, Check, Loader2, CheckCircle2, FileJson
 } from 'lucide-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import CloudinaryUploader from './CloudinaryUploader';
@@ -99,6 +99,9 @@ function RepeatableList({ label, items = [], onChange, fields, onConfirmRequest 
     return item;
   });
 
+  const [showBulkImport, setShowBulkImport] = useState(false);
+  const [bulkJson, setBulkJson] = useState('');
+
   const add = () => {
     const blank = { _id: Math.random().toString(36).substring(2, 9) };
     fields.forEach(f => {
@@ -110,6 +113,33 @@ function RepeatableList({ label, items = [], onChange, fields, onConfirmRequest 
     });
     onChange([blank, ...stableItems]);
   };
+
+  const handleBulkImport = () => {
+    try {
+      const parsed = JSON.parse(bulkJson);
+      if (!Array.isArray(parsed)) throw new Error("JSON must be an array of objects");
+      
+      const newItems = parsed.map(item => ({
+        ...item,
+        _id: Math.random().toString(36).substring(2, 9)
+      }));
+      
+      onChange([...newItems, ...stableItems]);
+      setShowBulkImport(false);
+      setBulkJson('');
+    } catch (err) {
+      alert("Invalid JSON format: " + err.message);
+    }
+  };
+
+  const loadExampleJson = () => {
+    const exampleItem = {};
+    fields.forEach(f => {
+      exampleItem[f.key] = f.placeholder || `value`;
+    });
+    setBulkJson(JSON.stringify([exampleItem], null, 2));
+  };
+
   const remove = (i) => {
     if (onConfirmRequest) {
       onConfirmRequest({ title: 'Remove Item', message: 'Are you sure you want to remove this item?', onConfirm: () => onChange(stableItems.filter((_, idx) => idx !== i)) });
@@ -133,14 +163,68 @@ function RepeatableList({ label, items = [], onChange, fields, onConfirmRequest 
     <div>
       <div className="flex items-center justify-between mb-3">
         <label className="text-sm font-medium text-slate-300">{label}</label>
-        <button
-          type="button"
-          onClick={add}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 transition-colors"
-        >
-          <Plus className="w-3.5 h-3.5" /> Add Item
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setShowBulkImport(!showBulkImport)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/20 transition-colors"
+          >
+            <FileJson className="w-3.5 h-3.5" /> Bulk Import
+          </button>
+          <button
+            type="button"
+            onClick={add}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 transition-colors"
+          >
+            <Plus className="w-3.5 h-3.5" /> Add Item
+          </button>
+        </div>
       </div>
+      
+      {showBulkImport && (
+        <div className="mb-4 p-5 rounded-xl bg-blue-500/5 border border-blue-500/20 animate-in fade-in slide-in-from-top-2 duration-200">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-3 gap-2">
+            <div>
+              <h4 className="text-sm font-bold text-blue-300">Bulk Import via JSON</h4>
+              <p className="text-xs text-blue-200/70 mt-0.5">
+                Paste an array of objects to instantly add multiple items.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={loadExampleJson}
+              className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 transition-colors"
+            >
+              Load Example Format
+            </button>
+          </div>
+          
+          <textarea
+            value={bulkJson}
+            onChange={e => setBulkJson(e.target.value)}
+            rows={6}
+            className="w-full bg-slate-900 border border-blue-500/30 rounded-lg px-4 py-3 text-sm text-slate-300 placeholder-slate-600 font-mono resize-y focus:outline-none focus:border-blue-500"
+            placeholder="[{&quot;title&quot;: &quot;Example&quot;}, ...]"
+          />
+          <div className="flex justify-end mt-3 gap-3">
+            <button
+              type="button"
+              onClick={() => setShowBulkImport(false)}
+              className="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:text-white transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={handleBulkImport}
+              className="px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-500 hover:bg-blue-600 text-white shadow-lg transition-colors"
+            >
+              Parse & Add
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="space-y-3">
         {stableItems.map((item, i) => (
           <div key={item._id} className="p-3 rounded-xl bg-white/5 border border-white/10 space-y-2 animate-in fade-in slide-in-from-top-4 duration-300">

@@ -22,7 +22,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import SectionEditorModal from '../../components/dashboard/SectionEditorModal';
-import SurveyResponsesModal from '../../components/dashboard/SurveyResponsesModal';
+import SurveyResponsesView from '../../components/dashboard/SurveyResponsesView';
 
 // ── API helpers ───────────────────────────────────────────────
 
@@ -140,7 +140,7 @@ export default function ManagePages() {
   const queryClient        = useQueryClient();
   const [pageSlug, setPageSlug] = useState('home');
   const [editingSection, setEditingSection] = useState(null);
-  const [showSurveyResponsesModal, setShowSurveyResponsesModal] = useState(false);
+  const [activeTab, setActiveTab] = useState('sections');
   const [savingId,       setSavingId]       = useState(null);
   const [savedId,        setSavedId]        = useState(null);
 
@@ -275,11 +275,15 @@ export default function ManagePages() {
               <>
                 {['student-survey', 'faculty-survey'].includes(pageSlug) && (
                   <button
-                    onClick={() => setShowSurveyResponsesModal(true)}
-                    className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-blue-400 hover:text-white bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 transition-all"
+                    onClick={() => setActiveTab(activeTab === 'responses' ? 'sections' : 'responses')}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+                      activeTab === 'responses'
+                        ? 'bg-red-500/10 text-red-400 border border-red-500/20'
+                        : 'text-blue-400 hover:text-white bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20'
+                    }`}
                   >
                     <Eye className="w-4 h-4" />
-                    View Responses
+                    {activeTab === 'responses' ? 'Edit Form Fields' : 'View Responses'}
                   </button>
                 )}
                 <a
@@ -300,7 +304,7 @@ export default function ManagePages() {
       {/* Page Tabs */}
       <div className="flex flex-wrap items-center gap-2 mb-6 border-b border-white/10 pb-4">
         <button
-          onClick={() => { setPageSlug('home'); setLocalOrder(null); }}
+          onClick={() => { setPageSlug('home'); setLocalOrder(null); setActiveTab('sections'); }}
           className={`px-5 py-2.5 rounded-lg text-sm font-semibold transition-all ${
             pageSlug === 'home'
               ? 'bg-red-500/10 text-red-400 border border-red-500/20'
@@ -310,7 +314,7 @@ export default function ManagePages() {
           Home Page
         </button>
         <button
-          onClick={() => { setPageSlug('publications'); setLocalOrder(null); }}
+          onClick={() => { setPageSlug('publications'); setLocalOrder(null); setActiveTab('sections'); }}
           className={`px-5 py-2.5 rounded-lg text-sm font-semibold transition-all ${
             pageSlug === 'publications'
               ? 'bg-red-500/10 text-red-400 border border-red-500/20'
@@ -320,7 +324,7 @@ export default function ManagePages() {
           Publications
         </button>
         <button
-          onClick={() => { setPageSlug('project'); setLocalOrder(null); }}
+          onClick={() => { setPageSlug('project'); setLocalOrder(null); setActiveTab('sections'); }}
           className={`px-5 py-2.5 rounded-lg text-sm font-semibold transition-all ${
             pageSlug === 'project'
               ? 'bg-red-500/10 text-red-400 border border-red-500/20'
@@ -330,7 +334,7 @@ export default function ManagePages() {
           Project
         </button>
         <button
-          onClick={() => { setPageSlug('nodal-centres'); setLocalOrder(null); }}
+          onClick={() => { setPageSlug('nodal-centres'); setLocalOrder(null); setActiveTab('sections'); }}
           className={`px-5 py-2.5 rounded-lg text-sm font-semibold transition-all ${
             pageSlug === 'nodal-centres'
               ? 'bg-red-500/10 text-red-400 border border-red-500/20'
@@ -352,75 +356,86 @@ export default function ManagePages() {
           </button>
           
           <div className="absolute left-0 top-full mt-1 w-48 bg-slate-800 border border-white/10 rounded-xl shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 overflow-hidden py-1">
-            <button
-              onClick={() => { setPageSlug('student-survey'); setLocalOrder(null); }}
-              className={`w-full text-left px-4 py-2.5 text-sm transition-colors ${
-                pageSlug === 'student-survey' 
-                  ? 'bg-blue-500/20 text-blue-300 font-bold border-l-2 border-blue-400' 
-                  : 'text-slate-300 hover:bg-white/5 hover:text-white border-l-2 border-transparent'
-              }`}
-            >
-              Student Survey
-            </button>
-            <button
-              onClick={() => { setPageSlug('faculty-survey'); setLocalOrder(null); }}
-              className={`w-full text-left px-4 py-2.5 text-sm transition-colors ${
-                pageSlug === 'faculty-survey' 
-                  ? 'bg-blue-500/20 text-blue-300 font-bold border-l-2 border-blue-400' 
-                  : 'text-slate-300 hover:bg-white/5 hover:text-white border-l-2 border-transparent'
-              }`}
-            >
-              Faculty Survey
-            </button>
-          </div>
+              <button
+                onClick={() => { setPageSlug('student-survey'); setLocalOrder(null); setActiveTab('sections'); }}
+                className={`w-full text-left px-4 py-2.5 text-sm transition-colors ${
+                  pageSlug === 'student-survey' 
+                    ? 'bg-blue-500/20 text-blue-300 font-bold border-l-2 border-blue-400' 
+                    : 'text-slate-300 hover:bg-white/5 hover:text-white border-l-2 border-transparent'
+                }`}
+              >
+                Student Survey
+              </button>
+              <button
+                onClick={() => { setPageSlug('faculty-survey'); setLocalOrder(null); setActiveTab('sections'); }}
+                className={`w-full text-left px-4 py-2.5 text-sm transition-colors ${
+                  pageSlug === 'faculty-survey' 
+                    ? 'bg-blue-500/20 text-blue-300 font-bold border-l-2 border-blue-400' 
+                    : 'text-slate-300 hover:bg-white/5 hover:text-white border-l-2 border-transparent'
+                }`}
+              >
+                Faculty Survey
+              </button>
+            </div>
         </div>
       </div>
 
-      {/* Info banner */}
-      <div className="flex items-center gap-3 p-4 bg-blue-500/10 border border-blue-500/20 rounded-2xl mb-6">
-        <Globe className="w-5 h-5 text-blue-400 flex-shrink-0" />
-        <p className="text-blue-300 text-sm">
-          Changes are <strong>live immediately</strong> after saving. Hidden sections are invisible to visitors but stay saved in the database.
-        </p>
-      </div>
+      {/* Content Area */}
+      {activeTab === 'responses' ? (
+        <SurveyResponsesView
+          pageSlug={pageSlug}
+          token={token}
+          API_URL={API_URL}
+        />
+      ) : (
+        <>
+          {/* Info banner */}
+          <div className="flex items-center gap-3 p-4 bg-blue-500/10 border border-blue-500/20 rounded-2xl mb-6">
+            <Globe className="w-5 h-5 text-blue-400 flex-shrink-0" />
+            <p className="text-blue-300 text-sm">
+              Changes are <strong>live immediately</strong> after saving. Hidden sections are invisible to visitors but stay saved in the database.
+            </p>
+          </div>
 
-      {/* Section list with DnD */}
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragEnd={handleDragEnd}
-      >
-        <SortableContext
-          items={displaySections.map(s => s.id)}
-          strategy={verticalListSortingStrategy}
-        >
-          <div className="space-y-3">
-            {displaySections.map(section => (
-              <div key={section.id} className="relative">
-                <SortableSection
-                  section={section}
-                  onEdit={setEditingSection}
-                  onToggle={s => toggleMutation.mutate(s)}
-                  isSaving={savingId === section.id}
-                />
-                {savedId === section.id && (
-                  <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-1.5 text-emerald-400 text-xs font-medium animate-fade-in">
-                    <CheckCircle2 className="w-4 h-4" />
-                    Saved!
+          {/* Section list with DnD */}
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext
+              items={displaySections.map(s => s.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              <div className="space-y-3">
+                {displaySections.map(section => (
+                  <div key={section.id} className="relative">
+                    <SortableSection
+                      section={section}
+                      onEdit={setEditingSection}
+                      onToggle={s => toggleMutation.mutate(s)}
+                      isSaving={savingId === section.id}
+                    />
+                    {savedId === section.id && (
+                      <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-1.5 text-emerald-400 text-xs font-medium animate-fade-in">
+                        <CheckCircle2 className="w-4 h-4" />
+                        Saved!
+                      </div>
+                    )}
                   </div>
-                )}
+                ))}
               </div>
-            ))}
-          </div>
-        </SortableContext>
-      </DndContext>
+            </SortableContext>
+          </DndContext>
 
-      {/* Reorder status */}
-      {reorderMutation.isPending && (
-        <div className="flex items-center justify-center gap-2 mt-4 text-slate-500 text-sm">
-          <Loader2 className="w-4 h-4 animate-spin" />
-          Saving order…
-        </div>
+          {/* Reorder status */}
+          {reorderMutation.isPending && (
+            <div className="flex items-center justify-center gap-2 mt-4 text-slate-500 text-sm">
+              <Loader2 className="w-4 h-4 animate-spin" />
+              Saving order…
+            </div>
+          )}
+        </>
       )}
 
       {/* Edit modal */}
@@ -435,13 +450,6 @@ export default function ManagePages() {
           }}
         />
       )}
-      <SurveyResponsesModal
-        isOpen={showSurveyResponsesModal}
-        onClose={() => setShowSurveyResponsesModal(false)}
-        pageSlug={pageSlug}
-        token={token}
-        API_URL={API_URL}
-      />
     </div>
   );
 }

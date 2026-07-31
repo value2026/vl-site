@@ -768,10 +768,7 @@ const getSurveyResponses = async (req, res) => {
       orderBy: { createdAt: 'desc' }
     });
     
-    if (responses.length === 0) {
-      return res.status(404).json({ error: 'No responses found' });
-    }
-
+    // Remove the 404 error block so that it simply returns the empty array
     if (req.query.format === 'csv') {
       // Convert JSON data to CSV
       const allKeys = new Set();
