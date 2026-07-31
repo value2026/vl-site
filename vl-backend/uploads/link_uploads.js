@@ -83,7 +83,13 @@ async function linkUploads() {
           }
           if (hasSim) {
             const simFolderName = items.find(i => i.isDirectory() && (i.name === 'simulation' || i.name === 'sim-root')).name;
-            updateData.simulationPath = `${targetRelPath}/${simFolderName}`;
+            
+            // If it's sim-root, the actual HTML is inside sim-root/simulation
+            if (simFolderName === 'sim-root' && fs.existsSync(path.join(dir, 'sim-root', 'simulation'))) {
+              updateData.simulationPath = `${targetRelPath}/sim-root/simulation`;
+            } else {
+              updateData.simulationPath = `${targetRelPath}/${simFolderName}`;
+            }
           }
 
           console.log(`✅ Matched [${match.title}] to folder "${targetRelPath}" ->`, updateData);
