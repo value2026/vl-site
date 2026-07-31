@@ -1,0 +1,41 @@
+{
+  "version": 2.0,
+  "questions": [
+    {
+      "question": "Permanent dipole moment consists of the following angular momentum",
+      "answers": {
+        "a": "Orbital angular momentum of electron",
+        "b": "Electron spin angular momentum",
+        "c": "Nuclear spin angular momentum",
+        "d": "All the above"
+      },
+      
+      "correctAnswer": "d",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "Ferromagnetic materials or ferrites are obtained from",
+      "answers": {
+        "a": "Copper",
+        "b": "Zinc",
+        "c": "Aluminium",
+        "d": "None of these"
+      },
+    
+      "correctAnswer": "c",
+      "difficulty": "beginner"
+    },
+     {
+      "question": "What are domains?",
+      "answers": {
+        "a": "Small regions inside the ferromagnetic solid which are spontaneously magnetized.",
+        "b": "Walls or boundaries of the ferromagnetic solids.",
+        "c": "The ferromagnetic solid itself",
+        "d": "None of these"
+      },
+    
+      "correctAnswer": "a",
+      "difficulty": "beginner"
+    }
+  ]
+}

@@ -239,6 +239,79 @@ async function main() {
           ]
         }
       ]
+    },
+    {
+      id: '3834263f-6848-4015-bf6f-1a7c6ebb0b8f',
+      title: 'Physical Sciences',
+      icon: '📚',
+      description: 'Explore concepts in physics and chemistry.',
+      gradient: 'from-rose-500 to-red-600',
+      labs: [
+        {
+          id: 'f0513ca4-6622-460a-a465-bf192ba426da',
+          title: 'Electricity & Magnetism Virtual Lab',
+          icon: '🔬',
+          description: 'Explore fundamental principles of electricity and magnetism.',
+          experiments: [
+            {
+              id: '7c2cc105-09b2-4494-a8f3-d29926545ca9',
+              title: 'Tangent Galvanometer',
+              description: 'Experiment on Tangent Galvanometer.',
+              duration: '60 min',
+              difficulty: 'Beginner',
+            },
+            {
+              id: '18c16f17-a849-4a6c-bc5a-9cb98410ab03',
+              title: 'Magnetic Field Along The Axis of A Circular Coil Carrying Current',
+              description: 'Analyze magnetic field along the axis of a circular coil.',
+              duration: '60 min',
+              difficulty: 'Beginner',
+            },
+            {
+              id: 'b0345919-ec61-499a-8440-3be1216fad39',
+              title: 'Deflection Magnetometer',
+              description: 'Experiment on Deflection Magnetometer.',
+              duration: '60 min',
+              difficulty: 'Beginner',
+            },
+            {
+              id: 'd952599c-fbe3-4246-9ca8-68b201f47f65',
+              title: 'Van De Graaff Generator',
+              description: 'Experiment on Van De Graaff Generator.',
+              duration: '60 min',
+              difficulty: 'Beginner',
+            },
+            {
+              id: '0adf85be-fe6b-4148-8c2f-cebaef432314',
+              title: 'Barkhausen Effect',
+              description: 'Observe the Barkhausen effect.',
+              duration: '60 min',
+              difficulty: 'Beginner',
+            },
+            {
+              id: '07df6e46-6e79-4cdd-b47f-6f43536cabc5',
+              title: 'Temperature Coefficient of Resistance',
+              description: 'Determine the temperature coefficient of resistance.',
+              duration: '60 min',
+              difficulty: 'Beginner',
+            },
+            {
+              id: '37c08ccb-4412-440e-8bcf-9a8a94bb5a92',
+              title: 'Anderson\'s Bridge',
+              description: 'Experiment on Anderson\'s Bridge.',
+              duration: '60 min',
+              difficulty: 'Beginner',
+            },
+            {
+              id: '374b9cdb-86cf-4aab-bbad-ea65c87ec16e',
+              title: 'Quincke\'s Method',
+              description: 'Experiment using Quincke\'s Method.',
+              duration: '60 min',
+              difficulty: 'Beginner',
+            }
+          ]
+        }
+      ]
     }
   ];
 

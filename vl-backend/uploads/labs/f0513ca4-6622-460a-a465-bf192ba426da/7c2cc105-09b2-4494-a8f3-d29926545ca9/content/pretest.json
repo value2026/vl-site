@@ -1,0 +1,65 @@
+{
+  "version": 2.0,
+  "questions": [
+    {
+      "question": "The tangent galvanometer is an early measuring instrument for",
+      "answers": {
+        "a": "Electric field",
+        "b": "Charge",
+        "c": "Current",
+        "d": "Magnetic field"
+      },
+      
+      "correctAnswer": "c",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "The magnetic field produced by a circular coil carrying current I is",
+      "answers": {
+        "a": "Proportional to I",
+        "b": "Proportional to half of I",
+        "c": "Proportional to square of I",
+        "d": "Inependent of I"
+      },
+      
+      "correctAnswer": "a",
+      "difficulty": "beginner"
+    },
+     {
+      "question": "The S.I unit of magnetic field is",
+      "answers": {
+        "a": "Coulomb",
+        "b": "Tesla",
+        "c": "Gauss",
+        "d": "Newton/Coulomb"
+      },
+      
+      "correctAnswer": "b",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "The magnitude of horizontal intensity of earth's magnetic field is",
+      "answers": {
+        "a": "35 μT",
+        "b": "35 μGauss",
+        "c": "35 μN/m",
+        "d": "35 μVm"
+      },
+     
+      "correctAnswer": "a",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "For better result while doing tangent galvanometer experiment in real lab, the deflection should be in between",
+      "answers": {
+        "a": "60-90",
+        "b": "30-60",
+        "c": "10-20",
+        "d": "no specific range"
+      },
+      
+      "correctAnswer": "b",
+      "difficulty": "beginner"
+    }
+  ]
+}

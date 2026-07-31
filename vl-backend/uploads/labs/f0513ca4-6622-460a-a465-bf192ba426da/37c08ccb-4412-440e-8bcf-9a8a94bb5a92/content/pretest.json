@@ -1,0 +1,66 @@
+{
+  "version": 2.0,
+  "questions": [
+    {
+      "question": "Anderson's bridge enables to measure the inductance of the coil using",
+      "answers": {
+        "a": "Capacitors",
+        "b": "Resistors",
+        "c": "Capacitor and Resistors",
+        "d": "None of these"
+      },
+      
+      "correctAnswer": "c",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "Inductance of a coil depends on",
+      "answers": {
+        "a": "Relative permeability",
+        "b": "Area of the core material",
+        "c": "Length of the coil",
+        "d": "All of the above"
+      },
+      
+      "correctAnswer": "d",
+      "difficulty": "beginner"
+    },
+     {
+      "question": "L, C and R respectively represent inductance, capacitance and resistance. Which one of the following doesn't have dimensions of frequency?",
+      "answers": {
+        "a": "R/L",
+        "b": "1/RL",
+        "c": "R/√(LC)",
+        "d": "1/√(LC)"
+      },
+     
+      "correctAnswer": "c",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "Inductance plays the role similar to",
+      "answers": {
+        "a": "Inertia",
+        "b": "Friction",
+        "c": "Source of emf",
+        "d": "Force"
+      },
+      
+      "correctAnswer": "c",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "In the case of pure inductance, average power dissipation is",
+      "answers": {
+        "a": "1/2LIω<sup>2</sup>",
+        "b": "1/4 LIω<sup>2</sup>",
+        "c": "2LIω<sup>2</sup>",
+        "d": "Zero"
+      },
+      
+      "correctAnswer": "d",
+      "difficulty": "beginner"
+    }
+  ]
+}
+

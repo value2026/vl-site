@@ -1,0 +1,65 @@
+{
+  "version": 2.0,
+  "questions": [
+    {
+      "question": "The degree of magnetization of a material in response to an applied magnetic field is called",
+      "answers": {
+        "a": "Magnetic permeability",
+        "b": "Magnetic susceptibility",
+        "c": "Magnetic induction",
+        "d": "Magnetic dipole moment"
+      },
+      
+      "correctAnswer": "b",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "Which among the following is a experimental method to determine the susceptibility of liquids?",
+      "answers": {
+        "a": "Cornu's method",
+        "b": "Kundts tube method",
+        "c": "Quincke's method",
+        "d": "Oscillation disc method"
+      },
+      
+      "correctAnswer": "c",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "The relative permeability of air is one. Its susceptibility is given by",
+      "answers": {
+        "a": "Zero",
+        "b": "One",
+        "c": "Two",
+        "d": "Infinity"
+      },
+      
+      "correctAnswer": "a",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "MnSO4 dissolved in water is an example for",
+      "answers": {
+        "a": "Diamagnetic solution",
+        "b": "Ferromagnetic solution",
+        "c": "Paramagnetic solution",
+        "d": "Not magnetic at all"
+      },
+     
+      "correctAnswer": "c",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "Which among the following statement is correct regarding magnetic susceptibility?",
+      "answers": {
+        "a": "It is not related to permittivity of the material",
+        "b": "It depends on the external conditions",
+        "c": "It depends on magnetic field applied",
+        "d": "It is a dimensionless quantity"
+      },
+     
+      "correctAnswer": "d",
+      "difficulty": "beginner"
+    }
+  ]
+}
