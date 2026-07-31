@@ -48,10 +48,10 @@ const BENEFITS = [
 ];
 
 const INAUGURATION_EVENTS = [
-  { year: '2024', title: 'Nodal Centre Inauguration – Amrita Coimbatore', location: 'Coimbatore, Tamil Nadu', description: 'Launch of Virtual Labs Nodal Centre at the School of Engineering, Amrita Vishwa Vidyapeetham.', attendees: '200+' },
-  { year: '2023', title: 'Virtual Labs Expansion – Southern Consortium', location: 'Bengaluru, Karnataka', description: 'Formal inauguration ceremony for the southern consortium nodal centres, expanding access to 12 new institutions.', attendees: '350+' },
-  { year: '2023', title: 'NMEICT Nodal Centre Drive', location: 'New Delhi', description: 'National launch event for the 2023 wave of nodal centre registrations under the MHRD NMEICT initiative.', attendees: '500+' },
-  { year: '2022', title: 'North India Expansion Launch', location: 'Lucknow, Uttar Pradesh', description: 'Inauguration of 8 new nodal centres across Uttar Pradesh, Bihar, and Madhya Pradesh.', attendees: '280+' },
+  { year: '2024', title: 'Nodal Centre Inauguration – Amrita Coimbatore', location: 'Coimbatore, Tamil Nadu', description: 'Launch of Virtual Labs Nodal Centre at the School of Engineering, Amrita Vishwa Vidyapeetham.', attendees: '200+', status: 'Completed' },
+  { year: '2023', title: 'Virtual Labs Expansion – Southern Consortium', location: 'Bengaluru, Karnataka', description: 'Formal inauguration ceremony for the southern consortium nodal centres, expanding access to 12 new institutions.', attendees: '350+', status: 'Completed' },
+  { year: '2023', title: 'NMEICT Nodal Centre Drive', location: 'New Delhi', description: 'National launch event for the 2023 wave of nodal centre registrations under the MHRD NMEICT initiative.', attendees: '500+', status: 'Completed' },
+  { year: '2022', title: 'North India Expansion Launch', location: 'Lucknow, Uttar Pradesh', description: 'Inauguration of 8 new nodal centres across Uttar Pradesh, Bihar, and Madhya Pradesh.', attendees: '280+', status: 'Completed' },
 ];
 
 function InlineFreeDemoForm() {
@@ -598,24 +598,30 @@ export default function NodalCentres() {
                         {event.location}
                       </div>
                       <p className="text-gray-600 text-sm leading-relaxed mb-4">{event.description}</p>
-                      <div className="flex items-center gap-2 text-sm">
-                        <Users className="w-4 h-4 text-primary-500" />
-                        <span className="text-gray-500">{event.attendees} attendees</span>
-                        <span className="ml-auto text-xs bg-green-50 text-green-700 px-2.5 py-1 rounded-full font-semibold">Completed</span>
+                      <div className="flex items-center gap-2 text-sm mt-auto">
+                        {event.attendees && (
+                          <>
+                            <Users className="w-4 h-4 text-primary-500" />
+                            <span className="text-gray-500">{event.attendees} attendees</span>
+                          </>
+                        )}
+                        <span className={`ml-auto text-xs px-2.5 py-1 rounded-full font-semibold ${(event.status || 'Completed').toLowerCase() === 'upcoming' ? 'bg-blue-50 text-blue-700' : 'bg-green-50 text-green-700'}`}>
+                          {event.status || 'Completed'}
+                        </span>
                       </div>
                     </div>
                   </div>
                 ))}
               </div>
+            </div>
 
-              <div className="mt-12 card p-8 border border-dashed border-primary-300 bg-primary-50/40 text-center">
-                <Ribbon className="w-10 h-10 text-primary-600 mx-auto mb-4" />
-                <h3 className="font-heading text-xl font-bold text-gray-900 mb-2">Hosting an Inauguration?</h3>
-                <p className="text-gray-500 text-sm mb-6">If your institution is planning to launch a Nodal Centre and would like to organize an inauguration event, reach out to our team for support.</p>
-                <a href="mailto:virtual_labs@am.amrita.edu" className="btn-primary">
-                  <Mail className="w-4 h-4" /> Get in Touch
-                </a>
-              </div>
+            <div className="mt-12 card p-8 border border-dashed border-primary-300 bg-primary-50/40 text-center">
+              <Ribbon className="w-10 h-10 text-primary-600 mx-auto mb-4" />
+              <h3 className="font-heading text-xl font-bold text-gray-900 mb-2">Hosting an Inauguration?</h3>
+              <p className="text-gray-500 text-sm mb-6">If your institution is planning to launch a Nodal Centre and would like to organize an inauguration event, reach out to our team for support.</p>
+              <a href="mailto:virtual_labs@am.amrita.edu" className="btn-primary">
+                <Mail className="w-4 h-4" /> Get in Touch
+              </a>
             </div>
           </div>
         </section>

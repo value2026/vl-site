@@ -597,6 +597,19 @@ const REPEATABLE_CONFIGS = {
       ],
     },
   },
+  nc_inaugurations: {
+    items: {
+      label: 'Inauguration Events',
+      fields: [
+        { key: 'year',        label: 'Year',        placeholder: '2024' },
+        { key: 'title',       label: 'Title',       placeholder: 'Nodal Centre Inauguration...' },
+        { key: 'location',    label: 'Location',    placeholder: 'Coimbatore, Tamil Nadu' },
+        { key: 'description', label: 'Description', placeholder: 'Launch of...', type: 'textarea' },
+        { key: 'attendees',   label: 'Attendees',   placeholder: '200+' },
+        { key: 'status',      label: 'Status',      placeholder: 'Completed / Upcoming' },
+      ],
+    },
+  },
 };
 
 // ── Simple text input ─────────────────────────────────────────
@@ -1260,6 +1273,22 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
             </>
           )}
 
+          {/* ── NODAL CENTRE INAUGURATIONS ───────────────────────── */}
+          {section.sectionKey === 'nc_inaugurations' && (
+            <>
+              <SectionDivider label="Inauguration Events" />
+              <TextField label="Section Tag" value={content.tag} onChange={v => setContentKey('tag', v)} placeholder="Events" />
+              <RepeatableList
+                label="Inaugurations"
+                items={content.items || []}
+                onChange={v => setContentKey('items', v)}
+                onAutoSave={v => handleAutoSave('items', v)}
+                fields={REPEATABLE_CONFIGS.nc_inaugurations.items.fields}
+                onConfirmRequest={setConfirmConfig}
+              />
+            </>
+          )}
+
 
 
           {/* ── NODAL CENTRES ───────────────────────────────── */}
@@ -1290,6 +1319,8 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
               />
             </>
           )}
+
+
         </div>
 
         {/* Footer */}
