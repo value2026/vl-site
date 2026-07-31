@@ -501,14 +501,17 @@ export default function ExperimentPage() {
 
       case 'simulation':
         return (
-          <div>
-            <SectionHeader title="Simulation" subtitle="Interact with the simulation below. Follow the procedure steps for guidance." />
+          <div className="flex flex-col flex-1 w-full h-full">
+            <div className="mb-4">
+              <h2 className="text-gray-900 font-bold text-xl">Simulation</h2>
+              <p className="text-gray-500 text-sm mt-1">Interact with the simulation below. Follow the procedure steps for guidance.</p>
+            </div>
             {experiment.simulationPath ? (
-              <div className="w-full max-w-5xl mx-auto space-y-4">
+              <div className="w-full flex-1 flex flex-col min-h-[650px]">
                 {/* Desktop Window Frame Container */}
                 <div 
                   id="simulation-frame-container" 
-                  className="flex flex-col bg-slate-900 border border-slate-700/60 rounded-2xl overflow-hidden w-full h-[650px] shadow-2xl relative animate-in fade-in zoom-in-95 duration-200"
+                  className="flex flex-col bg-slate-900 border border-slate-700/60 rounded-2xl overflow-hidden w-full flex-1 shadow-2xl relative animate-in fade-in zoom-in-95 duration-200"
                 >
                   {/* Browser Header Bar */}
                   <div className="flex items-center justify-between px-4 py-3 bg-slate-900 border-b border-slate-800 flex-shrink-0 select-none">
@@ -538,7 +541,7 @@ export default function ExperimentPage() {
 
                   <iframe
                     src={fileUrl(`${experiment.simulationPath}/index.html`)}
-                    className="w-full flex-1 border-none bg-[#3CA4AB]"
+                    className="w-full flex-1 border-none bg-white"
                     title="Simulation"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
@@ -748,8 +751,8 @@ export default function ExperimentPage() {
         </aside>
 
         {/* Main content */}
-        <main className="flex-1 overflow-y-auto bg-white">
-          <div className={`${active === 'simulation' ? 'max-w-7xl' : 'max-w-3xl'} mx-auto px-6 py-8 transition-all duration-300`}>
+        <main className="flex-1 flex flex-col overflow-y-auto bg-white">
+          <div className={`${active === 'simulation' ? 'w-full flex-1 flex flex-col p-4 md:p-6' : 'max-w-3xl mx-auto px-6 py-8'} transition-all duration-300`}>
             {renderContent()}
           </div>
         </main>
