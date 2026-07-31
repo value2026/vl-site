@@ -6,7 +6,7 @@ import Placeholder from '@tiptap/extension-placeholder';
 import {
   X, Save, Plus, Trash2, ChevronDown, ChevronUp,
   Bold, Italic, List, Heading2, Link2, Undo, Redo, Image as ImageIcon,
-  Search, FlaskConical, Check, Loader2, CheckCircle2, FileJson
+  Search, FlaskConical, Check, Loader2, CheckCircle2, FileJson, Maximize, Minimize
 } from 'lucide-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import CloudinaryUploader from './CloudinaryUploader';
@@ -92,7 +92,7 @@ function TiptapEditor({ content, onChange, placeholder = 'Start writing…' }) {
 }
 
 // ── Repeatable rows ───────────────────────────────────────────
-function RepeatableList({ label, items = [], onChange, fields, onConfirmRequest }) {
+function RepeatableList({ label, items = [], onChange, fields, onConfirmRequest, onAutoSave }) {
   // Ensure items have stable IDs for React keys
   const stableItems = items.map(item => {
     if (!item._id) return { ...item, _id: Math.random().toString(36).substring(2, 9) };
@@ -101,6 +101,9 @@ function RepeatableList({ label, items = [], onChange, fields, onConfirmRequest 
 
   const [showBulkImport, setShowBulkImport] = useState(false);
   const [bulkJson, setBulkJson] = useState('');
+  const [isFullScreen, setIsFullScreen] = useState(false);
+  const [isSelectionMode, setIsSelectionMode] = useState(false);
+  const [selectedItems, setSelectedItems] = useState(new Set());
 
   const add = () => {
     const blank = { _id: Math.random().toString(36).substring(2, 9) };
@@ -141,12 +144,64 @@ function RepeatableList({ label, items = [], onChange, fields, onConfirmRequest 
   };
 
   const remove = (i) => {
+    const action = () => {
+      const next = stableItems.filter((_, idx) => idx !== i);
+      onChange(next);
+      if (onAutoSave) onAutoSave(next);
+    };
     if (onConfirmRequest) {
-      onConfirmRequest({ title: 'Remove Item', message: 'Are you sure you want to remove this item?', onConfirm: () => onChange(stableItems.filter((_, idx) => idx !== i)) });
+      onConfirmRequest({ title: 'Remove Item', message: 'Are you sure you want to remove this item?', onConfirm: action });
     } else if (window.confirm('Are you sure you want to remove this item?')) {
-      onChange(stableItems.filter((_, idx) => idx !== i));
+      action();
     }
   };
+
+  const toggleSelectAll = (e) => {
+    if (e.target.checked) {
+      setSelectedItems(new Set(stableItems.map(i => i._id)));
+    } else {
+      setSelectedItems(new Set());
+    }
+  };
+
+  const toggleSelection = (id, checked) => {
+    const next = new Set(selectedItems);
+    if (checked) next.add(id);
+    else next.delete(id);
+    setSelectedItems(next);
+  };
+
+  const removeSelected = () => {
+    if (selectedItems.size === 0) return;
+    const msg = `Are you sure you want to delete ${selectedItems.size} selected items?`;
+    const action = () => {
+      const next = stableItems.filter(item => !selectedItems.has(item._id));
+      onChange(next);
+      if (onAutoSave) onAutoSave(next);
+      setSelectedItems(new Set());
+      setIsSelectionMode(false);
+    };
+    if (onConfirmRequest) {
+      onConfirmRequest({ title: 'Delete Selected', message: msg, onConfirm: action });
+    } else if (window.confirm(msg)) {
+      action();
+    }
+  };
+
+  const removeAll = () => {
+    const action = () => {
+      onChange([]);
+      if (onAutoSave) onAutoSave([]);
+      setSelectedItems(new Set());
+      setIsSelectionMode(false);
+    };
+    if (onConfirmRequest) {
+      onConfirmRequest({ title: 'Delete All Items', message: `Are you sure you want to delete all ${label}? This cannot be undone.`, onConfirm: action });
+    } else if (window.confirm(`Are you sure you want to delete all ${label}? This cannot be undone.`)) {
+      action();
+    }
+  };
+
   const update = (i, key, val) => {
     const next = stableItems.map((item, idx) => idx === i ? { ...item, [key]: val } : item);
     onChange(next);
@@ -159,11 +214,96 @@ function RepeatableList({ label, items = [], onChange, fields, onConfirmRequest 
     onChange(next);
   };
 
+  const containerClasses = isFullScreen 
+    ? "fixed inset-0 z-[100] bg-slate-950 p-6 sm:p-10 overflow-y-auto animate-in zoom-in-95 duration-200"
+    : "";
+
   return (
-    <div>
-      <div className="flex items-center justify-between mb-3">
-        <label className="text-sm font-medium text-slate-300">{label}</label>
+    <div className={containerClasses}>
+      {isFullScreen && (
+        <div className="flex items-center gap-3 mb-6 pb-4 border-b border-white/10">
+          <button onClick={() => setIsFullScreen(false)} className="p-2 text-slate-400 hover:text-white bg-white/5 rounded-xl transition-colors">
+            <X className="w-5 h-5" />
+          </button>
+          <h2 className="text-xl font-bold text-white">Editing: {label}</h2>
+        </div>
+      )}
+
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-4">
+        <div className="flex flex-wrap items-center gap-3">
+          {!isFullScreen && <label className="text-sm font-medium text-slate-300">{label}</label>}
+          
+          {items.length > 0 && !isSelectionMode && (
+            <button
+              type="button"
+              onClick={() => setIsSelectionMode(true)}
+              className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 transition-colors"
+            >
+              Select / Delete Items
+            </button>
+          )}
+
+          {items.length > 0 && isSelectionMode && (
+            <div className="flex items-center gap-3 bg-slate-800/50 px-3 py-1.5 rounded-lg border border-white/5">
+              <label className="flex items-center gap-2 cursor-pointer text-sm text-slate-300 hover:text-white">
+                <input
+                  type="checkbox"
+                  checked={selectedItems.size === stableItems.length && stableItems.length > 0}
+                  onChange={toggleSelectAll}
+                  className="w-4 h-4 rounded border-slate-600 text-blue-500 focus:ring-blue-500/20 bg-slate-900 cursor-pointer"
+                />
+                <span className="font-medium text-xs">Select All</span>
+              </label>
+              
+              {selectedItems.size > 0 && (
+                <>
+                  <div className="w-px h-4 bg-white/20" />
+                  <button
+                    type="button"
+                    onClick={removeSelected}
+                    className="flex items-center gap-1.5 text-xs font-bold text-red-400 hover:text-red-300 transition-colors"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    Delete ({selectedItems.size})
+                  </button>
+                </>
+              )}
+              {selectedItems.size === 0 && (
+                <>
+                  <div className="w-px h-4 bg-white/20" />
+                  <button
+                    type="button"
+                    onClick={removeAll}
+                    className="flex items-center gap-1.5 text-xs font-bold text-red-400 hover:text-red-300 transition-colors"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    Delete All
+                  </button>
+                </>
+              )}
+              
+              <div className="w-px h-4 bg-white/20" />
+              <button
+                type="button"
+                onClick={() => { setIsSelectionMode(false); setSelectedItems(new Set()); }}
+                className="text-xs font-bold text-slate-400 hover:text-white transition-colors"
+              >
+                Done
+              </button>
+            </div>
+          )}
+        </div>
         <div className="flex items-center gap-2">
+          {!isFullScreen && (
+            <button
+              type="button"
+              onClick={() => setIsFullScreen(true)}
+              title="Full Screen Editor"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 transition-colors"
+            >
+              <Maximize className="w-3.5 h-3.5" /> Full Screen
+            </button>
+          )}
           <button
             type="button"
             onClick={() => setShowBulkImport(!showBulkImport)}
@@ -227,9 +367,23 @@ function RepeatableList({ label, items = [], onChange, fields, onConfirmRequest 
 
       <div className="space-y-3">
         {stableItems.map((item, i) => (
-          <div key={item._id} className="p-3 rounded-xl bg-white/5 border border-white/10 space-y-2 animate-in fade-in slide-in-from-top-4 duration-300">
+          <div key={item._id} className={`p-3 rounded-xl border space-y-2 animate-in fade-in slide-in-from-top-4 duration-300 transition-colors ${
+            selectedItems.has(item._id) ? 'bg-blue-500/10 border-blue-500/30' : 'bg-white/5 border-white/10'
+          }`}>
             <div className="flex items-center justify-between mb-1">
-              <span className="text-xs text-slate-500 font-mono">#{i + 1}</span>
+              {isSelectionMode ? (
+                <label className="flex items-center gap-2 cursor-pointer text-xs text-slate-500 font-mono hover:text-white transition-colors">
+                  <input
+                    type="checkbox"
+                    checked={selectedItems.has(item._id)}
+                    onChange={(e) => toggleSelection(item._id, e.target.checked)}
+                    className="w-4 h-4 rounded border-slate-600 text-blue-500 focus:ring-blue-500/20 bg-slate-900 cursor-pointer"
+                  />
+                  #{i + 1}
+                </label>
+              ) : (
+                <span className="text-xs text-slate-500 font-mono">#{i + 1}</span>
+              )}
               <div className="flex items-center gap-1">
                 <button type="button" onClick={() => move(i, -1)} className="p-1 text-slate-500 hover:text-white rounded" disabled={i === 0}>
                   <ChevronUp className="w-3.5 h-3.5" />
@@ -496,13 +650,36 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
 
   const handleSave = () => mutation.mutate({ title, subtitle, content });
 
+  const autoSaveMutation = useMutation({
+    mutationFn: async (payload) => {
+      const res = await fetch(`${API_URL}/pages/${pageSlug}/sections/${section.id}/update`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization:  `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error('Failed to auto-save');
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries([`${pageSlug}-sections`]);
+      queryClient.invalidateQueries(['admin-page-sections', pageSlug]);
+    },
+  });
+
+  const handleAutoSave = useCallback((key, updatedValue) => {
+    autoSaveMutation.mutate({ title, subtitle, content: { ...content, [key]: updatedValue } });
+  }, [autoSaveMutation, title, subtitle, content]);
+
   return (
     <div className="fixed inset-0 z-50 flex">
       {/* Backdrop */}
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
 
       {/* Drawer */}
-      <div className="relative ml-auto h-full w-full max-w-2xl bg-slate-900 border-l border-white/10 flex flex-col shadow-2xl overflow-hidden animate-slide-in-right">
+      <div className="relative ml-auto h-full w-full max-w-4xl bg-slate-900 border-l border-white/10 flex flex-col shadow-2xl overflow-hidden animate-slide-in-right">
 
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-white/10 flex-shrink-0">
@@ -717,6 +894,7 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
                     label="Stats Counter Badges"
                     items={content.stats || []}
                     onChange={v => setContentKey('stats', v)}
+                    onAutoSave={v => handleAutoSave('stats', v)}
                     fields={REPEATABLE_CONFIGS.hero.stats.fields}
                 onConfirmRequest={setConfirmConfig}
                   />
@@ -886,6 +1064,7 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
                 label="CTA Cards"
                 items={content.cards || []}
                 onChange={v => setContentKey('cards', v)}
+                onAutoSave={v => handleAutoSave('cards', v)}
                 fields={REPEATABLE_CONFIGS.cta.cards.fields}
                 onConfirmRequest={setConfirmConfig}
               />
@@ -907,6 +1086,7 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
                 label="Sponsor Cards"
                 items={content.sponsors || []}
                 onChange={v => setContentKey('sponsors', v)}
+                onAutoSave={v => handleAutoSave('sponsors', v)}
                 fields={REPEATABLE_CONFIGS.sponsors.sponsors.fields}
                 onConfirmRequest={setConfirmConfig}
               />
@@ -960,23 +1140,11 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
               <p className="text-slate-500 text-xs mt-1 mb-3">
                 💡 The first item is displayed as a large featured card. Items 2–4 appear as a side list.
               </p>
-              <div className="flex gap-4 mb-4">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setConfirmConfig({ title: 'Delete All news items', message: 'Are you sure you want to delete all news items? This cannot be undone.', onConfirm: () => {
-                      setContentKey('items', []);
-                    } })
-                  }}
-                  className="px-4 py-2 rounded-lg text-sm font-medium text-red-400 bg-red-400/10 hover:bg-red-400/20 transition-all border border-red-500/20"
-                >
-                  Delete All News Items
-                </button>
-              </div>
               <RepeatableList
                 label="News Items"
                 items={content.items || []}
                 onChange={v => setContentKey('items', v)}
+                onAutoSave={v => handleAutoSave('items', v)}
                 fields={REPEATABLE_CONFIGS.news.items.fields}
                 onConfirmRequest={setConfirmConfig}
               />
@@ -993,23 +1161,11 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
               <p className="text-slate-500 text-xs mt-1 mb-3">
                 💡 Add multiple videos to showcase them side-by-side in a responsive grid layout.
               </p>
-              <div className="flex gap-4 mb-4">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setConfirmConfig({ title: 'Delete All videos', message: 'Are you sure you want to delete all videos? This cannot be undone.', onConfirm: () => {
-                      setContentKey('videos', []);
-                    } })
-                  }}
-                  className="px-4 py-2 rounded-lg text-sm font-medium text-red-400 bg-red-400/10 hover:bg-red-400/20 transition-all border border-red-500/20"
-                >
-                  Delete All Videos
-                </button>
-              </div>
               <RepeatableList
                 label="Videos list shown on Home page"
                 items={content.videos || []}
                 onChange={v => setContentKey('videos', v)}
+                onAutoSave={v => handleAutoSave('videos', v)}
                 fields={REPEATABLE_CONFIGS.media.videos.fields}
                 onConfirmRequest={setConfirmConfig}
               />
@@ -1020,20 +1176,6 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
           {section.sectionKey === 'publications_list' && (
             <>
               <SectionDivider label="Publication Settings" />
-              <div className="flex gap-4">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setConfirmConfig({ title: 'Delete All publications', message: 'Are you sure you want to delete all publications? This cannot be undone.', onConfirm: () => {
-                      setContentKey('items', []);
-                    } })
-                  }}
-                  className="px-4 py-2 rounded-lg text-sm font-medium text-red-400 bg-red-400/10 hover:bg-red-400/20 transition-all border border-red-500/20"
-                >
-                  Delete All Publications
-                </button>
-              </div>
-
               <SectionDivider label="Research Publications (Ordered by Year)" />
               <p className="text-slate-500 text-xs -mt-2">
                 💡 Add papers here. The frontend will group them automatically by year.
@@ -1042,6 +1184,7 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
                 label="Publications Items"
                 items={content.items || []}
                 onChange={v => setContentKey('items', v)}
+                onAutoSave={v => handleAutoSave('items', v)}
                 fields={REPEATABLE_CONFIGS.publications_list.items.fields}
                 onConfirmRequest={setConfirmConfig}
               />
@@ -1052,23 +1195,11 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
           {section.sectionKey === 'project_timeline' && (
             <>
               <SectionDivider label="Timeline Entries" />
-              <div className="flex gap-4 mb-4">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setConfirmConfig({ title: 'Delete All timeline entries', message: 'Are you sure you want to delete all timeline entries?', onConfirm: () => {
-                      setContentKey('items', []);
-                    } })
-                  }}
-                  className="px-4 py-2 rounded-lg text-sm font-medium text-red-400 bg-red-400/10 hover:bg-red-400/20 transition-all border border-red-500/20"
-                >
-                  Delete All Timeline Entries
-                </button>
-              </div>
               <RepeatableList
                 label="Timeline Items"
                 items={content.items || []}
                 onChange={v => setContentKey('items', v)}
+                onAutoSave={v => handleAutoSave('items', v)}
                 fields={REPEATABLE_CONFIGS.project_timeline.items.fields}
                 onConfirmRequest={setConfirmConfig}
               />
@@ -1078,23 +1209,11 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
           {section.sectionKey === 'project_objectives' && (
             <>
               <SectionDivider label="Mission Objectives" />
-              <div className="flex gap-4 mb-4">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setConfirmConfig({ title: 'Delete All objectives', message: 'Are you sure you want to delete all objectives?', onConfirm: () => {
-                      setContentKey('items', []);
-                    } })
-                  }}
-                  className="px-4 py-2 rounded-lg text-sm font-medium text-red-400 bg-red-400/10 hover:bg-red-400/20 transition-all border border-red-500/20"
-                >
-                  Delete All Objectives
-                </button>
-              </div>
               <RepeatableList
                 label="Objective Items"
                 items={content.items || []}
                 onChange={v => setContentKey('items', v)}
+                onAutoSave={v => handleAutoSave('items', v)}
                 fields={REPEATABLE_CONFIGS.project_objectives.items.fields}
                 onConfirmRequest={setConfirmConfig}
               />
@@ -1107,23 +1226,11 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
           {section.sectionKey === 'nc_benefits' && (
             <>
               <SectionDivider label="Nodal Centre Benefits" />
-              <div className="flex gap-4 mb-4">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setConfirmConfig({ title: 'Delete All benefits', message: 'Are you sure you want to delete all benefits?', onConfirm: () => {
-                      setContentKey('items', []);
-                    } })
-                  }}
-                  className="px-4 py-2 rounded-lg text-sm font-medium text-red-400 bg-red-400/10 hover:bg-red-400/20 transition-all border border-red-500/20"
-                >
-                  Delete All Benefits
-                </button>
-              </div>
               <RepeatableList
                 label="Benefits List"
                 items={content.items || []}
                 onChange={v => setContentKey('items', v)}
+                onAutoSave={v => handleAutoSave('items', v)}
                 fields={REPEATABLE_CONFIGS.nc_benefits.items.fields}
                 onConfirmRequest={setConfirmConfig}
               />
@@ -1133,23 +1240,11 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
           {section.sectionKey === 'nc_list' && (
             <>
               <SectionDivider label="Registered Nodal Centres" />
-              <div className="flex gap-4 mb-4">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setConfirmConfig({ title: 'Delete All registered centres', message: 'Are you sure you want to delete all registered centres?', onConfirm: () => {
-                      setContentKey('items', []);
-                    } })
-                  }}
-                  className="px-4 py-2 rounded-lg text-sm font-medium text-red-400 bg-red-400/10 hover:bg-red-400/20 transition-all border border-red-500/20"
-                >
-                  Delete All Centres
-                </button>
-              </div>
               <RepeatableList
                 label="Centres List"
                 items={content.items || []}
                 onChange={v => setContentKey('items', v)}
+                onAutoSave={v => handleAutoSave('items', v)}
                 fields={REPEATABLE_CONFIGS.nc_list.items.fields}
                 onConfirmRequest={setConfirmConfig}
               />

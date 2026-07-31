@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import SurveyResponsesView from '../../components/dashboard/SurveyResponsesView';
-import { ClipboardList } from 'lucide-react';
+import { ClipboardList, GraduationCap, Briefcase } from 'lucide-react';
 
 export default function SurveysDashboard() {
   const { token, API_URL } = useAuth();
@@ -42,30 +42,36 @@ export default function SurveysDashboard() {
         </div>
         
         {/* Survey Selection Tabs */}
-        <div className="flex bg-slate-800/50 p-1 rounded-xl border border-white/10">
+        <div className="flex bg-slate-800/80 p-1.5 rounded-2xl border border-white/10 shadow-inner">
           <button
             onClick={() => setActiveTab('student-survey')}
-            className={`px-6 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 ${
+            className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 flex items-center gap-2.5 ${
               activeTab === 'student-survey'
-                ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                : 'text-slate-400 hover:text-white hover:bg-white/5'
+                ? 'bg-emerald-500/20 text-emerald-300 shadow-sm border border-emerald-500/30'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-white/5 border border-transparent'
             }`}
           >
+            <GraduationCap className={`w-4 h-4 ${activeTab === 'student-survey' ? 'text-emerald-400' : 'text-slate-500'}`} />
             Student Survey
-            <span className={`py-0.5 px-2 rounded-full text-xs ${activeTab === 'student-survey' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-slate-700 text-slate-300'}`}>
+            <span className={`py-0.5 px-2.5 rounded-full text-[11px] font-bold tracking-wide transition-colors ${
+              activeTab === 'student-survey' ? 'bg-emerald-500/30 text-emerald-400' : 'bg-slate-900 text-slate-400'
+            }`}>
               {counts['student-survey']}
             </span>
           </button>
           <button
             onClick={() => setActiveTab('faculty-survey')}
-            className={`px-6 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 ${
+            className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 flex items-center gap-2.5 ${
               activeTab === 'faculty-survey'
-                ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                : 'text-slate-400 hover:text-white hover:bg-white/5'
+                ? 'bg-emerald-500/20 text-emerald-300 shadow-sm border border-emerald-500/30'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-white/5 border border-transparent'
             }`}
           >
+            <Briefcase className={`w-4 h-4 ${activeTab === 'faculty-survey' ? 'text-emerald-400' : 'text-slate-500'}`} />
             Faculty Survey
-            <span className={`py-0.5 px-2 rounded-full text-xs ${activeTab === 'faculty-survey' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-slate-700 text-slate-300'}`}>
+            <span className={`py-0.5 px-2.5 rounded-full text-[11px] font-bold tracking-wide transition-colors ${
+              activeTab === 'faculty-survey' ? 'bg-emerald-500/30 text-emerald-400' : 'bg-slate-900 text-slate-400'
+            }`}>
               {counts['faculty-survey']}
             </span>
           </button>

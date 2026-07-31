@@ -18,7 +18,9 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import {
   GripVertical, Eye, EyeOff, Pencil, ExternalLink,
-  RefreshCw, Globe, AlertCircle, Loader2, CheckCircle2, ChevronDown, DownloadCloud
+  RefreshCw, Globe, AlertCircle, Loader2, CheckCircle2, ChevronDown, DownloadCloud,
+  Home, Microscope, Megaphone, Landmark, FlaskConical, Newspaper, Clapperboard, FileText,
+  BookOpen, Clock, Target, Gift, Building2
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import SectionEditorModal from '../../components/dashboard/SectionEditorModal';
@@ -42,13 +44,19 @@ function usePageSections(slug, token, API_URL) {
 // ── Section card (draggable) ──────────────────────────────────
 
 const SECTION_ICONS = {
-  hero:                '🏠',
-  featured_simulation: '🔬',
-  cta:                 '📣',
-  sponsors:            '🏛',
-  lab_categories:      '🧪',
-  news:                '📰',
-  media:               '🎬',
+  hero:                <Home className="w-5 h-5 text-blue-400" />,
+  featured_simulation: <Microscope className="w-5 h-5 text-indigo-400" />,
+  cta:                 <Megaphone className="w-5 h-5 text-amber-400" />,
+  sponsors:            <Landmark className="w-5 h-5 text-emerald-400" />,
+  lab_categories:      <FlaskConical className="w-5 h-5 text-purple-400" />,
+  news:                <Newspaper className="w-5 h-5 text-orange-400" />,
+  media:               <Clapperboard className="w-5 h-5 text-pink-400" />,
+  publications_list:   <BookOpen className="w-5 h-5 text-cyan-400" />,
+  project_timeline:    <Clock className="w-5 h-5 text-rose-400" />,
+  project_objectives:  <Target className="w-5 h-5 text-red-400" />,
+  nc_benefits:         <Gift className="w-5 h-5 text-teal-400" />,
+  nc_list:             <Building2 className="w-5 h-5 text-blue-400" />,
+  survey_header:       <FileText className="w-5 h-5 text-blue-400" />
 };
 
 function SortableSection({ section, onEdit, onToggle, isSaving }) {
@@ -88,8 +96,8 @@ function SortableSection({ section, onEdit, onToggle, isSaving }) {
       </button>
 
       {/* Icon */}
-      <div className="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center text-xl flex-shrink-0">
-        {SECTION_ICONS[section.sectionKey] || '📄'}
+      <div className="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center flex-shrink-0">
+        {SECTION_ICONS[section.sectionKey] || <FileText className="w-5 h-5 text-slate-400" />}
       </div>
 
       {/* Info */}

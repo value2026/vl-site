@@ -126,12 +126,26 @@ export function AuthProvider({ children }) {
   }, [token, logout]);
 
   const login = async (email, password) => {
-    const res  = await fetch(`${API_URL}/auth/login`, {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({ email, password }),
-    });
-    const data = await res.json();
+    let res;
+    try {
+      res = await fetch(`${API_URL}/auth/login`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ email, password }),
+      });
+    } catch (err) {
+      throw new Error('Network error. Please check your connection or try again later.');
+    }
+
+    let data;
+    const isJson = res.headers.get('content-type')?.includes('application/json');
+    
+    if (isJson) {
+      data = await res.json();
+    } else {
+      throw new Error(`Server is currently unavailable (Status: ${res.status}). Please try again later.`);
+    }
+
     if (!res.ok) throw new Error(data.message || 'Login failed');
 
     localStorage.removeItem('vl_token');
