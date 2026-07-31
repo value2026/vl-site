@@ -159,11 +159,6 @@ async function main() {
 
 
 
-  const existingSubCount = await prisma.subject.count();
-  if (existingSubCount > 0) {
-    console.log('ℹ️  Subjects/Labs already exist in database. Skipping default subjects & experiments seed...');
-    return;
-  }
 
   // 3. Define Seed Data
   const subjectsData = [
