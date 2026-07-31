@@ -6,7 +6,8 @@ import Placeholder from '@tiptap/extension-placeholder';
 import {
   X, Save, Plus, Trash2, ChevronDown, ChevronUp,
   Bold, Italic, List, Heading2, Link2, Undo, Redo, Image as ImageIcon,
-  Search, FlaskConical, Check, Loader2, CheckCircle2, FileJson, Maximize, Minimize
+  Search, FlaskConical, Check, Loader2, CheckCircle2, FileJson, Maximize, Minimize,
+  Download, UploadCloud
 } from 'lucide-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import CloudinaryUploader from './CloudinaryUploader';
@@ -133,16 +134,38 @@ function RepeatableList({ label, items = [], onChange, fields, onConfirmRequest,
         const lines = text.split('\n');
         if (lines.length < 2) throw new Error("Need at least a header row and one data row for CSV/TSV");
         const delimiter = lines[0].includes('\t') ? '\t' : ',';
-        const headers = lines[0].split(delimiter).map(h => h.trim());
+        
+        const parseLine = (line) => {
+          if (delimiter === '\t') return line.split('\t').map(v => v.trim());
+          let result = [];
+          let current = '';
+          let inQuotes = false;
+          for (let i = 0; i < line.length; i++) {
+            const char = line[i];
+            if (char === '"' && line[i+1] === '"') {
+               current += '"'; i++;
+            } else if (char === '"') {
+              inQuotes = !inQuotes;
+            } else if (char === delimiter && !inQuotes) {
+              result.push(current); current = '';
+            } else {
+              current += char;
+            }
+          }
+          result.push(current);
+          return result.map(v => v.trim());
+        };
+
+        const headers = parseLine(lines[0]);
         const fieldKeys = fields.map(f => f.key);
         
         newItems = lines.slice(1).map(line => {
           if (!line.trim()) return null;
-          const values = line.split(delimiter);
+          const values = parseLine(line);
           const obj = { _id: Math.random().toString(36).substring(2, 9) };
           headers.forEach((header, idx) => {
             if (fieldKeys.includes(header)) {
-              obj[header] = values[idx]?.trim() || '';
+              obj[header] = values[idx] || '';
             }
           });
           fieldKeys.forEach(fk => {
@@ -169,9 +192,32 @@ function RepeatableList({ label, items = [], onChange, fields, onConfirmRequest,
   };
 
   const loadExampleCsv = () => {
-    const headers = fields.map(f => f.key).join('\t');
-    const values = fields.map(f => f.placeholder || 'value').join('\t');
-    setBulkJson(`${headers}\n${values}`);
+    const headers = fields.map(f => f.key).join(',');
+    const values = fields.map(f => `"${f.placeholder || 'value'}"`).join(',');
+    
+    const csvContent = `${headers}\n${values}`;
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    
+    const a = document.createElement('a');
+    a.href = url;
+    a.setAttribute('download', 'bulk_import_template.csv');
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
+
+  const handleFileUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      const text = evt.target.result;
+      setBulkJson(text);
+    };
+    reader.readAsText(file);
+    e.target.value = null; // reset
   };
 
   const remove = (i) => {
@@ -356,25 +402,22 @@ function RepeatableList({ label, items = [], onChange, fields, onConfirmRequest,
         <div className="mb-4 p-5 rounded-xl bg-blue-500/5 border border-blue-500/20 animate-in fade-in slide-in-from-top-2 duration-200">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-3 gap-2">
             <div>
-              <h4 className="text-sm font-bold text-blue-300">Bulk Import (JSON / CSV / Excel)</h4>
+              <h4 className="text-sm font-bold text-blue-300">Bulk Import (JSON / CSV / TSV)</h4>
               <p className="text-xs text-blue-200/70 mt-0.5">
-                Paste an array of JSON objects, or just paste directly from Excel (TSV/CSV).
+                Upload a CSV file, paste from Excel, or paste JSON array.
               </p>
             </div>
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={loadExampleJson}
-                className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 transition-colors"
-              >
-                JSON Example
-              </button>
+            <div className="flex gap-2 flex-wrap">
+              <label className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-blue-500 hover:bg-blue-600 text-white transition-colors cursor-pointer flex items-center gap-1">
+                <UploadCloud className="w-3.5 h-3.5" /> Upload CSV
+                <input type="file" accept=".csv,.tsv,.txt" className="hidden" onChange={handleFileUpload} />
+              </label>
               <button
                 type="button"
                 onClick={loadExampleCsv}
-                className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 transition-colors"
+                className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 transition-colors flex items-center gap-1"
               >
-                Excel/CSV Example
+                <Download className="w-3.5 h-3.5" /> Template
               </button>
             </div>
           </div>
