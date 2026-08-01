@@ -608,7 +608,7 @@ async function seedNodalCentresPage() {
     content: {
       tag: 'Access',
       instructions: 'Nodal coordinator can submit the list of students and faculty members for obtaining the unique login id in the prescribed format to virtual_labs@am.amrita.edu with the subject line - Login ID request - your institute name.',
-      templateLink: 'https://vlab.amrita.edu/userfiles/1/file/login_id_template.xlsx',
+      templateLink: '/login_id_template.xlsx',
       templateLabel: 'Click Here To Download Login ID Template',
       features: [
         { icon: 'KeyRound', title: 'Institutional Login', desc: 'A dedicated login ID tied to your institution for centralized access management.' },
