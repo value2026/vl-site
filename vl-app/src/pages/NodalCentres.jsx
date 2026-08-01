@@ -303,7 +303,7 @@ export default function NodalCentres() {
     { icon: Award, title: 'Results Reporting', desc: 'Generate and export detailed performance reports for students and faculty.' },
   ];
   const uniqueIdInstructions = uniqueIdSec?.content?.instructions || 'Nodal coordinator can submit the list of students and faculty members for obtaining the unique login id in the prescribed format to virtual_labs@am.amrita.edu with the subject line - Login ID request - your institute name.';
-  const templateLink = uniqueIdSec?.content?.templateLink || 'https://vlab.amrita.edu/userfiles/1/file/login_id_template.xlsx';
+  const templateLink = uniqueIdSec?.content?.templateLink || '/login_id_template.xlsx';
   const templateLabel = uniqueIdSec?.content?.templateLabel || 'Click Here To Download Login ID Template';
 
 
@@ -657,14 +657,15 @@ export default function NodalCentres() {
             </div>
 
             <div className="grid sm:grid-cols-2 gap-6 mb-12">
-              {uniqueIdFeatures.map(({ icon: IconComponent, icon, title, desc }) => {
+              {uniqueIdFeatures.map(({ icon, title, desc }) => {
                 let RealIcon = KeyRound;
-                if (IconComponent) {
-                  RealIcon = IconComponent;
-                } else if (typeof icon === 'string') {
+                if (typeof icon === 'string') {
                   if (icon === 'ClipboardList') RealIcon = ClipboardList;
                   else if (icon === 'Users') RealIcon = Users;
                   else if (icon === 'Award') RealIcon = Award;
+                  else if (icon === 'KeyRound') RealIcon = KeyRound;
+                } else if (icon) {
+                  RealIcon = icon;
                 }
                 return (
                   <div key={title} className="card p-7 border border-gray-100 flex gap-4">
