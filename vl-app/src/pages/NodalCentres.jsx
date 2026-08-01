@@ -278,17 +278,34 @@ export default function NodalCentres() {
   let benefitsSec = null;
   let listSec = null;
   let inaugSec = null;
+  let uniqueIdSec = null;
 
   if (sections) {
     listSec = sections.find(s => s.sectionKey === 'nc_list');
     benefitsSec = sections.find(s => s.sectionKey === 'nc_benefits');
     heroSec = sections.find(s => s.sectionKey === 'nc_hero');
     inaugSec = sections.find(s => s.sectionKey === 'nc_inaugurations');
+    uniqueIdSec = sections.find(s => s.sectionKey === 'nc_unique_id');
 
     if (listSec?.content?.items) centres = listSec.content.items;
     if (benefitsSec?.content?.items) benefits = benefitsSec.content.items.map(b => b.text || b);
     if (inaugSec?.content?.items) inaugurations = inaugSec.content.items;
   }
+
+  // Set default unique ID content if not present
+  const uniqueIdTitle = uniqueIdSec?.title || 'Unique Login ID';
+  const uniqueIdSubtitle = uniqueIdSec?.subtitle || 'Registered Nodal Centres receive a unique institutional login ID granting access to exclusive faculty features, progress tracking, and lab management tools.';
+  const uniqueIdTag = uniqueIdSec?.content?.tag || 'Access';
+  const uniqueIdFeatures = uniqueIdSec?.content?.features || [
+    { icon: KeyRound, title: 'Institutional Login', desc: 'A dedicated login ID tied to your institution for centralized access management.' },
+    { icon: ClipboardList, title: 'Lab Exam Setup', desc: 'Set up, schedule, and monitor online virtual lab exams directly from your dashboard.' },
+    { icon: Users, title: 'Student Enrollment', desc: 'Enroll students under your nodal centre and track their experiment completions and scores.' },
+    { icon: Award, title: 'Results Reporting', desc: 'Generate and export detailed performance reports for students and faculty.' },
+  ];
+  const uniqueIdInstructions = uniqueIdSec?.content?.instructions || 'Nodal coordinator can submit the list of students and faculty members for obtaining the unique login id in the prescribed format to virtual_labs@am.amrita.edu with the subject line - Login ID request - your institute name.';
+  const templateLink = uniqueIdSec?.content?.templateLink || 'https://vlab.amrita.edu/userfiles/1/file/login_id_template.xlsx';
+  const templateLabel = uniqueIdSec?.content?.templateLabel || 'Click Here To Download Login ID Template';
+
 
   return (
     <main>
@@ -632,30 +649,54 @@ export default function NodalCentres() {
         <section className="py-20 bg-white">
           <div className="container-custom max-w-3xl">
             <div className="text-center mb-14">
-              <span className="tag">Access</span>
-              <h2 className="section-title mt-4">Unique Login ID</h2>
+              <span className="tag">{uniqueIdTag}</span>
+              <h2 className="section-title mt-4">{uniqueIdTitle}</h2>
               <p className="section-subtitle">
-                Registered Nodal Centres receive a unique institutional login ID granting access to exclusive faculty features, progress tracking, and lab management tools.
+                {uniqueIdSubtitle}
               </p>
             </div>
 
             <div className="grid sm:grid-cols-2 gap-6 mb-12">
-              {[
-                { icon: KeyRound, title: 'Institutional Login', desc: 'A dedicated login ID tied to your institution for centralized access management.' },
-                { icon: ClipboardList, title: 'Lab Exam Setup', desc: 'Set up, schedule, and monitor online virtual lab exams directly from your dashboard.' },
-                { icon: Users, title: 'Student Enrollment', desc: 'Enroll students under your nodal centre and track their experiment completions and scores.' },
-                { icon: Award, title: 'Results Reporting', desc: 'Generate and export detailed performance reports for students and faculty.' },
-              ].map(({ icon: Icon, title, desc }) => (
-                <div key={title} className="card p-7 border border-gray-100 flex gap-4">
-                  <div className="w-12 h-12 bg-primary-50 rounded-2xl flex items-center justify-center flex-shrink-0">
-                    <Icon className="w-6 h-6 text-primary-700" />
+              {uniqueIdFeatures.map(({ icon: IconComponent, icon, title, desc }) => {
+                let RealIcon = KeyRound;
+                if (IconComponent) {
+                  RealIcon = IconComponent;
+                } else if (typeof icon === 'string') {
+                  if (icon === 'ClipboardList') RealIcon = ClipboardList;
+                  else if (icon === 'Users') RealIcon = Users;
+                  else if (icon === 'Award') RealIcon = Award;
+                }
+                return (
+                  <div key={title} className="card p-7 border border-gray-100 flex gap-4">
+                    <div className="w-12 h-12 bg-primary-50 rounded-2xl flex items-center justify-center flex-shrink-0">
+                      <RealIcon className="w-6 h-6 text-primary-700" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900 mb-1">{title}</h3>
+                      <p className="text-gray-500 text-sm leading-relaxed">{desc}</p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900 mb-1">{title}</h3>
-                    <p className="text-gray-500 text-sm leading-relaxed">{desc}</p>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
+            </div>
+
+            {/* Template Download Section */}
+            <div className="card p-8 border border-blue-100 bg-blue-50/50 mb-12 text-center">
+              <FileText className="w-12 h-12 text-blue-600 mx-auto mb-4" />
+              <h3 className="font-heading text-xl font-bold text-gray-900 mb-3">Login ID Template</h3>
+              <p className="text-gray-700 text-sm max-w-2xl mx-auto leading-relaxed mb-6">
+                {uniqueIdInstructions}
+              </p>
+              <div className="flex justify-center">
+                <a
+                  href={templateLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-primary bg-blue-600 hover:bg-blue-700"
+                >
+                  <FileText className="w-4 h-4" /> {templateLabel}
+                </a>
+              </div>
             </div>
 
             <div className="card p-10 border border-primary-100 bg-gradient-to-br from-primary-50 to-white">

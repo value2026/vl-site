@@ -20,7 +20,7 @@ import {
   GripVertical, Eye, EyeOff, Pencil, ExternalLink,
   RefreshCw, Globe, AlertCircle, Loader2, CheckCircle2, ChevronDown, DownloadCloud,
   Home, Microscope, Megaphone, Landmark, FlaskConical, Newspaper, Clapperboard, FileText,
-  BookOpen, Clock, Target, Gift, Building2, Ribbon
+  BookOpen, Clock, Target, Gift, Building2, Ribbon, KeyRound
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import SectionEditorModal from '../../components/dashboard/SectionEditorModal';
@@ -57,6 +57,7 @@ const SECTION_ICONS = {
   nc_benefits:         <Gift className="w-5 h-5 text-teal-400" />,
   nc_list:             <Building2 className="w-5 h-5 text-blue-400" />,
   nc_inaugurations:    <Ribbon className="w-5 h-5 text-purple-400" />,
+  nc_unique_id:        <KeyRound className="w-5 h-5 text-yellow-400" />,
   survey_header:       <FileText className="w-5 h-5 text-blue-400" />
 };
 

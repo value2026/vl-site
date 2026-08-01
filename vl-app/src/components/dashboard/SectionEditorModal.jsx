@@ -653,6 +653,16 @@ const REPEATABLE_CONFIGS = {
       ],
     },
   },
+  nc_unique_id: {
+    features: {
+      label: 'Features List',
+      fields: [
+        { key: 'icon',  label: 'Icon (e.g. KeyRound, Users, Award)', placeholder: 'KeyRound' },
+        { key: 'title', label: 'Feature Title',        placeholder: 'Institutional Login' },
+        { key: 'desc',  label: 'Description',          placeholder: 'A dedicated login ID...', type: 'textarea' },
+      ],
+    },
+  },
 };
 
 // ── Simple text input ─────────────────────────────────────────
@@ -1358,6 +1368,26 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
                 onChange={v => setContentKey('items', v)}
                 onAutoSave={v => handleAutoSave('items', v)}
                 fields={REPEATABLE_CONFIGS.nc_list.items.fields}
+                onConfirmRequest={setConfirmConfig}
+              />
+            </>
+          )}
+
+          {section.sectionKey === 'nc_unique_id' && (
+            <>
+              <SectionDivider label="Template Settings" />
+              <TextField label="Section Tag" value={content.tag} onChange={v => setContentKey('tag', v)} placeholder="Access" />
+              <TextField label="Instructions" value={content.instructions} onChange={v => setContentKey('instructions', v)} placeholder="Nodal coordinator can submit the list..." multiline />
+              <TextField label="Template File URL" value={content.templateLink} onChange={v => setContentKey('templateLink', v)} placeholder="https://vlab.amrita.edu/userfiles/1/file/login_id_template.xlsx" />
+              <TextField label="Template Button Label" value={content.templateLabel} onChange={v => setContentKey('templateLabel', v)} placeholder="Click Here To Download Login ID Template" />
+
+              <SectionDivider label="Features" />
+              <RepeatableList
+                label="Features List"
+                items={content.features || []}
+                onChange={v => setContentKey('features', v)}
+                onAutoSave={v => handleAutoSave('features', v)}
+                fields={REPEATABLE_CONFIGS.nc_unique_id.features.fields}
                 onConfirmRequest={setConfirmConfig}
               />
             </>
