@@ -4,7 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import CloudinaryUploader from './CloudinaryUploader';
 
 const CREATABLE_ROLES = {
-  admin:        ['admin', 'nodal_centre', 'teacher', 'student', 'content_admin', 'sim_admin', 'vl_manager', 'vl_coordinator'],
+  admin:        ['nodal_centre', 'teacher', 'student', 'vl_manager', 'vl_coordinator'],
   vl_manager:   ['nodal_centre', 'teacher', 'student', 'vl_coordinator'],
   vl_coordinator: ['nodal_centre', 'teacher', 'student'],
   nodal_centre: [],
@@ -16,8 +16,6 @@ const ROLE_LABELS = {
   nodal_centre:  'Nodal Centre Admin',
   teacher:       'Faculty / Instructor',
   student:       'Student',
-  content_admin: 'Content Admin',
-  sim_admin:     'Simulation Admin',
   vl_manager:    'VL Manager',
   vl_coordinator:'VL Co-ordinator',
 };
@@ -26,8 +24,6 @@ const ROLE_LABELS = {
 // Admin can untick any of these before saving.
 const ROLE_DEFAULT_PERMISSIONS = {
   nodal_centre:  ['manage_users'],
-  content_admin: ['manage_content'],
-  sim_admin:     ['manage_simulations'],
   vl_manager:    ['manage_simulations', 'manage_institutions', 'manage_workshops'],
   vl_coordinator:['manage_institutions', 'manage_workshops'],
   teacher:       [],
@@ -137,9 +133,10 @@ export default function AddUserModal({ isOpen, onClose, onSuccess, defaultRole }
   const isStudent       = form.role === 'student';
   const isTeacher       = form.role === 'teacher';
   const isNodalCentre   = form.role === 'nodal_centre';
-  const isPlatformRole  = ['admin', 'content_admin', 'sim_admin', 'vl_manager'].includes(form.role);
+  const isPlatformRole  = ['admin', 'vl_manager'].includes(form.role);
+  const isCoordinator   = form.role === 'vl_coordinator';
   const needsInstitution =
-    (isStudent || isTeacher || isNodalCentre) &&
+    (isStudent || isTeacher || isNodalCentre || isCoordinator) &&
     (!user?.nodalCentreId || user?.role === 'admin' || user?.role === 'vl_manager');
 
   const missingBulkInstitution = isPlatformRole && !form.nodalCentreId;

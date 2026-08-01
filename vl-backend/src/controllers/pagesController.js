@@ -213,8 +213,18 @@ async function getSections(req, res) {
       },
     });
 
-    // Auto-seed if page doesn't exist yet
+    // Auto-seed if page doesn't exist yet or is missing sections
+    let needsSeed = false;
     if (!page) {
+      needsSeed = true;
+    } else {
+      // Check if newly added sections are missing
+      if (slug === 'nodal-centres' && page.sections.length < 5) needsSeed = true;
+      if (slug === 'home' && page.sections.length < 7) needsSeed = true;
+      if (slug === 'project' && page.sections.length < 4) needsSeed = true;
+    }
+
+    if (needsSeed) {
       if (slug === 'home') {
         page = await seedHomePage();
       } else if (slug === 'publications') {
@@ -231,15 +241,18 @@ async function getSections(req, res) {
         page = await seedNodalCentreRequestPage();
       } else if (slug === 'contact') {
         // Create an empty page for contact messages so it doesn't 404
-        page = await prisma.page.create({
-          data: { slug: 'contact', title: 'Contact Messages' }
+        page = await prisma.page.upsert({
+          where: { slug: 'contact' },
+          update: {},
+          create: { slug: 'contact', title: 'Contact Messages' }
         });
+        page.sections = [];
       } else {
         return res.status(404).json({ message: 'Page not found' });
       }
     }
 
-    res.json(page.sections);
+    res.json(page.sections || []);
   } catch (err) {
     console.error('getSections error:', err);
     res.status(500).json({ message: 'Failed to fetch sections' });
