@@ -51,6 +51,8 @@ async function getTransporter() {
  */
 async function sendWelcomeEmail(user, plainTextPassword) {
   const from = process.env.SMTP_FROM || '"Virtual Labs Admin" <no-reply@virtuallabs.in>';
+  const frontendUrl = (process.env.FRONTEND_URL || '').replace(/\/+$/, '');
+  const loginUrl = `${frontendUrl}/login`;
   
   const htmlContent = `
     <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 550px; margin: 0 auto; padding: 24px; border: 1px solid #f1f5f9; rounded: 16px; background-color: #ffffff;">
@@ -72,7 +74,7 @@ async function sendWelcomeEmail(user, plainTextPassword) {
       <p style="color: #ef4444; font-size: 11px; font-weight: bold; margin: -10px 0 20px 0;">⚠️ Please change your password immediately after logging in for security.</p>
 
       <div style="text-align: center; margin: 24px 0;">
-        <a href="http://localhost:5173/login" target="_blank" style="background-color: #2563eb; color: #ffffff; padding: 12px 28px; border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: bold; display: inline-block;">Log In to Platform</a>
+        <a href="${loginUrl}" target="_blank" style="background-color: #2563eb; color: #ffffff; padding: 12px 28px; border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: bold; display: inline-block;">Log In to Platform</a>
       </div>
 
       <p style="color: #64748b; font-size: 11px; border-top: 1px solid #f1f5f9; padding-top: 16px; margin-top: 24px; text-align: center;">
@@ -91,7 +93,7 @@ Username: ${user.username}
 Email: ${user.email}
 Password: ${plainTextPassword}
 
-Please log in at: http://localhost:5173/login
+Please log in at: ${loginUrl}
 Make sure to change your password after logging in for security.
   `;
 
@@ -124,7 +126,7 @@ Make sure to change your password after logging in for security.
  */
 async function sendPasswordResetEmail(user, token) {
   const from = process.env.SMTP_FROM || '"Virtual Labs Admin" <no-reply@virtuallabs.in>';
-  const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+  const frontendUrl = (process.env.FRONTEND_URL || '').replace(/\/+$/, '');
   const resetLink = `${frontendUrl}/reset-password?token=${token}`;
 
   const htmlContent = `

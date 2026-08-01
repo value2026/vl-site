@@ -8,15 +8,16 @@ import {
 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import WorkshopRegistrationModal from '../components/public/WorkshopRegistrationModal';
+import { apiUrl } from '../utils/api';
 
 async function fetchNodalCentresSections() {
-  const res = await fetch(`${import.meta.env.VITE_API_URL || window.location.origin}/api/pages/nodal-centres/sections`);
+  const res = await fetch(apiUrl("/pages/nodal-centres/sections"));
   if (!res.ok) throw new Error('Failed to fetch nodal centres sections');
   return res.json();
 }
 
 async function fetchWorkshops() {
-  const res = await fetch(`${import.meta.env.VITE_API_URL || window.location.origin}/api/workshops`);
+  const res = await fetch(apiUrl("/workshops"));
   if (!res.ok) throw new Error('Failed to fetch workshops');
   return res.json();
 }
@@ -66,7 +67,7 @@ function InlineFreeDemoForm() {
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL || window.location.origin}/api/pages/nodal-centre-request/sections`);
+        const res = await fetch(apiUrl("/pages/nodal-centre-request/sections"));
         if (!res.ok) throw new Error('Failed to load form');
         const sections = await res.json();
         const formSec = sections.find(s => s.sectionKey === 'formSchema');
@@ -92,7 +93,7 @@ function InlineFreeDemoForm() {
     setError('');
     try {
       const res = await fetch(
-        `${import.meta.env.VITE_API_URL || window.location.origin}/api/pages/nodal-centre-request/survey`,
+        apiUrl("/pages/nodal-centre-request/survey"),
         { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(formData) }
       );
       if (!res.ok) throw new Error('Submission failed. Please try again.');

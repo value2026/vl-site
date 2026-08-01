@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { apiUrl } from '../utils/api';
 import SectionRenderer from '../components/SectionRenderer';
 import Hero               from '../components/Hero';
 import FeaturedSimulation  from '../components/FeaturedSimulation';
@@ -21,7 +22,7 @@ const STATIC_FALLBACK = [
 ];
 
 async function fetchHomeSections() {
-  const res = await fetch(`${import.meta.env.VITE_API_URL || window.location.origin}/api/pages/home/sections`);
+  const res = await fetch(apiUrl("/pages/home/sections"));
   if (!res.ok) throw new Error('Failed to fetch home sections');
   return res.json();
 }

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { FlaskConical, Eye, EyeOff, ArrowRight } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { assetUrl } from '../utils/url';
 
 const DASHBOARD_MAP = {
   admin:        '/dashboard/admin',
@@ -58,7 +59,7 @@ export default function Login() {
         <div className="text-center mb-8 flex flex-col items-center">
           <Link to="/" className="inline-flex items-center gap-3 mb-6 hover:opacity-90 transition-opacity">
             <div className="bg-white p-1 rounded-full flex-shrink-0">
-              <img src="/amrita-icon.jpg" alt="Amrita Logo" className="h-10 w-10 object-contain rounded-full" />
+              <img src={assetUrl('/amrita-icon.jpg')} alt="Amrita Logo" className="h-10 w-10 object-contain rounded-full" />
             </div>
             <div className="flex flex-col justify-center text-left">
               <span className="text-white font-serif text-3xl leading-none tracking-wide font-bold">

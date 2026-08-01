@@ -496,7 +496,7 @@ function AppLayout() {
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/v2">
       <ScrollToTop />
       <GoogleAnalytics />
       <AppLayout />

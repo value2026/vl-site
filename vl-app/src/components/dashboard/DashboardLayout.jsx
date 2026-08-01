@@ -5,6 +5,7 @@ import {
   LogOut, Menu, X, ChevronRight, Bell, TrendingUp, FileText, Globe, KeyRound, Building2, Presentation, ClipboardList, Home
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { assetUrl } from '../../utils/url';
 
 const NAV = {
   admin: [
@@ -87,7 +88,7 @@ export default function DashboardLayout({ children, title }) {
       <div className="p-6 border-b border-white/10">
         <Link to="/" className="flex items-center gap-3">
           <div className="bg-white p-1 rounded-xl shadow-lg flex items-center justify-center">
-            <img src="/amrita-icon.jpg" alt="Amrita Logo" className="w-8 h-8 object-contain rounded" />
+            <img src={assetUrl('/amrita-icon.jpg')} alt="Amrita Logo" className="w-8 h-8 object-contain rounded" />
           </div>
           <div>
             <div className="text-white font-bold text-sm leading-tight">VALUE @ Amrita</div>

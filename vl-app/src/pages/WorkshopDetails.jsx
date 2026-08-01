@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Calendar, MapPin, Users, ArrowRight, Loader2, ArrowLeft, Video, Clock, CheckCircle2 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
+import { apiUrl } from '../utils/api';
 
 async function fetchWorkshop(id) {
-  const res = await fetch(`${import.meta.env.VITE_API_URL || window.location.origin}/api/workshops/${id}`);
+  const res = await fetch(apiUrl(`/workshops/${id}`));
   if (!res.ok) throw new Error('Failed to fetch workshop');
   return res.json();
 }

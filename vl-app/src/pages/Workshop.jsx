@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { Calendar, MapPin, Clock, Users, ArrowRight, Loader2, CheckCircle2, ChevronRight, Mail } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
+import { apiUrl } from '../utils/api';
 import { Link } from 'react-router-dom';
 import WorkshopRegistrationModal from '../components/public/WorkshopRegistrationModal';
 import NodalCentreRequestModal from '../components/public/NodalCentreRequestModal';
 
 async function fetchWorkshops() {
-  const res = await fetch(`${import.meta.env.VITE_API_URL || window.location.origin}/api/workshops`);
+  const res = await fetch(apiUrl("/workshops"));
   if (!res.ok) throw new Error('Failed to fetch workshops');
   return res.json();
 }

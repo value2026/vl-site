@@ -1,9 +1,10 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight, CheckCircle2, Calendar, Users, Loader2 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
+import { apiUrl } from '../utils/api';
 
 async function fetchProjectSections() {
-  const res = await fetch(`${import.meta.env.VITE_API_URL || window.location.origin}/api/pages/project/sections`);
+  const res = await fetch(apiUrl("/pages/project/sections"));
   if (!res.ok) throw new Error('Failed to fetch project sections');
   return res.json();
 }

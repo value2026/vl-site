@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Loader2, Download, Users, Mail, Building2, User, Calendar, MapPin, Eye, ChevronLeft } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { apiUrl } from '../../utils/api';
 
 export default function WorkshopRegistrationsModal({ workshop, onClose }) {
   const { user, token } = useAuth();
@@ -15,7 +16,7 @@ export default function WorkshopRegistrationsModal({ workshop, onClose }) {
 
   const fetchRegistrations = async () => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || window.location.origin}/api/pages/workshop-${workshop.id}/survey/responses`, {
+      const res = await fetch(apiUrl(`/pages/workshop-${workshop.id}/survey/responses`), {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       
@@ -37,7 +38,7 @@ export default function WorkshopRegistrationsModal({ workshop, onClose }) {
   };
 
   const handleDownloadCsv = () => {
-    window.open(`${import.meta.env.VITE_API_URL || window.location.origin}/api/pages/workshop-${workshop.id}/survey/responses?format=csv&token=${token}`, '_blank');
+    window.open(apiUrl(`/pages/workshop-${workshop.id}/survey/responses?format=csv&token=${token}`), '_blank');
   };
   
   // Helper to map submission data (keys are IDs) to an object with readable question text as keys
