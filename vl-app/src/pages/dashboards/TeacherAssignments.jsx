@@ -10,7 +10,7 @@ import { useAuth } from '../../context/AuthContext';
 import { api } from '../../utils/api';
 
 const inputCls =
-  'w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all';
+  'w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all [color-scheme:dark]';
 
 export default function TeacherAssignments() {
   const { user } = useAuth();
@@ -23,9 +23,17 @@ export default function TeacherAssignments() {
   const [error, setError]         = useState('');
   const [success, setSuccess]     = useState('');
 
+  const getNowLocal = () => {
+    const tzOffset = (new Date()).getTimezoneOffset() * 60000;
+    return new Date(Date.now() - tzOffset).toISOString().slice(0, 16);
+  };
+
   // Modal States
   const [paperModalOpen, setPaperModalOpen]       = useState(false);
   const [scheduleModalOpen, setScheduleModalOpen] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen]     = useState(false);
+  const [paperToDelete, setPaperToDelete]         = useState(null);
+  const [isDeleting, setIsDeleting]               = useState(false);
 
   // New Paper Form State
   const [paperForm, setPaperForm] = useState({
@@ -174,16 +182,29 @@ export default function TeacherAssignments() {
     }
   };
 
-  const handleDeletePaper = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this question paper? This cannot be undone.')) return;
+  const triggerDelete = (paper) => {
+    setPaperToDelete(paper);
+    setDeleteModalOpen(true);
+  };
+
+  const confirmDeletePaper = async () => {
+    if (!paperToDelete) return;
+    setIsDeleting(true);
     try {
-      const res = await api.post(`/assignments/papers/${id}/delete`);
+      const res = await api.post(`/assignments/papers/${paperToDelete.id}/delete`);
       if (res.ok) {
         setSuccess('Question paper deleted.');
         fetchData();
+        setDeleteModalOpen(false);
+        setPaperToDelete(null);
+      } else {
+        setError('Failed to delete question paper');
       }
     } catch (e) {
       console.error(e);
+      setError('An error occurred while deleting.');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -214,6 +235,8 @@ export default function TeacherAssignments() {
     try {
       const payload = {
         ...scheduleForm,
+        startTime: new Date(scheduleForm.startTime).toISOString(),
+        endTime: new Date(scheduleForm.endTime).toISOString(),
         questionPaperId: selectedPaper.id,
         studentIds: selectedStudentIds
       };
@@ -448,7 +471,7 @@ export default function TeacherAssignments() {
                     Schedule Slot
                   </button>
                   <button
-                    onClick={() => handleDeletePaper(paper.id)}
+                    onClick={() => triggerDelete(paper)}
                     className="p-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-400 rounded-xl transition-all"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -649,6 +672,7 @@ export default function TeacherAssignments() {
                   <input
                     type="datetime-local"
                     required
+                    min={getNowLocal()}
                     className={inputCls}
                     value={scheduleForm.startTime}
                     onChange={e => setScheduleForm(prev => ({ ...prev, startTime: e.target.value }))}
@@ -661,6 +685,7 @@ export default function TeacherAssignments() {
                   <input
                     type="datetime-local"
                     required
+                    min={scheduleForm.startTime || getNowLocal()}
                     className={inputCls}
                     value={scheduleForm.endTime}
                     onChange={e => setScheduleForm(prev => ({ ...prev, endTime: e.target.value }))}
@@ -785,6 +810,46 @@ export default function TeacherAssignments() {
           </div>
         </div>
       )}
+      {/* ── DELETE CONFIRMATION MODAL ── */}
+      {deleteModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm overflow-y-auto">
+          <div className="w-full max-w-md bg-slate-900 border border-white/10 rounded-3xl p-6 shadow-2xl relative">
+            <button
+              onClick={() => { setDeleteModalOpen(false); setPaperToDelete(null); }}
+              className="absolute top-5 right-5 text-slate-400 hover:text-white rounded-lg p-1 hover:bg-white/5"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-12 h-12 rounded-full bg-red-500/20 flex items-center justify-center text-red-500">
+                <AlertCircle className="w-6 h-6" />
+              </div>
+              <h3 className="text-xl font-bold text-white">Delete Question Paper?</h3>
+            </div>
+            <p className="text-slate-400 text-sm mb-6 ml-16">
+              Are you sure you want to delete <strong>{paperToDelete?.title}</strong>? This action cannot be undone.
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => { setDeleteModalOpen(false); setPaperToDelete(null); }}
+                className="px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-300 hover:bg-white/10 transition-colors"
+                disabled={isDeleting}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDeletePaper}
+                disabled={isDeleting}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-red-600 hover:bg-red-500 transition-colors shadow-lg shadow-red-500/20 disabled:opacity-50"
+              >
+                {isDeleting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                {isDeleting ? 'Deleting...' : 'Delete'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </DashboardLayout>
   );
 }

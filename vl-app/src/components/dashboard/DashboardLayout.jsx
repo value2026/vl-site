@@ -14,6 +14,7 @@ const NAV = {
     { icon: Presentation,    label: 'Workshops',       path: '/dashboard/admin/workshops' },
     { icon: FlaskConical,    label: 'Lab Management',  path: '/dashboard/admin/labs' },
     { icon: FileText,        label: 'Contact Messages', path: '/dashboard/admin/messages' },
+    { icon: ClipboardList,   label: 'Surveys',          path: '/dashboard/admin/surveys' },
     { icon: TrendingUp,      label: 'Usage Analytics',  path: '/dashboard/admin/analytics' },
     { icon: Globe,           label: 'Manage Pages',    path: '/dashboard/admin/pages' },
   ],
@@ -24,6 +25,7 @@ const NAV = {
     { icon: Presentation,    label: 'Workshops',       path: '/dashboard/vl-manager/workshops' },
     { icon: FlaskConical,    label: 'Lab Management',  path: '/dashboard/vl-manager/labs' },
     { icon: FileText,        label: 'Contact Messages', path: '/dashboard/vl-manager/messages' },
+    { icon: ClipboardList,   label: 'Surveys',          path: '/dashboard/vl-manager/surveys' },
     { icon: Globe,           label: 'Manage Pages',    path: '/dashboard/vl-manager/pages' },
     { icon: TrendingUp,      label: 'Usage Analytics',  path: '/dashboard/vl-manager/analytics' },
   ],
@@ -33,6 +35,7 @@ const NAV = {
     { icon: Building2,       label: 'Institutions',    path: '/dashboard/vl-coordinator/institutions' },
     { icon: Presentation,    label: 'Workshops',       path: '/dashboard/vl-coordinator/workshops' },
     { icon: FlaskConical,    label: 'Lab Management',  path: '/dashboard/vl-coordinator/labs' },
+    { icon: ClipboardList,   label: 'Surveys',          path: '/dashboard/vl-coordinator/surveys' },
     { icon: TrendingUp,      label: 'Usage Analytics',  path: '/dashboard/vl-coordinator/analytics' },
   ],
   nodal_centre: [

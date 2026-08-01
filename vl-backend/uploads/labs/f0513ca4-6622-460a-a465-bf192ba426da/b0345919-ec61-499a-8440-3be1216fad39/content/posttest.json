@@ -1,0 +1,41 @@
+{
+  "version": 2.0,
+  "questions": [
+    {
+      "question": "Magnetic moment of a magnet m is _______.",
+      "answers": {
+        "a": "2pl",
+        "b": "pl",
+        "c": "pl/2",
+        "d": "pl²"
+      },
+     
+      "correctAnswer": "b",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "By cutting along the magnetic equator a bar magnet having pole strength p and magnetic moment m is broken into two pieces. What is its pole strength and moment of each piece?",
+      "answers": {
+        "a": "p/2, m/2",
+        "b": "p, m",
+        "c": "p², m",
+        "d": "p, m/2"
+      },
+     
+      "correctAnswer": "a",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "Tangent law states as,",
+      "answers": {
+        "a": "BH/B = tanθ",
+        "b": "BH = tanθ",
+        "c": "B = BH tanθ",
+        "d": "B = sinθ1/cosθ1"
+      },
+      
+      "correctAnswer": "a",
+      "difficulty": "beginner"
+    }
+  ]
+}

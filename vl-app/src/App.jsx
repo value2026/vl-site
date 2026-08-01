@@ -32,6 +32,7 @@ import VLCoordinatorDashboard from './pages/dashboards/VLCoordinatorDashboard';
 import InstitutionsManagement from './pages/dashboards/InstitutionsManagement';
 import WorkshopsManagement    from './pages/dashboards/WorkshopsManagement';
 import WorkshopEditor         from './pages/dashboards/WorkshopEditor';
+import SurveysDashboard       from './pages/dashboards/SurveysDashboard';
 
 // Student learning platform
 import StudentHome    from './pages/student/StudentHome';
@@ -278,6 +279,11 @@ function AppLayout() {
             <DashboardLayout title="Workshops"><WorkshopsManagement /></DashboardLayout>
           </ProtectedRoute>
         } />
+        <Route path="/dashboard/admin/surveys" element={
+          <ProtectedRoute allowedRole="admin">
+            <DashboardLayout title="Surveys"><SurveysDashboard /></DashboardLayout>
+          </ProtectedRoute>
+        } />
         <Route path="/dashboard/admin/workshops/:id" element={
           <ProtectedRoute allowedRole="admin">
             <DashboardLayout title="Workshop Editor"><WorkshopEditor /></DashboardLayout>
@@ -304,6 +310,11 @@ function AppLayout() {
         <Route path="/dashboard/vl-manager/workshops" element={
           <ProtectedRoute allowedRole="vl_manager">
             <DashboardLayout title="Workshops"><WorkshopsManagement /></DashboardLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/dashboard/vl-manager/surveys" element={
+          <ProtectedRoute allowedRole="vl_manager">
+            <DashboardLayout title="Surveys"><SurveysDashboard /></DashboardLayout>
           </ProtectedRoute>
         } />
         <Route path="/dashboard/vl-manager/workshops/:id" element={
@@ -342,6 +353,11 @@ function AppLayout() {
         <Route path="/dashboard/vl-coordinator/workshops" element={
           <ProtectedRoute allowedRole="vl_coordinator">
             <DashboardLayout title="Workshops"><WorkshopsManagement /></DashboardLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/dashboard/vl-coordinator/surveys" element={
+          <ProtectedRoute allowedRole="vl_coordinator">
+            <DashboardLayout title="Surveys"><SurveysDashboard /></DashboardLayout>
           </ProtectedRoute>
         } />
         <Route path="/dashboard/vl-coordinator/workshops/:id" element={

@@ -6,7 +6,8 @@ import Placeholder from '@tiptap/extension-placeholder';
 import {
   X, Save, Plus, Trash2, ChevronDown, ChevronUp,
   Bold, Italic, List, Heading2, Link2, Undo, Redo, Image as ImageIcon,
-  Search, FlaskConical, Check, Loader2, CheckCircle2
+  Search, FlaskConical, Check, Loader2, CheckCircle2, FileJson, Maximize, Minimize,
+  Download, UploadCloud
 } from 'lucide-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import CloudinaryUploader from './CloudinaryUploader';
@@ -92,12 +93,18 @@ function TiptapEditor({ content, onChange, placeholder = 'Start writing…' }) {
 }
 
 // ── Repeatable rows ───────────────────────────────────────────
-function RepeatableList({ label, items = [], onChange, fields, onConfirmRequest }) {
+function RepeatableList({ label, items = [], onChange, fields, onConfirmRequest, onAutoSave }) {
   // Ensure items have stable IDs for React keys
   const stableItems = items.map(item => {
     if (!item._id) return { ...item, _id: Math.random().toString(36).substring(2, 9) };
     return item;
   });
+
+  const [showBulkImport, setShowBulkImport] = useState(false);
+  const [bulkJson, setBulkJson] = useState('');
+  const [isFullScreen, setIsFullScreen] = useState(false);
+  const [isSelectionMode, setIsSelectionMode] = useState(false);
+  const [selectedItems, setSelectedItems] = useState(new Set());
 
   const add = () => {
     const blank = { _id: Math.random().toString(36).substring(2, 9) };
@@ -110,13 +117,168 @@ function RepeatableList({ label, items = [], onChange, fields, onConfirmRequest 
     });
     onChange([blank, ...stableItems]);
   };
-  const remove = (i) => {
-    if (onConfirmRequest) {
-      onConfirmRequest({ title: 'Remove Item', message: 'Are you sure you want to remove this item?', onConfirm: () => onChange(stableItems.filter((_, idx) => idx !== i)) });
-    } else if (window.confirm('Are you sure you want to remove this item?')) {
-      onChange(stableItems.filter((_, idx) => idx !== i));
+
+  const handleBulkImport = () => {
+    if (!bulkJson.trim()) return;
+    try {
+      let newItems = [];
+      const text = bulkJson.trim();
+      
+      if (text.startsWith('[')) {
+        // Parse as JSON
+        const parsed = JSON.parse(text);
+        if (!Array.isArray(parsed)) throw new Error("JSON must be an array of objects");
+        newItems = parsed.map(item => ({ ...item, _id: Math.random().toString(36).substring(2, 9) }));
+      } else {
+        // Parse as TSV or CSV
+        const lines = text.split('\n');
+        if (lines.length < 2) throw new Error("Need at least a header row and one data row for CSV/TSV");
+        const delimiter = lines[0].includes('\t') ? '\t' : ',';
+        
+        const parseLine = (line) => {
+          if (delimiter === '\t') return line.split('\t').map(v => v.trim());
+          let result = [];
+          let current = '';
+          let inQuotes = false;
+          for (let i = 0; i < line.length; i++) {
+            const char = line[i];
+            if (char === '"' && line[i+1] === '"') {
+               current += '"'; i++;
+            } else if (char === '"') {
+              inQuotes = !inQuotes;
+            } else if (char === delimiter && !inQuotes) {
+              result.push(current); current = '';
+            } else {
+              current += char;
+            }
+          }
+          result.push(current);
+          return result.map(v => v.trim());
+        };
+
+        const headers = parseLine(lines[0]);
+        const fieldKeys = fields.map(f => f.key);
+        
+        newItems = lines.slice(1).map(line => {
+          if (!line.trim()) return null;
+          const values = parseLine(line);
+          const obj = { _id: Math.random().toString(36).substring(2, 9) };
+          headers.forEach((header, idx) => {
+            if (fieldKeys.includes(header)) {
+              obj[header] = values[idx] || '';
+            }
+          });
+          fieldKeys.forEach(fk => {
+             if (obj[fk] === undefined) obj[fk] = '';
+          });
+          return obj;
+        }).filter(Boolean);
+      }
+      
+      onChange([...newItems, ...stableItems]);
+      setShowBulkImport(false);
+      setBulkJson('');
+    } catch (err) {
+      alert("Invalid format: " + err.message);
     }
   };
+
+  const loadExampleJson = () => {
+    const exampleItem = {};
+    fields.forEach(f => {
+      exampleItem[f.key] = f.placeholder || `value`;
+    });
+    setBulkJson(JSON.stringify([exampleItem], null, 2));
+  };
+
+  const loadExampleCsv = () => {
+    const headers = fields.map(f => f.key).join(',');
+    const values = fields.map(f => `"${f.placeholder || 'value'}"`).join(',');
+    
+    const csvContent = `${headers}\n${values}`;
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    
+    const a = document.createElement('a');
+    a.href = url;
+    a.setAttribute('download', 'bulk_import_template.csv');
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
+
+  const handleFileUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      const text = evt.target.result;
+      setBulkJson(text);
+    };
+    reader.readAsText(file);
+    e.target.value = null; // reset
+  };
+
+  const remove = (i) => {
+    const action = () => {
+      const next = stableItems.filter((_, idx) => idx !== i);
+      onChange(next);
+      if (onAutoSave) onAutoSave(next);
+    };
+    if (onConfirmRequest) {
+      onConfirmRequest({ title: 'Remove Item', message: 'Are you sure you want to remove this item?', onConfirm: action });
+    } else if (window.confirm('Are you sure you want to remove this item?')) {
+      action();
+    }
+  };
+
+  const toggleSelectAll = (e) => {
+    if (e.target.checked) {
+      setSelectedItems(new Set(stableItems.map(i => i._id)));
+    } else {
+      setSelectedItems(new Set());
+    }
+  };
+
+  const toggleSelection = (id, checked) => {
+    const next = new Set(selectedItems);
+    if (checked) next.add(id);
+    else next.delete(id);
+    setSelectedItems(next);
+  };
+
+  const removeSelected = () => {
+    if (selectedItems.size === 0) return;
+    const msg = `Are you sure you want to delete ${selectedItems.size} selected items?`;
+    const action = () => {
+      const next = stableItems.filter(item => !selectedItems.has(item._id));
+      onChange(next);
+      if (onAutoSave) onAutoSave(next);
+      setSelectedItems(new Set());
+      setIsSelectionMode(false);
+    };
+    if (onConfirmRequest) {
+      onConfirmRequest({ title: 'Delete Selected', message: msg, onConfirm: action });
+    } else if (window.confirm(msg)) {
+      action();
+    }
+  };
+
+  const removeAll = () => {
+    const action = () => {
+      onChange([]);
+      if (onAutoSave) onAutoSave([]);
+      setSelectedItems(new Set());
+      setIsSelectionMode(false);
+    };
+    if (onConfirmRequest) {
+      onConfirmRequest({ title: 'Delete All Items', message: `Are you sure you want to delete all ${label}? This cannot be undone.`, onConfirm: action });
+    } else if (window.confirm(`Are you sure you want to delete all ${label}? This cannot be undone.`)) {
+      action();
+    }
+  };
+
   const update = (i, key, val) => {
     const next = stableItems.map((item, idx) => idx === i ? { ...item, [key]: val } : item);
     onChange(next);
@@ -129,23 +291,182 @@ function RepeatableList({ label, items = [], onChange, fields, onConfirmRequest 
     onChange(next);
   };
 
+  const containerClasses = isFullScreen 
+    ? "fixed inset-0 z-[100] bg-slate-950 p-6 sm:p-10 overflow-y-auto animate-in zoom-in-95 duration-200"
+    : "";
+
   return (
-    <div>
-      <div className="flex items-center justify-between mb-3">
-        <label className="text-sm font-medium text-slate-300">{label}</label>
-        <button
-          type="button"
-          onClick={add}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 transition-colors"
-        >
-          <Plus className="w-3.5 h-3.5" /> Add Item
-        </button>
+    <div className={containerClasses}>
+      {isFullScreen && (
+        <div className="flex items-center gap-3 mb-6 pb-4 border-b border-white/10">
+          <button onClick={() => setIsFullScreen(false)} className="p-2 text-slate-400 hover:text-white bg-white/5 rounded-xl transition-colors">
+            <X className="w-5 h-5" />
+          </button>
+          <h2 className="text-xl font-bold text-white">Editing: {label}</h2>
+        </div>
+      )}
+
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-4">
+        <div className="flex flex-wrap items-center gap-3">
+          {!isFullScreen && <label className="text-sm font-medium text-slate-300">{label}</label>}
+          
+          {items.length > 0 && !isSelectionMode && (
+            <button
+              type="button"
+              onClick={() => setIsSelectionMode(true)}
+              className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 transition-colors"
+            >
+              Select / Delete Items
+            </button>
+          )}
+
+          {items.length > 0 && isSelectionMode && (
+            <div className="flex items-center gap-3 bg-slate-800/50 px-3 py-1.5 rounded-lg border border-white/5">
+              <label className="flex items-center gap-2 cursor-pointer text-sm text-slate-300 hover:text-white">
+                <input
+                  type="checkbox"
+                  checked={selectedItems.size === stableItems.length && stableItems.length > 0}
+                  onChange={toggleSelectAll}
+                  className="w-4 h-4 rounded border-slate-600 text-blue-500 focus:ring-blue-500/20 bg-slate-900 cursor-pointer"
+                />
+                <span className="font-medium text-xs">Select All</span>
+              </label>
+              
+              {selectedItems.size > 0 && (
+                <>
+                  <div className="w-px h-4 bg-white/20" />
+                  <button
+                    type="button"
+                    onClick={removeSelected}
+                    className="flex items-center gap-1.5 text-xs font-bold text-red-400 hover:text-red-300 transition-colors"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    Delete ({selectedItems.size})
+                  </button>
+                </>
+              )}
+              {selectedItems.size === 0 && (
+                <>
+                  <div className="w-px h-4 bg-white/20" />
+                  <button
+                    type="button"
+                    onClick={removeAll}
+                    className="flex items-center gap-1.5 text-xs font-bold text-red-400 hover:text-red-300 transition-colors"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    Delete All
+                  </button>
+                </>
+              )}
+              
+              <div className="w-px h-4 bg-white/20" />
+              <button
+                type="button"
+                onClick={() => { setIsSelectionMode(false); setSelectedItems(new Set()); }}
+                className="text-xs font-bold text-slate-400 hover:text-white transition-colors"
+              >
+                Done
+              </button>
+            </div>
+          )}
+        </div>
+        <div className="flex items-center gap-2">
+          {!isFullScreen && (
+            <button
+              type="button"
+              onClick={() => setIsFullScreen(true)}
+              title="Full Screen Editor"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 transition-colors"
+            >
+              <Maximize className="w-3.5 h-3.5" /> Full Screen
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={() => setShowBulkImport(!showBulkImport)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/20 transition-colors"
+          >
+            <FileJson className="w-3.5 h-3.5" /> Bulk Import
+          </button>
+          <button
+            type="button"
+            onClick={add}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 transition-colors"
+          >
+            <Plus className="w-3.5 h-3.5" /> Add Item
+          </button>
+        </div>
       </div>
+      
+      {showBulkImport && (
+        <div className="mb-4 p-5 rounded-xl bg-blue-500/5 border border-blue-500/20 animate-in fade-in slide-in-from-top-2 duration-200">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-3 gap-2">
+            <div>
+              <h4 className="text-sm font-bold text-blue-300">Bulk Import (JSON / CSV / TSV)</h4>
+              <p className="text-xs text-blue-200/70 mt-0.5">
+                Upload a CSV file, paste from Excel, or paste JSON array.
+              </p>
+            </div>
+            <div className="flex gap-2 flex-wrap">
+              <label className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-blue-500 hover:bg-blue-600 text-white transition-colors cursor-pointer flex items-center gap-1">
+                <UploadCloud className="w-3.5 h-3.5" /> Upload CSV
+                <input type="file" accept=".csv,.tsv,.txt" className="hidden" onChange={handleFileUpload} />
+              </label>
+              <button
+                type="button"
+                onClick={loadExampleCsv}
+                className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 transition-colors flex items-center gap-1"
+              >
+                <Download className="w-3.5 h-3.5" /> Template
+              </button>
+            </div>
+          </div>
+          
+          <textarea
+            value={bulkJson}
+            onChange={e => setBulkJson(e.target.value)}
+            rows={6}
+            className="w-full bg-slate-900 border border-blue-500/30 rounded-lg px-4 py-3 text-sm text-slate-300 placeholder-slate-600 font-mono resize-y focus:outline-none focus:border-blue-500"
+            placeholder="[{&quot;title&quot;: &quot;Example&quot;}, ...]"
+          />
+          <div className="flex justify-end mt-3 gap-3">
+            <button
+              type="button"
+              onClick={() => setShowBulkImport(false)}
+              className="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:text-white transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={handleBulkImport}
+              className="px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-500 hover:bg-blue-600 text-white shadow-lg transition-colors"
+            >
+              Parse & Add
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="space-y-3">
         {stableItems.map((item, i) => (
-          <div key={item._id} className="p-3 rounded-xl bg-white/5 border border-white/10 space-y-2 animate-in fade-in slide-in-from-top-4 duration-300">
+          <div key={item._id} className={`p-3 rounded-xl border space-y-2 animate-in fade-in slide-in-from-top-4 duration-300 transition-colors ${
+            selectedItems.has(item._id) ? 'bg-blue-500/10 border-blue-500/30' : 'bg-white/5 border-white/10'
+          }`}>
             <div className="flex items-center justify-between mb-1">
-              <span className="text-xs text-slate-500 font-mono">#{i + 1}</span>
+              {isSelectionMode ? (
+                <label className="flex items-center gap-2 cursor-pointer text-xs text-slate-500 font-mono hover:text-white transition-colors">
+                  <input
+                    type="checkbox"
+                    checked={selectedItems.has(item._id)}
+                    onChange={(e) => toggleSelection(item._id, e.target.checked)}
+                    className="w-4 h-4 rounded border-slate-600 text-blue-500 focus:ring-blue-500/20 bg-slate-900 cursor-pointer"
+                  />
+                  #{i + 1}
+                </label>
+              ) : (
+                <span className="text-xs text-slate-500 font-mono">#{i + 1}</span>
+              )}
               <div className="flex items-center gap-1">
                 <button type="button" onClick={() => move(i, -1)} className="p-1 text-slate-500 hover:text-white rounded" disabled={i === 0}>
                   <ChevronUp className="w-3.5 h-3.5" />
@@ -319,6 +640,29 @@ const REPEATABLE_CONFIGS = {
       ],
     },
   },
+  nc_inaugurations: {
+    items: {
+      label: 'Inauguration Events',
+      fields: [
+        { key: 'year',        label: 'Year',        placeholder: '2024' },
+        { key: 'title',       label: 'Title',       placeholder: 'Nodal Centre Inauguration...' },
+        { key: 'location',    label: 'Location',    placeholder: 'Coimbatore, Tamil Nadu' },
+        { key: 'description', label: 'Description', placeholder: 'Launch of...', type: 'textarea' },
+        { key: 'attendees',   label: 'Attendees',   placeholder: '200+' },
+        { key: 'status',      label: 'Status',      placeholder: 'Completed / Upcoming' },
+      ],
+    },
+  },
+  nc_unique_id: {
+    features: {
+      label: 'Features List',
+      fields: [
+        { key: 'icon',  label: 'Icon (e.g. KeyRound, Users, Award)', placeholder: 'KeyRound' },
+        { key: 'title', label: 'Feature Title',        placeholder: 'Institutional Login' },
+        { key: 'desc',  label: 'Description',          placeholder: 'A dedicated login ID...', type: 'textarea' },
+      ],
+    },
+  },
 };
 
 // ── Simple text input ─────────────────────────────────────────
@@ -412,13 +756,36 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
 
   const handleSave = () => mutation.mutate({ title, subtitle, content });
 
+  const autoSaveMutation = useMutation({
+    mutationFn: async (payload) => {
+      const res = await fetch(`${API_URL}/pages/${pageSlug}/sections/${section.id}/update`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization:  `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error('Failed to auto-save');
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries([`${pageSlug}-sections`]);
+      queryClient.invalidateQueries(['admin-page-sections', pageSlug]);
+    },
+  });
+
+  const handleAutoSave = useCallback((key, updatedValue) => {
+    autoSaveMutation.mutate({ title, subtitle, content: { ...content, [key]: updatedValue } });
+  }, [autoSaveMutation, title, subtitle, content]);
+
   return (
     <div className="fixed inset-0 z-50 flex">
       {/* Backdrop */}
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
 
       {/* Drawer */}
-      <div className="relative ml-auto h-full w-full max-w-2xl bg-slate-900 border-l border-white/10 flex flex-col shadow-2xl overflow-hidden animate-slide-in-right">
+      <div className="relative ml-auto h-full w-full max-w-4xl bg-slate-900 border-l border-white/10 flex flex-col shadow-2xl overflow-hidden animate-slide-in-right">
 
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-white/10 flex-shrink-0">
@@ -435,7 +802,7 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
         <div className="flex-1 overflow-y-auto p-6 space-y-6">
 
           {/* ── Common section meta ──────────────────────── */}
-          {!pageSlug.includes('survey') && (
+          {!pageSlug.includes('survey') && section.sectionKey !== 'hero' && (
             <>
               <SectionDivider label="Section Header" />
               <TextField label="Section Title" value={title} onChange={setTitle} placeholder="Section heading…" />
@@ -450,7 +817,35 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
               {!pageSlug.includes('survey') && (
                 <TextField label="Badge Text" value={content.badge} onChange={v => setContentKey('badge', v)} placeholder="Ministry of Education Initiative · NMEICT" />
               )}
-              <TextField label="Main Heading" value={content.heading} onChange={v => setContentKey('heading', v)} placeholder="Learn Science Without Limits" />
+              <TextField label="Main Heading (Use *asterisks* for blue gradient)" value={content.heading} onChange={v => setContentKey('heading', v)} placeholder={"Build Your Future with\n*Emerging Technologies*\nand Create Impact."} multiline />
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium text-slate-300 block mb-2">Content Alignment</label>
+                  <select 
+                    value={content.contentAlignment || 'left'} 
+                    onChange={e => setContentKey('contentAlignment', e.target.value)}
+                    className="w-full bg-slate-800 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-red-500/50"
+                  >
+                    <option value="left">Left Align</option>
+                    <option value="center">Center Align</option>
+                    <option value="right">Right Align</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-slate-300 block mb-2">Highlight Gradient</label>
+                  <select 
+                    value={content.headingGradient || 'cyan-blue'} 
+                    onChange={e => setContentKey('headingGradient', e.target.value)}
+                    className="w-full bg-slate-800 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-red-500/50"
+                  >
+                    <option value="cyan-blue">Cyan to Blue</option>
+                    <option value="purple-pink">Purple to Pink</option>
+                    <option value="orange-red">Orange to Red</option>
+                    <option value="emerald-teal">Emerald to Teal</option>
+                  </select>
+                </div>
+              </div>
 
               <div>
                 <label className="text-sm font-medium text-slate-300 block mb-2">Subheading (rich text — supports bold, links)</label>
@@ -605,6 +1000,7 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
                     label="Stats Counter Badges"
                     items={content.stats || []}
                     onChange={v => setContentKey('stats', v)}
+                    onAutoSave={v => handleAutoSave('stats', v)}
                     fields={REPEATABLE_CONFIGS.hero.stats.fields}
                 onConfirmRequest={setConfirmConfig}
                   />
@@ -774,6 +1170,7 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
                 label="CTA Cards"
                 items={content.cards || []}
                 onChange={v => setContentKey('cards', v)}
+                onAutoSave={v => handleAutoSave('cards', v)}
                 fields={REPEATABLE_CONFIGS.cta.cards.fields}
                 onConfirmRequest={setConfirmConfig}
               />
@@ -795,6 +1192,7 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
                 label="Sponsor Cards"
                 items={content.sponsors || []}
                 onChange={v => setContentKey('sponsors', v)}
+                onAutoSave={v => handleAutoSave('sponsors', v)}
                 fields={REPEATABLE_CONFIGS.sponsors.sponsors.fields}
                 onConfirmRequest={setConfirmConfig}
               />
@@ -848,23 +1246,11 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
               <p className="text-slate-500 text-xs mt-1 mb-3">
                 💡 The first item is displayed as a large featured card. Items 2–4 appear as a side list.
               </p>
-              <div className="flex gap-4 mb-4">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setConfirmConfig({ title: 'Delete All news items', message: 'Are you sure you want to delete all news items? This cannot be undone.', onConfirm: () => {
-                      setContentKey('items', []);
-                    } })
-                  }}
-                  className="px-4 py-2 rounded-lg text-sm font-medium text-red-400 bg-red-400/10 hover:bg-red-400/20 transition-all border border-red-500/20"
-                >
-                  Delete All News Items
-                </button>
-              </div>
               <RepeatableList
                 label="News Items"
                 items={content.items || []}
                 onChange={v => setContentKey('items', v)}
+                onAutoSave={v => handleAutoSave('items', v)}
                 fields={REPEATABLE_CONFIGS.news.items.fields}
                 onConfirmRequest={setConfirmConfig}
               />
@@ -881,23 +1267,11 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
               <p className="text-slate-500 text-xs mt-1 mb-3">
                 💡 Add multiple videos to showcase them side-by-side in a responsive grid layout.
               </p>
-              <div className="flex gap-4 mb-4">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setConfirmConfig({ title: 'Delete All videos', message: 'Are you sure you want to delete all videos? This cannot be undone.', onConfirm: () => {
-                      setContentKey('videos', []);
-                    } })
-                  }}
-                  className="px-4 py-2 rounded-lg text-sm font-medium text-red-400 bg-red-400/10 hover:bg-red-400/20 transition-all border border-red-500/20"
-                >
-                  Delete All Videos
-                </button>
-              </div>
               <RepeatableList
                 label="Videos list shown on Home page"
                 items={content.videos || []}
                 onChange={v => setContentKey('videos', v)}
+                onAutoSave={v => handleAutoSave('videos', v)}
                 fields={REPEATABLE_CONFIGS.media.videos.fields}
                 onConfirmRequest={setConfirmConfig}
               />
@@ -908,20 +1282,6 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
           {section.sectionKey === 'publications_list' && (
             <>
               <SectionDivider label="Publication Settings" />
-              <div className="flex gap-4">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setConfirmConfig({ title: 'Delete All publications', message: 'Are you sure you want to delete all publications? This cannot be undone.', onConfirm: () => {
-                      setContentKey('items', []);
-                    } })
-                  }}
-                  className="px-4 py-2 rounded-lg text-sm font-medium text-red-400 bg-red-400/10 hover:bg-red-400/20 transition-all border border-red-500/20"
-                >
-                  Delete All Publications
-                </button>
-              </div>
-
               <SectionDivider label="Research Publications (Ordered by Year)" />
               <p className="text-slate-500 text-xs -mt-2">
                 💡 Add papers here. The frontend will group them automatically by year.
@@ -930,6 +1290,7 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
                 label="Publications Items"
                 items={content.items || []}
                 onChange={v => setContentKey('items', v)}
+                onAutoSave={v => handleAutoSave('items', v)}
                 fields={REPEATABLE_CONFIGS.publications_list.items.fields}
                 onConfirmRequest={setConfirmConfig}
               />
@@ -940,23 +1301,11 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
           {section.sectionKey === 'project_timeline' && (
             <>
               <SectionDivider label="Timeline Entries" />
-              <div className="flex gap-4 mb-4">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setConfirmConfig({ title: 'Delete All timeline entries', message: 'Are you sure you want to delete all timeline entries?', onConfirm: () => {
-                      setContentKey('items', []);
-                    } })
-                  }}
-                  className="px-4 py-2 rounded-lg text-sm font-medium text-red-400 bg-red-400/10 hover:bg-red-400/20 transition-all border border-red-500/20"
-                >
-                  Delete All Timeline Entries
-                </button>
-              </div>
               <RepeatableList
                 label="Timeline Items"
                 items={content.items || []}
                 onChange={v => setContentKey('items', v)}
+                onAutoSave={v => handleAutoSave('items', v)}
                 fields={REPEATABLE_CONFIGS.project_timeline.items.fields}
                 onConfirmRequest={setConfirmConfig}
               />
@@ -966,24 +1315,28 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
           {section.sectionKey === 'project_objectives' && (
             <>
               <SectionDivider label="Mission Objectives" />
-              <div className="flex gap-4 mb-4">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setConfirmConfig({ title: 'Delete All objectives', message: 'Are you sure you want to delete all objectives?', onConfirm: () => {
-                      setContentKey('items', []);
-                    } })
-                  }}
-                  className="px-4 py-2 rounded-lg text-sm font-medium text-red-400 bg-red-400/10 hover:bg-red-400/20 transition-all border border-red-500/20"
-                >
-                  Delete All Objectives
-                </button>
-              </div>
               <RepeatableList
                 label="Objective Items"
                 items={content.items || []}
                 onChange={v => setContentKey('items', v)}
+                onAutoSave={v => handleAutoSave('items', v)}
                 fields={REPEATABLE_CONFIGS.project_objectives.items.fields}
+                onConfirmRequest={setConfirmConfig}
+              />
+            </>
+          )}
+
+          {/* ── NODAL CENTRE INAUGURATIONS ───────────────────────── */}
+          {section.sectionKey === 'nc_inaugurations' && (
+            <>
+              <SectionDivider label="Inauguration Events" />
+              <TextField label="Section Tag" value={content.tag} onChange={v => setContentKey('tag', v)} placeholder="Events" />
+              <RepeatableList
+                label="Inaugurations"
+                items={content.items || []}
+                onChange={v => setContentKey('items', v)}
+                onAutoSave={v => handleAutoSave('items', v)}
+                fields={REPEATABLE_CONFIGS.nc_inaugurations.items.fields}
                 onConfirmRequest={setConfirmConfig}
               />
             </>
@@ -995,23 +1348,11 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
           {section.sectionKey === 'nc_benefits' && (
             <>
               <SectionDivider label="Nodal Centre Benefits" />
-              <div className="flex gap-4 mb-4">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setConfirmConfig({ title: 'Delete All benefits', message: 'Are you sure you want to delete all benefits?', onConfirm: () => {
-                      setContentKey('items', []);
-                    } })
-                  }}
-                  className="px-4 py-2 rounded-lg text-sm font-medium text-red-400 bg-red-400/10 hover:bg-red-400/20 transition-all border border-red-500/20"
-                >
-                  Delete All Benefits
-                </button>
-              </div>
               <RepeatableList
                 label="Benefits List"
                 items={content.items || []}
                 onChange={v => setContentKey('items', v)}
+                onAutoSave={v => handleAutoSave('items', v)}
                 fields={REPEATABLE_CONFIGS.nc_benefits.items.fields}
                 onConfirmRequest={setConfirmConfig}
               />
@@ -1021,28 +1362,38 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
           {section.sectionKey === 'nc_list' && (
             <>
               <SectionDivider label="Registered Nodal Centres" />
-              <div className="flex gap-4 mb-4">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setConfirmConfig({ title: 'Delete All registered centres', message: 'Are you sure you want to delete all registered centres?', onConfirm: () => {
-                      setContentKey('items', []);
-                    } })
-                  }}
-                  className="px-4 py-2 rounded-lg text-sm font-medium text-red-400 bg-red-400/10 hover:bg-red-400/20 transition-all border border-red-500/20"
-                >
-                  Delete All Centres
-                </button>
-              </div>
               <RepeatableList
                 label="Centres List"
                 items={content.items || []}
                 onChange={v => setContentKey('items', v)}
+                onAutoSave={v => handleAutoSave('items', v)}
                 fields={REPEATABLE_CONFIGS.nc_list.items.fields}
                 onConfirmRequest={setConfirmConfig}
               />
             </>
           )}
+
+          {section.sectionKey === 'nc_unique_id' && (
+            <>
+              <SectionDivider label="Template Settings" />
+              <TextField label="Section Tag" value={content.tag} onChange={v => setContentKey('tag', v)} placeholder="Access" />
+              <TextField label="Instructions" value={content.instructions} onChange={v => setContentKey('instructions', v)} placeholder="Nodal coordinator can submit the list..." multiline />
+              <TextField label="Template File URL" value={content.templateLink} onChange={v => setContentKey('templateLink', v)} placeholder="https://vlab.amrita.edu/userfiles/1/file/login_id_template.xlsx" />
+              <TextField label="Template Button Label" value={content.templateLabel} onChange={v => setContentKey('templateLabel', v)} placeholder="Click Here To Download Login ID Template" />
+
+              <SectionDivider label="Features" />
+              <RepeatableList
+                label="Features List"
+                items={content.features || []}
+                onChange={v => setContentKey('features', v)}
+                onAutoSave={v => handleAutoSave('features', v)}
+                fields={REPEATABLE_CONFIGS.nc_unique_id.features.fields}
+                onConfirmRequest={setConfirmConfig}
+              />
+            </>
+          )}
+
+
         </div>
 
         {/* Footer */}

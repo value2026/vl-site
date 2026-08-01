@@ -36,9 +36,6 @@ const requireRole = (...roles) => (req, res, next) => {
   // Admin has all access
   if (req.user.role === 'admin') return next();
 
-  // VL Manager implicitly has sim_admin privileges
-  if (req.user.role === 'vl_manager' && roles.includes('sim_admin')) return next();
-
   if (!roles.includes(req.user.role)) {
     console.log(`[AUTH DEBUG] requireRole failed: User role "${req.user.role}" is not in allowed roles: ${JSON.stringify(roles)}`);
     return res.status(403).json({ message: 'Insufficient permissions' });

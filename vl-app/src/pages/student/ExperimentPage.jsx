@@ -1,6 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { FlaskConical, Star, Bug, Menu, X, ChevronLeft, CheckCircle, Circle, Loader2, Maximize2, Monitor } from 'lucide-react';
+import { 
+  FlaskConical, Star, Bug, Menu, X, ChevronLeft, CheckCircle, Circle, 
+  Loader2, Maximize2, Monitor, Target, BookOpen, ClipboardList, 
+  ListOrdered, ClipboardCheck, Link as LinkIcon, Users, MessageSquare, Gamepad2, MonitorPlay, FileText, Beaker 
+} from 'lucide-react';
 import { api, fileUrl } from '../../utils/api';
 import { trackEvent, trackError, EVENTS } from '../../utils/analytics';
 import QuizBlock from '../../components/student/QuizBlock';
@@ -8,15 +12,15 @@ import { useAuth } from '../../context/AuthContext';
 
 // ── Sidebar sections ─────────────────────────────────────────
 const SECTIONS = [
-  { id: 'aim',          label: 'Aim' },
-  { id: 'theory',       label: 'Theory' },
-  { id: 'pretest',      label: 'Pretest' },
-  { id: 'procedure',    label: 'Procedure' },
-  { id: 'simulation',   label: 'Simulation' },
-  { id: 'posttest',     label: 'Posttest' },
-  { id: 'references',   label: 'References' },
-  { id: 'contributors', label: 'Contributors' },
-  { id: 'feedback',     label: 'Feedback' },
+  { id: 'aim',          label: 'Aim',          icon: Target,         color: 'text-indigo-600',  bg: 'bg-indigo-50' },
+  { id: 'theory',       label: 'Theory',       icon: BookOpen,       color: 'text-blue-600',    bg: 'bg-blue-50' },
+  { id: 'pretest',      label: 'Pretest',      icon: ClipboardList,  color: 'text-emerald-600', bg: 'bg-emerald-50' },
+  { id: 'procedure',    label: 'Procedure',    icon: Beaker,         color: 'text-amber-500',   bg: 'bg-amber-50' },
+  { id: 'simulation',   label: 'Simulation',   icon: MonitorPlay,    color: 'text-violet-600',  bg: 'bg-violet-50' },
+  { id: 'posttest',     label: 'Posttest',     icon: ClipboardCheck, color: 'text-rose-500',    bg: 'bg-rose-50' },
+  { id: 'references',   label: 'References',   icon: FileText,       color: 'text-teal-600',    bg: 'bg-teal-50' },
+  { id: 'contributors', label: 'Contributors', icon: Users,          color: 'text-indigo-500',  bg: 'bg-indigo-50' },
+  { id: 'feedback',     label: 'Feedback',     icon: MessageSquare,  color: 'text-orange-500',  bg: 'bg-orange-50' },
 ];
 
 const DIFFICULTY_STYLE = {
@@ -444,20 +448,14 @@ export default function ExperimentPage() {
           <div>
             <SectionHeader title="Aim" />
             {sections.aim ? (
-              <div dangerouslySetInnerHTML={{ __html: sections.aim }} className="prose max-w-none text-gray-700" />
+              <div className="bg-slate-50/50 border border-slate-200 shadow-sm rounded-2xl p-6 sm:p-8 mt-2">
+                <div dangerouslySetInnerHTML={{ __html: sections.aim }} className="prose prose-slate max-w-none" />
+              </div>
             ) : (
               <div className="bg-blue-50 border border-blue-200 rounded-xl p-5">
                 <p className="text-blue-900 text-sm leading-relaxed">{experiment.description || 'No aim described yet.'}</p>
               </div>
             )}
-            <div className="mt-5 flex flex-wrap gap-3">
-              <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold border ${DIFFICULTY_STYLE[experiment.difficulty] || 'bg-gray-100 border-gray-200 text-gray-700'}`}>
-                {experiment.difficulty}
-              </span>
-              <span className="inline-flex items-center gap-1.5 text-xs text-gray-500 border border-gray-200 px-3 py-1.5 rounded-full">
-                ⏱ {experiment.duration}
-              </span>
-            </div>
           </div>
         );
 
@@ -466,7 +464,9 @@ export default function ExperimentPage() {
           <div>
             <SectionHeader title="Theory" />
             {sections.theory ? (
-              <div dangerouslySetInnerHTML={{ __html: sections.theory }} className="prose prose-sm max-w-none text-gray-700" />
+              <div className="bg-slate-50/50 border border-slate-200 shadow-sm rounded-2xl p-6 sm:p-8 mt-2 overflow-hidden">
+                <div dangerouslySetInnerHTML={{ __html: sections.theory }} className="prose prose-slate max-w-none" />
+              </div>
             ) : (
               <p className="text-gray-500 italic">Theory content has not been uploaded yet.</p>
             )}
@@ -492,7 +492,9 @@ export default function ExperimentPage() {
           <div>
             <SectionHeader title="Procedure" subtitle="Follow these steps carefully during the simulation." />
             {sections.procedure ? (
-              <div dangerouslySetInnerHTML={{ __html: sections.procedure }} className="prose prose-sm max-w-none text-gray-700" />
+              <div className="bg-slate-50/50 border border-slate-200 shadow-sm rounded-2xl p-6 sm:p-8 mt-2 overflow-hidden">
+                <div dangerouslySetInnerHTML={{ __html: sections.procedure }} className="prose prose-slate max-w-none" />
+              </div>
             ) : (
               <p className="text-gray-500 italic">Procedure steps have not been uploaded yet.</p>
             )}
@@ -501,14 +503,17 @@ export default function ExperimentPage() {
 
       case 'simulation':
         return (
-          <div>
-            <SectionHeader title="Simulation" subtitle="Interact with the simulation below. Follow the procedure steps for guidance." />
+          <div className="flex flex-col flex-1 w-full h-full">
+            <div className="mb-4">
+              <h2 className="text-gray-900 font-bold text-xl">Simulation</h2>
+              <p className="text-gray-500 text-sm mt-1">Interact with the simulation below. Follow the procedure steps for guidance.</p>
+            </div>
             {experiment.simulationPath ? (
-              <div className="w-full max-w-5xl mx-auto space-y-4">
+              <div className="w-full flex-1 flex flex-col min-h-[650px]">
                 {/* Desktop Window Frame Container */}
                 <div 
                   id="simulation-frame-container" 
-                  className="flex flex-col bg-slate-900 border border-slate-700/60 rounded-2xl overflow-hidden w-full h-[650px] shadow-2xl relative animate-in fade-in zoom-in-95 duration-200"
+                  className="flex flex-col bg-slate-900 border border-slate-700/60 rounded-2xl overflow-hidden w-full flex-1 shadow-2xl relative animate-in fade-in zoom-in-95 duration-200"
                 >
                   {/* Browser Header Bar */}
                   <div className="flex items-center justify-between px-4 py-3 bg-slate-900 border-b border-slate-800 flex-shrink-0 select-none">
@@ -538,7 +543,7 @@ export default function ExperimentPage() {
 
                   <iframe
                     src={fileUrl(`${experiment.simulationPath}/index.html`)}
-                    className="w-full flex-1 border-none bg-[#3CA4AB]"
+                    className="w-full flex-1 border-none bg-white"
                     title="Simulation"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
@@ -581,9 +586,11 @@ export default function ExperimentPage() {
       case 'references':
         return (
           <div>
-            <SectionHeader title="References" />
+            <SectionHeader title="References" subtitle="Supporting materials and bibliography." />
             {sections.references ? (
-              <div dangerouslySetInnerHTML={{ __html: sections.references }} className="prose max-w-none text-gray-700" />
+              <div className="bg-slate-50/50 border border-slate-200 shadow-sm rounded-2xl p-6 sm:p-8 mt-2 overflow-hidden">
+                <div dangerouslySetInnerHTML={{ __html: sections.references }} className="prose prose-slate max-w-none" />
+              </div>
             ) : (
               <p className="text-gray-500 italic">No reference links available.</p>
             )}
@@ -595,7 +602,9 @@ export default function ExperimentPage() {
           <div>
             <SectionHeader title="Contributors" subtitle="The team who designed and developed this experiment." />
             {sections.contributors ? (
-              <div dangerouslySetInnerHTML={{ __html: sections.contributors }} className="prose max-w-none text-gray-700" />
+              <div className="bg-slate-50/50 border border-slate-200 shadow-sm rounded-2xl p-6 sm:p-8 mt-2 overflow-hidden">
+                <div dangerouslySetInnerHTML={{ __html: sections.contributors }} className="prose prose-slate max-w-none" />
+              </div>
             ) : (
               <p className="text-gray-500 italic">No contributor information uploaded.</p>
             )}
@@ -616,9 +625,9 @@ export default function ExperimentPage() {
   };
 
   return (
-    <div className="h-screen flex flex-col bg-white overflow-hidden">
+    <div className="min-h-screen flex flex-col bg-white">
       {/* Top bar */}
-      <header className="flex-shrink-0 h-12 bg-white border-b border-gray-200 flex items-center px-4 gap-3 z-40 shadow-sm">
+      <header className="sticky top-0 flex-shrink-0 h-12 bg-white border-b border-slate-200 flex items-center px-4 gap-3 z-50 shadow-sm">
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
           className="lg:hidden p-1.5 rounded-lg text-gray-500 hover:bg-gray-100 transition-colors"
@@ -641,6 +650,15 @@ export default function ExperimentPage() {
         <div className="w-px h-5 bg-gray-200 mx-1 hidden md:block" />
 
         <div className="hidden md:flex items-center gap-1.5 text-xs lg:text-sm text-gray-500 overflow-hidden">
+          <button 
+            onClick={() => navigate(-1)}
+            className="flex items-center justify-center p-1.5 mr-2 text-slate-500 hover:text-slate-800 hover:bg-slate-50 border border-slate-200 bg-white shadow-sm rounded-lg transition-all"
+            title="Go Back"
+            aria-label="Go Back"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </button>
+          
           <Link to="/student" className="hover:text-blue-600 transition-colors flex-shrink-0">Home</Link>
           <span className="text-gray-300">/</span>
           {subject && (
@@ -674,24 +692,35 @@ export default function ExperimentPage() {
         </div>
       </header>
 
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 w-full">
         {/* Left Sidebar */}
         {sidebarOpen && (
           <div
-            className="lg:hidden fixed inset-0 z-30 bg-black/40"
+            className="lg:hidden fixed inset-0 z-30 bg-black/40 backdrop-blur-sm"
             onClick={() => setSidebarOpen(false)}
           />
         )}
 
         <aside className={`
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
-          lg:translate-x-0 fixed lg:static inset-y-0 left-0 z-30
-          w-44 bg-white border-r border-gray-200 flex-shrink-0
+          lg:translate-x-0 fixed lg:sticky lg:top-12 inset-y-0 left-0 z-30
+          w-64 bg-white border-r border-slate-100 flex-shrink-0
           flex flex-col transition-transform duration-200 ease-in-out
-          pt-12 lg:pt-0
+          pt-12 lg:pt-0 h-full lg:h-[calc(100vh-3rem)] overflow-y-auto shadow-2xl lg:shadow-none
         `}>
-          <nav className="flex-1 py-3 overflow-y-auto">
-            {SECTIONS.map(({ id, label }) => {
+          {/* Top Experiment Label */}
+          <div className="p-5 flex items-center gap-4 border-b border-slate-100">
+            <div className="w-11 h-11 bg-indigo-600 rounded-[14px] flex items-center justify-center text-white shadow-sm flex-shrink-0">
+              <FlaskConical className="w-6 h-6" />
+            </div>
+            <div className="overflow-hidden">
+              <h2 className="text-[17px] font-bold text-slate-800 leading-tight truncate">Experiment</h2>
+              <p className="text-[13px] text-slate-500 leading-tight truncate mt-0.5">{experiment.title}</p>
+            </div>
+          </div>
+
+          <nav className="flex-1 overflow-y-auto">
+            {SECTIONS.map(({ id, label, icon: Icon, color, bg }) => {
               const isActive = active === id;
               return (
                 <button
@@ -731,16 +760,22 @@ export default function ExperimentPage() {
                       });
                     }
                   }}
-                  className={`w-full text-left px-5 py-3 text-sm transition-all duration-150 relative ${
-                    isActive
-                      ? 'text-blue-700 font-semibold bg-blue-50'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 font-normal'
-                  }`}
+                  className={`
+                    w-full flex items-center gap-4 px-6 py-4 text-left transition-colors duration-200 border-b border-slate-50/80 relative
+                    ${isActive 
+                      ? 'bg-indigo-50/40' 
+                      : 'bg-white hover:bg-slate-50/50'}
+                  `}
                 >
                   {isActive && (
-                    <span className="absolute left-0 top-0 bottom-0 w-0.5 bg-blue-600 rounded-r-full" />
+                    <span className="absolute left-0 top-[14px] bottom-[14px] w-[3.5px] bg-indigo-600 rounded-r-full" />
                   )}
-                  {label}
+                  <div className={`w-[42px] h-[42px] rounded-[14px] flex items-center justify-center flex-shrink-0 ${bg} ${color}`}>
+                    <Icon className="w-[20px] h-[20px]" />
+                  </div>
+                  <span className={`text-[15px] ${isActive ? 'font-bold text-slate-800' : 'font-medium text-slate-600'}`}>
+                    {label}
+                  </span>
                 </button>
               );
             })}
@@ -748,8 +783,8 @@ export default function ExperimentPage() {
         </aside>
 
         {/* Main content */}
-        <main className="flex-1 overflow-y-auto bg-white">
-          <div className={`${active === 'simulation' ? 'max-w-7xl' : 'max-w-3xl'} mx-auto px-6 py-8 transition-all duration-300`}>
+        <main className="flex-1 flex flex-col bg-white min-h-[calc(100vh-3rem)]">
+          <div className={`${active === 'simulation' ? 'w-full flex-1 flex flex-col p-4 md:p-6' : 'max-w-3xl mx-auto px-6 py-8'} transition-all duration-300 h-full`}>
             {renderContent()}
           </div>
         </main>

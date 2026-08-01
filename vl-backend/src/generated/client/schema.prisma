@@ -12,11 +12,9 @@ datasource db {
 
 enum Role {
   admin
-  content_admin
   nodal_centre
   teacher
   student
-  sim_admin
   vl_manager
   vl_coordinator
 }

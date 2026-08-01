@@ -1,0 +1,29 @@
+{
+  "version": 2.0,
+  "questions": [
+    {
+      "question": "MnSO4 dissolved in water is an example for",
+      "answers": {
+        "a": "Diamagnetic solution",
+        "b": "Ferromagnetic solution",
+        "c": "Paramagnetic solution",
+        "d": "Not magnetic at all"
+      },
+     
+      "correctAnswer": "c",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "Which among the following statement is correct regarding magnetic susceptibility?",
+      "answers": {
+        "a": "It is not related to permittivity of the material",
+        "b": "It depends on the external conditions",
+        "c": "It depends on magnetic field applied",
+        "d": "It is a dimensionless quantity"
+      },
+     
+      "correctAnswer": "d",
+      "difficulty": "beginner"
+    }
+  ]
+}

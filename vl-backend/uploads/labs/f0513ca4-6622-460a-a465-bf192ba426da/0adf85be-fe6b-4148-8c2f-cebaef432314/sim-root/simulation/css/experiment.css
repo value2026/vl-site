@@ -1,0 +1,12 @@
+#graphDiv {
+  position: absolute;
+  left: 5%;
+  top: 5%;
+  opacity: 0.5;
+  width: 45%;
+  height: 25%;
+}
+
+md-radio-button {
+  display: inline;
+}

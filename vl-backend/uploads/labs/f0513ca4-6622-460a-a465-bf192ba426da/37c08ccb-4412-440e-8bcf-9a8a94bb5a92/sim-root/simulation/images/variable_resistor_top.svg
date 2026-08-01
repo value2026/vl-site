@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="48px" height="20.75px" viewBox="0 0 48 20.75" enable-background="new 0 0 48 20.75" xml:space="preserve">
+<g>
+	<g>
+		<g>
+			
+				<radialGradient id="SVGID_1_" cx="23.9751" cy="12.1499" r="22.6344" gradientTransform="matrix(1 0 0 0.3029 0 8.4693)" gradientUnits="userSpaceOnUse">
+				<stop  offset="0" style="stop-color:#000000;stop-opacity:0.6902"/>
+				<stop  offset="0.5765" style="stop-color:#000000;stop-opacity:0.5098"/>
+				<stop  offset="0.9882" style="stop-color:#000000;stop-opacity:0"/>
+			</radialGradient>
+			<path fill-rule="evenodd" clip-rule="evenodd" fill="url(#SVGID_1_)" d="M30.75,4.65c3.6,0.37,6.82,1.02,9.65,1.95
+				c4.13,1.33,6.38,2.95,6.75,4.85c0.03,0.17,0.05,0.37,0.05,0.6c0,2.1-2.27,3.88-6.8,5.35c-4.5,1.53-9.97,2.3-16.4,2.3
+				c-6.47,0-11.97-0.77-16.5-2.3C3,15.93,0.75,14.13,0.75,12c0-0.2,0.02-0.4,0.05-0.6c0.37-1.87,2.6-3.47,6.7-4.8
+				c2.87-0.93,6.1-1.58,9.7-1.95H30.75z"/>
+		</g>
+		<g>
+			<path fill-rule="evenodd" clip-rule="evenodd" fill="#474A46" d="M41.85,6.1c0.03,0.17,0.05,0.32,0.05,0.45
+				c0,1.63-1.75,3.03-5.25,4.2c-3.5,1.13-7.72,1.7-12.65,1.7c-4.97,0-9.18-0.57-12.65-1.7C7.85,9.58,6.1,8.18,6.1,6.55
+				c0-0.17,0.03-0.32,0.1-0.45c0.27,1.47,1.98,2.72,5.15,3.75c3.47,1.13,7.68,1.7,12.65,1.7c4.93,0,9.15-0.57,12.65-1.7
+				C39.82,8.82,41.55,7.57,41.85,6.1z"/>
+			<path fill-rule="evenodd" clip-rule="evenodd" fill="#737872" d="M41.85,6.1c-0.3,1.47-2.03,2.72-5.2,3.75
+				c-3.5,1.13-7.72,1.7-12.65,1.7c-4.97,0-9.18-0.57-12.65-1.7C8.18,8.82,6.47,7.57,6.2,6.1c0.27-1.43,1.98-2.67,5.15-3.7
+				c2.17-0.7,4.63-1.18,7.4-1.45l4.61-0.18l5.84,0.18c2.77,0.27,5.25,0.75,7.45,1.45C39.82,3.43,41.55,4.67,41.85,6.1z"/>
+			<path fill-rule="evenodd" clip-rule="evenodd" fill="#737872" d="M18.75,0.95l4.53-0.19l6.09,0.18"/>
+		</g>
+		<g>
+			<polygon fill-rule="evenodd" clip-rule="evenodd" fill="#484848" points="14.7,6.45 17.5,8.05 32.15,4.85 32.15,5.2 32.3,5.25 
+				17.5,8.45 14.65,6.85 14.7,6.85 			"/>
+			<polygon fill-rule="evenodd" clip-rule="evenodd" fill="#DBE1D7" points="32.15,4.85 17.5,8.05 14.7,6.45 14.65,6.4 29.7,3.65 
+				32.3,4.8 			"/>
+		</g>
+		<g>
+			
+				<radialGradient id="SVGID_2_" cx="23.3999" cy="5.25" r="8.6259" gradientTransform="matrix(0.9999 0.0149 -4.221387e-003 0.2826 0.0248 3.4169)" gradientUnits="userSpaceOnUse">
+				<stop  offset="0" style="stop-color:#293124"/>
+				<stop  offset="0.2078" style="stop-color:#444C3F"/>
+				<stop  offset="0.298" style="stop-color:#DBE1D7"/>
+				<stop  offset="0.9804" style="stop-color:#DBE1D7"/>
+			</radialGradient>
+			<path fill-rule="evenodd" clip-rule="evenodd" fill="url(#SVGID_2_)" d="M16.7,5.5c0.17-0.57,0.83-1.05,2-1.45
+				c1.4-0.43,3.05-0.65,4.95-0.65c1.93,0,3.58,0.22,4.95,0.65c1.2,0.4,1.87,0.88,2,1.45c-0.13,0.53-0.8,1-2,1.4
+				c-1.37,0.47-3.02,0.7-4.95,0.7c-1.9,0-3.55-0.23-4.95-0.7C17.53,6.5,16.87,6.03,16.7,5.5z"/>
+			<path fill-rule="evenodd" clip-rule="evenodd" fill="#484848" d="M30.6,5.5c0.03,0.07,0.05,0.15,0.05,0.25
+				c0,0.63-0.68,1.17-2.05,1.6c-1.37,0.47-3.02,0.7-4.95,0.7c-1.9,0-3.55-0.23-4.95-0.7c-1.33-0.43-2-0.97-2-1.6
+				c0-0.1,0-0.18,0-0.25c0.17,0.53,0.83,1,2,1.4c1.4,0.47,3.05,0.7,4.95,0.7c1.93,0,3.58-0.23,4.95-0.7
+				C29.8,6.5,30.47,6.03,30.6,5.5z"/>
+		</g>
+	</g>
+	<g>
+		
+			<radialGradient id="SVGID_3_" cx="26.2002" cy="11.2998" r="8.0125" gradientTransform="matrix(1 0 0 0.209 0 8.9376)" gradientUnits="userSpaceOnUse">
+			<stop  offset="0" style="stop-color:#FFFFFF"/>
+			<stop  offset="0.1765" style="stop-color:#FFFFFF"/>
+			<stop  offset="0.3059" style="stop-color:#FFFFFF;stop-opacity:0.4235"/>
+			<stop  offset="0.4902" style="stop-color:#FFFFFF;stop-opacity:0.2314"/>
+			<stop  offset="0.651" style="stop-color:#FFFFFF;stop-opacity:0.0824"/>
+			<stop  offset="1" style="stop-color:#FFFFFF;stop-opacity:0"/>
+		</radialGradient>
+		<path fill-rule="evenodd" clip-rule="evenodd" fill="url(#SVGID_3_)" d="M20.65,12.5c-1.5-0.3-2.25-0.7-2.25-1.2
+			c0-0.43,0.75-0.8,2.25-1.1c1.57-0.33,3.42-0.5,5.55-0.5c2.17,0,4.03,0.17,5.6,0.5c1.6,0.3,2.4,0.67,2.4,1.1c0,0.5-0.8,0.9-2.4,1.2
+			c-1.57,0.33-3.43,0.5-5.6,0.5C24.07,13,22.22,12.83,20.65,12.5z"/>
+	</g>
+</g>
+</svg>

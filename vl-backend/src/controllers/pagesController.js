@@ -11,8 +11,8 @@ const HOME_DEFAULTS = [
     subtitle: 'Access 1,800+ virtual experiments across 700 labs from IITs, NITs, and leading institutions — free, anywhere, anytime.',
     content: {
       badge: 'Ministry of Education Initiative · NMEICT',
-      heading: 'Learn Science Without Limits',
-      subheading: 'Access <strong>1,800+ virtual experiments</strong> across 700 labs from IITs, NITs, and leading institutions — free, anywhere, anytime.',
+      heading: 'Build Your Future with\n*Emerging Technologies*\nand Create Impact.',
+      subheading: 'Access <strong class="text-white">1,800+ virtual experiments</strong> across 700 labs from IITs, NITs, and leading institutions — free, anywhere, anytime.',
       ctaPrimaryLabel: 'Explore Labs',
       ctaPrimaryHref: '#labs-heading',
       ctaSecondaryLabel: 'Watch Demo',
@@ -353,7 +353,11 @@ async function seedHomePage() {
   for (const sec of HOME_DEFAULTS) {
     await prisma.pageSection.upsert({
       where: { pageId_sectionKey: { pageId: page.id, sectionKey: sec.sectionKey } },
-      update: {},  // Don't overwrite existing edits on re-seed
+      update: {
+        title: sec.title,
+        subtitle: sec.subtitle,
+        content: sec.content,
+      },
       create: {
         pageId: page.id,
         sectionKey: sec.sectionKey,
@@ -470,7 +474,30 @@ async function seedProjectPage() {
     }
   };
 
-  for (const sec of [timelineSection, objectivesSection]) {
+  const heroSection = {
+    sectionKey: 'project_hero',
+    label: 'Project Hero',
+    order: -2,
+    title: 'The Virtual Labs Project',
+    subtitle: 'A Ministry of Education initiative to provide remote access to labs in science and engineering disciplines through a web-based platform — free for all students in India.',
+    content: {
+      tag: 'About the Project'
+    }
+  };
+
+  const overviewSection = {
+    sectionKey: 'project_overview',
+    label: 'Project Overview',
+    order: -1,
+    title: 'What is Amrita Virtual Labs?',
+    content: {
+      tag: 'Overview',
+      paragraph1: 'Amrita Virtual Labs is a major initiative by Amrita Vishwa Vidyapeetham funded by the Ministry of Education under the National Mission on Education through ICT (NMEICT). It provides interactive simulation-based online experiment environments across engineering and sciences.',
+      paragraph2: 'The platform provides students access to over 700 virtual labs and 1,800+ experiments spanning core science and engineering disciplines — accessible anytime, anywhere without requiring physical lab equipment.'
+    }
+  };
+
+  for (const sec of [heroSection, overviewSection, timelineSection, objectivesSection]) {
     await prisma.pageSection.upsert({
       where: { pageId_sectionKey: { pageId: page.id, sectionKey: sec.sectionKey } },
       update: {},
@@ -533,7 +560,53 @@ async function seedNodalCentresPage() {
     }
   };
 
-  for (const sec of [benefitsSection, listSection]) {
+  const heroSection = {
+    sectionKey: 'nc_hero',
+    label: 'Nodal Centres Hero',
+    order: -1,
+    title: 'Join the Virtual Labs Network',
+    subtitle: 'Become a nodal centre and bring world-class virtual lab experiences to your students. Sponsored by MHRD (NME-ICT) — no registration fees, no hidden costs.',
+    content: { tag: 'Nodal Centres' }
+  };
+
+  const inaugSection = {
+    sectionKey: 'nc_inaugurations',
+    label: 'Inaugurations',
+    order: 2,
+    title: 'Nodal Centre Inaugurations',
+    subtitle: 'Celebrating the launch of new nodal centres across India. Each inauguration marks a milestone in expanding quality STEM education.',
+    content: {
+      tag: 'Events',
+      items: [
+        { year: '2024', title: 'Nodal Centre Inauguration – Amrita Coimbatore', location: 'Coimbatore, Tamil Nadu', description: 'Launch of Virtual Labs Nodal Centre at the School of Engineering, Amrita Vishwa Vidyapeetham.', attendees: '200+', status: 'Completed' },
+        { year: '2023', title: 'Virtual Labs Expansion – Southern Consortium', location: 'Bengaluru, Karnataka', description: 'Formal inauguration ceremony for the southern consortium nodal centres, expanding access to 12 new institutions.', attendees: '350+', status: 'Completed' },
+        { year: '2023', title: 'NMEICT Nodal Centre Drive', location: 'New Delhi', description: 'National launch event for the 2023 wave of nodal centre registrations under the MHRD NMEICT initiative.', attendees: '500+', status: 'Completed' },
+        { year: '2022', title: 'North India Expansion Launch', location: 'Lucknow, Uttar Pradesh', description: 'Inauguration of 8 new nodal centres across Uttar Pradesh, Bihar, and Madhya Pradesh.', attendees: '280+', status: 'Completed' },
+      ]
+    }
+  };
+
+  const uniqueIdSection = {
+    sectionKey: 'nc_unique_id',
+    label: 'Unique Login ID',
+    order: 3,
+    title: 'Unique Login ID',
+    subtitle: 'Registered Nodal Centres receive a unique institutional login ID granting access to exclusive faculty features, progress tracking, and lab management tools.',
+    content: {
+      tag: 'Access',
+      instructions: 'Nodal coordinator can submit the list of students and faculty members for obtaining the unique login id in the prescribed format to virtual_labs@am.amrita.edu with the subject line - Login ID request - your institute name.',
+      templateLink: 'https://vlab.amrita.edu/userfiles/1/file/login_id_template.xlsx',
+      templateLabel: 'Click Here To Download Login ID Template',
+      features: [
+        { icon: 'KeyRound', title: 'Institutional Login', desc: 'A dedicated login ID tied to your institution for centralized access management.' },
+        { icon: 'ClipboardList', title: 'Lab Exam Setup', desc: 'Set up, schedule, and monitor online virtual lab exams directly from your dashboard.' },
+        { icon: 'Users', title: 'Student Enrollment', desc: 'Enroll students under your nodal centre and track their experiment completions and scores.' },
+        { icon: 'Award', title: 'Results Reporting', desc: 'Generate and export detailed performance reports for students and faculty.' },
+      ]
+    }
+  };
+
+  for (const sec of [heroSection, benefitsSection, listSection, inaugSection, uniqueIdSection]) {
     await prisma.pageSection.upsert({
       where: { pageId_sectionKey: { pageId: page.id, sectionKey: sec.sectionKey } },
       update: {},
@@ -764,10 +837,7 @@ const getSurveyResponses = async (req, res) => {
       orderBy: { createdAt: 'desc' }
     });
     
-    if (responses.length === 0) {
-      return res.status(404).json({ error: 'No responses found' });
-    }
-
+    // Remove the 404 error block so that it simply returns the empty array
     if (req.query.format === 'csv') {
       // Convert JSON data to CSV
       const allKeys = new Set();
@@ -805,6 +875,19 @@ const getSurveyResponses = async (req, res) => {
   }
 };
 
+const deleteSurveyResponse = async (req, res) => {
+  const { id } = req.params;
+  try {
+    await prisma.surveyResponse.delete({
+      where: { id }
+    });
+    res.json({ success: true, message: 'Response deleted' });
+  } catch (error) {
+    console.error('Failed to delete survey response:', error);
+    res.status(500).json({ error: 'Failed to delete response' });
+  }
+};
+
 module.exports = {
   getSections,
   updateSection,
@@ -813,4 +896,5 @@ module.exports = {
   seedPage,
   submitSurveyResponse,
   getSurveyResponses,
+  deleteSurveyResponse,
 };

@@ -9,6 +9,7 @@ const {
   seedPage,
   submitSurveyResponse,
   getSurveyResponses,
+  deleteSurveyResponse,
 } = require('../controllers/pagesController');
 
 // Public — no auth
@@ -17,6 +18,7 @@ router.post('/:slug/survey', submitSurveyResponse);
 
 // Admin-only operations
 router.get('/:slug/survey/responses',          verifyToken, requireRole('admin', 'vl_manager'), getSurveyResponses);
+router.post('/:slug/survey/responses/:id/delete', verifyToken, requireRole('admin', 'vl_manager'), deleteSurveyResponse);
 router.post('/:slug/sections/reorder',          verifyToken, requireRole('admin', 'vl_manager'), reorderSections);
 router.post('/:slug/sections/:id/update',              verifyToken, requireRole('admin', 'vl_manager'), updateSection);
 router.post('/:slug/sections/:id/visibility', verifyToken, requireRole('admin', 'vl_manager'), toggleVisibility);

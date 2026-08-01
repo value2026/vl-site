@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="114.17px" height="26.83px" viewBox="0 0 114.17 26.83" enable-background="new 0 0 114.17 26.83" xml:space="preserve">
+<symbol  id="start_x5F_btn" viewBox="-173 73 60.8 13.6">
+	<g id="Layer_4_1_">
+		<path fill-rule="evenodd" clip-rule="evenodd" fill="#989EA3" d="M-169,73c-1.33,0-2,0.67-2,2v7.2c0,1.33,0.67,2,2,2h54.8
+			c1.33,0,2-0.67,2-2V75c0-1.33-0.67-2-2-2H-169z"/>
+	</g>
+	<g id="Layer_5_1_">
+		<path fill-rule="evenodd" clip-rule="evenodd" fill="#010101" d="M-173,77.4v7.2c0,1.33,0.67,2,2,2h54.8c1.33,0,2-0.67,2-2v-7.2
+			c0-1.33-0.67-2-2-2H-171C-172.33,75.4-173,76.07-173,77.4z"/>
+	</g>
+	<g id="Layer_3_1_">
+		<linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="-142.6001" y1="67.2002" x2="-142.6001" y2="86.4002">
+			<stop  offset="0" style="stop-color:#424547"/>
+			<stop  offset="1" style="stop-color:#B6BBC1"/>
+		</linearGradient>
+		<path fill-rule="evenodd" clip-rule="evenodd" fill="url(#SVGID_1_)" d="M-170,74.4c-1.33,0-2,0.67-2,2v7.2c0,1.33,0.67,2,2,2
+			h54.8c1.33,0,2-0.67,2-2v-7.2c0-1.33-0.67-2-2-2H-170z"/>
+		
+			<path fill-rule="evenodd" clip-rule="evenodd" fill="none" stroke="#46494C" stroke-width="0.1" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="3" d="
+			M-170,74.4h54.8c1.33,0,2,0.67,2,2v7.2c0,1.33-0.67,2-2,2H-170c-1.33,0-2-0.67-2-2v-7.2C-172,75.07-171.33,74.4-170,74.4z"/>
+	</g>
+	<g id="Layer_2_2_">
+	</g>
+	<g id="Layer_1_2_">
+	</g>
+	<g id="Layer_7_1_">
+	</g>
+	<g id="Layer_6_1_">
+	</g>
+</symbol>
+<use xlink:href="#start_x5F_btn"  width="60.8" height="13.6" id="starttimer" x="-173" y="73" transform="matrix(1.8573 0 0 -1.8573 322.0337 161.25)" overflow="visible"/>
+</svg>

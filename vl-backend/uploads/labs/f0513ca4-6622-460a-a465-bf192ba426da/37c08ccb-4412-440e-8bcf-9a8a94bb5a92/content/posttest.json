@@ -1,0 +1,43 @@
+
+{
+  "version": 2.0,
+  "questions": [
+    {
+      "question": "L, C and R respectively represent inductance, capacitance and resistance. Which one of the following doesn't have dimensions of frequency?",
+      "answers": {
+        "a": "R/L",
+        "b": "1/RL",
+        "c": "R/√(LC)",
+        "d": "1/√(LC)"
+      },
+     
+      "correctAnswer": "c",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "Inductance plays the role similar to",
+      "answers": {
+        "a": "Inertia",
+        "b": "Friction",
+        "c": "Source of emf",
+        "d": "Force"
+      },
+      
+      "correctAnswer": "c",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "In the case of pure inductance, average power dissipation is",
+      "answers": {
+        "a": "1/2LIω<sup>2</sup>",
+        "b": "1/4 LIω<sup>2</sup>",
+        "c": "2LIω<sup>2</sup>",
+        "d": "Zero"
+      },
+      
+      "correctAnswer": "d",
+      "difficulty": "beginner"
+    }
+  ]
+}
+

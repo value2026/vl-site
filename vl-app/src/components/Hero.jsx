@@ -5,12 +5,14 @@ import VideoPlayerModal from './VideoPlayerModal';
 
 const DEFAULTS = {
   badge: '', // Removed in favor of Organized By block
-  heading: 'Build Your Future with\nEmerging Technologies\nand Create Impact',
+  heading: 'Build Your Future with\n*Emerging Technologies*\nand Create Impact.',
   subheading: 'Explore <strong class="text-white">1,800+ interactive virtual experiments</strong> across engineering, science, and technology disciplines. VALUE @ Amrita empowers students and educators with immersive, hands-on learning experiences—accessible anytime, anywhere.',
   ctaPrimaryLabel: 'Explore Virtual Labs',
   ctaPrimaryHref: '/labs/biotechnology',
   ctaSecondaryLabel: 'Watch Demo',
   ctaSecondaryHref: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+  contentAlignment: 'left', // 'left', 'center', 'right'
+  headingGradient: 'cyan-blue', // 'cyan-blue', 'purple-pink', 'orange-red', 'emerald-teal'
   stats: [
     { n: '700+', label: 'Virtual Labs' },
     { n: '1,800+', label: 'Experiments' },
@@ -19,10 +21,23 @@ const DEFAULTS = {
   ],
 };
 
-export default function Hero({ content = {} }) {
+const GRADIENTS = {
+  'cyan-blue': 'from-cyan-300 to-blue-500',
+  'purple-pink': 'from-purple-400 to-pink-500',
+  'orange-red': 'from-orange-400 to-red-500',
+  'emerald-teal': 'from-emerald-300 to-teal-500',
+};
+
+export default function Hero({ sectionTitle, sectionSubtitle, content = {} }) {
   const d = { ...DEFAULTS, ...content };
+  const heading = sectionTitle || d.heading;
+  const subheading = sectionSubtitle || d.subheading;
   const stats = d.stats?.length ? d.stats : DEFAULTS.stats;
   const [isVideoOpen, setIsVideoOpen] = useState(false);
+  
+  const alignClass = d.contentAlignment === 'center' ? 'text-center' : d.contentAlignment === 'right' ? 'text-right' : 'text-left';
+  const flexAlignClass = d.contentAlignment === 'center' ? 'justify-center' : d.contentAlignment === 'right' ? 'justify-end' : 'justify-start';
+  const gradientClass = GRADIENTS[d.headingGradient] || GRADIENTS['cyan-blue'];
 
   const scrollToSection = (sectionId) => {
     const el = document.getElementById(sectionId);
@@ -51,28 +66,39 @@ export default function Hero({ content = {} }) {
         </div>
 
         {/* Main Content */}
-        <div className="container-custom relative z-10 w-full flex justify-center mt-8">
+        <div className="container-custom relative z-10 w-full flex justify-center -mt-12 md:-mt-24">
           <div className="w-full max-w-5xl">
             {/* Heading */}
             <h1
               id="hero-heading"
-              className="font-heading text-4xl sm:text-[3rem] lg:text-[4rem] font-extrabold leading-[1.15] mb-6 animate-fade-in-up text-white tracking-tight"
+              className={`font-heading text-4xl sm:text-[3rem] lg:text-[4rem] font-extrabold leading-[1.15] mb-6 animate-fade-in-up text-white tracking-tight ${alignClass}`}
             >
-              Build Your Future with <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-blue-500 drop-shadow-sm">Emerging Technologies</span> <br />
-              and Create Impact.
+              {heading.split('\n').map((line, lineIdx) => (
+                <span key={lineIdx}>
+                  {line.split(/\*(.*?)\*/g).map((part, partIdx) => (
+                    partIdx % 2 === 1 ? (
+                      <span key={partIdx} className={`text-transparent bg-clip-text bg-gradient-to-r ${gradientClass} drop-shadow-sm`}>
+                        {part}
+                      </span>
+                    ) : (
+                      <span key={partIdx}>{part}</span>
+                    )
+                  ))}
+                  {lineIdx < heading.split('\n').length - 1 && <br />}
+                </span>
+              ))}
             </h1>
 
 
 
             {/* Subheading */}
             <p
-              className="text-[1.1rem] sm:text-[1.25rem] text-white/90 leading-relaxed mb-10 max-w-3xl animate-fade-in-up animate-delay-300 font-medium drop-shadow-sm"
-              dangerouslySetInnerHTML={{ __html: d.subheading }}
+              className={`text-[1.1rem] sm:text-[1.25rem] text-white/90 leading-relaxed mb-10 max-w-3xl animate-fade-in-up animate-delay-300 font-medium drop-shadow-sm ${alignClass} ${d.contentAlignment === 'center' ? 'mx-auto' : d.contentAlignment === 'right' ? 'ml-auto' : ''}`}
+              dangerouslySetInnerHTML={{ __html: subheading }}
             />
 
             {/* CTAs */}
-            <div className="flex flex-col sm:flex-row gap-5 animate-fade-in-up animate-delay-400 mb-16">
+            <div className={`flex flex-col sm:flex-row gap-5 animate-fade-in-up animate-delay-400 mb-16 ${flexAlignClass}`}>
               {(d.ctaPrimaryHref || '#labs-heading').startsWith('#') ? (
                 <button 
                   onClick={() => {
@@ -105,7 +131,7 @@ export default function Hero({ content = {} }) {
       </section>
 
       {/* Floating Stats Block (White Card) */}
-      <div className="container-custom relative z-20 -mt-28 sm:-mt-32 mb-0 animate-fade-in-up animate-delay-400">
+      <div className="container-custom relative z-20 -mt-32 sm:-mt-34 mb-10 animate-fade-in-up animate-delay-400">
         <div className="bg-white rounded-[1.25rem] shadow-[0_15px_50px_rgba(0,0,0,0.12)] py-7 px-6 lg:px-10 border border-slate-100">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-0 lg:divide-x divide-slate-100/80">
             {stats.map(({ n, label }, idx) => {

@@ -157,24 +157,8 @@ async function main() {
     }
   }
 
-  // 2. Clear existing subjects/labs/experiments ONLY if explicitly forced
-  // WARNING: This deletes all lab content. Only run with SEED_FORCE=true when you
-  // intentionally want to reset lab data (e.g. fresh install / dev environment).
-  // In production, leave SEED_FORCE unset so existing lab data is preserved.
-  if (process.env.SEED_FORCE === 'true') {
-    await prisma.experiment.deleteMany({});
-    await prisma.lab.deleteMany({});
-    await prisma.subject.deleteMany({});
-    console.log('🧹 [SEED_FORCE] Cleaned existing lab/experiment structures.');
-  } else {
-    console.log('ℹ️  Skipping lab data wipe (set SEED_FORCE=true to reset lab data).');
-  }
 
-  const existingSubCount = await prisma.subject.count();
-  if (existingSubCount > 0 && process.env.SEED_FORCE !== 'true') {
-    console.log('ℹ️  Subjects/Labs already exist in database. Skipping default subjects & experiments seed...');
-    return;
-  }
+
 
   // 3. Define Seed Data
   const subjectsData = [
@@ -250,6 +234,95 @@ async function main() {
           ]
         }
       ]
+    },
+    {
+      id: '3834263f-6848-4015-bf6f-1a7c6ebb0b8f',
+      title: 'Physical Sciences',
+      icon: '📚',
+      description: 'Explore concepts in physics and chemistry.',
+      gradient: 'from-rose-500 to-red-600',
+      labs: [
+        {
+          id: 'f0513ca4-6622-460a-a465-bf192ba426da',
+          title: 'Electricity & Magnetism Virtual Lab',
+          icon: '🔬',
+          description: 'Explore fundamental principles of electricity and magnetism.',
+          experiments: [
+            {
+              id: '7c2cc105-09b2-4494-a8f3-d29926545ca9',
+              title: 'Tangent Galvanometer',
+              description: 'Experiment on Tangent Galvanometer.',
+              duration: '60 min',
+              difficulty: 'Beginner',
+              contentPath: 'labs/f0513ca4-6622-460a-a465-bf192ba426da/7c2cc105-09b2-4494-a8f3-d29926545ca9/content',
+              simulationPath: 'labs/f0513ca4-6622-460a-a465-bf192ba426da/7c2cc105-09b2-4494-a8f3-d29926545ca9/sim-root/simulation'
+            },
+            {
+              id: '18c16f17-a849-4a6c-bc5a-9cb98410ab03',
+              title: 'Magnetic Field Along The Axis of A Circular Coil Carrying Current',
+              description: 'Analyze magnetic field along the axis of a circular coil.',
+              duration: '60 min',
+              difficulty: 'Beginner',
+              contentPath: 'labs/f0513ca4-6622-460a-a465-bf192ba426da/18c16f17-a849-4a6c-bc5a-9cb98410ab03/content',
+              simulationPath: 'labs/f0513ca4-6622-460a-a465-bf192ba426da/18c16f17-a849-4a6c-bc5a-9cb98410ab03/sim-root/simulation'
+            },
+            {
+              id: 'b0345919-ec61-499a-8440-3be1216fad39',
+              title: 'Deflection Magnetometer',
+              description: 'Experiment on Deflection Magnetometer.',
+              duration: '60 min',
+              difficulty: 'Beginner',
+              contentPath: 'labs/f0513ca4-6622-460a-a465-bf192ba426da/b0345919-ec61-499a-8440-3be1216fad39/content',
+              simulationPath: 'labs/f0513ca4-6622-460a-a465-bf192ba426da/b0345919-ec61-499a-8440-3be1216fad39/sim-root/simulation'
+            },
+            {
+              id: 'd952599c-fbe3-4246-9ca8-68b201f47f65',
+              title: 'Van De Graaff Generator',
+              description: 'Experiment on Van De Graaff Generator.',
+              duration: '60 min',
+              difficulty: 'Beginner',
+              contentPath: 'labs/f0513ca4-6622-460a-a465-bf192ba426da/d952599c-fbe3-4246-9ca8-68b201f47f65/content',
+              simulationPath: 'labs/f0513ca4-6622-460a-a465-bf192ba426da/d952599c-fbe3-4246-9ca8-68b201f47f65/sim-root/simulation'
+            },
+            {
+              id: '0adf85be-fe6b-4148-8c2f-cebaef432314',
+              title: 'Barkhausen Effect',
+              description: 'Observe the Barkhausen effect.',
+              duration: '60 min',
+              difficulty: 'Beginner',
+              contentPath: 'labs/f0513ca4-6622-460a-a465-bf192ba426da/0adf85be-fe6b-4148-8c2f-cebaef432314/content',
+              simulationPath: 'labs/f0513ca4-6622-460a-a465-bf192ba426da/0adf85be-fe6b-4148-8c2f-cebaef432314/sim-root/simulation'
+            },
+            {
+              id: '07df6e46-6e79-4cdd-b47f-6f43536cabc5',
+              title: 'Temperature Coefficient of Resistance',
+              description: 'Determine the temperature coefficient of resistance.',
+              duration: '60 min',
+              difficulty: 'Beginner',
+              contentPath: 'labs/f0513ca4-6622-460a-a465-bf192ba426da/07df6e46-6e79-4cdd-b47f-6f43536cabc5/content',
+              simulationPath: 'labs/f0513ca4-6622-460a-a465-bf192ba426da/07df6e46-6e79-4cdd-b47f-6f43536cabc5/sim-root/simulation'
+            },
+            {
+              id: '37c08ccb-4412-440e-8bcf-9a8a94bb5a92',
+              title: 'Anderson\'s Bridge',
+              description: 'Experiment on Anderson\'s Bridge.',
+              duration: '60 min',
+              difficulty: 'Beginner',
+              contentPath: 'labs/f0513ca4-6622-460a-a465-bf192ba426da/37c08ccb-4412-440e-8bcf-9a8a94bb5a92/content',
+              simulationPath: 'labs/f0513ca4-6622-460a-a465-bf192ba426da/37c08ccb-4412-440e-8bcf-9a8a94bb5a92/sim-root/simulation'
+            },
+            {
+              id: '374b9cdb-86cf-4aab-bbad-ea65c87ec16e',
+              title: 'Quincke\'s Method',
+              description: 'Experiment using Quincke\'s Method.',
+              duration: '60 min',
+              difficulty: 'Beginner',
+              contentPath: 'labs/f0513ca4-6622-460a-a465-bf192ba426da/374b9cdb-86cf-4aab-bbad-ea65c87ec16e/content',
+              simulationPath: 'labs/f0513ca4-6622-460a-a465-bf192ba426da/374b9cdb-86cf-4aab-bbad-ea65c87ec16e/sim-root/simulation'
+            }
+          ]
+        }
+      ]
     }
   ];
 
@@ -295,10 +368,10 @@ async function main() {
 
       for (const eData of lData.experiments) {
         const expId = eData.id || undefined;
-        let contentPath = null;
-        let simulationPath = null;
+        let contentPath = eData.contentPath || null;
+        let simulationPath = eData.simulationPath || null;
 
-        if (expId) {
+        if (expId && !contentPath && !simulationPath) {
           const fs = require('fs');
           const path = require('path');
           let uploadsDir = path.join(__dirname, '../uploads/experiments', expId);

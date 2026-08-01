@@ -120,11 +120,9 @@ export type Notification = $Result.DefaultSelection<Prisma.$NotificationPayload>
 export namespace $Enums {
   export const Role: {
   admin: 'admin',
-  content_admin: 'content_admin',
   nodal_centre: 'nodal_centre',
   teacher: 'teacher',
   student: 'student',
-  sim_admin: 'sim_admin',
   vl_manager: 'vl_manager',
   vl_coordinator: 'vl_coordinator'
 };
