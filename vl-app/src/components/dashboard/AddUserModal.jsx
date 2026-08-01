@@ -138,8 +138,9 @@ export default function AddUserModal({ isOpen, onClose, onSuccess, defaultRole }
   const isTeacher       = form.role === 'teacher';
   const isNodalCentre   = form.role === 'nodal_centre';
   const isPlatformRole  = ['admin', 'content_admin', 'sim_admin', 'vl_manager'].includes(form.role);
+  const isCoordinator   = form.role === 'vl_coordinator';
   const needsInstitution =
-    (isStudent || isTeacher || isNodalCentre) &&
+    (isStudent || isTeacher || isNodalCentre || isCoordinator) &&
     (!user?.nodalCentreId || user?.role === 'admin' || user?.role === 'vl_manager');
 
   const missingBulkInstitution = isPlatformRole && !form.nodalCentreId;

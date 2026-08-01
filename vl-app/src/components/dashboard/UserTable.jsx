@@ -6,18 +6,20 @@ import { exportToCSV } from '../../utils/exportToCSV';
 import StudentAnalyticsModal from './StudentAnalyticsModal';
 
 const ROLE_BADGE = {
-  admin:        'bg-red-500/20 text-red-300 border-red-500/30',
-  nodal_centre: 'bg-orange-500/20 text-orange-300 border-orange-500/30',
-  teacher:      'bg-blue-500/20 text-blue-300 border-blue-500/30',
-  student:      'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
-  content_admin: 'bg-purple-500/20 text-purple-300 border-purple-500/30',
-  sim_admin:    'bg-indigo-500/20 text-indigo-300 border-indigo-500/30',
-  vl_manager:   'bg-pink-500/20 text-pink-300 border-pink-500/30',
+  admin:          'bg-red-500/20 text-red-300 border-red-500/30',
+  nodal_centre:   'bg-orange-500/20 text-orange-300 border-orange-500/30',
+  teacher:        'bg-blue-500/20 text-blue-300 border-blue-500/30',
+  student:        'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
+  content_admin:  'bg-purple-500/20 text-purple-300 border-purple-500/30',
+  sim_admin:      'bg-indigo-500/20 text-indigo-300 border-indigo-500/30',
+  vl_manager:     'bg-pink-500/20 text-pink-300 border-pink-500/30',
+  vl_coordinator: 'bg-violet-500/20 text-violet-300 border-violet-500/30',
 };
 
 const ROLE_LABELS = {
   admin: 'Admin', nodal_centre: 'Nodal Centre', teacher: 'Teacher', student: 'Student',
   content_admin: 'Content Admin', sim_admin: 'Sim Admin', vl_manager: 'VL Manager',
+  vl_coordinator: 'VL Co-ordinator',
 };
 
 export default function UserTable({ users, loading, onRefresh, hideActions = false, viewOnly = false }) {
