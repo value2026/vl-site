@@ -7,6 +7,11 @@ const browserOrigin = () => {
   return '';
 };
 
+const withBasePath = (path) => {
+  const base = import.meta.env.BASE_URL || '/';
+  return `${base.replace(/\/+$/, '')}/${path.replace(/^\/+/, '')}`;
+};
+
 const isUnusableHost = (hostname) => {
   const normalized = hostname.replace(/\.$/, '');
   return normalized === '0.0.0.0' || normalized === '::';
@@ -14,13 +19,15 @@ const isUnusableHost = (hostname) => {
 
 const normalizeConfiguredUrl = (rawUrl, fallbackPath) => {
   const origin = browserOrigin();
-  const fallback = origin ? `${origin}${fallbackPath}` : `http://localhost:5000${fallbackPath}`;
+  const fallback = withBasePath(fallbackPath);
   const raw = rawUrl?.trim();
 
   if (!raw) return fallback;
 
+  if (raw.startsWith('/')) return trimTrailingSlash(raw);
+
   try {
-    const url = new URL(raw, origin || 'http://localhost');
+    const url = new URL(raw, origin || 'https://vlab.amrita.edu');
     if (isUnusableHost(url.hostname)) return fallback;
     return trimTrailingSlash(url.toString());
   } catch (_) {
@@ -36,4 +43,8 @@ export const getApiBaseUrl = () => {
 export const getFilesBaseUrl = () => {
   const base = normalizeConfiguredUrl(import.meta.env.VITE_FILES_URL, '/files');
   return base.endsWith('/files') ? base : `${base}/files`;
+};
+
+export const assetUrl = (path) => {
+  return withBasePath(path);
 };

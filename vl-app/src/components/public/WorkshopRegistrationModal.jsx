@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
+import { apiUrl } from '../../utils/api';
 
 export default function WorkshopRegistrationModal({ workshop, onClose }) {
   const [formData, setFormData] = useState({});
@@ -35,7 +36,7 @@ export default function WorkshopRegistrationModal({ workshop, onClose }) {
     setError('');
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || window.location.origin}/api/pages/workshop-${workshop.id}/survey`, {
+      const res = await fetch(apiUrl(`/pages/workshop-${workshop.id}/survey`), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ data: formData })

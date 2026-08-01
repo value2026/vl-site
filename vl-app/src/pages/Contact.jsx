@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Mail, Phone, MapPin, Send, CheckCircle2 } from 'lucide-react';
+import { apiUrl } from '../utils/api';
 
 export default function Contact() {
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
@@ -17,7 +18,7 @@ export default function Contact() {
     setError('');
     
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || window.location.origin}/api/pages/contact/survey`, {
+      const res = await fetch(apiUrl("/pages/contact/survey"), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form)

@@ -3,6 +3,7 @@ import {
   FlaskConical, Mail, Phone, MapPin,
   AtSign, Rss, Globe, Share2,
 } from 'lucide-react';
+import { assetUrl } from '../utils/url';
 
 const quickLinks = [
   { label: 'Home', href: '/' },
@@ -37,7 +38,7 @@ export default function Footer() {
           <div className="lg:col-span-1">
             <div className="flex items-center gap-3.5 mb-6">
               <div className="bg-white p-2.5 rounded-[1.25rem] shadow-sm flex items-center justify-center flex-shrink-0">
-                <img src="/amrita-icon.jpg" alt="Amrita Logo" className="w-8 h-8 object-contain" />
+                <img src={assetUrl('/amrita-icon.jpg')} alt="Amrita Logo" className="w-8 h-8 object-contain" />
               </div>
               <div className="flex flex-col justify-center pt-1">
                 <span className="block text-white font-bold text-[1rem] leading-none tracking-wide" style={{ fontFamily: 'Arial, sans-serif' }}>

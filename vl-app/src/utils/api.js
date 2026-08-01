@@ -85,6 +85,8 @@ const apiFetch = async (endpoint, options = {}) => {
   return res;
 };
 
+export const apiUrl = (endpoint = '') => `${BASE}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
+
 export const api = {
   get:    (url)           => apiFetch(url),
   post:   (url, body)     => apiFetch(url, { method: 'POST', body: JSON.stringify(body) }),

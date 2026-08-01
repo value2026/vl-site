@@ -4,6 +4,7 @@ const fs   = require('fs');
 const { extractZip, uploadsPath, UPLOADS_DIR } = require('../middleware/upload');
 const { compileSimulation } = require('../utils/simulationBuilder');
 const { marked } = require('marked');
+const { getExternalBaseUrl } = require('../utils/requestUrl');
 
 // HTML section file names (returned as raw HTML)
 const HTML_SECTIONS = ['aim', 'theory', 'procedure'];
@@ -403,7 +404,7 @@ const getExperimentDocs = async (req, res) => {
       contributors: 'contributors.md'
     };
 
-    const hostPrefix = `${req.protocol}://${req.get('host')}/files/${experiment.contentPath}/`;
+    const hostPrefix = `${getExternalBaseUrl(req)}/files/${experiment.contentPath}/`;
 
     for (const [key, filename] of Object.entries(textFiles)) {
       const filePath = path.join(absoluteDir, filename);

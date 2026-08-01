@@ -2,10 +2,11 @@ import { Calendar, ArrowRight, Loader2, X } from 'lucide-react';
 import { news as defaultNews, categoryColors } from '../data/news';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
+import { apiUrl } from '../utils/api';
 import { useState } from 'react';
 
 async function fetchHomeSections() {
-  const res = await fetch(`${import.meta.env.VITE_API_URL || window.location.origin}/api/pages/home/sections`);
+  const res = await fetch(apiUrl("/pages/home/sections"));
   if (!res.ok) throw new Error('Failed to fetch home sections');
   return res.json();
 }
