@@ -30,8 +30,8 @@ const GRADIENTS = {
 
 export default function Hero({ sectionTitle, sectionSubtitle, content = {} }) {
   const d = { ...DEFAULTS, ...content };
-  const heading = sectionTitle || d.heading;
-  const subheading = sectionSubtitle || d.subheading;
+  const heading = content.heading || sectionTitle || d.heading;
+  const subheading = content.subheading || sectionSubtitle || d.subheading;
   const stats = d.stats?.length ? d.stats : DEFAULTS.stats;
   const [isVideoOpen, setIsVideoOpen] = useState(false);
   
