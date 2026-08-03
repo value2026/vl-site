@@ -14,10 +14,9 @@ const DEFAULTS = {
   contentAlignment: 'left', // 'left', 'center', 'right'
   headingGradient: 'cyan-blue', // 'cyan-blue', 'purple-pink', 'orange-red', 'emerald-teal'
   stats: [
-    { n: '700+', label: 'Virtual Labs' },
-    { n: '1,800+', label: 'Experiments' },
-    { n: '14', label: 'Partner IITs/NITs' },
-    { n: '5M+', label: 'Students' },
+    { n: '37', label: 'Total Labs' },
+    { n: '340', label: 'Experiments' },
+    { n: '2,36,237', label: 'Registered Users' },
   ],
 };
 
@@ -133,7 +132,7 @@ export default function Hero({ sectionTitle, sectionSubtitle, content = {} }) {
       {/* Floating Stats Block (White Card) */}
       <div className="container-custom relative z-20 -mt-32 sm:-mt-34 mb-10 animate-fade-in-up animate-delay-400">
         <div className="bg-white rounded-[1.25rem] shadow-[0_15px_50px_rgba(0,0,0,0.12)] py-7 px-6 lg:px-10 border border-slate-100">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-0 lg:divide-x divide-slate-100/80">
+          <div className={`grid grid-cols-1 sm:grid-cols-2 ${stats.length === 3 ? 'lg:grid-cols-3' : stats.length === 2 ? 'lg:grid-cols-2' : stats.length === 1 ? 'lg:grid-cols-1' : 'lg:grid-cols-4'} gap-8 lg:gap-0 lg:divide-x divide-slate-100/80`}>
             {stats.map(({ n, label }, idx) => {
               const iconsList = [Landmark, FlaskConical, Users, User];
               const colorsList = [

@@ -9,7 +9,7 @@ const HOME_DEFAULTS = [
     label: 'Hero Section',
     order: 0,
     title: 'Learn Science Without Limits',
-    subtitle: 'Access 1,800+ virtual experiments across 700 labs from IITs, NITs, and leading institutions — free, anywhere, anytime.',
+    subtitle: 'Access 340 virtual experiments across 37 labs from IITs, NITs, and leading institutions — free, anywhere, anytime.',
     content: {
       badge: 'Ministry of Education Initiative · NMEICT',
       heading: 'Build Your Future with\n*Emerging Technologies*\nand Create Impact.',
@@ -19,10 +19,9 @@ const HOME_DEFAULTS = [
       ctaSecondaryLabel: 'Watch Demo',
       ctaSecondaryHref: 'https://www.youtube.com/watch?v=ViqHtlZSOjM',
       stats: [
-        { n: '700+', label: 'Virtual Labs' },
-        { n: '1,800+', label: 'Experiments' },
-        { n: '14', label: 'Partner IITs/NITs' },
-        { n: '5M+', label: 'Students' },
+        { n: '37', label: 'Total Labs' },
+        { n: '340', label: 'Experiments' },
+        { n: '2,36,237', label: 'Registered Users' },
       ],
     },
   },
@@ -197,6 +196,26 @@ const HOME_DEFAULTS = [
       ],
     },
   },
+  {
+    sectionKey: 'footer',
+    label: 'Global Footer',
+    order: 8,
+    title: 'Footer Details',
+    subtitle: 'Manage the official contact information displayed across all pages.',
+    content: {
+      email: 'virtual_labs@am.amrita.edu',
+      phone: '+91 9446 007 135',
+      address: 'Amrita Virtual Labs\nAmrita Vishwa Vidyapeetham\nAmritapuri Campus, Kollam\nKerala — 690 525',
+      importantLinks: [
+        { label: 'Amrita University', href: '#' },
+        { label: 'NMEICT', href: '#' },
+        { label: 'AICTE', href: '#' },
+        { label: 'UGC', href: '#' },
+        { label: 'National Education Policy', href: '#' },
+        { label: 'Virtual Labs India', href: '#' }
+      ]
+    }
+  }
 ];
 
 // ── GET /api/pages/:slug/sections ─────────────────────────────
@@ -221,7 +240,7 @@ async function getSections(req, res) {
     } else {
       // Check if newly added sections are missing
       if (slug === 'nodal-centres' && page.sections.length < 5) needsSeed = true;
-      if (slug === 'home' && page.sections.length < 7) needsSeed = true;
+      if (slug === 'home' && page.sections.length < 9) needsSeed = true;
       if (slug === 'project' && page.sections.length < 4) needsSeed = true;
     }
 
@@ -368,9 +387,9 @@ async function seedHomePage() {
     await prisma.pageSection.upsert({
       where: { pageId_sectionKey: { pageId: page.id, sectionKey: sec.sectionKey } },
       update: {
-        title: sec.title,
-        subtitle: sec.subtitle,
-        content: sec.content,
+        // Only update structural metadata if needed, do NOT overwrite content
+        label: sec.label,
+        order: sec.order,
       },
       create: {
         pageId: page.id,
@@ -507,7 +526,7 @@ async function seedProjectPage() {
     content: {
       tag: 'Overview',
       paragraph1: 'Amrita Virtual Labs is a major initiative by Amrita Vishwa Vidyapeetham funded by the Ministry of Education under the National Mission on Education through ICT (NMEICT). It provides interactive simulation-based online experiment environments across engineering and sciences.',
-      paragraph2: 'The platform provides students access to over 700 virtual labs and 1,800+ experiments spanning core science and engineering disciplines — accessible anytime, anywhere without requiring physical lab equipment.'
+      paragraph2: 'The platform provides students access to over 37 virtual labs and 340 experiments spanning core science and engineering disciplines — accessible anytime, anywhere without requiring physical lab equipment.'
     }
   };
 
@@ -549,7 +568,7 @@ async function seedNodalCentresPage() {
     title: 'Benefits of Becoming a Nodal Centre',
     content: {
       items: [
-        { text: 'Free access to all 700+ virtual labs for your institution' },
+        { text: 'Free access to all 37 virtual labs for your institution' },
         { text: 'Priority support and technical assistance' },
         { text: 'Dedicated workshops and faculty training sessions' },
         { text: 'Certificate of recognition from Ministry of Education' },

@@ -74,10 +74,9 @@ export default function Project() {
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               {[
-                { n: '700+', l: 'Virtual Labs', Icon: Calendar },
-                { n: '1,800+', l: 'Experiments', Icon: Users },
-                { n: '14', l: 'Institutions', Icon: CheckCircle2 },
-                { n: '5M+', l: 'Students Reached', Icon: Users },
+                { n: '37', l: 'Total Labs', Icon: Calendar },
+                { n: '340', l: 'Experiments', Icon: Users },
+                { n: '2,36,237', l: 'Registered Users', Icon: Users },
               ].map(({ n, l, Icon }) => (
                 <div key={l} className="bg-primary-50 border border-primary-100 rounded-2xl p-6">
                   <div className="text-3xl font-heading font-extrabold text-primary-800 mb-1">{n}</div>
