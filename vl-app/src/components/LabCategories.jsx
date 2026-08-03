@@ -40,8 +40,8 @@ export default function LabCategories({ sectionTitle, sectionSubtitle, content =
   return (
     <section
       id="labs-heading"
-      className="py-[72px]"
-      style={{ background: 'radial-gradient(circle at top, #eef4ff 0, #ffffff 60%)', scrollMarginTop: '120px' }}
+      className="pt-6 pb-20"
+      style={{ background: 'radial-gradient(circle at top, #eef4ff 0, #ffffff 60%)', scrollMarginTop: '80px' }}
       aria-labelledby="labs-heading-title"
     >
       <div className="container-custom">
@@ -58,7 +58,7 @@ export default function LabCategories({ sectionTitle, sectionSubtitle, content =
             <Loader2 className="w-8 h-8 text-primary-600 animate-spin" />
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-[50px]">
+          <div className="flex flex-wrap justify-center gap-6 mt-[50px]">
             {subjects.map((subject, index) => {
               const theme = THEMES[index % THEMES.length];
               const labCount = subject.categories?.length || 0;
@@ -68,7 +68,7 @@ export default function LabCategories({ sectionTitle, sectionSubtitle, content =
                 <Link
                   key={subject.id}
                   to={`/subject/${subject.id}`}
-                  className={`border border-slate-200 transition-all duration-300 shadow-[0_12px_40px_rgba(15,23,42,0.04)] hover:shadow-[0_12px_40px_rgba(15,23,42,0.08)] hover:-translate-y-2 rounded-[20px] group p-7 flex flex-col h-[340px] ${theme.cardBg}`}
+                  className={`w-full sm:w-[calc(50%-12px)] lg:w-[calc(25%-18px)] min-w-[260px] max-w-[320px] border border-slate-200 transition-all duration-300 shadow-[0_12px_40px_rgba(15,23,42,0.04)] hover:shadow-[0_12px_40px_rgba(15,23,42,0.08)] hover:-translate-y-2 rounded-[20px] group p-7 flex flex-col h-[340px] ${theme.cardBg}`}
                 >
                   {/* Icon row */}
                   <div className="flex items-start justify-between mb-6">
