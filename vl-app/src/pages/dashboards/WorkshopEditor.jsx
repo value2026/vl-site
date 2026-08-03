@@ -325,7 +325,7 @@ export default function WorkshopEditor() {
                   </div>
                   <div>
                     <h4 className="text-amber-400 font-bold mb-1">Approval Required</h4>
-                    <p className="text-sm text-amber-200/70">Your new workshop will remain in a "Pending" state until reviewed and approved by an administrator.</p>
+                    <p className="text-sm text-amber-200/70">Your new workshop will remain in a "Pending" state until reviewed and approved by an administrator or VL manager.</p>
                   </div>
                 </div>
               )}
