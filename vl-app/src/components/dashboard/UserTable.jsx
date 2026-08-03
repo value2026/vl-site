@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Search, Trash2, ToggleLeft, ToggleRight, ChevronUp, ChevronDown, Eye, Loader2, AlertCircle, CheckCircle2, Download } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { api, safeJson } from '../../utils/api';
@@ -40,6 +40,9 @@ export default function UserTable({ users, loading, onRefresh, hideActions = fal
 
   const canDelete = self?.role === 'admin' || self?.role === 'vl_manager';
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
   const filtered = users
     .filter((u) => {
       const matchSearch = u.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -61,6 +64,14 @@ export default function UserTable({ users, loading, onRefresh, hideActions = fal
     if (sortKey === key) setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'));
     else { setSortKey(key); setSortDir('asc'); }
   };
+
+  // Reset page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, roleFilter, statusFilter, sortKey, sortDir]);
+
+  const totalPages = Math.ceil(filtered.length / itemsPerPage) || 1;
+  const paginatedUsers = filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   const handleExportCSV = () => {
     if (filtered.length === 0) return;
@@ -355,7 +366,7 @@ export default function UserTable({ users, loading, onRefresh, hideActions = fal
                 </td>
               </tr>
             ) : (
-              filtered.map((u) => (
+              paginatedUsers.map((u) => (
                 <tr key={u.id} className={`hover:bg-white/5 transition-colors group ${selectedIds.has(u.id) ? 'bg-blue-500/5' : ''}`}>
                   {!hideActions && canDelete && bulkDeleteMode && (
                     <td className="px-4 py-3 transition-all duration-300">
@@ -478,8 +489,35 @@ export default function UserTable({ users, loading, onRefresh, hideActions = fal
 
       {/* Footer */}
       {!loading && filtered.length > 0 && (
-        <div className="px-4 py-3 border-t border-white/10 text-xs text-slate-500">
-          Showing {filtered.length} of {users.length} users
+        <div className="px-4 py-3 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-900/50">
+          <div className="text-xs text-slate-400">
+            Showing <span className="font-medium text-white">{(currentPage - 1) * itemsPerPage + 1}</span> to <span className="font-medium text-white">{Math.min(currentPage * itemsPerPage, filtered.length)}</span> of <span className="font-medium text-white">{filtered.length}</span> results
+          </div>
+          
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className="px-3 py-1 text-sm font-medium text-slate-300 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              Previous
+            </button>
+            
+            <div className="flex items-center px-2">
+              <span className="text-sm font-medium text-white bg-blue-500/20 border border-blue-500/30 px-3 py-1 rounded-lg">
+                {currentPage}
+              </span>
+              <span className="text-sm text-slate-500 px-2">of {totalPages}</span>
+            </div>
+            
+            <button
+              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+              className="px-3 py-1 text-sm font-medium text-slate-300 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              Next
+            </button>
+          </div>
         </div>
       )}
 
