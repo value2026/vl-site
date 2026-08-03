@@ -46,7 +46,7 @@ const HOME_DEFAULTS = [
   {
     sectionKey: 'cta',
     label: 'Call to Action',
-    order: 2,
+    order: 3,
     title: 'Take the Next Step',
     subtitle: "Whether you're a student, faculty, or institution — Virtual Labs has something for you.",
     content: {
@@ -85,9 +85,9 @@ const HOME_DEFAULTS = [
   {
     sectionKey: 'sponsors',
     label: 'Partners & Sponsors',
-    order: 3,
+    order: 4,
     title: "Sponsors of Virtual Labs",
-    subtitle: 'This project is an initiative of Ministry of Human Resource Department under National Mission on Education through ICT. These experiments and labs will be hosted for open access through the main project website www.vlab.co.in.',
+    subtitle: 'This project is an initiative of Ministry of Education under National Mission on Education through ICT. These experiments and labs will be hosted for open access through the main project website www.vlab.co.in.',
     content: {
       sectionTag: 'Our Sponsors',
       footerNote: '🇮🇳 A Government of India initiative to democratize quality STEM education',
@@ -103,7 +103,7 @@ const HOME_DEFAULTS = [
   {
     sectionKey: 'ad_banner',
     label: 'Advertisement Banner',
-    order: 4,
+    order: 5,
     title: 'Admissions Open 2026',
     subtitle: 'Amrita Vishwa Vidyapeetham',
     content: {
@@ -118,7 +118,7 @@ const HOME_DEFAULTS = [
   {
     sectionKey: 'lab_categories',
     label: 'Lab Categories',
-    order: 5,
+    order: 2,
     title: 'Explore Virtual Labs',
     subtitle: 'Discover interactive virtual laboratories across science, engineering, and emerging technologies. Explore experiments, strengthen practical skills, and learn through immersive, hands-on experiences.',
     content: {
