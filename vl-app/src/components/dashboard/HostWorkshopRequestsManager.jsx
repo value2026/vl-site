@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { FileText, Users, Eye, GripVertical, ChevronLeft, Plus, Trash2, Save, X, Loader2, AlertCircle, Play } from 'lucide-react';
+import { FileText, Users, Eye, GripVertical, ChevronLeft, Plus, Trash2, Save, X, Loader2, AlertCircle, Play, Check } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 export default function HostWorkshopRequestsManager() {
-  const { token, API_URL } = useAuth();
+  const { token, API_URL, user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const rolePath = location.pathname.split('/')[2];
@@ -168,24 +168,59 @@ export default function HostWorkshopRequestsManager() {
   const handleProceed = () => {
     if (!viewingRequest) return;
     const readable = getReadableData(viewingRequest.data);
-    const instName = extractField(readable, ['institution', 'college', 'university', 'name']);
+    const instName = extractField(readable, ['institution', 'college', 'university', 'nodal centre']);
     const contactEmail = extractField(readable, ['email', 'mail', 'contact']);
     const phone = extractField(readable, ['phone', 'mobile', 'number']);
+    const reqDate = extractField(readable, ['date']);
+    const reqTime = extractField(readable, ['time']);
+    const reqMode = extractField(readable, ['mode', 'training']);
     
     const prefillTitle = instName !== '-' ? `${instName} Workshop` : 'New Workshop';
     let prefillDesc = '';
+    
+    // Add date and time to description
+    if (reqDate !== '-' || reqTime !== '-') {
+      prefillDesc += `Requested Schedule:\n`;
+      if (reqDate !== '-') prefillDesc += `- Date: ${reqDate}\n`;
+      if (reqTime !== '-') prefillDesc += `- Time: ${reqTime}\n`;
+      prefillDesc += `\n`;
+    }
+
     if (contactEmail !== '-' || phone !== '-') {
-      prefillDesc = `Contact Information from Request:\n`;
+      prefillDesc += `Contact Information from Request:\n`;
       if (contactEmail !== '-') prefillDesc += `- Email: ${contactEmail}\n`;
       if (phone !== '-') prefillDesc += `- Phone: ${phone}\n`;
+    }
+
+    let prefillDate = '';
+    if (reqDate !== '-') {
+      // Attempt to format the date to YYYY-MM-DD for the date picker
+      try {
+        const d = new Date(reqDate);
+        if (!isNaN(d.getTime())) {
+          prefillDate = d.toISOString().split('T')[0];
+        } else {
+          prefillDate = reqDate;
+        }
+      } catch (e) {
+        prefillDate = reqDate;
+      }
+    }
+    
+    let prefillMode = 'Online';
+    if (reqMode.toLowerCase().includes('offline') || reqMode.toLowerCase().includes('in-person')) {
+      prefillMode = 'In-person';
     }
 
     navigate(`/dashboard/${rolePath}/workshops/new`, {
       state: {
         prefill: {
           title: prefillTitle,
-          description: prefillDesc
-        }
+          description: prefillDesc,
+          date: prefillDate,
+          mode: prefillMode
+        },
+        deleteRequestId: viewingRequest.id
       }
     });
   };
@@ -203,14 +238,16 @@ export default function HostWorkshopRequestsManager() {
           >
             <Users className="w-4 h-4" /> Received Requests
           </button>
-          <button
-            onClick={() => setActiveTab('form')}
-            className={`px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 transition-all ${
-              activeTab === 'form' ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800 border border-transparent'
-            }`}
-          >
-            <FileText className="w-4 h-4" /> Edit Request Form
-          </button>
+          {(user?.role === 'admin' || user?.role === 'vl_manager') && (
+            <button
+              onClick={() => setActiveTab('form')}
+              className={`px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 transition-all ${
+                activeTab === 'form' ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800 border border-transparent'
+              }`}
+            >
+              <FileText className="w-4 h-4" /> Edit Request Form
+            </button>
+          )}
         </div>
         {activeTab === 'form' && (
           <button onClick={saveFormSchema} disabled={savingForm} className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-purple-600 hover:bg-purple-700 shadow-lg shadow-purple-500/20 transition-all disabled:opacity-50">
@@ -245,13 +282,15 @@ export default function HostWorkshopRequestsManager() {
                       {new Date(viewingRequest.createdAt).toLocaleString()}
                     </span>
                   </div>
-                  <button 
-                    onClick={handleProceed}
-                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 shadow-lg shadow-emerald-500/25 transition-all transform hover:-translate-y-0.5"
-                  >
-                    <Play className="w-4 h-4 fill-current" />
-                    Proceed & Create Workshop
-                  </button>
+                  {(user?.role === 'admin' || user?.role === 'vl_manager' || user?.role === 'vl_coordinator') && (
+                    <button 
+                      onClick={handleProceed}
+                      className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 shadow-lg shadow-emerald-500/25 transition-all transform hover:-translate-y-0.5"
+                    >
+                      <Check className="w-4 h-4" />
+                      {user?.role === 'vl_coordinator' ? 'Create Pending Workshop' : 'Approve & Create Workshop'}
+                    </button>
+                  )}
                 </div>
                 <div className="space-y-5">
                   {Object.entries(getReadableData(viewingRequest.data)).map(([q, a], i) => (
@@ -302,14 +341,16 @@ export default function HostWorkshopRequestsManager() {
                               >
                                 <Eye className="w-4 h-4" /> View Application
                               </button>
-                              <button
-                                onClick={() => requestDelete(req)}
-                                disabled={deletingId === req.id}
-                                className="p-2 rounded-xl text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-colors disabled:opacity-50"
-                                title="Delete Request"
-                              >
-                                {deletingId === req.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
-                              </button>
+                              {(user?.role === 'admin' || user?.role === 'vl_manager') && (
+                                <button
+                                  onClick={() => requestDelete(req)}
+                                  disabled={deletingId === req.id}
+                                  className="p-2 rounded-xl text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-colors disabled:opacity-50"
+                                  title="Delete Request"
+                                >
+                                  {deletingId === req.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                                </button>
+                              )}
                             </div>
                           </td>
                         </tr>

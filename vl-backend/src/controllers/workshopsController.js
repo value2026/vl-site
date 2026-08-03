@@ -1,4 +1,5 @@
 const prisma = require('../db');
+const { sendWorkshopApprovalEmail } = require('../utils/mailer');
 
 // GET /api/workshops
 const getWorkshops = async (req, res) => {
@@ -38,6 +39,23 @@ const createWorkshop = async (req, res) => {
         status: (req.user.role === 'admin' || req.user.role === 'vl_manager') ? 'approved' : 'pending'
       }
     });
+
+    // If the workshop is pending, send an email to managers for approval
+    if (workshop.status === 'pending') {
+      const managers = await prisma.user.findMany({
+        where: {
+          role: { in: ['admin', 'vl_manager'] },
+          isActive: true,
+        },
+        select: { email: true }
+      });
+      
+      const managerEmails = managers.map(m => m.email).filter(Boolean);
+      
+      if (managerEmails.length > 0) {
+        sendWorkshopApprovalEmail(managerEmails, workshop, req.user.name || req.user.email).catch(console.error);
+      }
+    }
 
     res.status(201).json(workshop);
   } catch (err) {
@@ -103,8 +121,8 @@ const deleteWorkshop = async (req, res) => {
       return res.status(404).json({ message: 'Workshop not found' });
     }
 
-    if (req.user.role !== 'admin' && req.user.role !== 'vl_manager' && existingWorkshop.createdById !== req.user.id) {
-      return res.status(403).json({ message: 'Insufficient permissions to delete this workshop' });
+    if (req.user.role !== 'admin' && req.user.role !== 'vl_manager') {
+      return res.status(403).json({ message: 'Only Admins and VL Managers are allowed to delete workshops' });
     }
 
     await prisma.workshop.delete({

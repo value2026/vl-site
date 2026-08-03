@@ -1,5 +1,6 @@
 const { PrismaClient } = require('../generated/client');
 const prisma = new PrismaClient();
+const { sendHostWorkshopRequestEmail } = require('../utils/mailer');
 
 // Default section data for the home page
 const HOME_DEFAULTS = [
@@ -835,6 +836,42 @@ const submitSurveyResponse = async (req, res) => {
         data,
       }
     });
+
+    if (slug === 'nodal-centre-request') {
+      const managers = await prisma.user.findMany({
+        where: {
+          role: { in: ['admin', 'vl_manager'] },
+          isActive: true,
+        },
+        select: { email: true }
+      });
+      const managerEmails = managers.map(m => m.email).filter(Boolean);
+      if (managerEmails.length > 0) {
+        let mappedData = data;
+        try {
+          const page = await prisma.page.findUnique({
+            where: { slug: 'nodal-centre-request' },
+            include: { sections: { where: { sectionKey: 'formSchema' } } }
+          });
+          if (page && page.sections && page.sections.length > 0) {
+            const schema = page.sections[0].content;
+            if (schema && schema.questions) {
+              mappedData = {};
+              const qMap = {};
+              schema.questions.forEach(q => { qMap[q.id] = q.text; });
+              Object.keys(data).forEach(k => {
+                mappedData[qMap[k] || k] = data[k];
+              });
+            }
+          }
+        } catch (err) {
+          console.error("Error mapping survey data:", err);
+        }
+
+        sendHostWorkshopRequestEmail(managerEmails, mappedData).catch(console.error);
+      }
+    }
+
     res.json({ success: true, id: response.id });
   } catch (error) {
     console.error('Failed to submit survey:', error);

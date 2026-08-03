@@ -16,12 +16,12 @@ const {
 router.get('/:slug/sections', getSections);
 router.post('/:slug/survey', submitSurveyResponse);
 
-// Admin-only operations
-router.get('/:slug/survey/responses',          verifyToken, requireRole('admin', 'vl_manager'), getSurveyResponses);
-router.post('/:slug/survey/responses/:id/delete', verifyToken, requireRole('admin', 'vl_manager'), deleteSurveyResponse);
-router.post('/:slug/sections/reorder',          verifyToken, requireRole('admin', 'vl_manager'), reorderSections);
-router.post('/:slug/sections/:id/update',              verifyToken, requireRole('admin', 'vl_manager'), updateSection);
-router.post('/:slug/sections/:id/visibility', verifyToken, requireRole('admin', 'vl_manager'), toggleVisibility);
-router.post('/:slug/seed',                     verifyToken, requireRole('admin', 'vl_manager'), seedPage);
+// Admin and Coordinator operations
+router.get('/:slug/survey/responses',          verifyToken, requireRole('admin', 'vl_manager', 'vl_coordinator'), getSurveyResponses);
+router.post('/:slug/survey/responses/:id/delete', verifyToken, requireRole('admin', 'vl_manager', 'vl_coordinator'), deleteSurveyResponse);
+router.post('/:slug/sections/reorder',          verifyToken, requireRole('admin', 'vl_manager', 'vl_coordinator'), reorderSections);
+router.post('/:slug/sections/:id/update',              verifyToken, requireRole('admin', 'vl_manager', 'vl_coordinator'), updateSection);
+router.post('/:slug/sections/:id/visibility', verifyToken, requireRole('admin', 'vl_manager', 'vl_coordinator'), toggleVisibility);
+router.post('/:slug/seed',                     verifyToken, requireRole('admin', 'vl_manager', 'vl_coordinator'), seedPage);
 
 module.exports = router;
