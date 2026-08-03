@@ -25,7 +25,7 @@ const ROLE_LABELS = {
 const ROLE_DEFAULT_PERMISSIONS = {
   nodal_centre:  ['manage_users'],
   vl_manager:    ['manage_simulations', 'manage_institutions', 'manage_workshops'],
-  vl_coordinator:['manage_institutions', 'manage_workshops'],
+  vl_coordinator:['manage_institutions', 'manage_workshops', 'manage_simulations'],
   teacher:       [],
   student:       [],
   admin:         [],
@@ -50,6 +50,7 @@ const DEFAULT_FORM = {
   batch:             '',
   section:           '',
   customPermissions: ROLE_DEFAULT_PERMISSIONS['student'] || [],
+  managedSubjectIds: [],
 };
 
 function Field({ label, required, children }) {
@@ -85,6 +86,7 @@ export default function AddUserModal({ isOpen, onClose, onSuccess, defaultRole }
   const [error,         setError]         = useState('');
   const [successMsg,    setSuccessMsg]    = useState('');
   const [institutions,  setInstitutions]  = useState([]);
+  const [subjects,      setSubjects]      = useState([]);
 
   // Bulk CSV
   const [csvText,       setCsvText]       = useState('');
@@ -101,6 +103,11 @@ export default function AddUserModal({ isOpen, onClose, onSuccess, defaultRole }
       fetch(`${API_URL}/institutions`)
         .then(r => r.json())
         .then(data => setInstitutions(Array.isArray(data) ? data : []))
+        .catch(console.error);
+        
+      fetch(`${API_URL}/subjects`)
+        .then(r => r.json())
+        .then(data => setSubjects(Array.isArray(data) ? data : []))
         .catch(console.error);
     }
   }, [isOpen, API_URL]);
@@ -523,6 +530,46 @@ export default function AddUserModal({ isOpen, onClose, onSuccess, defaultRole }
               {isPlatformRole && (
                 <div className="col-span-full p-4 bg-purple-500/10 border border-purple-500/20 rounded-2xl text-xs text-purple-300 leading-relaxed">
                   <strong>{ROLE_LABELS[form.role]}</strong> is a platform-level role. No institution or academic details required.
+                </div>
+              )}
+
+              {/* ── VL Coordinator Broad Areas ── */}
+              {isCoordinator && (
+                <div className="col-span-full mt-2">
+                  <SectionDivider title="Manage Broad Areas" />
+                  <p className="text-[10px] text-slate-500 mt-1 mb-3">
+                    Select the broad areas (Subjects) this VL Co-ordinator is responsible for.
+                  </p>
+                  <div className="flex flex-wrap gap-3">
+                    {subjects.length > 0 ? subjects.map((sub) => {
+                      const isChecked = form.managedSubjectIds.includes(sub.id);
+                      return (
+                        <label key={sub.id}
+                          className={`flex items-center gap-2 text-xs px-3 py-1.5 rounded-lg border cursor-pointer transition-colors ${
+                            isChecked
+                              ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300'
+                              : 'bg-white/5 border-white/10 text-slate-400 hover:bg-white/10'
+                          }`}>
+                          <input
+                            type="checkbox"
+                            className="accent-emerald-500"
+                            checked={isChecked}
+                            onChange={(e) => {
+                              const next = e.target.checked
+                                ? [...form.managedSubjectIds, sub.id]
+                                : form.managedSubjectIds.filter(id => id !== sub.id);
+                              setForm({ ...form, managedSubjectIds: next });
+                            }}
+                          />
+                          <span className="flex items-center gap-1.5">
+                            <span className="text-sm">{sub.icon}</span> {sub.title}
+                          </span>
+                        </label>
+                      );
+                    }) : (
+                      <div className="text-xs text-slate-500 italic">No broad areas found.</div>
+                    )}
+                  </div>
                 </div>
               )}
 

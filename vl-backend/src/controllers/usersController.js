@@ -31,8 +31,10 @@ const getUsers = async (req, res) => {
 
     let where = {};
 
-    if (role === 'admin' || role === 'vl_manager' || role === 'vl_coordinator') {
+    if (role === 'admin' || role === 'vl_manager') {
       where = { ...searchFilter, ...roleFilter };
+    } else if (role === 'vl_coordinator') {
+      where = { createdById: id, ...searchFilter, ...roleFilter };
     } else if (role === 'nodal_centre') {
       const nodalAdmin = await prisma.user.findUnique({ where: { id }, select: { nodalCentreId: true } });
       if (nodalAdmin?.nodalCentreId) {
@@ -206,7 +208,8 @@ const createUser = async (req, res) => {
         facultyDept:   newRole === 'teacher' && facultyDept ? facultyDept.trim() : null,
         facultyInst:   newRole === 'teacher' && facultyInst ? facultyInst.trim() : null,
         
-        customPermissions: callerRole === 'admin' && req.body.customPermissions ? req.body.customPermissions : [],
+        customPermissions: req.body.customPermissions ? req.body.customPermissions : [],
+        managedSubjectIds: req.body.managedSubjectIds ? req.body.managedSubjectIds : [],
       },
       select: {
         id:           true,
@@ -217,6 +220,8 @@ const createUser = async (req, res) => {
         isActive:     true,
         nodalCentreId: true,
         createdAt:    true,
+        customPermissions: true,
+        managedSubjectIds: true,
         nodalCentre:  { select: { name: true } },
         createdBy:    { select: { name: true } },
       },
@@ -239,7 +244,7 @@ const updateUser = async (req, res) => {
   try {
     const { role: callerRole, id: callerId } = req.user;
     const { id: targetId } = req.params;
-    const { name, email, password, isActive } = req.body;
+    const { name, email, password, isActive, customPermissions, managedSubjectIds } = req.body;
 
     const target = await prisma.user.findUnique({ where: { id: targetId } });
     if (!target) return res.status(404).json({ message: 'User not found' });
@@ -275,7 +280,8 @@ const updateUser = async (req, res) => {
     if (email)                      data.email    = email.toLowerCase().trim();
     if (typeof isActive === 'boolean') data.isActive = isActive;
     if (password)                   data.password = await bcrypt.hash(password, 12);
-    if (req.body.customPermissions && callerRole === 'admin') data.customPermissions = req.body.customPermissions;
+    if (customPermissions)          data.customPermissions = customPermissions;
+    if (managedSubjectIds)          data.managedSubjectIds = managedSubjectIds;
 
     const updated = await prisma.user.update({
       where: { id: targetId },
@@ -328,7 +334,7 @@ const getStats = async (req, res) => {
   try {
     const { role, id } = req.user;
 
-    if (role === 'admin' || role === 'vl_manager' || role === 'vl_coordinator') {
+    if (role === 'admin' || role === 'vl_manager') {
       const [totalAdmins, totalNodalCentres, totalTeachers, totalStudents] = await Promise.all([
         prisma.user.count({ where: { role: 'admin' } }),
         prisma.user.count({ where: { role: 'nodal_centre' } }),
@@ -336,6 +342,14 @@ const getStats = async (req, res) => {
         prisma.user.count({ where: { role: 'student' } }),
       ]);
       res.json({ totalAdmins, totalNodalCentres, totalTeachers, totalStudents });
+
+    } else if (role === 'vl_coordinator') {
+      const [totalNodalCentres, totalTeachers, totalStudents] = await Promise.all([
+        prisma.user.count({ where: { createdById: id, role: 'nodal_centre' } }),
+        prisma.user.count({ where: { createdById: id, role: 'teacher' } }),
+        prisma.user.count({ where: { createdById: id, role: 'student' } }),
+      ]);
+      res.json({ totalNodalCentres, totalTeachers, totalStudents });
 
     } else if (role === 'nodal_centre') {
       const nodalAdmin = await prisma.user.findUnique({ where: { id }, select: { nodalCentreId: true } });

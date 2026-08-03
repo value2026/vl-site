@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { Search, Trash2, ToggleLeft, ToggleRight, ChevronUp, ChevronDown, Eye, Loader2, AlertCircle, CheckCircle2, Download } from 'lucide-react';
+import { Search, Trash2, ToggleLeft, ToggleRight, ChevronUp, ChevronDown, Eye, Loader2, AlertCircle, CheckCircle2, Download, Edit2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { api, safeJson } from '../../utils/api';
 import { exportToCSV } from '../../utils/exportToCSV';
 import StudentAnalyticsModal from './StudentAnalyticsModal';
+import EditUserModal from './EditUserModal';
 
 const ROLE_BADGE = {
   admin:          'bg-red-500/20 text-red-300 border-red-500/30',
@@ -33,12 +34,14 @@ export default function UserTable({ users, loading, onRefresh, hideActions = fal
   const [success, setSuccess] = useState('');
   const [actionLoading, setActionLoading] = useState(null);
   const [selectedStudentId, setSelectedStudentId] = useState(null);
+  const [userToEdit, setUserToEdit] = useState(null);
   const [selectedIds, setSelectedIds] = useState(new Set());
   const [bulkDeleting, setBulkDeleting] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
   const [bulkDeleteMode, setBulkDeleteMode] = useState(false);
 
   const canDelete = self?.role === 'admin' || self?.role === 'vl_manager';
+  const canEdit = self?.role === 'admin' || self?.role === 'vl_manager' || self?.role === 'vl_coordinator';
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -452,6 +455,15 @@ export default function UserTable({ users, loading, onRefresh, hideActions = fal
                               <Eye className="w-4 h-4" />
                             </button>
                           )}
+                          {canEdit && (
+                            <button
+                              onClick={() => setUserToEdit(u)}
+                              title="Edit user"
+                              className="text-slate-400 hover:text-blue-400 transition-colors p-1"
+                            >
+                              <Edit2 className="w-4 h-4" />
+                            </button>
+                          )}
                           {canDelete && (
                             <button
                               onClick={() => requestDeleteUser(u.id, u.name)}
@@ -564,6 +576,19 @@ export default function UserTable({ users, loading, onRefresh, hideActions = fal
             </div>
           </div>
         </div>
+      )}
+
+      {userToEdit && (
+        <EditUserModal
+          isOpen={!!userToEdit}
+          onClose={() => setUserToEdit(null)}
+          onSuccess={() => {
+            onRefresh?.();
+            setSuccess(`User ${userToEdit.name} updated successfully.`);
+            setTimeout(() => setSuccess(''), 5000);
+          }}
+          userToEdit={userToEdit}
+        />
       )}
     </div>
   );

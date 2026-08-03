@@ -98,7 +98,7 @@ const ActiveBadge = ({ active, onClick, labels = ['Active', 'Inactive'] }) => (
 // ════════════════════════════════════════════════════════════════
 //  SUBJECTS TAB
 // ════════════════════════════════════════════════════════════════
-function SubjectsTab() {
+function SubjectsTab({ role }) {
   const [subjects, setSubjects] = useState([]);
   const [loading,  setLoading]  = useState(true);
   const [modal,    setModal]    = useState(null);
@@ -106,6 +106,8 @@ function SubjectsTab() {
   const [form,     setForm]     = useState({ title: '', icon: '📚', description: '', gradient: GRADIENTS[0].value });
   const [saving,   setSaving]   = useState(false);
   const [error,    setError]    = useState('');
+  
+  const canEdit = ['admin', 'vl_manager', 'content_admin'].includes(role);
 
   const load = async () => {
     setLoading(true);
@@ -116,7 +118,7 @@ function SubjectsTab() {
   useEffect(() => { load(); }, []);
 
   const openAdd  = () => { setForm({ title: '', icon: '📚', description: '', gradient: GRADIENTS[0].value }); setError(''); setModal('add'); };
-  const openEdit = (s) => { setForm({ title: s.title, icon: s.icon, description: s.description || '', gradient: s.gradient }); setError(''); setModal({ edit: s }); };
+  const openEdit = (s) => { setForm({ title: s.title, icon: s.icon || '📚', description: s.description || '', gradient: s.gradient || GRADIENTS[0].value }); setError(''); setModal({ edit: s }); };
 
   const save = async () => {
     if (!form.title.trim()) { setError('Title is required'); return; }
@@ -128,6 +130,7 @@ function SubjectsTab() {
   };
 
   const toggleActive = async (s) => {
+    if (!canEdit) return;
     await api.post(`/subjects/${s.id}/update`, { isActive: !s.isActive });
     load();
   };
@@ -145,9 +148,11 @@ function SubjectsTab() {
           <h3 className="text-white font-bold text-lg">Broad Areas</h3>
           <p className="text-slate-400 text-xs mt-0.5">Top-level subject categories for the student learning platform</p>
         </div>
-        <button onClick={openAdd} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white text-sm font-semibold rounded-xl transition-all shadow-lg shadow-blue-500/20">
-          <Plus className="w-4 h-4" /> Add Subject
-        </button>
+        {canEdit && (
+          <button onClick={openAdd} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white text-sm font-semibold rounded-xl transition-all shadow-lg shadow-blue-500/20">
+            <Plus className="w-4 h-4" /> Add Subject
+          </button>
+        )}
       </div>
 
       {loading ? (
@@ -155,7 +160,7 @@ function SubjectsTab() {
       ) : subjects.length === 0 ? (
         <div className="text-center py-16 border border-dashed border-white/10 rounded-2xl bg-white/5 text-slate-400">
           <Folder className="w-10 h-10 mx-auto mb-3 text-slate-500" />
-          <p className="text-sm font-medium">No subjects found. Create your first subject.</p>
+          <p className="text-sm font-medium">No subjects found.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -166,16 +171,25 @@ function SubjectsTab() {
                   <div className={`w-12 h-12 bg-gradient-to-br ${s.gradient} rounded-xl flex items-center justify-center text-2xl shadow-lg`}>
                     {s.icon}
                   </div>
-                  <div className="flex items-center gap-1">
-                    <button onClick={() => openEdit(s)} className="p-1.5 text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
-                    <button onClick={() => setDeleting(s)} className="p-1.5 text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
-                  </div>
+                  {canEdit && (
+                    <div className="flex items-center gap-1">
+                      <button onClick={() => openEdit(s)} className="p-1.5 text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
+                      <button onClick={() => setDeleting(s)} className="p-1.5 text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
+                    </div>
+                  )}
                 </div>
                 <h4 className="text-white font-bold text-base mb-1">{s.title}</h4>
                 {s.description && <p className="text-slate-400 text-xs line-clamp-2 mb-4 leading-relaxed">{s.description}</p>}
               </div>
               <div className="flex items-center justify-between border-t border-white/5 pt-4 mt-auto">
-                <ActiveBadge active={s.isActive} onClick={() => toggleActive(s)} />
+                {canEdit ? (
+                  <ActiveBadge active={s.isActive} onClick={() => toggleActive(s)} />
+                ) : (
+                  <div className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold border ${s.isActive ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' : 'bg-slate-800 border-white/5 text-slate-400'}`}>
+                    <span className={`w-1.5 h-1.5 rounded-full ${s.isActive ? 'bg-emerald-400' : 'bg-slate-500'}`} />
+                    {s.isActive ? 'Active' : 'Inactive'}
+                  </div>
+                )}
                 <span className="text-xs font-semibold text-slate-400 bg-white/5 px-2.5 py-1 rounded-lg border border-white/5">{s._count?.labs || 0} Labs</span>
               </div>
             </div>
@@ -233,11 +247,24 @@ function LabsTab({ onSelectLab }) {
   const [saving,   setSaving]   = useState(false);
   const [error,    setError]    = useState('');
 
+  const initialized = useRef(false);
+
   const load = async () => {
     setLoading(true);
     const [lr, sr] = await Promise.all([api.get('/labs/all'), api.get('/subjects/all')]);
-    if (lr.ok) setLabs(await safeJson(lr));
-    if (sr.ok) setSubjects(await safeJson(sr));
+    
+    let loadedLabs = [];
+    let loadedSubs = [];
+    if (lr.ok) loadedLabs = await safeJson(lr);
+    if (sr.ok) loadedSubs = await safeJson(sr);
+    
+    setLabs(loadedLabs);
+    setSubjects(loadedSubs);
+
+    if (!initialized.current && loadedSubs.length > 0) {
+      initialized.current = true;
+      setFilter(loadedSubs[0].id);
+    }
     setLoading(false);
   };
   useEffect(() => { load(); }, []);
@@ -382,6 +409,8 @@ function ExperimentsTab({ role, initialLabId = '' }) {
   const [uploading,   setUploading]   = useState({});
   const [uploadMsg,   setUploadMsg]   = useState({});
 
+  const initialized = useRef(false);
+
   const load = async () => {
     setLoading(true);
     const [er, lr, sr] = await Promise.all([
@@ -389,18 +418,37 @@ function ExperimentsTab({ role, initialLabId = '' }) {
       api.get('/labs/all'),
       api.get('/subjects/all')
     ]);
-    if (er.ok) setExperiments(await safeJson(er));
-    if (lr.ok) setLabs(await safeJson(lr));
-    if (sr.ok) setSubjects(await safeJson(sr));
+    
+    let loadedExps = [], loadedLabs = [], loadedSubs = [];
+    if (er.ok) loadedExps = await safeJson(er);
+    if (lr.ok) loadedLabs = await safeJson(lr);
+    if (sr.ok) loadedSubs = await safeJson(sr);
+
+    setExperiments(loadedExps);
+    setLabs(loadedLabs);
+    setSubjects(loadedSubs);
+
+    // Set default filter if no initialLabId was provided
+    if (!initialized.current && loadedSubs.length > 0 && !initialLabId) {
+      initialized.current = true;
+      const firstSub = loadedSubs[0];
+      setSubjectFilter(firstSub.id);
+      const firstLab = loadedLabs.find(l => l.subjectId === firstSub.id);
+      if (firstLab) setLabFilter(firstLab.id);
+    }
+
     setLoading(false);
   };
   useEffect(() => { load(); }, []);
 
   useEffect(() => {
-    if (initialLabId) {
+    if (initialLabId && labs.length > 0) {
+      initialized.current = true;
       setLabFilter(initialLabId);
+      const lab = labs.find((l) => l.id === initialLabId);
+      if (lab) setSubjectFilter(lab.subjectId);
     }
-  }, [initialLabId]);
+  }, [initialLabId, labs]);
 
   const filtered = experiments.filter((e) => {
     const parentLab = labs.find((l) => l.id === e.labId);
@@ -409,59 +457,36 @@ function ExperimentsTab({ role, initialLabId = '' }) {
     return true;
   });
 
-  const openAdd  = () => { setForm({ title: '', description: '', duration: '60 min', difficulty: 'Beginner', labId: labFilter || labs[0]?.id || '', coverPic: '' }); setError(''); setModal('add'); };
-  const openEdit = (e) => { setForm({ title: e.title, description: e.description || '', duration: e.duration, difficulty: e.difficulty, labId: e.labId, coverPic: e.coverPic || '' }); setError(''); setModal({ edit: e }); };
+  const openAdd  = () => { setForm({ title: '', description: '', duration: '60 min', difficulty: 'Beginner', labId: labFilter || labs[0]?.id || '', coverPic: '', zipFile: null }); setError(''); setModal('add'); };
+  const openEdit = (e) => { setForm({ title: e.title, description: e.description || '', duration: e.duration, difficulty: e.difficulty, labId: e.labId, coverPic: e.coverPic || '', zipFile: null }); setError(''); setModal({ edit: e }); };
 
   const save = async () => {
     if (!form.title.trim() || !form.labId) { setError('Title and lab are required'); return; }
     setSaving(true);
     const isEdit = modal?.edit;
     const res = isEdit ? await api.post(`/experiments/${isEdit.id}/update`, form) : await api.post('/experiments', form);
-    setSaving(false);
-    if (res.ok) { setModal(null); load(); } else { setError((await safeJson(res)).message); }
+    
+    if (res.ok) { 
+      const savedExp = await safeJson(res);
+      // Upload ZIP if provided
+      if (form.zipFile) {
+        const fd = new FormData();
+        fd.append('file', form.zipFile);
+        await api.upload(`/experiments/${savedExp.id || isEdit.id}/upload-zip`, fd);
+      }
+      setSaving(false);
+      setModal(null); 
+      load(); 
+    } else { 
+      setSaving(false);
+      setError((await safeJson(res)).message); 
+    }
   };
 
   const toggleActive = async (e) => { await api.post(`/experiments/${e.id}/update`, { isActive: !e.isActive }); load(); };
   const confirmDelete = async () => { await api.post(`/experiments/${deleting.id}/delete`); setDeleting(null); load(); };
 
-  const handleUpload = async (expId, type, file) => {
-    if (!file) return;
-    const key = `${expId}-${type}`;
-    setUploading((u) => ({ ...u, [key]: true }));
-    setUploadMsg((m) => ({ ...m, [key]: '' }));
-    try {
-      const fd = new FormData();
-      fd.append('file', file);
-      const res = await api.upload(`/experiments/${expId}/upload-zip`, fd);
-      const data = await safeJson(res);
-      setUploading((u) => ({ ...u, [key]: false }));
-      setUploadMsg((m) => ({ ...m, [key]: res.ok ? '✅ Done' : `❌ ${data.message || 'Upload failed'}` }));
-      if (res.ok) load();
-    } catch (err) {
-      console.error('Upload error:', err);
-      setUploading((u) => ({ ...u, [key]: false }));
-      setUploadMsg((m) => ({ ...m, [key]: `❌ ${err.message || 'Upload error'}` }));
-    }
-  };
 
-  const UploadBtn = ({ exp, type, label }) => {
-    const key = `${exp.id}-${type}`;
-    const inputRef = useRef();
-    const isLoading = uploading[key];
-    const msg = uploadMsg[key];
-    const hasFile = !!exp.contentPath || !!exp.simulationPath;
-    return (
-      <div className="flex flex-col gap-1">
-        <input ref={inputRef} type="file" accept=".zip" className="hidden" onChange={(e) => handleUpload(exp.id, type, e.target.files[0])} />
-        <button onClick={() => inputRef.current?.click()} disabled={isLoading}
-          className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${hasFile ? 'border-emerald-500/20 bg-emerald-500/5 text-emerald-400 hover:bg-emerald-500/10' : 'border-white/10 bg-white/5 text-slate-300 hover:bg-white/10'}`}>
-          {isLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin text-slate-400" /> : <Upload className="w-3.5 h-3.5" />}
-          {label}
-        </button>
-        {msg && <span className={`text-[10px] font-medium ${msg.startsWith('✅') ? 'text-emerald-400' : 'text-rose-400'}`}>{msg}</span>}
-      </div>
-    );
-  };
 
   const DIFF_STYLE = {
     Beginner:     'bg-emerald-500/10 border-emerald-500/25 text-emerald-400',
@@ -533,7 +558,15 @@ function ExperimentsTab({ role, initialLabId = '' }) {
                   {/* Upload Actions */}
                   <div className="flex flex-wrap items-center gap-4 bg-slate-950/40 border border-white/5 p-3 rounded-xl max-w-lg">
                     <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex-shrink-0">Assets:</div>
-                    <UploadBtn exp={exp} type="zip" label={exp.contentPath || exp.simulationPath ? 'Experiment ZIP Attached' : 'Upload Experiment ZIP'} />
+                    {(exp.contentPath || exp.simulationPath) ? (
+                      <span className="flex items-center gap-1.5 text-xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-lg">
+                        <CheckCircle2 className="w-3.5 h-3.5" /> Experiment ZIP Attached
+                      </span>
+                    ) : (
+                      <span className="flex items-center gap-1.5 text-xs font-semibold text-slate-400 bg-white/5 border border-white/10 px-2.5 py-1 rounded-lg">
+                        <AlertCircle className="w-3.5 h-3.5" /> No ZIP Uploaded
+                      </span>
+                    )}
                   </div>
                 </div>
 
@@ -581,6 +614,16 @@ function ExperimentsTab({ role, initialLabId = '' }) {
               </Select>
             </Field>
           </div>
+          <Field label="Experiment ZIP (Optional)">
+            <input 
+              type="file" 
+              accept=".zip" 
+              onChange={(e) => setForm({ ...form, zipFile: e.target.files[0] })}
+              className="w-full text-sm text-slate-400 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-white/10 file:text-white hover:file:bg-white/20 transition-all cursor-pointer bg-slate-950/50 border border-white/10 rounded-xl"
+            />
+            {form.zipFile && <p className="text-emerald-400 text-xs mt-2 truncate">Selected: {form.zipFile.name}</p>}
+            <p className="text-slate-500 text-[10px] mt-1.5">You can upload the simulation ZIP here. If you edit the experiment later, you can upload a new ZIP to replace it.</p>
+          </Field>
           <button onClick={save} disabled={saving} className="w-full py-3 mt-2 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-bold rounded-xl transition-all shadow-lg flex items-center justify-center gap-2">
             {saving && <Loader2 className="w-4.5 h-4.5 animate-spin" />}
             {modal?.edit ? 'Save Changes' : 'Create Experiment'}
@@ -605,7 +648,7 @@ export default function LabManagement() {
   const { user } = useAuth();
   const role = user?.role || 'student';
 
-  const tabs = ['admin', 'vl_manager', 'content_admin'].includes(role)
+  const tabs = ['admin', 'vl_manager', 'content_admin', 'vl_coordinator'].includes(role)
     ? TABS
     : TABS.filter((t) => t.id !== 'subjects');
 
@@ -636,7 +679,7 @@ export default function LabManagement() {
 
       {/* Render selected view */}
       <div className="bg-slate-900/25 border border-white/5 rounded-2xl p-6 backdrop-blur-xl">
-        {tab === 'subjects'    && <SubjectsTab />}
+        {tab === 'subjects'    && <SubjectsTab role={role} />}
         {tab === 'labs'        && <LabsTab onSelectLab={(id) => { setSelectedLabId(id); setTab('experiments'); }} />}
         {tab === 'experiments' && <ExperimentsTab role={role} initialLabId={selectedLabId} />}
       </div>

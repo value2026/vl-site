@@ -130,6 +130,7 @@ exports.Prisma.UserScalarFieldEnum = {
   role: 'role',
   isActive: 'isActive',
   customPermissions: 'customPermissions',
+  managedSubjectIds: 'managedSubjectIds',
   username: 'username',
   mobile: 'mobile',
   profilePic: 'profilePic',

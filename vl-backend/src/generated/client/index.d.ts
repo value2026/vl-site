@@ -3049,6 +3049,7 @@ export namespace Prisma {
     role: number
     isActive: number
     customPermissions: number
+    managedSubjectIds: number
     username: number
     mobile: number
     profilePic: number
@@ -3151,6 +3152,7 @@ export namespace Prisma {
     role?: true
     isActive?: true
     customPermissions?: true
+    managedSubjectIds?: true
     username?: true
     mobile?: true
     profilePic?: true
@@ -3258,6 +3260,7 @@ export namespace Prisma {
     role: $Enums.Role
     isActive: boolean
     customPermissions: string[]
+    managedSubjectIds: string[]
     username: string | null
     mobile: string | null
     profilePic: string | null
@@ -3309,6 +3312,7 @@ export namespace Prisma {
     role?: boolean
     isActive?: boolean
     customPermissions?: boolean
+    managedSubjectIds?: boolean
     username?: boolean
     mobile?: boolean
     profilePic?: boolean
@@ -3364,6 +3368,7 @@ export namespace Prisma {
     role?: boolean
     isActive?: boolean
     customPermissions?: boolean
+    managedSubjectIds?: boolean
     username?: boolean
     mobile?: boolean
     profilePic?: boolean
@@ -3400,6 +3405,7 @@ export namespace Prisma {
     role?: boolean
     isActive?: boolean
     customPermissions?: boolean
+    managedSubjectIds?: boolean
     username?: boolean
     mobile?: boolean
     profilePic?: boolean
@@ -3486,6 +3492,7 @@ export namespace Prisma {
       role: $Enums.Role
       isActive: boolean
       customPermissions: string[]
+      managedSubjectIds: string[]
       username: string | null
       mobile: string | null
       profilePic: string | null
@@ -3930,6 +3937,7 @@ export namespace Prisma {
     readonly role: FieldRef<"User", 'Role'>
     readonly isActive: FieldRef<"User", 'Boolean'>
     readonly customPermissions: FieldRef<"User", 'String[]'>
+    readonly managedSubjectIds: FieldRef<"User", 'String[]'>
     readonly username: FieldRef<"User", 'String'>
     readonly mobile: FieldRef<"User", 'String'>
     readonly profilePic: FieldRef<"User", 'String'>
@@ -23697,6 +23705,7 @@ export namespace Prisma {
     role: 'role',
     isActive: 'isActive',
     customPermissions: 'customPermissions',
+    managedSubjectIds: 'managedSubjectIds',
     username: 'username',
     mobile: 'mobile',
     profilePic: 'profilePic',
@@ -24140,6 +24149,7 @@ export namespace Prisma {
     role?: EnumRoleFilter<"User"> | $Enums.Role
     isActive?: BoolFilter<"User"> | boolean
     customPermissions?: StringNullableListFilter<"User">
+    managedSubjectIds?: StringNullableListFilter<"User">
     username?: StringNullableFilter<"User"> | string | null
     mobile?: StringNullableFilter<"User"> | string | null
     profilePic?: StringNullableFilter<"User"> | string | null
@@ -24194,6 +24204,7 @@ export namespace Prisma {
     role?: SortOrder
     isActive?: SortOrder
     customPermissions?: SortOrder
+    managedSubjectIds?: SortOrder
     username?: SortOrderInput | SortOrder
     mobile?: SortOrderInput | SortOrder
     profilePic?: SortOrderInput | SortOrder
@@ -24252,6 +24263,7 @@ export namespace Prisma {
     role?: EnumRoleFilter<"User"> | $Enums.Role
     isActive?: BoolFilter<"User"> | boolean
     customPermissions?: StringNullableListFilter<"User">
+    managedSubjectIds?: StringNullableListFilter<"User">
     mobile?: StringNullableFilter<"User"> | string | null
     profilePic?: StringNullableFilter<"User"> | string | null
     org?: StringNullableFilter<"User"> | string | null
@@ -24305,6 +24317,7 @@ export namespace Prisma {
     role?: SortOrder
     isActive?: SortOrder
     customPermissions?: SortOrder
+    managedSubjectIds?: SortOrder
     username?: SortOrderInput | SortOrder
     mobile?: SortOrderInput | SortOrder
     profilePic?: SortOrderInput | SortOrder
@@ -24345,6 +24358,7 @@ export namespace Prisma {
     role?: EnumRoleWithAggregatesFilter<"User"> | $Enums.Role
     isActive?: BoolWithAggregatesFilter<"User"> | boolean
     customPermissions?: StringNullableListFilter<"User">
+    managedSubjectIds?: StringNullableListFilter<"User">
     username?: StringNullableWithAggregatesFilter<"User"> | string | null
     mobile?: StringNullableWithAggregatesFilter<"User"> | string | null
     profilePic?: StringNullableWithAggregatesFilter<"User"> | string | null
@@ -25778,6 +25792,7 @@ export namespace Prisma {
     role: $Enums.Role
     isActive?: boolean
     customPermissions?: UserCreatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserCreatemanagedSubjectIdsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -25830,6 +25845,7 @@ export namespace Prisma {
     role: $Enums.Role
     isActive?: boolean
     customPermissions?: UserCreatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserCreatemanagedSubjectIdsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -25882,6 +25898,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
     customPermissions?: UserUpdatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserUpdatemanagedSubjectIdsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -25934,6 +25951,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
     customPermissions?: UserUpdatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserUpdatemanagedSubjectIdsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -25986,6 +26004,7 @@ export namespace Prisma {
     role: $Enums.Role
     isActive?: boolean
     customPermissions?: UserCreatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserCreatemanagedSubjectIdsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -26020,6 +26039,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
     customPermissions?: UserUpdatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserUpdatemanagedSubjectIdsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -26052,6 +26072,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
     customPermissions?: UserUpdatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserUpdatemanagedSubjectIdsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -27805,6 +27826,7 @@ export namespace Prisma {
     role?: SortOrder
     isActive?: SortOrder
     customPermissions?: SortOrder
+    managedSubjectIds?: SortOrder
     username?: SortOrder
     mobile?: SortOrder
     profilePic?: SortOrder
@@ -28878,6 +28900,10 @@ export namespace Prisma {
     set: string[]
   }
 
+  export type UserCreatemanagedSubjectIdsInput = {
+    set: string[]
+  }
+
   export type UserCreateNestedOneWithoutCreatedUsersInput = {
     create?: XOR<UserCreateWithoutCreatedUsersInput, UserUncheckedCreateWithoutCreatedUsersInput>
     connectOrCreate?: UserCreateOrConnectWithoutCreatedUsersInput
@@ -29155,6 +29181,11 @@ export namespace Prisma {
   }
 
   export type UserUpdatecustomPermissionsInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type UserUpdatemanagedSubjectIdsInput = {
     set?: string[]
     push?: string | string[]
   }
@@ -30890,6 +30921,7 @@ export namespace Prisma {
     role: $Enums.Role
     isActive?: boolean
     customPermissions?: UserCreatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserCreatemanagedSubjectIdsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -30941,6 +30973,7 @@ export namespace Prisma {
     role: $Enums.Role
     isActive?: boolean
     customPermissions?: UserCreatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserCreatemanagedSubjectIdsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -30997,6 +31030,7 @@ export namespace Prisma {
     role: $Enums.Role
     isActive?: boolean
     customPermissions?: UserCreatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserCreatemanagedSubjectIdsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -31048,6 +31082,7 @@ export namespace Prisma {
     role: $Enums.Role
     isActive?: boolean
     customPermissions?: UserCreatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserCreatemanagedSubjectIdsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -31683,6 +31718,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
     customPermissions?: UserUpdatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserUpdatemanagedSubjectIdsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -31734,6 +31770,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
     customPermissions?: UserUpdatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserUpdatemanagedSubjectIdsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -31804,6 +31841,7 @@ export namespace Prisma {
     role?: EnumRoleFilter<"User"> | $Enums.Role
     isActive?: BoolFilter<"User"> | boolean
     customPermissions?: StringNullableListFilter<"User">
+    managedSubjectIds?: StringNullableListFilter<"User">
     username?: StringNullableFilter<"User"> | string | null
     mobile?: StringNullableFilter<"User"> | string | null
     profilePic?: StringNullableFilter<"User"> | string | null
@@ -32375,6 +32413,7 @@ export namespace Prisma {
     role: $Enums.Role
     isActive?: boolean
     customPermissions?: UserCreatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserCreatemanagedSubjectIdsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -32426,6 +32465,7 @@ export namespace Prisma {
     role: $Enums.Role
     isActive?: boolean
     customPermissions?: UserCreatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserCreatemanagedSubjectIdsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -32531,6 +32571,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
     customPermissions?: UserUpdatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserUpdatemanagedSubjectIdsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -32582,6 +32623,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
     customPermissions?: UserUpdatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserUpdatemanagedSubjectIdsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -32678,6 +32720,7 @@ export namespace Prisma {
     role: $Enums.Role
     isActive?: boolean
     customPermissions?: UserCreatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserCreatemanagedSubjectIdsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -32729,6 +32772,7 @@ export namespace Prisma {
     role: $Enums.Role
     isActive?: boolean
     customPermissions?: UserCreatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserCreatemanagedSubjectIdsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -32910,6 +32954,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
     customPermissions?: UserUpdatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserUpdatemanagedSubjectIdsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -32961,6 +33006,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
     customPermissions?: UserUpdatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserUpdatemanagedSubjectIdsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -33100,6 +33146,7 @@ export namespace Prisma {
     role: $Enums.Role
     isActive?: boolean
     customPermissions?: UserCreatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserCreatemanagedSubjectIdsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -33151,6 +33198,7 @@ export namespace Prisma {
     role: $Enums.Role
     isActive?: boolean
     customPermissions?: UserCreatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserCreatemanagedSubjectIdsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -33343,6 +33391,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
     customPermissions?: UserUpdatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserUpdatemanagedSubjectIdsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -33394,6 +33443,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
     customPermissions?: UserUpdatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserUpdatemanagedSubjectIdsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -33493,6 +33543,7 @@ export namespace Prisma {
     role: $Enums.Role
     isActive?: boolean
     customPermissions?: UserCreatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserCreatemanagedSubjectIdsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -33544,6 +33595,7 @@ export namespace Prisma {
     role: $Enums.Role
     isActive?: boolean
     customPermissions?: UserCreatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserCreatemanagedSubjectIdsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -33652,6 +33704,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
     customPermissions?: UserUpdatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserUpdatemanagedSubjectIdsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -33703,6 +33756,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
     customPermissions?: UserUpdatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserUpdatemanagedSubjectIdsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -33801,6 +33855,7 @@ export namespace Prisma {
     role: $Enums.Role
     isActive?: boolean
     customPermissions?: UserCreatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserCreatemanagedSubjectIdsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -33852,6 +33907,7 @@ export namespace Prisma {
     role: $Enums.Role
     isActive?: boolean
     customPermissions?: UserCreatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserCreatemanagedSubjectIdsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -33960,6 +34016,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
     customPermissions?: UserUpdatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserUpdatemanagedSubjectIdsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -34011,6 +34068,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
     customPermissions?: UserUpdatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserUpdatemanagedSubjectIdsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -34109,6 +34167,7 @@ export namespace Prisma {
     role: $Enums.Role
     isActive?: boolean
     customPermissions?: UserCreatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserCreatemanagedSubjectIdsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -34160,6 +34219,7 @@ export namespace Prisma {
     role: $Enums.Role
     isActive?: boolean
     customPermissions?: UserCreatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserCreatemanagedSubjectIdsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -34268,6 +34328,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
     customPermissions?: UserUpdatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserUpdatemanagedSubjectIdsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -34319,6 +34380,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
     customPermissions?: UserUpdatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserUpdatemanagedSubjectIdsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -34417,6 +34479,7 @@ export namespace Prisma {
     role: $Enums.Role
     isActive?: boolean
     customPermissions?: UserCreatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserCreatemanagedSubjectIdsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -34468,6 +34531,7 @@ export namespace Prisma {
     role: $Enums.Role
     isActive?: boolean
     customPermissions?: UserCreatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserCreatemanagedSubjectIdsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -34524,6 +34588,7 @@ export namespace Prisma {
     role: $Enums.Role
     isActive?: boolean
     customPermissions?: UserCreatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserCreatemanagedSubjectIdsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -34575,6 +34640,7 @@ export namespace Prisma {
     role: $Enums.Role
     isActive?: boolean
     customPermissions?: UserCreatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserCreatemanagedSubjectIdsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -34642,6 +34708,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
     customPermissions?: UserUpdatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserUpdatemanagedSubjectIdsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -34693,6 +34760,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
     customPermissions?: UserUpdatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserUpdatemanagedSubjectIdsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -34755,6 +34823,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
     customPermissions?: UserUpdatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserUpdatemanagedSubjectIdsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -34806,6 +34875,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
     customPermissions?: UserUpdatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserUpdatemanagedSubjectIdsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -34857,6 +34927,7 @@ export namespace Prisma {
     role: $Enums.Role
     isActive?: boolean
     customPermissions?: UserCreatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserCreatemanagedSubjectIdsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -34908,6 +34979,7 @@ export namespace Prisma {
     role: $Enums.Role
     isActive?: boolean
     customPermissions?: UserCreatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserCreatemanagedSubjectIdsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -34999,6 +35071,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
     customPermissions?: UserUpdatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserUpdatemanagedSubjectIdsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -35050,6 +35123,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
     customPermissions?: UserUpdatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserUpdatemanagedSubjectIdsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -35142,6 +35216,7 @@ export namespace Prisma {
     role: $Enums.Role
     isActive?: boolean
     customPermissions?: UserCreatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserCreatemanagedSubjectIdsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -35193,6 +35268,7 @@ export namespace Prisma {
     role: $Enums.Role
     isActive?: boolean
     customPermissions?: UserCreatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserCreatemanagedSubjectIdsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -35291,6 +35367,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
     customPermissions?: UserUpdatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserUpdatemanagedSubjectIdsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -35342,6 +35419,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
     customPermissions?: UserUpdatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserUpdatemanagedSubjectIdsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -35507,6 +35585,7 @@ export namespace Prisma {
     role: $Enums.Role
     isActive?: boolean
     customPermissions?: UserCreatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserCreatemanagedSubjectIdsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -35558,6 +35637,7 @@ export namespace Prisma {
     role: $Enums.Role
     isActive?: boolean
     customPermissions?: UserCreatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserCreatemanagedSubjectIdsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -35657,6 +35737,7 @@ export namespace Prisma {
     role: $Enums.Role
     isActive?: boolean
     customPermissions?: UserCreatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserCreatemanagedSubjectIdsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -35708,6 +35789,7 @@ export namespace Prisma {
     role: $Enums.Role
     isActive?: boolean
     customPermissions?: UserCreatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserCreatemanagedSubjectIdsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -35807,6 +35889,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
     customPermissions?: UserUpdatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserUpdatemanagedSubjectIdsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -35858,6 +35941,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
     customPermissions?: UserUpdatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserUpdatemanagedSubjectIdsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -35909,6 +35993,7 @@ export namespace Prisma {
     role: $Enums.Role
     isActive?: boolean
     customPermissions?: UserCreatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserCreatemanagedSubjectIdsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -35960,6 +36045,7 @@ export namespace Prisma {
     role: $Enums.Role
     isActive?: boolean
     customPermissions?: UserCreatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserCreatemanagedSubjectIdsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -36027,6 +36113,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
     customPermissions?: UserUpdatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserUpdatemanagedSubjectIdsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -36078,6 +36165,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
     customPermissions?: UserUpdatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserUpdatemanagedSubjectIdsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -36129,6 +36217,7 @@ export namespace Prisma {
     role: $Enums.Role
     isActive?: boolean
     customPermissions?: UserCreatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserCreatemanagedSubjectIdsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -36180,6 +36269,7 @@ export namespace Prisma {
     role: $Enums.Role
     isActive?: boolean
     customPermissions?: UserCreatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserCreatemanagedSubjectIdsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -36289,6 +36379,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
     customPermissions?: UserUpdatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserUpdatemanagedSubjectIdsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -36340,6 +36431,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
     customPermissions?: UserUpdatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserUpdatemanagedSubjectIdsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -36430,6 +36522,7 @@ export namespace Prisma {
     role: $Enums.Role
     isActive?: boolean
     customPermissions?: UserCreatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserCreatemanagedSubjectIdsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -36481,6 +36574,7 @@ export namespace Prisma {
     role: $Enums.Role
     isActive?: boolean
     customPermissions?: UserCreatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserCreatemanagedSubjectIdsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -36627,6 +36721,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
     customPermissions?: UserUpdatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserUpdatemanagedSubjectIdsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -36678,6 +36773,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
     customPermissions?: UserUpdatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserUpdatemanagedSubjectIdsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -36798,6 +36894,7 @@ export namespace Prisma {
     role: $Enums.Role
     isActive?: boolean
     customPermissions?: UserCreatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserCreatemanagedSubjectIdsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -36849,6 +36946,7 @@ export namespace Prisma {
     role: $Enums.Role
     isActive?: boolean
     customPermissions?: UserCreatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserCreatemanagedSubjectIdsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -36959,6 +37057,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
     customPermissions?: UserUpdatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserUpdatemanagedSubjectIdsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -37010,6 +37109,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
     customPermissions?: UserUpdatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserUpdatemanagedSubjectIdsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -37098,6 +37198,7 @@ export namespace Prisma {
     role: $Enums.Role
     isActive?: boolean
     customPermissions?: UserCreatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserCreatemanagedSubjectIdsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -37149,6 +37250,7 @@ export namespace Prisma {
     role: $Enums.Role
     isActive?: boolean
     customPermissions?: UserCreatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserCreatemanagedSubjectIdsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -37259,6 +37361,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
     customPermissions?: UserUpdatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserUpdatemanagedSubjectIdsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -37310,6 +37413,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
     customPermissions?: UserUpdatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserUpdatemanagedSubjectIdsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -37361,6 +37465,7 @@ export namespace Prisma {
     role: $Enums.Role
     isActive?: boolean
     customPermissions?: UserCreatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserCreatemanagedSubjectIdsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -37412,6 +37517,7 @@ export namespace Prisma {
     role: $Enums.Role
     isActive?: boolean
     customPermissions?: UserCreatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserCreatemanagedSubjectIdsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -37479,6 +37585,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
     customPermissions?: UserUpdatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserUpdatemanagedSubjectIdsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -37530,6 +37637,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
     customPermissions?: UserUpdatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserUpdatemanagedSubjectIdsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -37581,6 +37689,7 @@ export namespace Prisma {
     role: $Enums.Role
     isActive?: boolean
     customPermissions?: UserCreatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserCreatemanagedSubjectIdsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -37783,6 +37892,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
     customPermissions?: UserUpdatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserUpdatemanagedSubjectIdsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -37834,6 +37944,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
     customPermissions?: UserUpdatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserUpdatemanagedSubjectIdsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -37885,6 +37996,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
     customPermissions?: UserUpdatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserUpdatemanagedSubjectIdsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -38755,6 +38867,7 @@ export namespace Prisma {
     role: $Enums.Role
     isActive?: boolean
     customPermissions?: UserCreatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserCreatemanagedSubjectIdsInput | string[]
     username?: string | null
     mobile?: string | null
     profilePic?: string | null
@@ -38801,6 +38914,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
     customPermissions?: UserUpdatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserUpdatemanagedSubjectIdsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -38852,6 +38966,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
     customPermissions?: UserUpdatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserUpdatemanagedSubjectIdsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null
@@ -38903,6 +39018,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     isActive?: BoolFieldUpdateOperationsInput | boolean
     customPermissions?: UserUpdatecustomPermissionsInput | string[]
+    managedSubjectIds?: UserUpdatemanagedSubjectIdsInput | string[]
     username?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     profilePic?: NullableStringFieldUpdateOperationsInput | string | null

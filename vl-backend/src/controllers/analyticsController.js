@@ -135,18 +135,20 @@ const getDashboardStats = async (req, res) => {
     } else if (role === 'nodal_centre') {
       userFilter = { nodalCentreId: userId };
       labFilter = { nodalCentreId: userId };
+    } else if (role === 'vl_coordinator') {
+      userFilter = { createdById: userId };
     }
 
     // 1. Basic Counts
     const [totalUsers, totalLabs, totalExps, totalVisits, totalFeedback] = await Promise.all([
-      prisma.user.count({ where: role !== 'admin' ? userFilter : {} }),
-      prisma.lab.count({ where: role !== 'admin' ? labFilter : {} }),
-      prisma.experiment.count({ where: role !== 'admin' ? { lab: labFilter } : {} }),
+      prisma.user.count({ where: (role !== 'admin' && role !== 'vl_manager') ? userFilter : {} }),
+      prisma.lab.count({ where: (role !== 'admin' && role !== 'vl_manager') ? labFilter : {} }),
+      prisma.experiment.count({ where: (role !== 'admin' && role !== 'vl_manager') ? { lab: labFilter } : {} }),
       prisma.experimentVisit.count({
-        where: role !== 'admin' ? { user: userFilter } : {},
+        where: (role !== 'admin' && role !== 'vl_manager') ? { user: userFilter } : {},
       }),
       prisma.feedback.count({
-        where: role !== 'admin' ? { experiment: { lab: labFilter } } : {},
+        where: (role !== 'admin' && role !== 'vl_manager') ? { experiment: { lab: labFilter } } : {},
       }),
     ]);
 
@@ -161,29 +163,28 @@ const getDashboardStats = async (req, res) => {
         by: ['userId'],
         where: {
           createdAt: { gte: oneDayAgo },
-          ...(role !== 'admin' ? { user: userFilter } : {}),
+          ...((role !== 'admin' && role !== 'vl_manager') ? { user: userFilter } : {}),
         },
       }).then(r => r.length),
       prisma.experimentVisit.groupBy({
         by: ['userId'],
         where: {
           createdAt: { gte: oneWeekAgo },
-          ...(role !== 'admin' ? { user: userFilter } : {}),
+          ...((role !== 'admin' && role !== 'vl_manager') ? { user: userFilter } : {}),
         },
       }).then(r => r.length),
       prisma.experimentVisit.groupBy({
         by: ['userId'],
         where: {
           createdAt: { gte: oneMonthAgo },
-          ...(role !== 'admin' ? { user: userFilter } : {}),
+          ...((role !== 'admin' && role !== 'vl_manager') ? { user: userFilter } : {}),
         },
       }).then(r => r.length),
     ]);
 
     // 3. User Registration Trends (Daily/Monthly)
-    // Get users grouped by date created
     const rawRegistrations = await prisma.user.findMany({
-      where: role !== 'admin' ? userFilter : {},
+      where: (role !== 'admin' && role !== 'vl_manager') ? userFilter : {},
       select: { createdAt: true },
     });
 
@@ -199,7 +200,7 @@ const getDashboardStats = async (req, res) => {
 
     // 4. Most Visited Experiments & Labs
     const rawVisits = await prisma.experimentVisit.findMany({
-      where: role !== 'admin' ? { experiment: { lab: labFilter } } : {},
+      where: (role !== 'admin' && role !== 'vl_manager') ? { experiment: { lab: labFilter } } : {},
       include: {
         experiment: {
           select: {
@@ -231,7 +232,7 @@ const getDashboardStats = async (req, res) => {
 
     // 5. Quiz Performance & Top Students
     const attempts = await prisma.quizAttempt.findMany({
-      where: role !== 'admin' ? { user: userFilter } : {},
+      where: (role !== 'admin' && role !== 'vl_manager') ? { user: userFilter } : {},
       include: {
         user: { select: { name: true, email: true } }
       }
@@ -538,10 +539,12 @@ const getQuizReport = async (req, res) => {
       userFilter = { nodalCentreId: req.user.nodalCentreId };
     } else if (role === 'nodal_centre') {
       userFilter = { nodalCentreId: userId };
+    } else if (role === 'vl_coordinator') {
+      userFilter = { createdById: userId };
     }
 
     const attempts = await prisma.quizAttempt.findMany({
-      where: role !== 'admin' ? { user: userFilter } : {},
+      where: (role !== 'admin' && role !== 'vl_manager') ? { user: userFilter } : {},
       include: {
         user: { select: { name: true, email: true, dept: true } },
         experiment: { select: { title: true, lab: { select: { title: true } } } },
@@ -566,10 +569,12 @@ const getFeedbackReport = async (req, res) => {
       userFilter = { nodalCentreId: req.user.nodalCentreId };
     } else if (role === 'nodal_centre') {
       userFilter = { nodalCentreId: userId };
+    } else if (role === 'vl_coordinator') {
+      userFilter = { createdById: userId };
     }
 
     const feedbacks = await prisma.feedback.findMany({
-      where: role !== 'admin' ? { user: userFilter } : {},
+      where: (role !== 'admin' && role !== 'vl_manager') ? { user: userFilter } : {},
       include: {
         user: { select: { name: true, email: true } },
         experiment: { select: { title: true, lab: { select: { title: true } } } },
@@ -594,10 +599,12 @@ const getPagewiseReport = async (req, res) => {
       userFilter = { nodalCentreId: req.user.nodalCentreId };
     } else if (role === 'nodal_centre') {
       userFilter = { nodalCentreId: userId };
+    } else if (role === 'vl_coordinator') {
+      userFilter = { createdById: userId };
     }
 
     const visits = await prisma.experimentVisit.findMany({
-      where: role !== 'admin' ? { user: userFilter } : {},
+      where: (role !== 'admin' && role !== 'vl_manager') ? { user: userFilter } : {},
       include: {
         experiment: {
           select: {

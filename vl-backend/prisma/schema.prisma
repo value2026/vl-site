@@ -27,6 +27,7 @@ model User {
   role     Role
   isActive          Boolean  @default(true)
   customPermissions String[] @default([])
+  managedSubjectIds String[] @default([])
 
   // Additional fields requested by user
   username          String? @unique
