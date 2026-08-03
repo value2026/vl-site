@@ -75,9 +75,11 @@ export default function LabCategories({ sectionTitle, sectionSubtitle, content =
                     <div className={`w-14 h-14 rounded-full flex items-center justify-center bg-gradient-to-br ${theme.color} shadow-sm group-hover:scale-110 group-hover:shadow-md transition-all duration-300`}>
                       <span className="text-2xl text-white drop-shadow-sm">{theme.icon}</span>
                     </div>
-                    <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold border ${theme.badgeBg} ${theme.badgeText} ${theme.badgeBorder}`}>
-                      {badgeLabel}
-                    </div>
+                    {/* {labCount > 0 && (
+                      <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold border ${theme.badgeBg} ${theme.badgeText} ${theme.badgeBorder}`}>
+                        {badgeLabel}
+                      </div>
+                    )} */}
                   </div>
 
                   {/* Title & Meta */}

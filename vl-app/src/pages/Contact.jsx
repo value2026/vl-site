@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Mail, Phone, MapPin, Send, CheckCircle2 } from 'lucide-react';
+import { apiUrl } from '../utils/api';
 
 export default function Contact() {
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
@@ -17,7 +18,7 @@ export default function Contact() {
     setError('');
     
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/pages/contact/survey`, {
+      const res = await fetch(apiUrl("/pages/contact/survey"), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form)
@@ -33,15 +34,15 @@ export default function Contact() {
   return (
     <main>
       {/* Hero */}
-      <section className="bg-hero-gradient py-20">
+      <section className="bg-hero-gradient py-12">
         <div className="container-custom text-center">
-          <span className="inline-block bg-white/10 text-white/80 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider mb-6">
+          <span className="inline-block bg-white/10 text-white/80 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider mb-4">
             Get in Touch
           </span>
-          <h1 className="font-heading text-5xl font-extrabold text-white mb-6">
+          <h1 className="font-heading text-4xl font-extrabold text-white mb-4">
             Contact Us
           </h1>
-          <p className="text-xl text-white/70 max-w-xl mx-auto leading-relaxed">
+          <p className="text-lg md:text-xl text-white/70 max-w-xl mx-auto leading-relaxed">
             Have a question or want to collaborate? We'd love to hear from you.
           </p>
         </div>

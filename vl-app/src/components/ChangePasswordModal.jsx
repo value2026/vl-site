@@ -39,7 +39,7 @@ export default function ChangePasswordModal({ isOpen, onClose }) {
 
     setLoading(true);
     try {
-      const res = await api.put('/auth/change-password', { currentPassword, newPassword });
+      const res = await api.post('/auth/change-password', { currentPassword, newPassword });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Failed to update password.');
       

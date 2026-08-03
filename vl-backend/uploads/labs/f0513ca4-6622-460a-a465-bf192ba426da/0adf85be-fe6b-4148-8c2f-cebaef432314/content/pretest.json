@@ -1,0 +1,65 @@
+{
+  "version": 2.0,
+  "questions": [
+    {
+      "question": "The magnetic material in which permanent magnetic dipoles are already aligned due to bonding forces are known as",
+      "answers": {
+        "a": "Paramagnetic materials",
+        "b": "Ferromagnetic materials",
+        "c": "Superconducting materials",
+        "d": "Diamagnetic materials"
+      },
+     
+      "correctAnswer": "b",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "In a ferromagnetic material, susceptibility is",
+      "answers": {
+        "a": "Very small and positive",
+        "b": "Very small and negative",
+        "c": "Very large and positive",
+        "d": "Very large and negative"
+      },
+      
+      "correctAnswer": "c",
+      "difficulty": "beginner"
+    },
+     {
+      "question": "Permanent dipole moment consists of the following angular momentum",
+      "answers": {
+        "a": "Orbital angular momentum of electron",
+        "b": "Electron spin angular momentum",
+        "c": "Nuclear spin angular momentum",
+        "d": "All the above"
+      },
+      
+      "correctAnswer": "d",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "Ferromagnetic materials or ferrites are obtained from",
+      "answers": {
+        "a": "Copper",
+        "b": "Zinc",
+        "c": "Aluminium",
+        "d": "None of these"
+      },
+    
+      "correctAnswer": "c",
+      "difficulty": "beginner"
+    },
+     {
+      "question": "What are domains?",
+      "answers": {
+        "a": "Small regions inside the ferromagnetic solid which are spontaneously magnetized.",
+        "b": "Walls or boundaries of the ferromagnetic solids.",
+        "c": "The ferromagnetic solid itself",
+        "d": "None of these"
+      },
+    
+      "correctAnswer": "a",
+      "difficulty": "beginner"
+    }
+  ]
+}

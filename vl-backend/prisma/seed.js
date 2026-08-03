@@ -46,11 +46,6 @@ async function main() {
   // Create Default Institutions with Legacy Metadata
   const defaultInstitutions = [
     { legacyId: 1, name: 'Amrita Vishwa Vidyapeetham', code: 'amrita', oldCreatedAt: '01-01-2015' },
-    { legacyId: 2, name: 'VMKV Engineering College',  code: 'vmkv',   oldCreatedAt: '2/3/2015' },
-    { legacyId: 3, name: 'IIT Bombay',                 code: 'iitb',   oldCreatedAt: '01-01-2015' },
-    { legacyId: 4, name: 'NIT Warangal',               code: 'nitw',   oldCreatedAt: '01-01-2015' },
-    { legacyId: 5, name: 'MET Nashik',                 code: 'met',    oldCreatedAt: '01-05-2015' },
-    { legacyId: 6, name: 'IIIT Hyderabad',             code: 'iiith',  oldCreatedAt: '01-01-2015' },
   ];
   
   let primaryInstitution = null;
@@ -107,73 +102,6 @@ async function main() {
       },
     });
     console.log('✅ Nodal Admin user created!');
-  }
-
-  // Create default teacher if not exists
-  const teacherEmail = 'teacher@virtuallabs.in';
-  let teacherExists = await prisma.user.findUnique({ where: { email: teacherEmail } });
-  if (!teacherExists && primaryInstitution) {
-    const hashed = await bcrypt.hash('VLTeacher@2024', 12);
-    teacherExists = await prisma.user.create({
-      data: {
-        name: 'Jane Teacher',
-        email: teacherEmail,
-        password: hashed,
-        role: 'teacher',
-        nodalCentreId: primaryInstitution.id, // Linking to Institution
-      },
-    });
-    console.log('✅ Teacher user created!');
-  }
-
-  // Create default student if not exists
-  const studentEmail = 'student@virtuallabs.in';
-  let studentExists = await prisma.user.findUnique({ where: { email: studentEmail } });
-  if (!studentExists && primaryInstitution) {
-    const hashed = await bcrypt.hash('VLStudent@2024', 12);
-    studentExists = await prisma.user.create({
-      data: {
-        name: 'John Student',
-        email: studentEmail,
-        password: hashed,
-        role: 'student',
-        nodalCentreId: primaryInstitution.id, // Linking to Institution
-      },
-    });
-    console.log('✅ Student user created!');
-  }
-
-  // Ensure extra students (alice, bob, charlie) if they exist are linked to the primary institution
-  const extraStudentEmails = ['alice@virtuallabs.in', 'bob@virtuallabs.in', 'charlie@virtuallabs.in'];
-  for (const email of extraStudentEmails) {
-    const s = await prisma.user.findUnique({ where: { email } });
-    if (s && primaryInstitution) {
-      await prisma.user.update({
-        where: { id: s.id },
-        data: {
-          nodalCentreId: primaryInstitution.id
-        }
-      });
-    }
-  }
-
-  // 2. Clear existing subjects/labs/experiments ONLY if explicitly forced
-  // WARNING: This deletes all lab content. Only run with SEED_FORCE=true when you
-  // intentionally want to reset lab data (e.g. fresh install / dev environment).
-  // In production, leave SEED_FORCE unset so existing lab data is preserved.
-  if (process.env.SEED_FORCE === 'true') {
-    await prisma.experiment.deleteMany({});
-    await prisma.lab.deleteMany({});
-    await prisma.subject.deleteMany({});
-    console.log('🧹 [SEED_FORCE] Cleaned existing lab/experiment structures.');
-  } else {
-    console.log('ℹ️  Skipping lab data wipe (set SEED_FORCE=true to reset lab data).');
-  }
-
-  const existingSubCount = await prisma.subject.count();
-  if (existingSubCount > 0 && process.env.SEED_FORCE !== 'true') {
-    console.log('ℹ️  Subjects/Labs already exist in database. Skipping default subjects & experiments seed...');
-    return;
   }
 
   // 3. Define Seed Data
@@ -250,6 +178,95 @@ async function main() {
           ]
         }
       ]
+    },
+    {
+      id: '3834263f-6848-4015-bf6f-1a7c6ebb0b8f',
+      title: 'Physical Sciences',
+      icon: '📚',
+      description: 'Explore concepts in physics and chemistry.',
+      gradient: 'from-rose-500 to-red-600',
+      labs: [
+        {
+          id: 'f0513ca4-6622-460a-a465-bf192ba426da',
+          title: 'Electricity & Magnetism Virtual Lab',
+          icon: '🔬',
+          description: 'Explore fundamental principles of electricity and magnetism.',
+          experiments: [
+            {
+              id: '7c2cc105-09b2-4494-a8f3-d29926545ca9',
+              title: 'Tangent Galvanometer',
+              description: 'Experiment on Tangent Galvanometer.',
+              duration: '60 min',
+              difficulty: 'Beginner',
+              contentPath: 'labs/f0513ca4-6622-460a-a465-bf192ba426da/7c2cc105-09b2-4494-a8f3-d29926545ca9/content',
+              simulationPath: 'labs/f0513ca4-6622-460a-a465-bf192ba426da/7c2cc105-09b2-4494-a8f3-d29926545ca9/sim-root/simulation'
+            },
+            {
+              id: '18c16f17-a849-4a6c-bc5a-9cb98410ab03',
+              title: 'Magnetic Field Along The Axis of A Circular Coil Carrying Current',
+              description: 'Analyze magnetic field along the axis of a circular coil.',
+              duration: '60 min',
+              difficulty: 'Beginner',
+              contentPath: 'labs/f0513ca4-6622-460a-a465-bf192ba426da/18c16f17-a849-4a6c-bc5a-9cb98410ab03/content',
+              simulationPath: 'labs/f0513ca4-6622-460a-a465-bf192ba426da/18c16f17-a849-4a6c-bc5a-9cb98410ab03/sim-root/simulation'
+            },
+            {
+              id: 'b0345919-ec61-499a-8440-3be1216fad39',
+              title: 'Deflection Magnetometer',
+              description: 'Experiment on Deflection Magnetometer.',
+              duration: '60 min',
+              difficulty: 'Beginner',
+              contentPath: 'labs/f0513ca4-6622-460a-a465-bf192ba426da/b0345919-ec61-499a-8440-3be1216fad39/content',
+              simulationPath: 'labs/f0513ca4-6622-460a-a465-bf192ba426da/b0345919-ec61-499a-8440-3be1216fad39/sim-root/simulation'
+            },
+            {
+              id: 'd952599c-fbe3-4246-9ca8-68b201f47f65',
+              title: 'Van De Graaff Generator',
+              description: 'Experiment on Van De Graaff Generator.',
+              duration: '60 min',
+              difficulty: 'Beginner',
+              contentPath: 'labs/f0513ca4-6622-460a-a465-bf192ba426da/d952599c-fbe3-4246-9ca8-68b201f47f65/content',
+              simulationPath: 'labs/f0513ca4-6622-460a-a465-bf192ba426da/d952599c-fbe3-4246-9ca8-68b201f47f65/sim-root/simulation'
+            },
+            {
+              id: '0adf85be-fe6b-4148-8c2f-cebaef432314',
+              title: 'Barkhausen Effect',
+              description: 'Observe the Barkhausen effect.',
+              duration: '60 min',
+              difficulty: 'Beginner',
+              contentPath: 'labs/f0513ca4-6622-460a-a465-bf192ba426da/0adf85be-fe6b-4148-8c2f-cebaef432314/content',
+              simulationPath: 'labs/f0513ca4-6622-460a-a465-bf192ba426da/0adf85be-fe6b-4148-8c2f-cebaef432314/sim-root/simulation'
+            },
+            {
+              id: '07df6e46-6e79-4cdd-b47f-6f43536cabc5',
+              title: 'Temperature Coefficient of Resistance',
+              description: 'Determine the temperature coefficient of resistance.',
+              duration: '60 min',
+              difficulty: 'Beginner',
+              contentPath: 'labs/f0513ca4-6622-460a-a465-bf192ba426da/07df6e46-6e79-4cdd-b47f-6f43536cabc5/content',
+              simulationPath: 'labs/f0513ca4-6622-460a-a465-bf192ba426da/07df6e46-6e79-4cdd-b47f-6f43536cabc5/sim-root/simulation'
+            },
+            {
+              id: '37c08ccb-4412-440e-8bcf-9a8a94bb5a92',
+              title: 'Anderson\'s Bridge',
+              description: 'Experiment on Anderson\'s Bridge.',
+              duration: '60 min',
+              difficulty: 'Beginner',
+              contentPath: 'labs/f0513ca4-6622-460a-a465-bf192ba426da/37c08ccb-4412-440e-8bcf-9a8a94bb5a92/content',
+              simulationPath: 'labs/f0513ca4-6622-460a-a465-bf192ba426da/37c08ccb-4412-440e-8bcf-9a8a94bb5a92/sim-root/simulation'
+            },
+            {
+              id: '374b9cdb-86cf-4aab-bbad-ea65c87ec16e',
+              title: 'Quincke\'s Method',
+              description: 'Experiment using Quincke\'s Method.',
+              duration: '60 min',
+              difficulty: 'Beginner',
+              contentPath: 'labs/f0513ca4-6622-460a-a465-bf192ba426da/374b9cdb-86cf-4aab-bbad-ea65c87ec16e/content',
+              simulationPath: 'labs/f0513ca4-6622-460a-a465-bf192ba426da/374b9cdb-86cf-4aab-bbad-ea65c87ec16e/sim-root/simulation'
+            }
+          ]
+        }
+      ]
     }
   ];
 
@@ -295,10 +312,10 @@ async function main() {
 
       for (const eData of lData.experiments) {
         const expId = eData.id || undefined;
-        let contentPath = null;
-        let simulationPath = null;
+        let contentPath = eData.contentPath || null;
+        let simulationPath = eData.simulationPath || null;
 
-        if (expId) {
+        if (expId && !contentPath && !simulationPath) {
           const fs = require('fs');
           const path = require('path');
           let uploadsDir = path.join(__dirname, '../uploads/experiments', expId);
@@ -344,108 +361,6 @@ async function main() {
         console.log(`      ⚗️ Upserted Experiment: ${exp.title} (${exp.id})`);
       }
     }
-  }
-
-  // 5. Insert Mock Analytics Data
-  const student = await prisma.user.findFirst({ where: { role: 'student' } });
-  const teacherForAnalytics = await prisma.user.findFirst({ where: { role: 'teacher' } });
-  const allExps = await prisma.experiment.findMany();
-
-  if (student && allExps.length > 0) {
-    console.log('📈 Seeding mock analytics events...');
-    const nowTime = new Date();
-
-    // Add extra mock students for academic reports to look rich
-    const extraStudents = [
-      { name: 'Alice Johnson', email: 'alice@virtuallabs.in' },
-      { name: 'Bob Roberts', email: 'bob@virtuallabs.in' },
-      { name: 'Charlie Brown', email: 'charlie@virtuallabs.in' },
-    ];
-
-    const studentUsers = [student];
-    for (const est of extraStudents) {
-      let estUser = await prisma.user.findUnique({ where: { email: est.email } });
-      if (!estUser) {
-        const hashed = await bcrypt.hash('VLStudent@2024', 12);
-        estUser = await prisma.user.create({
-          data: {
-            name: est.name,
-            email: est.email,
-            password: hashed,
-            role: 'student',
-            nodalCentreId: student?.nodalCentreId || null, // Group them to make report work
-          },
-        });
-      }
-      studentUsers.push(estUser);
-    }
-
-    // Generate visits over past 15 days
-    const devicesList = ['desktop', 'mobile', 'tablet'];
-    const browsersList = ['chrome', 'firefox', 'safari'];
-
-    for (const sUser of studentUsers) {
-      for (let i = 0; i < 15; i++) {
-        // Random date in the past
-        const date = new Date(nowTime.getTime() - i * 24 * 60 * 60 * 1000);
-        // Random experiment
-        const randomExp = allExps[Math.floor(Math.random() * allExps.length)];
-
-        // Record 1-3 visits per day
-        const visitCount = Math.floor(Math.random() * 3) + 1;
-        for (let vc = 0; vc < visitCount; vc++) {
-          await prisma.experimentVisit.create({
-            data: {
-              userId: sUser.id,
-              experimentId: randomExp.id,
-              duration: Math.floor(Math.random() * 600) + 120, // 2-12 minutes
-              device: devicesList[Math.floor(Math.random() * devicesList.length)],
-              browser: browsersList[Math.floor(Math.random() * browsersList.length)],
-              createdAt: date,
-            },
-          });
-        }
-
-        // 50% chance of quiz attempt
-        if (Math.random() > 0.5) {
-          const maxScore = 5;
-          const score = Math.floor(Math.random() * 4) + 2; // Score between 2 and 5
-          const passed = score >= 3;
-          await prisma.quizAttempt.create({
-            data: {
-              userId: sUser.id,
-              experimentId: randomExp.id,
-              quizType: Math.random() > 0.5 ? 'pretest' : 'posttest',
-              score,
-              maxScore,
-              passed,
-              createdAt: date,
-            },
-          });
-        }
-
-        // 30% chance of feedback
-        if (Math.random() > 0.7) {
-          const comments = [
-            'Very helpful simulation!',
-            'Understood stack concepts easily.',
-            'Optics lab was realistic.',
-            'Nice explanation of aim and theory.',
-            'Smooth frame rate on simulation.',
-          ];
-          await prisma.feedback.create({
-            data: {
-              userId: sUser.id,
-              experimentId: randomExp.id,
-              rating: Math.floor(Math.random() * 2) + 4, // 4 or 5 stars
-              comment: comments[Math.floor(Math.random() * comments.length)],
-              createdAt: date,
-            },
-          });
-        }
-      }
-    }
-    console.log('✅ Analytics events seeded successfully.');
   }
 
   // Auto-link any uploaded content/simulations on disk

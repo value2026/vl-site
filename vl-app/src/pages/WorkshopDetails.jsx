@@ -2,10 +2,10 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Calendar, MapPin, Users, ArrowRight, Loader2, ArrowLeft, Video, Clock, CheckCircle2 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
-import WorkshopRegistrationModal from '../components/public/WorkshopRegistrationModal';
+import { apiUrl } from '../utils/api';
 
 async function fetchWorkshop(id) {
-  const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/workshops/${id}`);
+  const res = await fetch(apiUrl(`/workshops/${id}`));
   if (!res.ok) throw new Error('Failed to fetch workshop');
   return res.json();
 }
@@ -18,14 +18,7 @@ const modeColor = {
 
 export default function WorkshopDetails() {
   const { id } = useParams();
-  const [registeringWorkshop, setRegisteringWorkshop] = useState(null);
-  const [isRegistered, setIsRegistered] = useState(false);
 
-  useEffect(() => {
-    if (localStorage.getItem(`registered-workshop-${id}`)) {
-      setIsRegistered(true);
-    }
-  }, [id, registeringWorkshop]); // re-run when registeringWorkshop closes (might have just registered)
 
   const { data: workshop, isLoading, error } = useQuery({
     queryKey: ['workshop', id],
@@ -55,17 +48,17 @@ export default function WorkshopDetails() {
   return (
     <main className="pt-20 bg-gray-50 min-h-screen">
       {/* Hero */}
-      <section className="bg-hero-gradient py-20">
+      <section className="bg-hero-gradient py-12">
         <div className="container-custom relative">
           <Link to="/workshop" className="absolute -top-8 left-4 text-white/70 hover:text-white flex items-center gap-2 text-sm transition-colors">
             <ArrowLeft className="w-4 h-4" /> Back to all workshops
           </Link>
           
           <div className="max-w-4xl">
-            <span className={`inline-block text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider mb-6 ${workshop.status === 'approved' ? 'bg-emerald-500 text-white' : 'bg-amber-500 text-white'}`}>
+            <span className={`inline-block text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider mb-4 ${workshop.status === 'approved' ? 'bg-emerald-500 text-white' : 'bg-amber-500 text-white'}`}>
               {workshop.status || 'Active'}
             </span>
-            <h1 className="font-heading text-4xl md:text-5xl font-extrabold text-white mb-6 leading-tight">
+            <h1 className="font-heading text-3xl md:text-4xl font-extrabold text-white mb-4 leading-tight">
               {workshop.title}
             </h1>
             <div className="flex flex-wrap gap-4 text-white/80 text-sm md:text-base">
@@ -76,10 +69,6 @@ export default function WorkshopDetails() {
               <div className="flex items-center gap-2">
                 <MapPin className="w-5 h-5 text-primary-200" />
                 {workshop.location || 'Virtual Labs Platform'}
-              </div>
-              <div className="flex items-center gap-2">
-                <Users className="w-5 h-5 text-primary-200" />
-                {workshop.seats ? `${workshop.seats} seats available` : 'Open Registration'}
               </div>
             </div>
           </div>
@@ -131,32 +120,7 @@ export default function WorkshopDetails() {
                       <p className="text-sm text-gray-500">{new Date(workshop.date).toLocaleDateString()}</p>
                     </div>
                   </li>
-                  <li className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-full bg-primary-50 flex items-center justify-center flex-shrink-0">
-                      <Users className="w-4 h-4 text-primary-600" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-gray-900">Availability</p>
-                      <p className="text-sm text-gray-500">{workshop.seats ? `${workshop.seats} maximum participants` : 'Unlimited seats'}</p>
-                    </div>
-                  </li>
                 </ul>
-
-                {isRegistered ? (
-                  <button 
-                    disabled
-                    className="w-full py-3 flex justify-center items-center gap-2 text-base rounded-xl font-semibold bg-green-50 text-green-600 border border-green-200 cursor-not-allowed"
-                  >
-                    <CheckCircle2 className="w-5 h-5" /> Registered
-                  </button>
-                ) : (
-                  <button 
-                    onClick={() => setRegisteringWorkshop(workshop)}
-                    className="btn-primary w-full py-3 flex justify-center items-center gap-2 text-base shadow-lg shadow-primary-500/20"
-                  >
-                    Register Now <ArrowRight className="w-5 h-5" />
-                  </button>
-                )}
               </div>
             </div>
 
@@ -164,12 +128,6 @@ export default function WorkshopDetails() {
         </div>
       </section>
 
-      {registeringWorkshop && (
-        <WorkshopRegistrationModal 
-          workshop={registeringWorkshop} 
-          onClose={() => setRegisteringWorkshop(null)} 
-        />
-      )}
     </main>
   );
 }

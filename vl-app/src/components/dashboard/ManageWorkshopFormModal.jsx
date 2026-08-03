@@ -68,8 +68,8 @@ export default function ManageWorkshopFormModal({ workshop, onClose, onSave }) {
     setLoading(true);
     setError('');
     try {
-      const res = await fetch(`${API_URL}/workshops/${workshop.id}`, {
-        method: 'PUT',
+      const res = await fetch(`${API_URL}/workshops/${workshop.id}/update`, {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`

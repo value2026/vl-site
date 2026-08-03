@@ -1,0 +1,23 @@
+{
+  "name": "vl-site",
+  "version": "1.0.0",
+  "description": "A comprehensive Virtual Labs portal featuring interactive simulations, role-based access control, analytics, and content management.",
+  "main": "replace.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AmritaValueCS-22/vl-site.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AmritaValueCS-22/vl-site/issues"
+  },
+  "homepage": "https://github.com/AmritaValueCS-22/vl-site#readme",
+  "dependencies": {
+    "xlsx": "^0.18.5"
+  }
+}

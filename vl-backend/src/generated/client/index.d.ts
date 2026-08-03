@@ -120,12 +120,11 @@ export type Notification = $Result.DefaultSelection<Prisma.$NotificationPayload>
 export namespace $Enums {
   export const Role: {
   admin: 'admin',
-  content_admin: 'content_admin',
   nodal_centre: 'nodal_centre',
   teacher: 'teacher',
   student: 'student',
-  sim_admin: 'sim_admin',
-  vl_manager: 'vl_manager'
+  vl_manager: 'vl_manager',
+  vl_coordinator: 'vl_coordinator'
 };
 
 export type Role = (typeof Role)[keyof typeof Role]
@@ -3002,6 +3001,7 @@ export namespace Prisma {
     facultyInst: string | null
     resetToken: string | null
     resetTokenExpiry: Date | null
+    refreshToken: string | null
     createdById: string | null
     nodalCentreId: string | null
     createdAt: Date | null
@@ -3034,6 +3034,7 @@ export namespace Prisma {
     facultyInst: string | null
     resetToken: string | null
     resetTokenExpiry: Date | null
+    refreshToken: string | null
     createdById: string | null
     nodalCentreId: string | null
     createdAt: Date | null
@@ -3067,6 +3068,7 @@ export namespace Prisma {
     facultyInst: number
     resetToken: number
     resetTokenExpiry: number
+    refreshToken: number
     createdById: number
     nodalCentreId: number
     createdAt: number
@@ -3101,6 +3103,7 @@ export namespace Prisma {
     facultyInst?: true
     resetToken?: true
     resetTokenExpiry?: true
+    refreshToken?: true
     createdById?: true
     nodalCentreId?: true
     createdAt?: true
@@ -3133,6 +3136,7 @@ export namespace Prisma {
     facultyInst?: true
     resetToken?: true
     resetTokenExpiry?: true
+    refreshToken?: true
     createdById?: true
     nodalCentreId?: true
     createdAt?: true
@@ -3166,6 +3170,7 @@ export namespace Prisma {
     facultyInst?: true
     resetToken?: true
     resetTokenExpiry?: true
+    refreshToken?: true
     createdById?: true
     nodalCentreId?: true
     createdAt?: true
@@ -3272,6 +3277,7 @@ export namespace Prisma {
     facultyInst: string | null
     resetToken: string | null
     resetTokenExpiry: Date | null
+    refreshToken: string | null
     createdById: string | null
     nodalCentreId: string | null
     createdAt: Date
@@ -3322,6 +3328,7 @@ export namespace Prisma {
     facultyInst?: boolean
     resetToken?: boolean
     resetTokenExpiry?: boolean
+    refreshToken?: boolean
     createdById?: boolean
     nodalCentreId?: boolean
     createdAt?: boolean
@@ -3376,6 +3383,7 @@ export namespace Prisma {
     facultyInst?: boolean
     resetToken?: boolean
     resetTokenExpiry?: boolean
+    refreshToken?: boolean
     createdById?: boolean
     nodalCentreId?: boolean
     createdAt?: boolean
@@ -3411,6 +3419,7 @@ export namespace Prisma {
     facultyInst?: boolean
     resetToken?: boolean
     resetTokenExpiry?: boolean
+    refreshToken?: boolean
     createdById?: boolean
     nodalCentreId?: boolean
     createdAt?: boolean
@@ -3496,6 +3505,7 @@ export namespace Prisma {
       facultyInst: string | null
       resetToken: string | null
       resetTokenExpiry: Date | null
+      refreshToken: string | null
       createdById: string | null
       nodalCentreId: string | null
       createdAt: Date
@@ -3939,6 +3949,7 @@ export namespace Prisma {
     readonly facultyInst: FieldRef<"User", 'String'>
     readonly resetToken: FieldRef<"User", 'String'>
     readonly resetTokenExpiry: FieldRef<"User", 'DateTime'>
+    readonly refreshToken: FieldRef<"User", 'String'>
     readonly createdById: FieldRef<"User", 'String'>
     readonly nodalCentreId: FieldRef<"User", 'String'>
     readonly createdAt: FieldRef<"User", 'DateTime'>
@@ -23705,6 +23716,7 @@ export namespace Prisma {
     facultyInst: 'facultyInst',
     resetToken: 'resetToken',
     resetTokenExpiry: 'resetTokenExpiry',
+    refreshToken: 'refreshToken',
     createdById: 'createdById',
     nodalCentreId: 'nodalCentreId',
     createdAt: 'createdAt',
@@ -24147,6 +24159,7 @@ export namespace Prisma {
     facultyInst?: StringNullableFilter<"User"> | string | null
     resetToken?: StringNullableFilter<"User"> | string | null
     resetTokenExpiry?: DateTimeNullableFilter<"User"> | Date | string | null
+    refreshToken?: StringNullableFilter<"User"> | string | null
     createdById?: StringNullableFilter<"User"> | string | null
     nodalCentreId?: StringNullableFilter<"User"> | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
@@ -24200,6 +24213,7 @@ export namespace Prisma {
     facultyInst?: SortOrderInput | SortOrder
     resetToken?: SortOrderInput | SortOrder
     resetTokenExpiry?: SortOrderInput | SortOrder
+    refreshToken?: SortOrderInput | SortOrder
     createdById?: SortOrderInput | SortOrder
     nodalCentreId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
@@ -24256,6 +24270,7 @@ export namespace Prisma {
     facultyInst?: StringNullableFilter<"User"> | string | null
     resetToken?: StringNullableFilter<"User"> | string | null
     resetTokenExpiry?: DateTimeNullableFilter<"User"> | Date | string | null
+    refreshToken?: StringNullableFilter<"User"> | string | null
     createdById?: StringNullableFilter<"User"> | string | null
     nodalCentreId?: StringNullableFilter<"User"> | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
@@ -24309,6 +24324,7 @@ export namespace Prisma {
     facultyInst?: SortOrderInput | SortOrder
     resetToken?: SortOrderInput | SortOrder
     resetTokenExpiry?: SortOrderInput | SortOrder
+    refreshToken?: SortOrderInput | SortOrder
     createdById?: SortOrderInput | SortOrder
     nodalCentreId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
@@ -24348,6 +24364,7 @@ export namespace Prisma {
     facultyInst?: StringNullableWithAggregatesFilter<"User"> | string | null
     resetToken?: StringNullableWithAggregatesFilter<"User"> | string | null
     resetTokenExpiry?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
+    refreshToken?: StringNullableWithAggregatesFilter<"User"> | string | null
     createdById?: StringNullableWithAggregatesFilter<"User"> | string | null
     nodalCentreId?: StringNullableWithAggregatesFilter<"User"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
@@ -25780,6 +25797,7 @@ export namespace Prisma {
     facultyInst?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    refreshToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     createdBy?: UserCreateNestedOneWithoutCreatedUsersInput
@@ -25831,6 +25849,7 @@ export namespace Prisma {
     facultyInst?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    refreshToken?: string | null
     createdById?: string | null
     nodalCentreId?: string | null
     createdAt?: Date | string
@@ -25882,6 +25901,7 @@ export namespace Prisma {
     facultyInst?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: UserUpdateOneWithoutCreatedUsersNestedInput
@@ -25933,6 +25953,7 @@ export namespace Prisma {
     facultyInst?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     nodalCentreId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -25984,6 +26005,7 @@ export namespace Prisma {
     facultyInst?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    refreshToken?: string | null
     createdById?: string | null
     nodalCentreId?: string | null
     createdAt?: Date | string
@@ -26017,6 +26039,7 @@ export namespace Prisma {
     facultyInst?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -26048,6 +26071,7 @@ export namespace Prisma {
     facultyInst?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     nodalCentreId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -27800,6 +27824,7 @@ export namespace Prisma {
     facultyInst?: SortOrder
     resetToken?: SortOrder
     resetTokenExpiry?: SortOrder
+    refreshToken?: SortOrder
     createdById?: SortOrder
     nodalCentreId?: SortOrder
     createdAt?: SortOrder
@@ -27832,6 +27857,7 @@ export namespace Prisma {
     facultyInst?: SortOrder
     resetToken?: SortOrder
     resetTokenExpiry?: SortOrder
+    refreshToken?: SortOrder
     createdById?: SortOrder
     nodalCentreId?: SortOrder
     createdAt?: SortOrder
@@ -27864,6 +27890,7 @@ export namespace Prisma {
     facultyInst?: SortOrder
     resetToken?: SortOrder
     resetTokenExpiry?: SortOrder
+    refreshToken?: SortOrder
     createdById?: SortOrder
     nodalCentreId?: SortOrder
     createdAt?: SortOrder
@@ -30882,6 +30909,7 @@ export namespace Prisma {
     facultyInst?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    refreshToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     createdBy?: UserCreateNestedOneWithoutCreatedUsersInput
@@ -30932,6 +30960,7 @@ export namespace Prisma {
     facultyInst?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    refreshToken?: string | null
     createdById?: string | null
     nodalCentreId?: string | null
     createdAt?: Date | string
@@ -30987,6 +31016,7 @@ export namespace Prisma {
     facultyInst?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    refreshToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     createdUsers?: UserCreateNestedManyWithoutCreatedByInput
@@ -31037,6 +31067,7 @@ export namespace Prisma {
     facultyInst?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    refreshToken?: string | null
     nodalCentreId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -31671,6 +31702,7 @@ export namespace Prisma {
     facultyInst?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: UserUpdateOneWithoutCreatedUsersNestedInput
@@ -31721,6 +31753,7 @@ export namespace Prisma {
     facultyInst?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     nodalCentreId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -31790,6 +31823,7 @@ export namespace Prisma {
     facultyInst?: StringNullableFilter<"User"> | string | null
     resetToken?: StringNullableFilter<"User"> | string | null
     resetTokenExpiry?: DateTimeNullableFilter<"User"> | Date | string | null
+    refreshToken?: StringNullableFilter<"User"> | string | null
     createdById?: StringNullableFilter<"User"> | string | null
     nodalCentreId?: StringNullableFilter<"User"> | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
@@ -32360,6 +32394,7 @@ export namespace Prisma {
     facultyInst?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    refreshToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     createdBy?: UserCreateNestedOneWithoutCreatedUsersInput
@@ -32410,6 +32445,7 @@ export namespace Prisma {
     facultyInst?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    refreshToken?: string | null
     createdById?: string | null
     nodalCentreId?: string | null
     createdAt?: Date | string
@@ -32514,6 +32550,7 @@ export namespace Prisma {
     facultyInst?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: UserUpdateOneWithoutCreatedUsersNestedInput
@@ -32564,6 +32601,7 @@ export namespace Prisma {
     facultyInst?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     nodalCentreId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -32659,6 +32697,7 @@ export namespace Prisma {
     facultyInst?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    refreshToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     createdBy?: UserCreateNestedOneWithoutCreatedUsersInput
@@ -32709,6 +32748,7 @@ export namespace Prisma {
     facultyInst?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    refreshToken?: string | null
     createdById?: string | null
     nodalCentreId?: string | null
     createdAt?: Date | string
@@ -32889,6 +32929,7 @@ export namespace Prisma {
     facultyInst?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: UserUpdateOneWithoutCreatedUsersNestedInput
@@ -32939,6 +32980,7 @@ export namespace Prisma {
     facultyInst?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     nodalCentreId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -33077,6 +33119,7 @@ export namespace Prisma {
     facultyInst?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    refreshToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     createdBy?: UserCreateNestedOneWithoutCreatedUsersInput
@@ -33127,6 +33170,7 @@ export namespace Prisma {
     facultyInst?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    refreshToken?: string | null
     createdById?: string | null
     nodalCentreId?: string | null
     createdAt?: Date | string
@@ -33318,6 +33362,7 @@ export namespace Prisma {
     facultyInst?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: UserUpdateOneWithoutCreatedUsersNestedInput
@@ -33368,6 +33413,7 @@ export namespace Prisma {
     facultyInst?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     nodalCentreId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -33466,6 +33512,7 @@ export namespace Prisma {
     facultyInst?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    refreshToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     createdBy?: UserCreateNestedOneWithoutCreatedUsersInput
@@ -33516,6 +33563,7 @@ export namespace Prisma {
     facultyInst?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    refreshToken?: string | null
     createdById?: string | null
     nodalCentreId?: string | null
     createdAt?: Date | string
@@ -33623,6 +33671,7 @@ export namespace Prisma {
     facultyInst?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: UserUpdateOneWithoutCreatedUsersNestedInput
@@ -33673,6 +33722,7 @@ export namespace Prisma {
     facultyInst?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     nodalCentreId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -33770,6 +33820,7 @@ export namespace Prisma {
     facultyInst?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    refreshToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     createdBy?: UserCreateNestedOneWithoutCreatedUsersInput
@@ -33820,6 +33871,7 @@ export namespace Prisma {
     facultyInst?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    refreshToken?: string | null
     createdById?: string | null
     nodalCentreId?: string | null
     createdAt?: Date | string
@@ -33927,6 +33979,7 @@ export namespace Prisma {
     facultyInst?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: UserUpdateOneWithoutCreatedUsersNestedInput
@@ -33977,6 +34030,7 @@ export namespace Prisma {
     facultyInst?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     nodalCentreId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -34074,6 +34128,7 @@ export namespace Prisma {
     facultyInst?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    refreshToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     createdBy?: UserCreateNestedOneWithoutCreatedUsersInput
@@ -34124,6 +34179,7 @@ export namespace Prisma {
     facultyInst?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    refreshToken?: string | null
     createdById?: string | null
     nodalCentreId?: string | null
     createdAt?: Date | string
@@ -34231,6 +34287,7 @@ export namespace Prisma {
     facultyInst?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: UserUpdateOneWithoutCreatedUsersNestedInput
@@ -34281,6 +34338,7 @@ export namespace Prisma {
     facultyInst?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     nodalCentreId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -34378,6 +34436,7 @@ export namespace Prisma {
     facultyInst?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    refreshToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     createdBy?: UserCreateNestedOneWithoutCreatedUsersInput
@@ -34428,6 +34487,7 @@ export namespace Prisma {
     facultyInst?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    refreshToken?: string | null
     createdById?: string | null
     nodalCentreId?: string | null
     createdAt?: Date | string
@@ -34483,6 +34543,7 @@ export namespace Prisma {
     facultyInst?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    refreshToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     createdBy?: UserCreateNestedOneWithoutCreatedUsersInput
@@ -34533,6 +34594,7 @@ export namespace Prisma {
     facultyInst?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    refreshToken?: string | null
     createdById?: string | null
     nodalCentreId?: string | null
     createdAt?: Date | string
@@ -34599,6 +34661,7 @@ export namespace Prisma {
     facultyInst?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: UserUpdateOneWithoutCreatedUsersNestedInput
@@ -34649,6 +34712,7 @@ export namespace Prisma {
     facultyInst?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     nodalCentreId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -34710,6 +34774,7 @@ export namespace Prisma {
     facultyInst?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: UserUpdateOneWithoutCreatedUsersNestedInput
@@ -34760,6 +34825,7 @@ export namespace Prisma {
     facultyInst?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     nodalCentreId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -34810,6 +34876,7 @@ export namespace Prisma {
     facultyInst?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    refreshToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     createdBy?: UserCreateNestedOneWithoutCreatedUsersInput
@@ -34860,6 +34927,7 @@ export namespace Prisma {
     facultyInst?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    refreshToken?: string | null
     createdById?: string | null
     nodalCentreId?: string | null
     createdAt?: Date | string
@@ -34950,6 +35018,7 @@ export namespace Prisma {
     facultyInst?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: UserUpdateOneWithoutCreatedUsersNestedInput
@@ -35000,6 +35069,7 @@ export namespace Prisma {
     facultyInst?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     nodalCentreId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -35091,6 +35161,7 @@ export namespace Prisma {
     facultyInst?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    refreshToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     createdBy?: UserCreateNestedOneWithoutCreatedUsersInput
@@ -35141,6 +35212,7 @@ export namespace Prisma {
     facultyInst?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    refreshToken?: string | null
     createdById?: string | null
     nodalCentreId?: string | null
     createdAt?: Date | string
@@ -35238,6 +35310,7 @@ export namespace Prisma {
     facultyInst?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: UserUpdateOneWithoutCreatedUsersNestedInput
@@ -35288,6 +35361,7 @@ export namespace Prisma {
     facultyInst?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     nodalCentreId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -35452,6 +35526,7 @@ export namespace Prisma {
     facultyInst?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    refreshToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     createdBy?: UserCreateNestedOneWithoutCreatedUsersInput
@@ -35502,6 +35577,7 @@ export namespace Prisma {
     facultyInst?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    refreshToken?: string | null
     createdById?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -35600,6 +35676,7 @@ export namespace Prisma {
     facultyInst?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    refreshToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     createdBy?: UserCreateNestedOneWithoutCreatedUsersInput
@@ -35650,6 +35727,7 @@ export namespace Prisma {
     facultyInst?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    refreshToken?: string | null
     createdById?: string | null
     nodalCentreId?: string | null
     createdAt?: Date | string
@@ -35748,6 +35826,7 @@ export namespace Prisma {
     facultyInst?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: UserUpdateOneWithoutCreatedUsersNestedInput
@@ -35798,6 +35877,7 @@ export namespace Prisma {
     facultyInst?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     nodalCentreId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -35848,6 +35928,7 @@ export namespace Prisma {
     facultyInst?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    refreshToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     createdBy?: UserCreateNestedOneWithoutCreatedUsersInput
@@ -35898,6 +35979,7 @@ export namespace Prisma {
     facultyInst?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    refreshToken?: string | null
     createdById?: string | null
     nodalCentreId?: string | null
     createdAt?: Date | string
@@ -35964,6 +36046,7 @@ export namespace Prisma {
     facultyInst?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: UserUpdateOneWithoutCreatedUsersNestedInput
@@ -36014,6 +36097,7 @@ export namespace Prisma {
     facultyInst?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     nodalCentreId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -36064,6 +36148,7 @@ export namespace Prisma {
     facultyInst?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    refreshToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     createdBy?: UserCreateNestedOneWithoutCreatedUsersInput
@@ -36114,6 +36199,7 @@ export namespace Prisma {
     facultyInst?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    refreshToken?: string | null
     createdById?: string | null
     nodalCentreId?: string | null
     createdAt?: Date | string
@@ -36222,6 +36308,7 @@ export namespace Prisma {
     facultyInst?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: UserUpdateOneWithoutCreatedUsersNestedInput
@@ -36272,6 +36359,7 @@ export namespace Prisma {
     facultyInst?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     nodalCentreId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -36361,6 +36449,7 @@ export namespace Prisma {
     facultyInst?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    refreshToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     createdBy?: UserCreateNestedOneWithoutCreatedUsersInput
@@ -36411,6 +36500,7 @@ export namespace Prisma {
     facultyInst?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    refreshToken?: string | null
     createdById?: string | null
     nodalCentreId?: string | null
     createdAt?: Date | string
@@ -36556,6 +36646,7 @@ export namespace Prisma {
     facultyInst?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: UserUpdateOneWithoutCreatedUsersNestedInput
@@ -36606,6 +36697,7 @@ export namespace Prisma {
     facultyInst?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     nodalCentreId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -36725,6 +36817,7 @@ export namespace Prisma {
     facultyInst?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    refreshToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     createdBy?: UserCreateNestedOneWithoutCreatedUsersInput
@@ -36775,6 +36868,7 @@ export namespace Prisma {
     facultyInst?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    refreshToken?: string | null
     createdById?: string | null
     nodalCentreId?: string | null
     createdAt?: Date | string
@@ -36884,6 +36978,7 @@ export namespace Prisma {
     facultyInst?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: UserUpdateOneWithoutCreatedUsersNestedInput
@@ -36934,6 +37029,7 @@ export namespace Prisma {
     facultyInst?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     nodalCentreId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -37021,6 +37117,7 @@ export namespace Prisma {
     facultyInst?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    refreshToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     createdBy?: UserCreateNestedOneWithoutCreatedUsersInput
@@ -37071,6 +37168,7 @@ export namespace Prisma {
     facultyInst?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    refreshToken?: string | null
     createdById?: string | null
     nodalCentreId?: string | null
     createdAt?: Date | string
@@ -37180,6 +37278,7 @@ export namespace Prisma {
     facultyInst?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: UserUpdateOneWithoutCreatedUsersNestedInput
@@ -37230,6 +37329,7 @@ export namespace Prisma {
     facultyInst?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     nodalCentreId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -37280,6 +37380,7 @@ export namespace Prisma {
     facultyInst?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    refreshToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     createdBy?: UserCreateNestedOneWithoutCreatedUsersInput
@@ -37330,6 +37431,7 @@ export namespace Prisma {
     facultyInst?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    refreshToken?: string | null
     createdById?: string | null
     nodalCentreId?: string | null
     createdAt?: Date | string
@@ -37396,6 +37498,7 @@ export namespace Prisma {
     facultyInst?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: UserUpdateOneWithoutCreatedUsersNestedInput
@@ -37446,6 +37549,7 @@ export namespace Prisma {
     facultyInst?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     nodalCentreId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -37496,6 +37600,7 @@ export namespace Prisma {
     facultyInst?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    refreshToken?: string | null
     nodalCentreId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -37697,6 +37802,7 @@ export namespace Prisma {
     facultyInst?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdUsers?: UserUpdateManyWithoutCreatedByNestedInput
@@ -37747,6 +37853,7 @@ export namespace Prisma {
     facultyInst?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     nodalCentreId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -37797,6 +37904,7 @@ export namespace Prisma {
     facultyInst?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     nodalCentreId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -38666,6 +38774,7 @@ export namespace Prisma {
     facultyInst?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    refreshToken?: string | null
     createdById?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -38711,6 +38820,7 @@ export namespace Prisma {
     facultyInst?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: UserUpdateOneWithoutCreatedUsersNestedInput
@@ -38761,6 +38871,7 @@ export namespace Prisma {
     facultyInst?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -38811,6 +38922,7 @@ export namespace Prisma {
     facultyInst?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string

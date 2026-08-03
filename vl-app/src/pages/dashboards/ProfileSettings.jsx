@@ -68,7 +68,7 @@ export default function ProfileSettings() {
 
     setProfileLoading(true);
     try {
-      const res  = await api.put(`/users/${user.id}`, { name, email });
+      const res  = await api.post(`/users/${user.id}/update`, { name, email });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Failed to update profile.');
       setProfileSuccess(true);

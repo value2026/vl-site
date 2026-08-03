@@ -8,15 +8,16 @@ import {
 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import WorkshopRegistrationModal from '../components/public/WorkshopRegistrationModal';
+import { apiUrl } from '../utils/api';
 
 async function fetchNodalCentresSections() {
-  const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/pages/nodal-centres/sections`);
+  const res = await fetch(apiUrl("/pages/nodal-centres/sections"));
   if (!res.ok) throw new Error('Failed to fetch nodal centres sections');
   return res.json();
 }
 
 async function fetchWorkshops() {
-  const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/workshops`);
+  const res = await fetch(apiUrl("/workshops"));
   if (!res.ok) throw new Error('Failed to fetch workshops');
   return res.json();
 }
@@ -48,10 +49,10 @@ const BENEFITS = [
 ];
 
 const INAUGURATION_EVENTS = [
-  { year: '2024', title: 'Nodal Centre Inauguration – Amrita Coimbatore', location: 'Coimbatore, Tamil Nadu', description: 'Launch of Virtual Labs Nodal Centre at the School of Engineering, Amrita Vishwa Vidyapeetham.', attendees: '200+' },
-  { year: '2023', title: 'Virtual Labs Expansion – Southern Consortium', location: 'Bengaluru, Karnataka', description: 'Formal inauguration ceremony for the southern consortium nodal centres, expanding access to 12 new institutions.', attendees: '350+' },
-  { year: '2023', title: 'NMEICT Nodal Centre Drive', location: 'New Delhi', description: 'National launch event for the 2023 wave of nodal centre registrations under the MHRD NMEICT initiative.', attendees: '500+' },
-  { year: '2022', title: 'North India Expansion Launch', location: 'Lucknow, Uttar Pradesh', description: 'Inauguration of 8 new nodal centres across Uttar Pradesh, Bihar, and Madhya Pradesh.', attendees: '280+' },
+  { year: '2024', title: 'Nodal Centre Inauguration – Amrita Coimbatore', location: 'Coimbatore, Tamil Nadu', description: 'Launch of Virtual Labs Nodal Centre at the School of Engineering, Amrita Vishwa Vidyapeetham.', attendees: '200+', status: 'Completed' },
+  { year: '2023', title: 'Virtual Labs Expansion – Southern Consortium', location: 'Bengaluru, Karnataka', description: 'Formal inauguration ceremony for the southern consortium nodal centres, expanding access to 12 new institutions.', attendees: '350+', status: 'Completed' },
+  { year: '2023', title: 'NMEICT Nodal Centre Drive', location: 'New Delhi', description: 'National launch event for the 2023 wave of nodal centre registrations under the MHRD NMEICT initiative.', attendees: '500+', status: 'Completed' },
+  { year: '2022', title: 'North India Expansion Launch', location: 'Lucknow, Uttar Pradesh', description: 'Inauguration of 8 new nodal centres across Uttar Pradesh, Bihar, and Madhya Pradesh.', attendees: '280+', status: 'Completed' },
 ];
 
 function InlineFreeDemoForm() {
@@ -66,7 +67,7 @@ function InlineFreeDemoForm() {
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/pages/nodal-centre-request/sections`);
+        const res = await fetch(apiUrl("/pages/nodal-centre-request/sections"));
         if (!res.ok) throw new Error('Failed to load form');
         const sections = await res.json();
         const formSec = sections.find(s => s.sectionKey === 'formSchema');
@@ -92,7 +93,7 @@ function InlineFreeDemoForm() {
     setError('');
     try {
       const res = await fetch(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/pages/nodal-centre-request/survey`,
+        apiUrl("/pages/nodal-centre-request/survey"),
         { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(formData) }
       );
       if (!res.ok) throw new Error('Submission failed. Please try again.');
@@ -272,40 +273,62 @@ export default function NodalCentres() {
   const approvedWorkshops = (workshops || []).filter(w => w.status === 'approved');
 
   let centres = [];
+  let benefits = BENEFITS;
+  let inaugurations = INAUGURATION_EVENTS;
+  let heroSec = null;
+  let benefitsSec = null;
+  let listSec = null;
+  let inaugSec = null;
+  let uniqueIdSec = null;
+
   if (sections) {
-    const listSec = sections.find(s => s.sectionKey === 'nc_list');
+    listSec = sections.find(s => s.sectionKey === 'nc_list');
+    benefitsSec = sections.find(s => s.sectionKey === 'nc_benefits');
+    heroSec = sections.find(s => s.sectionKey === 'nc_hero');
+    inaugSec = sections.find(s => s.sectionKey === 'nc_inaugurations');
+    uniqueIdSec = sections.find(s => s.sectionKey === 'nc_unique_id');
+
     if (listSec?.content?.items) centres = listSec.content.items;
+    if (benefitsSec?.content?.items) benefits = benefitsSec.content.items.map(b => b.text || b);
+    if (inaugSec?.content?.items) inaugurations = inaugSec.content.items;
   }
+
+  // Set default unique ID content if not present
+  const uniqueIdTitle = uniqueIdSec?.title || 'Unique Login ID';
+  const uniqueIdSubtitle = uniqueIdSec?.subtitle || 'Registered Nodal Centres receive a unique institutional login ID granting access to exclusive faculty features, progress tracking, and lab management tools.';
+  const uniqueIdTag = uniqueIdSec?.content?.tag || 'Access';
+  const uniqueIdFeatures = uniqueIdSec?.content?.features || [
+    { icon: KeyRound, title: 'Institutional Login', desc: 'A dedicated login ID tied to your institution for centralized access management.' },
+    { icon: ClipboardList, title: 'Lab Exam Setup', desc: 'Set up, schedule, and monitor online virtual lab exams directly from your dashboard.' },
+    { icon: Users, title: 'Student Enrollment', desc: 'Enroll students under your nodal centre and track their experiment completions and scores.' },
+    { icon: Award, title: 'Results Reporting', desc: 'Generate and export detailed performance reports for students and faculty.' },
+  ];
+  const uniqueIdInstructions = uniqueIdSec?.content?.instructions || 'Nodal coordinator can submit the list of students and faculty members for obtaining the unique login id in the prescribed format to virtual_labs@am.amrita.edu with the subject line - Login ID request - your institute name.';
+  const templateLink = uniqueIdSec?.content?.templateLink || '/login_id_template.xlsx';
+  const templateLabel = uniqueIdSec?.content?.templateLabel || 'Click Here To Download Login ID Template';
+
 
   return (
     <main>
       {/* Hero */}
-      <section className="bg-hero-gradient py-20">
+      <section className="bg-hero-gradient py-12">
         <div className="container-custom text-center">
-          <span className="inline-block bg-white/10 text-white/80 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider mb-6">
-            Nodal Centres
+          <span className="inline-block bg-white/10 text-white/80 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider mb-4">
+            {heroSec?.content?.tag || 'Nodal Centres'}
           </span>
-          <h1 className="font-heading text-5xl font-extrabold text-white mb-6">
-            Join the Virtual Labs Network
+          <h1 className="font-heading text-4xl font-extrabold text-white mb-4">
+            {heroSec?.title || 'Join the Virtual Labs Network'}
           </h1>
-          <p className="text-xl text-white/70 max-w-2xl mx-auto leading-relaxed mb-10">
-            Become a nodal centre and bring world-class virtual lab experiences to your students. Sponsored by MHRD (NME-ICT) — no registration fees, no hidden costs.
+          <p className="text-lg md:text-xl text-white/70 max-w-2xl mx-auto leading-relaxed">
+            {heroSec?.subtitle || 'Become a nodal centre and bring world-class virtual lab experiences to your students. Sponsored by MHRD (NME-ICT) — no registration fees, no hidden costs.'}
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button onClick={() => setActiveTab('apply')} className="btn-secondary">
-              Apply Now <ArrowRight className="w-5 h-5" />
-            </button>
-            <button onClick={() => setFreeDemoOpen(true)} className="btn-outline">
-              Request Free Demo
-            </button>
-          </div>
         </div>
       </section>
 
       {/* Tab Navigation */}
       <div className="sticky top-20 z-30 bg-white border-b border-gray-200 shadow-sm">
         <div className="container-custom">
-          <div className="flex overflow-x-auto scrollbar-hide gap-0">
+          <div className="flex overflow-x-auto scrollbar-hide gap-1 md:justify-center">
             {TABS.map(({ id, label, icon: Icon }) => (
               <button
                 key={id}
@@ -361,11 +384,11 @@ export default function NodalCentres() {
           <section className="py-20 bg-gray-50">
             <div className="container-custom">
               <div className="text-center mb-12">
-                <span className="tag">Why Join</span>
-                <h2 className="section-title mt-4">Benefits of Becoming a Nodal Centre</h2>
+                <span className="tag">{benefitsSec?.content?.tag || 'Why Join'}</span>
+                <h2 className="section-title mt-4">{benefitsSec?.title || 'Benefits of Becoming a Nodal Centre'}</h2>
               </div>
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-5xl mx-auto">
-                {BENEFITS.map((text, i) => (
+                {benefits.map((text, i) => (
                   <div key={i} className="card p-6 border border-gray-100 flex gap-3">
                     <CheckCircle2 className="w-5 h-5 text-primary-700 flex-shrink-0 mt-0.5" />
                     <p className="text-gray-700 text-sm leading-relaxed">{text}</p>
@@ -385,12 +408,12 @@ export default function NodalCentres() {
             <div className="container-custom">
               <div className="flex items-end justify-between mb-10">
                 <div>
-                  <span className="tag">Network</span>
-                  <h2 className="section-title mt-4 mb-0">Registered Nodal Centres</h2>
+                  <span className="tag">{listSec?.content?.tag || 'Network'}</span>
+                  <h2 className="section-title mt-4 mb-0">{listSec?.title || 'Registered Nodal Centres'}</h2>
                 </div>
                 <span className="text-sm text-gray-400">{centres.length} centres listed</span>
               </div>
-              <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+              <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                 {isLoading ? (
                   <div className="col-span-full flex justify-center py-10">
                     <Loader2 className="w-8 h-8 animate-spin text-primary-500" />
@@ -401,23 +424,25 @@ export default function NodalCentres() {
                   centres.map((c, i) => {
                     const isActive = c.active === true || c.active === 'true';
                     return (
-                      <div key={c.id || i} className="card p-6 border border-gray-100">
+                      <div key={c.id || i} className="card p-5 border border-gray-100 flex flex-col hover:border-primary-300 transition-all hover:shadow-md">
                         <div className="flex items-start justify-between mb-3">
-                          <div className="w-10 h-10 bg-primary-50 rounded-xl flex items-center justify-center">
-                            <Building className="w-5 h-5 text-primary-700" />
+                          <div className="w-9 h-9 bg-primary-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                            <Building className="w-4 h-4 text-primary-700" />
                           </div>
                           <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
                             {isActive ? 'Active' : 'Inactive'}
                           </span>
                         </div>
-                        <h3 className="font-semibold text-gray-900 text-sm mb-1">{c.name}</h3>
-                        <div className="flex items-center gap-1 text-xs text-gray-400">
-                          <MapPin className="w-3 h-3 flex-shrink-0" />
+                        <h3 className="font-semibold text-gray-900 text-sm mb-1 leading-snug line-clamp-2 flex-1">{c.name}</h3>
+                        <div className="flex items-start gap-1.5 text-xs text-gray-500 mt-1 mb-3 line-clamp-2">
+                          <MapPin className="w-3.5 h-3.5 flex-shrink-0 mt-0.5 text-gray-400" />
                           {c.location}
                         </div>
-                        <span className="mt-3 inline-block text-xs bg-primary-50 text-primary-700 px-2 py-0.5 rounded-full">
-                          {c.category}
-                        </span>
+                        <div className="mt-auto">
+                          <span className="inline-block text-[10px] bg-primary-50/50 border border-primary-100 text-primary-700 px-2 py-1 rounded-md font-medium truncate max-w-full">
+                            {c.category || 'Institution'}
+                          </span>
+                        </div>
                       </div>
                     );
                   })
@@ -487,7 +512,7 @@ export default function NodalCentres() {
               <FileText className="w-10 h-10 text-primary-700 mx-auto mb-4" />
               <h3 className="font-heading text-xl font-bold text-gray-900 mb-2">Expression of Interest Form</h3>
               <p className="text-gray-500 text-sm mb-6">Download and fill the EOI form, then send it to <strong>virtual_labs@am.amrita.edu</strong></p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <div className="flex justify-center">
                 <a
                   href="https://vlab.amrita.edu/userfiles/1/file/workshop_NodalCentre.PDF"
                   target="_blank"
@@ -495,9 +520,6 @@ export default function NodalCentres() {
                   className="btn-primary"
                 >
                   Download EOI Form <ArrowRight className="w-4 h-4" />
-                </a>
-                <a href="mailto:virtual_labs@am.amrita.edu" className="btn-outline">
-                  <Mail className="w-4 h-4" /> Email Us
                 </a>
               </div>
             </div>
@@ -566,10 +588,10 @@ export default function NodalCentres() {
         <section className="py-20 bg-white">
           <div className="container-custom max-w-4xl">
             <div className="text-center mb-14">
-              <span className="tag">Events</span>
-              <h2 className="section-title mt-4">Nodal Centre Inaugurations</h2>
+              <span className="tag">{inaugSec?.content?.tag || 'Events'}</span>
+              <h2 className="section-title mt-4">{inaugSec?.title || 'Nodal Centre Inaugurations'}</h2>
               <p className="section-subtitle">
-                Celebrating the launch of new nodal centres across India. Each inauguration marks a milestone in expanding quality STEM education.
+                {inaugSec?.subtitle || 'Celebrating the launch of new nodal centres across India. Each inauguration marks a milestone in expanding quality STEM education.'}
               </p>
             </div>
 
@@ -578,7 +600,7 @@ export default function NodalCentres() {
               <div className="absolute left-8 top-0 bottom-0 w-px bg-gray-200 hidden sm:block" />
 
               <div className="space-y-8">
-                {INAUGURATION_EVENTS.map((event, i) => (
+                {inaugurations.map((event, i) => (
                   <div key={i} className="relative flex gap-6">
                     {/* Year bubble */}
                     <div className="hidden sm:flex w-16 h-16 rounded-full bg-primary-700 text-white flex-shrink-0 items-center justify-center font-heading font-bold text-sm z-10 shadow-lg">
@@ -594,24 +616,30 @@ export default function NodalCentres() {
                         {event.location}
                       </div>
                       <p className="text-gray-600 text-sm leading-relaxed mb-4">{event.description}</p>
-                      <div className="flex items-center gap-2 text-sm">
-                        <Users className="w-4 h-4 text-primary-500" />
-                        <span className="text-gray-500">{event.attendees} attendees</span>
-                        <span className="ml-auto text-xs bg-green-50 text-green-700 px-2.5 py-1 rounded-full font-semibold">Completed</span>
+                      <div className="flex items-center gap-2 text-sm mt-auto">
+                        {event.attendees && (
+                          <>
+                            <Users className="w-4 h-4 text-primary-500" />
+                            <span className="text-gray-500">{event.attendees} attendees</span>
+                          </>
+                        )}
+                        <span className={`ml-auto text-xs px-2.5 py-1 rounded-full font-semibold ${(event.status || 'Completed').toLowerCase() === 'upcoming' ? 'bg-blue-50 text-blue-700' : 'bg-green-50 text-green-700'}`}>
+                          {event.status || 'Completed'}
+                        </span>
                       </div>
                     </div>
                   </div>
                 ))}
               </div>
+            </div>
 
-              <div className="mt-12 card p-8 border border-dashed border-primary-300 bg-primary-50/40 text-center">
-                <Ribbon className="w-10 h-10 text-primary-600 mx-auto mb-4" />
-                <h3 className="font-heading text-xl font-bold text-gray-900 mb-2">Hosting an Inauguration?</h3>
-                <p className="text-gray-500 text-sm mb-6">If your institution is planning to launch a Nodal Centre and would like to organize an inauguration event, reach out to our team for support.</p>
-                <a href="mailto:virtual_labs@am.amrita.edu" className="btn-primary">
-                  <Mail className="w-4 h-4" /> Get in Touch
-                </a>
-              </div>
+            <div className="mt-12 card p-8 border border-dashed border-primary-300 bg-primary-50/40 text-center">
+              <Ribbon className="w-10 h-10 text-primary-600 mx-auto mb-4" />
+              <h3 className="font-heading text-xl font-bold text-gray-900 mb-2">Hosting an Inauguration?</h3>
+              <p className="text-gray-500 text-sm mb-6">If your institution is planning to launch a Nodal Centre and would like to organize an inauguration event, reach out to our team for support.</p>
+              <a href="mailto:virtual_labs@am.amrita.edu" className="btn-primary">
+                <Mail className="w-4 h-4" /> Get in Touch
+              </a>
             </div>
           </div>
         </section>
@@ -622,30 +650,55 @@ export default function NodalCentres() {
         <section className="py-20 bg-white">
           <div className="container-custom max-w-3xl">
             <div className="text-center mb-14">
-              <span className="tag">Access</span>
-              <h2 className="section-title mt-4">Unique Login ID</h2>
+              <span className="tag">{uniqueIdTag}</span>
+              <h2 className="section-title mt-4">{uniqueIdTitle}</h2>
               <p className="section-subtitle">
-                Registered Nodal Centres receive a unique institutional login ID granting access to exclusive faculty features, progress tracking, and lab management tools.
+                {uniqueIdSubtitle}
               </p>
             </div>
 
             <div className="grid sm:grid-cols-2 gap-6 mb-12">
-              {[
-                { icon: KeyRound, title: 'Institutional Login', desc: 'A dedicated login ID tied to your institution for centralized access management.' },
-                { icon: ClipboardList, title: 'Lab Exam Setup', desc: 'Set up, schedule, and monitor online virtual lab exams directly from your dashboard.' },
-                { icon: Users, title: 'Student Enrollment', desc: 'Enroll students under your nodal centre and track their experiment completions and scores.' },
-                { icon: Award, title: 'Results Reporting', desc: 'Generate and export detailed performance reports for students and faculty.' },
-              ].map(({ icon: Icon, title, desc }) => (
-                <div key={title} className="card p-7 border border-gray-100 flex gap-4">
-                  <div className="w-12 h-12 bg-primary-50 rounded-2xl flex items-center justify-center flex-shrink-0">
-                    <Icon className="w-6 h-6 text-primary-700" />
+              {uniqueIdFeatures.map(({ icon, title, desc }) => {
+                let RealIcon = KeyRound;
+                if (typeof icon === 'string') {
+                  if (icon === 'ClipboardList') RealIcon = ClipboardList;
+                  else if (icon === 'Users') RealIcon = Users;
+                  else if (icon === 'Award') RealIcon = Award;
+                  else if (icon === 'KeyRound') RealIcon = KeyRound;
+                } else if (icon) {
+                  RealIcon = icon;
+                }
+                return (
+                  <div key={title} className="card p-7 border border-gray-100 flex gap-4">
+                    <div className="w-12 h-12 bg-primary-50 rounded-2xl flex items-center justify-center flex-shrink-0">
+                      <RealIcon className="w-6 h-6 text-primary-700" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900 mb-1">{title}</h3>
+                      <p className="text-gray-500 text-sm leading-relaxed">{desc}</p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900 mb-1">{title}</h3>
-                    <p className="text-gray-500 text-sm leading-relaxed">{desc}</p>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
+            </div>
+
+            {/* Template Download Section */}
+            <div className="card p-8 border border-blue-100 bg-blue-50/50 mb-12 text-center">
+              <FileText className="w-12 h-12 text-blue-600 mx-auto mb-4" />
+              <h3 className="font-heading text-xl font-bold text-gray-900 mb-3">Login ID Template</h3>
+              <p className="text-gray-700 text-sm max-w-2xl mx-auto leading-relaxed mb-6">
+                {uniqueIdInstructions}
+              </p>
+              <div className="flex justify-center">
+                <a
+                  href={templateLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-primary bg-blue-600 hover:bg-blue-700"
+                >
+                  <FileText className="w-4 h-4" /> {templateLabel}
+                </a>
+              </div>
             </div>
 
             <div className="card p-10 border border-primary-100 bg-gradient-to-br from-primary-50 to-white">

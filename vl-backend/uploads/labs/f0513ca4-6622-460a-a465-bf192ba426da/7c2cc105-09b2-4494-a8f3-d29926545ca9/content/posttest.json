@@ -1,0 +1,29 @@
+{
+  "version": 2.0,
+  "questions": [
+    {
+      "question": "The magnitude of horizontal intensity of earth's magnetic field is",
+      "answers": {
+        "a": "35 μT",
+        "b": "35 μGauss",
+        "c": "35 μN/m",
+        "d": "35 μVm"
+      },
+     
+      "correctAnswer": "a",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "For better result while doing tangent galvanometer experiment in real lab, the deflection should be in between",
+      "answers": {
+        "a": "60-90",
+        "b": "30-60",
+        "c": "10-20",
+        "d": "no specific range"
+      },
+      
+      "correctAnswer": "b",
+      "difficulty": "beginner"
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="12.72px" height="12.94px" viewBox="0 0 12.72 12.94" enable-background="new 0 0 12.72 12.94" xml:space="preserve">
+<g>
+	<g>
+		<radialGradient id="SVGID_1_" cx="6.375" cy="6.6064" r="8.1625" gradientUnits="userSpaceOnUse">
+			<stop  offset="0" style="stop-color:#F4F003"/>
+			<stop  offset="0.5216" style="stop-color:#F3ED04"/>
+			<stop  offset="1" style="stop-color:#B8971B"/>
+		</radialGradient>
+		<path fill-rule="evenodd" clip-rule="evenodd" fill="url(#SVGID_1_)" d="M0.33,6.61c0-1.67,0.58-3.1,1.75-4.3
+			c1.2-1.2,2.63-1.8,4.3-1.8c1.7,0,3.13,0.6,4.3,1.8c1.2,1.2,1.8,2.63,1.8,4.3c0,1.67-0.6,3.1-1.8,4.3c-1.17,1.2-2.6,1.8-4.3,1.8
+			c-1.67,0-3.1-0.6-4.3-1.8C0.91,9.71,0.33,8.27,0.33,6.61z"/>
+	</g>
+	<g>
+		<radialGradient id="SVGID_2_" cx="6.9248" cy="5.3564" r="8.1625" gradientUnits="userSpaceOnUse">
+			<stop  offset="0.0431" style="stop-color:#F4F003;stop-opacity:0"/>
+			<stop  offset="0.4392" style="stop-color:#F3ED04;stop-opacity:0"/>
+			<stop  offset="0.8314" style="stop-color:#856D16"/>
+		</radialGradient>
+		<path fill-rule="evenodd" clip-rule="evenodd" fill="url(#SVGID_2_)" d="M0.33,6.61c0-1.67,0.58-3.1,1.75-4.3
+			c1.2-1.2,2.63-1.8,4.3-1.8c1.7,0,3.13,0.6,4.3,1.8c1.2,1.2,1.8,2.63,1.8,4.3c0,1.67-0.6,3.1-1.8,4.3c-1.17,1.2-2.6,1.8-4.3,1.8
+			c-1.67,0-3.1-0.6-4.3-1.8C0.91,9.71,0.33,8.27,0.33,6.61z"/>
+	</g>
+	<g>
+		<path fill-rule="evenodd" clip-rule="evenodd" d="M5.88,3.41c0.13-0.2,0.33-0.3,0.6-0.3c0.2,0,0.37,0.1,0.5,0.3
+			c0.17,0.17,0.25,0.35,0.25,0.55v1.75h1.85c0.2,0,0.37,0.08,0.5,0.25c0.2,0.13,0.3,0.3,0.3,0.5c0,0.2-0.1,0.4-0.3,0.6
+			c-0.13,0.13-0.3,0.2-0.5,0.2H7.22v2.1c0,0.2-0.08,0.37-0.25,0.5c-0.13,0.17-0.3,0.25-0.5,0.25c-0.27,0-0.47-0.08-0.6-0.25
+			c-0.17-0.13-0.25-0.3-0.25-0.5v-2.1H4.08c-0.23,0-0.43-0.07-0.6-0.2c-0.13-0.2-0.2-0.4-0.2-0.6c0-0.2,0.07-0.37,0.2-0.5
+			c0.17-0.17,0.37-0.25,0.6-0.25h1.55V3.96C5.63,3.76,5.71,3.57,5.88,3.41z"/>
+	</g>
+</g>
+</svg>

@@ -35,7 +35,7 @@ export default function StudentNav({ breadcrumb = [] }) {
 
   const markNotificationsRead = async () => {
     try {
-      const res = await api.put('/assignments/notifications/read-all');
+      const res = await api.post('/assignments/notifications/read-all');
       if (res.ok) fetchNotifications();
     } catch (e) {
       console.error(e);
@@ -89,16 +89,6 @@ export default function StudentNav({ breadcrumb = [] }) {
       )}
 
       <div className="flex-1" />
-
-      {/* Website Home Shortcut */}
-      <Link
-        to="/"
-        className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold text-gray-700 hover:text-blue-600 hover:bg-gray-100 transition-all border border-gray-200 hover:border-blue-200 shadow-sm"
-        title="Go to Website Home Page"
-      >
-        <Globe className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-600 flex-shrink-0" />
-        <span className="hidden sm:inline">Website Home</span>
-      </Link>
 
       {/* Search */}
       <button

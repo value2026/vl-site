@@ -1,4 +1,5 @@
 const prisma = require('../db');
+const { sendWorkshopApprovalEmail } = require('../utils/mailer');
 
 // GET /api/workshops
 const getWorkshops = async (req, res) => {
@@ -34,10 +35,27 @@ const createWorkshop = async (req, res) => {
         mode: mode || 'Online',
         seats: seats ? parseInt(seats) : null,
         createdById: req.user.id,
-        // vl_manager creates pending workshops; admin creates approved ones
-        status: req.user.role === 'admin' ? 'approved' : 'pending'
+        // vl_manager and admin create approved workshops; coordinator creates pending
+        status: (req.user.role === 'admin' || req.user.role === 'vl_manager') ? 'approved' : 'pending'
       }
     });
+
+    // If the workshop is pending, send an email to managers for approval
+    if (workshop.status === 'pending') {
+      const managers = await prisma.user.findMany({
+        where: {
+          role: { in: ['admin', 'vl_manager'] },
+          isActive: true,
+        },
+        select: { email: true }
+      });
+      
+      const managerEmails = managers.map(m => m.email).filter(Boolean);
+      
+      if (managerEmails.length > 0) {
+        sendWorkshopApprovalEmail(managerEmails, workshop, req.user.name || req.user.email).catch(console.error);
+      }
+    }
 
     res.status(201).json(workshop);
   } catch (err) {
@@ -50,7 +68,7 @@ const createWorkshop = async (req, res) => {
 const updateWorkshop = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, description, date, status, location, mode, seats, formSchema } = req.body;
+    const { title, description, date, status, location, mode, seats } = req.body;
 
     const existingWorkshop = await prisma.workshop.findUnique({
       where: { id }
@@ -60,7 +78,7 @@ const updateWorkshop = async (req, res) => {
       return res.status(404).json({ message: 'Workshop not found' });
     }
 
-    if (req.user.role !== 'admin' && existingWorkshop.createdById !== req.user.id) {
+    if (req.user.role !== 'admin' && req.user.role !== 'vl_manager' && existingWorkshop.createdById !== req.user.id) {
       return res.status(403).json({ message: 'Insufficient permissions to update this workshop' });
     }
 
@@ -71,10 +89,10 @@ const updateWorkshop = async (req, res) => {
     if (location !== undefined) data.location = location;
     if (mode !== undefined) data.mode = mode;
     if (seats !== undefined) data.seats = parseInt(seats);
-    if (formSchema !== undefined) data.formSchema = formSchema;
+
     
-    // Only admins can approve/reject workshops, or change status
-    if (status && req.user.role === 'admin') {
+    // Admins and VL Managers can approve/reject workshops
+    if (status && (req.user.role === 'admin' || req.user.role === 'vl_manager')) {
         data.status = status;
     }
 
@@ -103,8 +121,8 @@ const deleteWorkshop = async (req, res) => {
       return res.status(404).json({ message: 'Workshop not found' });
     }
 
-    if (req.user.role !== 'admin' && existingWorkshop.createdById !== req.user.id) {
-      return res.status(403).json({ message: 'Insufficient permissions to delete this workshop' });
+    if (req.user.role !== 'admin' && req.user.role !== 'vl_manager') {
+      return res.status(403).json({ message: 'Only Admins and VL Managers are allowed to delete workshops' });
     }
 
     await prisma.workshop.delete({

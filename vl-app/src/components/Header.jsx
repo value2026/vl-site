@@ -3,10 +3,12 @@ import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, ChevronDown, FlaskConical, LogOut, LayoutDashboard } from 'lucide-react';
 import { navLinks } from '../data/navLinks';
 import { useQuery } from '@tanstack/react-query';
+import { apiUrl } from '../utils/api';
+import { assetUrl } from '../utils/url';
 import { useAuth } from '../context/AuthContext';
 
 async function fetchHomeSections() {
-  const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/pages/home/sections`);
+  const res = await fetch(apiUrl("/pages/home/sections"));
   if (!res.ok) throw new Error('Failed to fetch home sections');
   return res.json();
 }
@@ -96,7 +98,7 @@ export default function Header() {
           {/* Right Logo */}
           <Link to="/" className="hidden md:block flex-shrink-0 group">
             <img 
-              src="/amrita-logo.jpg" 
+              src={assetUrl('/amrita-logo.jpg')}
               alt="Amrita Vishwa Vidyapeetham" 
               className="h-10 sm:h-[3.25rem] w-auto object-contain transition-transform group-hover:scale-105" 
             />

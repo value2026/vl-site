@@ -4,8 +4,9 @@ import { useAuth } from '../../context/AuthContext';
 import CloudinaryUploader from './CloudinaryUploader';
 
 const CREATABLE_ROLES = {
-  admin:        ['admin', 'nodal_centre', 'teacher', 'student', 'content_admin', 'sim_admin', 'vl_manager'],
-  vl_manager:   ['nodal_centre', 'teacher', 'student'],
+  admin:        ['nodal_centre', 'teacher', 'student', 'vl_manager', 'vl_coordinator'],
+  vl_manager:   ['nodal_centre', 'teacher', 'student', 'vl_coordinator'],
+  vl_coordinator: ['nodal_centre', 'teacher', 'student'],
   nodal_centre: [],
   teacher:      ['student'],
 };
@@ -15,18 +16,16 @@ const ROLE_LABELS = {
   nodal_centre:  'Nodal Centre Admin',
   teacher:       'Faculty / Instructor',
   student:       'Student',
-  content_admin: 'Content Admin',
-  sim_admin:     'Simulation Admin',
   vl_manager:    'VL Manager',
+  vl_coordinator:'VL Co-ordinator',
 };
 
 // Default permissions that are pre-ticked for each role.
 // Admin can untick any of these before saving.
 const ROLE_DEFAULT_PERMISSIONS = {
   nodal_centre:  ['manage_users'],
-  content_admin: ['manage_content'],
-  sim_admin:     ['manage_simulations'],
   vl_manager:    ['manage_simulations', 'manage_institutions', 'manage_workshops'],
+  vl_coordinator:['manage_institutions', 'manage_workshops'],
   teacher:       [],
   student:       [],
   admin:         [],
@@ -84,6 +83,7 @@ export default function AddUserModal({ isOpen, onClose, onSuccess, defaultRole }
   const [form,          setForm]          = useState({ ...DEFAULT_FORM, role: defaultRole || allowedRoles[0] || 'student' });
   const [loading,       setLoading]       = useState(false);
   const [error,         setError]         = useState('');
+  const [successMsg,    setSuccessMsg]    = useState('');
   const [institutions,  setInstitutions]  = useState([]);
 
   // Bulk CSV
@@ -133,9 +133,10 @@ export default function AddUserModal({ isOpen, onClose, onSuccess, defaultRole }
   const isStudent       = form.role === 'student';
   const isTeacher       = form.role === 'teacher';
   const isNodalCentre   = form.role === 'nodal_centre';
-  const isPlatformRole  = ['admin', 'content_admin', 'sim_admin', 'vl_manager'].includes(form.role);
+  const isPlatformRole  = ['admin', 'vl_manager'].includes(form.role);
+  const isCoordinator   = form.role === 'vl_coordinator';
   const needsInstitution =
-    (isStudent || isTeacher || isNodalCentre) &&
+    (isStudent || isTeacher || isNodalCentre || isCoordinator) &&
     (!user?.nodalCentreId || user?.role === 'admin' || user?.role === 'vl_manager');
 
   const missingBulkInstitution = isPlatformRole && !form.nodalCentreId;
@@ -164,9 +165,13 @@ export default function AddUserModal({ isOpen, onClose, onSuccess, defaultRole }
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Failed to create user');
-      onSuccess?.(data);
-      resetState();
-      onClose();
+      setSuccessMsg('User registered successfully!');
+      setTimeout(() => {
+        onSuccess?.(data);
+        resetState();
+        setSuccessMsg('');
+        onClose();
+      }, 1500);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -272,7 +277,7 @@ export default function AddUserModal({ isOpen, onClose, onSuccess, defaultRole }
 
   const resetState = () => {
     setForm({ ...DEFAULT_FORM, role: defaultRole || allowedRoles[0] || 'student' });
-    setCsvText(''); setCsvFileName(''); setParsedPreview([]); setBulkResult(null); setError('');
+    setCsvText(''); setCsvFileName(''); setParsedPreview([]); setBulkResult(null); setError(''); setSuccessMsg('');
   };
 
   const downloadSampleCSV = () => {
@@ -334,6 +339,14 @@ export default function AddUserModal({ isOpen, onClose, onSuccess, defaultRole }
             {error}
           </div>
         )}
+        
+        {successMsg && (
+          <div className="mb-4 bg-emerald-500/10 border border-emerald-500/30 rounded-xl px-4 py-3 text-xs text-emerald-400 flex gap-2 items-start font-bold">
+            <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" />
+            {successMsg}
+          </div>
+        )}
+        
         {bulkResult && (
           <div className="mb-4 bg-emerald-500/10 border border-emerald-500/30 rounded-xl px-4 py-3 text-xs text-emerald-400 space-y-1">
             <div className="flex gap-2 items-center font-bold">

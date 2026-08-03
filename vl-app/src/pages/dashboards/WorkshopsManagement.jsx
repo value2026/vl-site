@@ -4,8 +4,9 @@ import {
   Calendar, MapPin, Clock, MoreVertical, LayoutGrid, List, ChevronRight, BarChart3, GraduationCap
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import WorkshopRegistrationsModal from '../../components/dashboard/WorkshopRegistrationsModal';
+
 import HostWorkshopRequestsManager from '../../components/dashboard/HostWorkshopRequestsManager';
+import WorkshopCalendar from '../../components/dashboard/WorkshopCalendar';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 export default function WorkshopsManagement() {
@@ -19,13 +20,14 @@ export default function WorkshopsManagement() {
   const [error, setError] = useState('');
   
   // UI State
-  const [mainTab, setMainTab] = useState('workshops'); // 'workshops' or 'host-requests'
+  const [mainTab, setMainTab] = useState('workshops'); // 'workshops', 'calendar', or 'host-requests'
   const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
 
-  const [viewingRegistrations, setViewingRegistrations] = useState(null);
+
   const [deleteConfirm, setDeleteConfirm] = useState(null);
+  const [statusConfirm, setStatusConfirm] = useState(null);
   const [actionLoading, setActionLoading] = useState(null);
 
   const fetchWorkshops = useCallback(async () => {
@@ -52,11 +54,19 @@ export default function WorkshopsManagement() {
   const openCreateModal = () => navigate(`/dashboard/${rolePath}/workshops/new`);
   const openEditModal = (w) => navigate(`/dashboard/${rolePath}/workshops/${w.id}`);
 
-  const updateStatus = async (id, status) => {
-    if (!window.confirm(`Are you sure you want to ${status} this workshop?`)) return;
+  const requestStatusUpdate = (workshop, status) => {
+    setStatusConfirm({ workshop, status });
+  };
+
+  const confirmStatusUpdate = async () => {
+    if (!statusConfirm) return;
+    const { workshop, status } = statusConfirm;
+    setStatusConfirm(null);
+    setActionLoading(workshop.id);
+
     try {
-      const res = await fetch(`${API_URL}/workshops/${id}`, {
-        method: 'PUT',
+      const res = await fetch(`${API_URL}/workshops/${workshop.id}/update`, {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
@@ -69,7 +79,9 @@ export default function WorkshopsManagement() {
       }
       fetchWorkshops();
     } catch (err) {
-      alert(err.message);
+      console.error(err);
+    } finally {
+      setActionLoading(null);
     }
   };
 
@@ -82,8 +94,8 @@ export default function WorkshopsManagement() {
     setActionLoading(id);
     
     try {
-      const res = await fetch(`${API_URL}/workshops/${id}`, {
-        method: 'DELETE',
+      const res = await fetch(`${API_URL}/workshops/${id}/delete`, {
+        method: 'POST',
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -125,7 +137,7 @@ export default function WorkshopsManagement() {
             Workshop Management
           </h1>
           <p className="text-slate-400 mt-2 max-w-xl">
-            Create, schedule, and manage platform workshops. Review participant registrations, handle approvals, and track attendance.
+            Create, schedule, and manage platform workshops. Handle approvals, and track details.
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -161,7 +173,7 @@ export default function WorkshopsManagement() {
       </div>
 
       {/* Top Level Tabs */}
-      <div className="flex border-b border-slate-800/50 mb-2">
+      <div className="flex items-center border-b border-slate-800/50 mb-2">
         <button
           onClick={() => setMainTab('workshops')}
           className={`px-6 py-3 text-sm font-bold border-b-2 transition-colors ${
@@ -178,9 +190,20 @@ export default function WorkshopsManagement() {
         >
           Host Workshop Requests
         </button>
+        <div className="flex-1" />
+        <button
+          onClick={() => setMainTab('calendar')}
+          className={`px-6 py-3 text-sm font-bold border-b-2 transition-colors flex items-center gap-2 ${
+            mainTab === 'calendar' ? 'border-purple-500 text-purple-400' : 'border-transparent text-slate-400 hover:text-slate-200'
+          }`}
+        >
+          <Calendar className="w-4 h-4" /> Calendar
+        </button>
       </div>
 
-      {mainTab === 'host-requests' ? (
+      {mainTab === 'calendar' ? (
+        <WorkshopCalendar workshops={workshops} role={user?.role} />
+      ) : mainTab === 'host-requests' ? (
         <HostWorkshopRequestsManager />
       ) : (
       <>
@@ -262,8 +285,8 @@ export default function WorkshopsManagement() {
                   user={user} 
                   onEdit={() => openEditModal(w)}
                   onDelete={() => requestDeleteWorkshop(w)}
-                  onViewRegistrations={() => setViewingRegistrations(w)}
-                  onStatusUpdate={(status) => updateStatus(w.id, status)}
+
+                  onStatusUpdate={(status) => requestStatusUpdate(w, status)}
                   actionLoading={actionLoading}
                 />
               ))}
@@ -287,8 +310,8 @@ export default function WorkshopsManagement() {
                       user={user}
                       onEdit={() => openEditModal(w)}
                       onDelete={() => requestDeleteWorkshop(w)}
-                      onViewRegistrations={() => setViewingRegistrations(w)}
-                      onStatusUpdate={(status) => updateStatus(w.id, status)}
+
+                      onStatusUpdate={(status) => requestStatusUpdate(w, status)}
                       actionLoading={actionLoading}
                     />
                   ))}
@@ -313,7 +336,7 @@ export default function WorkshopsManagement() {
               <div>
                 <h3 className="text-xl font-bold text-white mb-2">Delete Workshop?</h3>
                 <p className="text-sm text-slate-300 leading-relaxed mb-6">
-                  You are about to permanently delete <strong className="text-white">{deleteConfirm.title}</strong>. This action cannot be undone and all associated registrations will be lost.
+                  You are about to permanently delete <strong className="text-white">{deleteConfirm.title}</strong>. This action cannot be undone.
                 </p>
                 <div className="flex gap-3">
                   <button
@@ -335,12 +358,48 @@ export default function WorkshopsManagement() {
         </div>
       )}
 
-      {/* Registrations Modal */}
-      {viewingRegistrations && (
-        <WorkshopRegistrationsModal
-          workshop={viewingRegistrations}
-          onClose={() => setViewingRegistrations(null)}
-        />
+      {/* Status Confirmation Modal */}
+      {statusConfirm && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm" onClick={() => setStatusConfirm(null)} />
+          <div className="relative bg-slate-900 border border-slate-700 rounded-2xl p-6 w-full max-w-md shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-start gap-4">
+              <div className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 border ${
+                statusConfirm.status === 'approved' 
+                  ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' 
+                  : 'bg-red-500/20 text-red-400 border-red-500/30'
+              }`}>
+                {statusConfirm.status === 'approved' ? <Check className="w-6 h-6" /> : <XCircle className="w-6 h-6" />}
+              </div>
+              <div className="flex-1">
+                <h3 className="text-xl font-bold text-white mb-2 capitalize">
+                  {statusConfirm.status} Workshop?
+                </h3>
+                <p className="text-sm text-slate-300 leading-relaxed mb-6">
+                  Are you sure you want to <strong className="text-white capitalize">{statusConfirm.status}</strong> the workshop <strong className="text-white">"{statusConfirm.workshop?.title}"</strong>?
+                </p>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setStatusConfirm(null)}
+                    className="flex-1 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-300 bg-slate-800 hover:bg-slate-700 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={confirmStatusUpdate}
+                    className={`flex-1 px-4 py-2.5 rounded-xl text-sm font-bold text-white shadow-lg transition-colors capitalize ${
+                      statusConfirm.status === 'approved'
+                        ? 'bg-emerald-500 hover:bg-emerald-600 shadow-emerald-500/20'
+                        : 'bg-red-500 hover:bg-red-600 shadow-red-500/20'
+                    }`}
+                  >
+                    Yes, {statusConfirm.status}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
@@ -369,7 +428,7 @@ function StatCard({ title, value, icon: Icon, color }) {
   );
 }
 
-function WorkshopCard({ workshop, user, onEdit, onDelete, onViewRegistrations, onStatusUpdate, actionLoading }) {
+function WorkshopCard({ workshop, user, onEdit, onDelete, onStatusUpdate, actionLoading }) {
   const dateObj = new Date(workshop.date);
   const isPast = dateObj < new Date();
   
@@ -422,9 +481,7 @@ function WorkshopCard({ workshop, user, onEdit, onDelete, onViewRegistrations, o
       </div>
 
       <div className="p-3 bg-slate-950/50 rounded-b-[22px] border-t border-slate-800 flex flex-wrap gap-2 justify-end">
-        {(user?.role === 'admin' || user?.role === 'vl_manager') && (
-          <>
-            {workshop.status === 'pending' && user?.role === 'admin' && (
+            {workshop.status === 'pending' && (user?.role === 'admin' || user?.role === 'vl_manager') && (
               <>
                 <button onClick={() => onStatusUpdate('approved')} className="p-2 rounded-xl text-emerald-400 hover:bg-emerald-500/10 transition-colors" title="Approve">
                   <Check className="w-4 h-4" />
@@ -434,32 +491,27 @@ function WorkshopCard({ workshop, user, onEdit, onDelete, onViewRegistrations, o
                 </button>
               </>
             )}
-            {(user?.role === 'admin' || workshop.createdBy?.id === user?.id) && (
-              <>
-                <button onClick={onViewRegistrations} className="px-3 py-2 rounded-xl bg-purple-500/10 text-purple-400 hover:bg-purple-500/20 text-xs font-bold transition-colors flex items-center gap-1.5 flex-1 justify-center">
-                  <Users className="w-4 h-4" /> Registrations
-                </button>
-                <button onClick={onEdit} className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors" title="Edit">
-                  <Edit className="w-4 h-4" />
-                </button>
-                <button 
-                  onClick={onDelete} 
-                  disabled={actionLoading === workshop.id}
-                  className="p-2 rounded-xl text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-colors disabled:opacity-50" 
-                  title="Delete"
-                >
-                  {actionLoading === workshop.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
-                </button>
-              </>
+            {(user?.role === 'admin' || user?.role === 'vl_manager' || workshop.createdBy?.id === user?.id) && (
+              <button onClick={onEdit} className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors" title="Edit">
+                <Edit className="w-4 h-4" />
+              </button>
             )}
-          </>
-        )}
+            {(user?.role === 'admin' || user?.role === 'vl_manager') && (
+              <button 
+                onClick={onDelete} 
+                disabled={actionLoading === workshop.id}
+                className="p-2 rounded-xl text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-colors disabled:opacity-50" 
+                title="Delete"
+              >
+                {actionLoading === workshop.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+              </button>
+            )}
       </div>
     </div>
   );
 }
 
-function WorkshopListItem({ workshop, user, onEdit, onDelete, onViewRegistrations, onStatusUpdate, actionLoading }) {
+function WorkshopListItem({ workshop, user, onEdit, onDelete, onStatusUpdate, actionLoading }) {
   const dateObj = new Date(workshop.date);
   
   const statusStyles = {
@@ -505,9 +557,7 @@ function WorkshopListItem({ workshop, user, onEdit, onDelete, onViewRegistration
       </td>
       <td className="px-4 py-4 text-right">
         <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-          {(user?.role === 'admin' || user?.role === 'vl_manager') && (
-            <>
-              {workshop.status === 'pending' && user?.role === 'admin' && (
+              {workshop.status === 'pending' && (user?.role === 'admin' || user?.role === 'vl_manager') && (
                 <>
                   <button onClick={() => onStatusUpdate('approved')} className="p-2 rounded-xl text-emerald-400 hover:bg-emerald-500/10 transition-colors" title="Approve">
                     <Check className="w-4 h-4" />
@@ -517,27 +567,25 @@ function WorkshopListItem({ workshop, user, onEdit, onDelete, onViewRegistration
                   </button>
                 </>
               )}
-              {(user?.role === 'admin' || workshop.createdBy?.id === user?.id) && (
-                <>
-                  <button onClick={onViewRegistrations} className="p-2 rounded-xl text-purple-400 hover:bg-purple-500/10 transition-colors flex items-center gap-1.5 text-xs font-bold" title="View Registrations">
-                    <Users className="w-4 h-4" /> <span className="hidden xl:inline">Registrations</span>
-                  </button>
-                  <div className="w-px h-6 bg-slate-700 mx-1"></div>
-                  <button onClick={onEdit} className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors" title="Edit">
-                    <Edit className="w-4 h-4" />
-                  </button>
-                  <button 
-                    onClick={onDelete} 
-                    disabled={actionLoading === workshop.id}
-                    className="p-2 rounded-xl text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-colors disabled:opacity-50" 
-                    title="Delete"
-                  >
-                    {actionLoading === workshop.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
-                  </button>
-                </>
+              
+              <div className="w-px h-6 bg-slate-700 mx-1"></div>
+              
+              {(user?.role === 'admin' || user?.role === 'vl_manager' || workshop.createdBy?.id === user?.id) && (
+                <button onClick={onEdit} className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors" title="Edit">
+                  <Edit className="w-4 h-4" />
+                </button>
               )}
-            </>
-          )}
+              
+              {(user?.role === 'admin' || user?.role === 'vl_manager') && (
+                <button 
+                  onClick={onDelete} 
+                  disabled={actionLoading === workshop.id}
+                  className="p-2 rounded-xl text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-colors disabled:opacity-50" 
+                  title="Delete"
+                >
+                  {actionLoading === workshop.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                </button>
+              )}
         </div>
       </td>
     </tr>

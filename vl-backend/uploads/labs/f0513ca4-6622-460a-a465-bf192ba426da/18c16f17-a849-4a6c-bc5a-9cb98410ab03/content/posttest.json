@@ -1,0 +1,41 @@
+{
+  "version": 2.0,
+  "questions": [
+    {
+      "question": "Carey Foster Bridge is used to measure",
+      "answers": {
+        "a": "High resistance",
+        "b": "Low resistance",
+        "c": "E.M.F",
+        "d": "All the above"
+      },
+      
+      "correctAnswer": "a",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "As the temperature increases, resistance",
+      "answers": {
+        "a": "Decreases",
+        "b": "Increases",
+        "c": "No change",
+        "d": "First increases then decreases"
+      },
+     
+      "correctAnswer": "b",
+      "difficulty": "beginner"
+    },
+     {
+      "question": "In Wheatstone's bridge, P = 10 ohm, Q = 20 ohm R = 5 ohm, then value of X is",
+      "answers": {
+        "a": "15",
+        "b": "5",
+        "c": "10",
+        "d": "20"
+      },
+     
+      "correctAnswer": "c",
+      "difficulty": "beginner"
+    }
+  ]
+}

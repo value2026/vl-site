@@ -1,30 +1,36 @@
 import { useState } from 'react';
-import { Search, Trash2, ToggleLeft, ToggleRight, ChevronUp, ChevronDown, Eye, Loader2, AlertCircle } from 'lucide-react';
+import { Search, Trash2, ToggleLeft, ToggleRight, ChevronUp, ChevronDown, Eye, Loader2, AlertCircle, CheckCircle2, Download } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { api, safeJson } from '../../utils/api';
+import { exportToCSV } from '../../utils/exportToCSV';
 import StudentAnalyticsModal from './StudentAnalyticsModal';
 
 const ROLE_BADGE = {
-  admin:        'bg-red-500/20 text-red-300 border-red-500/30',
-  nodal_centre: 'bg-orange-500/20 text-orange-300 border-orange-500/30',
-  teacher:      'bg-blue-500/20 text-blue-300 border-blue-500/30',
-  student:      'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
-  content_admin: 'bg-purple-500/20 text-purple-300 border-purple-500/30',
-  sim_admin:    'bg-indigo-500/20 text-indigo-300 border-indigo-500/30',
-  vl_manager:   'bg-pink-500/20 text-pink-300 border-pink-500/30',
+  admin:          'bg-red-500/20 text-red-300 border-red-500/30',
+  nodal_centre:   'bg-orange-500/20 text-orange-300 border-orange-500/30',
+  teacher:        'bg-blue-500/20 text-blue-300 border-blue-500/30',
+  student:        'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
+  content_admin:  'bg-purple-500/20 text-purple-300 border-purple-500/30',
+  sim_admin:      'bg-indigo-500/20 text-indigo-300 border-indigo-500/30',
+  vl_manager:     'bg-pink-500/20 text-pink-300 border-pink-500/30',
+  vl_coordinator: 'bg-violet-500/20 text-violet-300 border-violet-500/30',
 };
 
 const ROLE_LABELS = {
   admin: 'Admin', nodal_centre: 'Nodal Centre', teacher: 'Teacher', student: 'Student',
   content_admin: 'Content Admin', sim_admin: 'Sim Admin', vl_manager: 'VL Manager',
+  vl_coordinator: 'VL Co-ordinator',
 };
 
 export default function UserTable({ users, loading, onRefresh, hideActions = false, viewOnly = false }) {
-  const { token, API_URL, user: self } = useAuth();
+  const { user: self } = useAuth();
   const [search, setSearch]   = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
   const [sortKey, setSortKey] = useState('createdAt');
   const [sortDir, setSortDir] = useState('desc');
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [actionLoading, setActionLoading] = useState(null);
   const [selectedStudentId, setSelectedStudentId] = useState(null);
   const [selectedIds, setSelectedIds] = useState(new Set());
@@ -56,6 +62,23 @@ export default function UserTable({ users, loading, onRefresh, hideActions = fal
     else { setSortKey(key); setSortDir('asc'); }
   };
 
+  const handleExportCSV = () => {
+    if (filtered.length === 0) return;
+    const exportData = filtered.map(u => ({
+      Name: u.name,
+      Email: u.email,
+      Role: ROLE_LABELS[u.role] || u.role,
+      Status: u.isActive ? 'Active' : 'Inactive',
+      Joined: new Date(u.createdAt).toLocaleDateString(),
+      'Labs Visited': u.uniqueLabsVisited ?? 'N/A',
+      'Time Spent (min)': u.totalTimeSpentMinutes ?? 'N/A',
+      'Quiz Attempts': u.quizAttemptsCount ?? 'N/A',
+      'Quiz Pass Rate (%)': u.quizPassRate ?? 'N/A',
+      'Avg Quiz Score (%)': u.averageQuizScore ?? 'N/A'
+    }));
+    exportToCSV(exportData, `academic_report_${new Date().toISOString().split('T')[0]}.csv`);
+  };
+
   const SortIcon = ({ col }) => {
     if (sortKey !== col) return <ChevronUp className="w-3 h-3 text-slate-600" />;
     return sortDir === 'asc'
@@ -66,12 +89,19 @@ export default function UserTable({ users, loading, onRefresh, hideActions = fal
   const toggleActive = async (userId, current) => {
     setActionLoading(userId + '_toggle');
     try {
-      await fetch(`${API_URL}/users/${userId}`, {
-        method:  'PUT',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body:    JSON.stringify({ isActive: !current }),
-      });
+      const res = await api.post(`/users/${userId}/update`, { isActive: !current });
+      if (!res.ok) {
+        const data = await safeJson(res);
+        throw new Error(data.message || 'Unable to update user status');
+      }
       onRefresh?.();
+      setSuccess(`User ${current ? 'deactivated' : 'activated'} successfully.`);
+      setError('');
+      setTimeout(() => setSuccess(''), 5000);
+    } catch (err) {
+      setError(err.message);
+      setSuccess('');
+      setTimeout(() => setError(''), 5000);
     } finally {
       setActionLoading(null);
     }
@@ -86,12 +116,20 @@ export default function UserTable({ users, loading, onRefresh, hideActions = fal
     setDeleteConfirm(null);
     setActionLoading(userId + '_delete');
     try {
-      await fetch(`${API_URL}/users/${userId}`, {
-        method:  'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await api.post(`/users/${userId}/delete`);
+      if (!res.ok) {
+        const data = await safeJson(res);
+        throw new Error(data.message || `Unable to delete ${name}`);
+      }
       setSelectedIds(prev => { const n = new Set(prev); n.delete(userId); return n; });
       onRefresh?.();
+      setSuccess('User deleted successfully.');
+      setError('');
+      setTimeout(() => setSuccess(''), 5000);
+    } catch (err) {
+      setError(err.message);
+      setSuccess('');
+      setTimeout(() => setError(''), 5000);
     } finally {
       setActionLoading(null);
     }
@@ -105,21 +143,44 @@ export default function UserTable({ users, loading, onRefresh, hideActions = fal
   const confirmBulkDelete = async () => {
     setDeleteConfirm(null);
     setBulkDeleting(true);
+    let successCount = 0;
+    let errors = [];
     try {
       const arr = Array.from(selectedIds);
       // Delete sequentially to avoid overwhelming the server
       for (const id of arr) {
-        await fetch(`${API_URL}/users/${id}`, {
-          method: 'DELETE',
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        try {
+          const res = await api.post(`/users/${id}/delete`);
+          if (!res.ok) {
+            const data = await safeJson(res);
+            throw new Error(data.message || `Unable to delete user`);
+          }
+          successCount++;
+        } catch (err) {
+          errors.push(err.message);
+        }
       }
+      
       setSelectedIds(new Set());
       setBulkDeleteMode(false);
       onRefresh?.();
+      
+      if (errors.length > 0) {
+        const uniqueErrors = [...new Set(errors)];
+        setError(`Failed to delete ${errors.length} user(s): ${uniqueErrors[0]}${uniqueErrors.length > 1 ? ' (and more)' : ''}`);
+        setSuccess(successCount > 0 ? `Successfully deleted ${successCount} user(s).` : '');
+        setTimeout(() => setError(''), 5000);
+        if (successCount > 0) setTimeout(() => setSuccess(''), 5000);
+      } else {
+        setSuccess(`Successfully deleted ${successCount} user(s).`);
+        setError('');
+        setTimeout(() => setSuccess(''), 5000);
+      }
     } catch (err) {
       console.error("Bulk delete failed:", err);
-      alert("An error occurred during bulk deletion. Please refresh the page.");
+      setError(err.message || "An error occurred during bulk deletion. Please try again.");
+      setSuccess('');
+      setTimeout(() => setError(''), 5000);
     } finally {
       setBulkDeleting(false);
     }
@@ -145,6 +206,18 @@ export default function UserTable({ users, loading, onRefresh, hideActions = fal
 
   return (
     <div className="bg-slate-900 border border-white/10 rounded-2xl overflow-hidden">
+      {error && (
+        <div className="m-4 bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3 text-sm text-red-400 flex items-center gap-2">
+          <AlertCircle className="w-4 h-4" /> {error}
+        </div>
+      )}
+
+      {success && (
+        <div className="m-4 bg-emerald-500/10 border border-emerald-500/30 rounded-xl px-4 py-3 text-sm text-emerald-400 flex items-center gap-2">
+          <CheckCircle2 className="w-4 h-4" /> {success}
+        </div>
+      )}
+      
       {/* Toolbar */}
       <div className="p-4 border-b border-white/10 flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
@@ -157,6 +230,16 @@ export default function UserTable({ users, loading, onRefresh, hideActions = fal
             className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
           />
         </div>
+        
+        {viewOnly && (
+          <button 
+            onClick={handleExportCSV}
+            className="flex items-center gap-2 px-4 py-2.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/20 rounded-xl text-sm font-semibold transition-all shadow-sm whitespace-nowrap"
+          >
+            <Download className="w-4 h-4" /> Export CSV
+          </button>
+        )}
+
         {!hideActions && !viewOnly && (
           <div className="flex items-center gap-3">
             <select

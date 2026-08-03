@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
+import { apiUrl } from '../../utils/api';
 
 export default function NodalCentreRequestModal({ onClose }) {
   const [formData, setFormData] = useState({});
@@ -12,7 +13,7 @@ export default function NodalCentreRequestModal({ onClose }) {
   useEffect(() => {
     const fetchSchema = async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/pages/nodal-centre-request/sections`);
+        const res = await fetch(apiUrl("/pages/nodal-centre-request/sections"));
         if (!res.ok) throw new Error('Failed to load application form');
         const sections = await res.json();
         const formSec = sections.find(s => s.sectionKey === 'formSchema');
@@ -49,7 +50,7 @@ export default function NodalCentreRequestModal({ onClose }) {
     setError('');
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/pages/nodal-centre-request/survey`, {
+      const res = await fetch(apiUrl("/pages/nodal-centre-request/survey"), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
@@ -152,6 +153,7 @@ export default function NodalCentreRequestModal({ onClose }) {
                     <input
                       type={q.type}
                       required={q.required}
+                      min={q.type === 'date' ? new Date().toISOString().split('T')[0] : undefined}
                       onChange={(e) => handleInputChange(q.id, e.target.value)}
                       className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors shadow-inner"
                       placeholder={`Enter your ${q.type === 'email' ? 'email address' : 'answer'}...`}

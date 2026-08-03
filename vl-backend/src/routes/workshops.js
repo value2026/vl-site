@@ -15,12 +15,12 @@ router.get('/:id', getWorkshopById);
 
 router.use(verifyToken);
 
-// Only admins and vl_managers can create workshops
-router.post('/', requireRole('admin', 'vl_manager'), createWorkshop);
+// Only admins, vl_managers, and vl_coordinators can create workshops
+router.post('/', requireRole('admin', 'vl_manager', 'vl_coordinator'), createWorkshop);
 
-// Admins can update/approve, vl_managers can update their own (complex logic in controller)
-router.put('/:id', requireRole('admin', 'vl_manager'), updateWorkshop);
+// Admins/vl_managers can update/approve, vl_coordinators can update their own
+router.post('/:id/update', requireRole('admin', 'vl_manager', 'vl_coordinator'), updateWorkshop);
 
-router.delete('/:id', requireRole('admin', 'vl_manager'), deleteWorkshop);
+router.post('/:id/delete', requireRole('admin', 'vl_manager', 'vl_coordinator'), deleteWorkshop);
 
 module.exports = router;

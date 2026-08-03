@@ -4,6 +4,7 @@ const cors    = require('cors');
 const path    = require('path');
 const fs      = require('fs');
 const { logError, logException, logRejection, logFrontendError, logAccess } = require('./utils/logger');
+const { getExternalBaseUrl } = require('./utils/requestUrl');
 
 // Override console.error to intercept all caught errors application-wide
 const originalConsoleError = console.error;
@@ -29,28 +30,30 @@ const assignmentRoutes  = require('./routes/assignments');
 const app  = express();
 const PORT = process.env.PORT || 5000;
 
+app.set('trust proxy', 1);
 
 // ── Middleware ────────────────────────────────────────────────
 const allowedOrigins = [
-  'http://localhost:5173',
-  'http://127.0.0.1:5173',
-  process.env.FRONTEND_URL
-].filter(Boolean);
+  process.env.FRONTEND_URL,
+  ...(process.env.CORS_ORIGINS || '').split(',')
+].map(origin => origin && origin.trim()).filter(Boolean);
 
-app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin) return callback(null, true);
-    if (
-      allowedOrigins.indexOf(origin) !== -1 ||
-      origin.startsWith('http://localhost:') ||
-      origin.startsWith('http://127.0.0.1:')
-    ) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
+app.use(cors((req, callback) => {
+  const requestOrigin = `${req.protocol}://${req.get('host')}`;
+  callback(null, {
+    origin: function (origin, originCallback) {
+      if (!origin) return originCallback(null, true);
+      if (
+        allowedOrigins.indexOf(origin) !== -1 ||
+        origin === requestOrigin
+      ) {
+        originCallback(null, true);
+      } else {
+        originCallback(new Error('Not allowed by CORS'));
+      }
+    },
+    credentials: true,
+  });
 }));
 app.use(express.json());
 
@@ -112,7 +115,7 @@ app.post('/api/upload', imageUpload.single('file'), (req, res) => {
       return res.status(400).json({ message: 'No file uploaded' });
     }
     const relativeUrl = `media/${req.file.filename}`;
-    const absoluteUrl = `${req.protocol}://${req.get('host')}/files/${relativeUrl}`;
+    const absoluteUrl = `${getExternalBaseUrl(req)}/files/${relativeUrl}`;
     console.log(`📸 Local uploader: Saved image to ${absoluteUrl}`);
     res.json({ url: absoluteUrl });
   } catch (err) {
@@ -163,6 +166,6 @@ process.on('unhandledRejection', (reason, promise) => {
 
 // ── Start ─────────────────────────────────────────────────────
 app.listen(PORT, () => {
-  console.log(`\n🚀 Virtual Labs API running at http://localhost:${PORT}`);
-  console.log(`   Health: http://localhost:${PORT}/api/health\n`);
+  console.log(`\nVirtual Labs API listening on port ${PORT}`);
+  console.log(`   Health: /api/health\n`);
 });

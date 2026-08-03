@@ -2,10 +2,11 @@ import { Calendar, ArrowRight, Loader2, X } from 'lucide-react';
 import { news as defaultNews, categoryColors } from '../data/news';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
+import { apiUrl } from '../utils/api';
 import { useState } from 'react';
 
 async function fetchHomeSections() {
-  const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/pages/home/sections`);
+  const res = await fetch(apiUrl("/pages/home/sections"));
   if (!res.ok) throw new Error('Failed to fetch home sections');
   return res.json();
 }
@@ -38,15 +39,15 @@ export default function News() {
   return (
     <main>
       {/* Hero */}
-      <section className="bg-hero-gradient py-20">
+      <section className="bg-hero-gradient py-12">
         <div className="container-custom text-center">
-          <span className="inline-block bg-white/10 text-white/80 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider mb-6">
+          <span className="inline-block bg-white/10 text-white/80 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider mb-4">
             Updates
           </span>
-          <h1 className="font-heading text-5xl font-extrabold text-white mb-6">
+          <h1 className="font-heading text-4xl font-extrabold text-white mb-4">
             {pageTitle}
           </h1>
-          <p className="text-xl text-white/70 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-lg md:text-xl text-white/70 max-w-2xl mx-auto leading-relaxed">
             {pageSubtitle}
           </p>
         </div>

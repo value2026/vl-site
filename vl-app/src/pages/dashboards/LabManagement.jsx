@@ -122,18 +122,18 @@ function SubjectsTab() {
     if (!form.title.trim()) { setError('Title is required'); return; }
     setSaving(true);
     const isEdit = modal?.edit;
-    const res = isEdit ? await api.put(`/subjects/${isEdit.id}`, form) : await api.post('/subjects', form);
+    const res = isEdit ? await api.post(`/subjects/${isEdit.id}/update`, form) : await api.post('/subjects', form);
     setSaving(false);
     if (res.ok) { setModal(null); load(); } else { setError((await safeJson(res)).message); }
   };
 
   const toggleActive = async (s) => {
-    await api.put(`/subjects/${s.id}`, { isActive: !s.isActive });
+    await api.post(`/subjects/${s.id}/update`, { isActive: !s.isActive });
     load();
   };
 
   const confirmDelete = async () => {
-    await api.delete(`/subjects/${deleting.id}`);
+    await api.post(`/subjects/${deleting.id}/delete`);
     setDeleting(null);
     load();
   };
@@ -251,13 +251,13 @@ function LabsTab({ onSelectLab }) {
     if (!form.title.trim() || !form.subjectId) { setError('Title and subject are required'); return; }
     setSaving(true);
     const isEdit = modal?.edit;
-    const res = isEdit ? await api.put(`/labs/${isEdit.id}`, form) : await api.post('/labs', form);
+    const res = isEdit ? await api.post(`/labs/${isEdit.id}/update`, form) : await api.post('/labs', form);
     setSaving(false);
     if (res.ok) { setModal(null); load(); } else { setError((await safeJson(res)).message); }
   };
 
-  const toggleActive = async (l) => { await api.put(`/labs/${l.id}`, { isActive: !l.isActive }); load(); };
-  const confirmDelete = async () => { await api.delete(`/labs/${deleting.id}`); setDeleting(null); load(); };
+  const toggleActive = async (l) => { await api.post(`/labs/${l.id}/update`, { isActive: !l.isActive }); load(); };
+  const confirmDelete = async () => { await api.post(`/labs/${deleting.id}/delete`); setDeleting(null); load(); };
 
   return (
     <div className="space-y-6">
@@ -416,13 +416,13 @@ function ExperimentsTab({ role, initialLabId = '' }) {
     if (!form.title.trim() || !form.labId) { setError('Title and lab are required'); return; }
     setSaving(true);
     const isEdit = modal?.edit;
-    const res = isEdit ? await api.put(`/experiments/${isEdit.id}`, form) : await api.post('/experiments', form);
+    const res = isEdit ? await api.post(`/experiments/${isEdit.id}/update`, form) : await api.post('/experiments', form);
     setSaving(false);
     if (res.ok) { setModal(null); load(); } else { setError((await safeJson(res)).message); }
   };
 
-  const toggleActive = async (e) => { await api.put(`/experiments/${e.id}`, { isActive: !e.isActive }); load(); };
-  const confirmDelete = async () => { await api.delete(`/experiments/${deleting.id}`); setDeleting(null); load(); };
+  const toggleActive = async (e) => { await api.post(`/experiments/${e.id}/update`, { isActive: !e.isActive }); load(); };
+  const confirmDelete = async () => { await api.post(`/experiments/${deleting.id}/delete`); setDeleting(null); load(); };
 
   const handleUpload = async (expId, type, file) => {
     if (!file) return;
@@ -605,7 +605,7 @@ export default function LabManagement() {
   const { user } = useAuth();
   const role = user?.role || 'student';
 
-  const tabs = role === 'admin'
+  const tabs = ['admin', 'vl_manager', 'content_admin'].includes(role)
     ? TABS
     : TABS.filter((t) => t.id !== 'subjects');
 

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Building2, Plus, RefreshCw, AlertCircle, Loader2, Save, X, Trash2, Upload, Download, Edit2 } from 'lucide-react';
+import { Building2, Plus, RefreshCw, AlertCircle, CheckCircle2, Loader2, Save, X, Trash2, Upload, Download, Edit2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 export default function InstitutionsManagement() {
@@ -7,6 +7,7 @@ export default function InstitutionsManagement() {
   const [institutions, setInstitutions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   
   // Modal state
   const [showModal, setShowModal] = useState(false);
@@ -44,6 +45,8 @@ export default function InstitutionsManagement() {
   const openAddModal = () => {
     setEditingInst(null);
     setForm({ collegeId: '', name: '', code: '' });
+    setError('');
+    setSuccess('');
     setShowModal(true);
   };
 
@@ -54,6 +57,8 @@ export default function InstitutionsManagement() {
       name: inst.name || '',
       code: inst.code || ''
     });
+    setError('');
+    setSuccess('');
     setShowModal(true);
   };
 
@@ -62,8 +67,8 @@ export default function InstitutionsManagement() {
     if (!form.name.trim()) return;
     setSubmitting(true);
     try {
-      const url = editingInst ? `${API_URL}/institutions/${editingInst.id}` : `${API_URL}/institutions`;
-      const method = editingInst ? 'PUT' : 'POST';
+      const url = editingInst ? `${API_URL}/institutions/${editingInst.id}/update` : `${API_URL}/institutions`;
+      const method = 'POST';
       const res = await fetch(url, {
         method,
         headers: {
@@ -85,8 +90,13 @@ export default function InstitutionsManagement() {
       setEditingInst(null);
       setForm({ collegeId: '', name: '', code: '' });
       fetchInstitutions();
+      setSuccess(`Institution ${editingInst ? 'updated' : 'created'} successfully.`);
+      setError('');
+      setTimeout(() => setSuccess(''), 5000);
     } catch (err) {
-      alert(err.message);
+      setError(err.message);
+      setSuccess('');
+      setTimeout(() => setError(''), 5000);
     } finally {
       setSubmitting(false);
     }
@@ -103,8 +113,8 @@ export default function InstitutionsManagement() {
     setActionLoading(id);
     
     try {
-      const res = await fetch(`${API_URL}/institutions/${id}`, {
-        method: 'DELETE',
+      const res = await fetch(`${API_URL}/institutions/${id}/delete`, {
+        method: 'POST',
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -112,8 +122,13 @@ export default function InstitutionsManagement() {
       if (!res.ok) throw new Error(data.message || 'Failed to delete institution');
       
       fetchInstitutions();
+      setSuccess('Institution deleted successfully.');
+      setError('');
+      setTimeout(() => setSuccess(''), 5000);
     } catch (err) {
       setError(err.message);
+      setSuccess('');
+      setTimeout(() => setError(''), 5000);
     } finally {
       setActionLoading(null);
     }
@@ -255,8 +270,13 @@ export default function InstitutionsManagement() {
       if (!res.ok) throw new Error(data.message || 'Bulk upload failed');
       setBulkResult(data);
       fetchInstitutions();
+      setSuccess('Bulk import completed successfully.');
+      setError('');
+      setTimeout(() => setSuccess(''), 5000);
     } catch (err) {
-      alert(err.message);
+      setError(err.message);
+      setSuccess('');
+      setTimeout(() => setError(''), 5000);
     } finally {
       setBulkImporting(false);
     }
@@ -304,6 +324,12 @@ export default function InstitutionsManagement() {
       {error && (
         <div className="mb-4 bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3 text-sm text-red-400 flex items-center gap-2">
           <AlertCircle className="w-4 h-4" /> {error}
+        </div>
+      )}
+
+      {success && (
+        <div className="mb-4 bg-emerald-500/10 border border-emerald-500/30 rounded-xl px-4 py-3 text-sm text-emerald-400 flex items-center gap-2">
+          <CheckCircle2 className="w-4 h-4" /> {success}
         </div>
       )}
 

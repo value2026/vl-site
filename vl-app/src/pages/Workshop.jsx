@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { Calendar, MapPin, Clock, Users, ArrowRight, Loader2, CheckCircle2, ChevronRight, Mail } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
+import { apiUrl } from '../utils/api';
 import { Link } from 'react-router-dom';
 import WorkshopRegistrationModal from '../components/public/WorkshopRegistrationModal';
 import NodalCentreRequestModal from '../components/public/NodalCentreRequestModal';
 
 async function fetchWorkshops() {
-  const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/workshops`);
+  const res = await fetch(apiUrl("/workshops"));
   if (!res.ok) throw new Error('Failed to fetch workshops');
   return res.json();
 }
@@ -34,15 +35,15 @@ export default function Workshop() {
     <main className="bg-slate-50 min-h-screen">
       
       {/* Page Header */}
-      <section className="bg-hero-gradient py-20">
+      <section className="bg-hero-gradient py-12">
         <div className="container-custom text-center">
-          <span className="inline-block bg-white/10 text-white/80 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider mb-6">
+          <span className="inline-block bg-white/10 text-white/80 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider mb-4">
             Workshops
           </span>
-          <h1 className="font-heading text-5xl font-extrabold text-white mb-6">
+          <h1 className="font-heading text-4xl font-extrabold text-white mb-4">
             Virtual Labs Workshops
           </h1>
-          <p className="text-xl text-white/70 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-lg md:text-xl text-white/70 max-w-2xl mx-auto leading-relaxed">
             Empowering educators and students through immersive, hands-on digital laboratory training.
           </p>
         </div>
@@ -83,7 +84,7 @@ export default function Workshop() {
         <div className="container-custom">
           <div className="mb-8">
             <h2 className="text-2xl font-bold text-slate-900 mb-2">Upcoming Schedule</h2>
-            <p className="text-slate-500">For workshop details and registration please click the relevant link below:</p>
+            <p className="text-slate-500">For workshop details please refer to the upcoming events below:</p>
           </div>
 
           <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
@@ -103,15 +104,13 @@ export default function Workshop() {
                       <th className="px-6 py-4 w-1/4">Location / Event</th>
                       <th className="px-6 py-4 w-1/5">Date</th>
                       <th className="px-6 py-4 w-1/3">Venue</th>
-                      <th className="px-6 py-4 w-1/5 text-center">Registration</th>
+                      <th className="px-6 py-4 w-1/5 text-center">Status</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
                     {workshopsList.map((w) => {
                       const dateObj = new Date(w.date);
                       const isPast = dateObj < new Date();
-                      const isRegistered = localStorage.getItem(`registered-workshop-${w.id}`);
-
                       return (
                         <tr key={w.id} className="hover:bg-slate-50/50 transition-colors group">
                           <td className="px-6 py-5 align-top">
@@ -154,20 +153,10 @@ export default function Workshop() {
                               <span className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-100 text-slate-500 text-sm font-semibold border border-slate-200">
                                 Closed
                               </span>
-                            ) : isRegistered ? (
-                              <button 
-                                disabled
-                                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-50 text-emerald-600 text-sm font-bold border border-emerald-200 cursor-not-allowed w-full justify-center shadow-sm"
-                              >
-                                <CheckCircle2 className="w-4 h-4" /> Registered
-                              </button>
                             ) : (
-                              <button 
-                                onClick={() => setRegisteringWorkshop(w)}
-                                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold transition-all shadow-md shadow-blue-500/20 w-full justify-center group-hover:shadow-lg transform group-hover:-translate-y-0.5"
-                              >
-                                Register <ChevronRight className="w-4 h-4" />
-                              </button>
+                              <span className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-50 text-blue-600 text-sm font-semibold border border-blue-200">
+                                Upcoming
+                              </span>
                             )}
                           </td>
                         </tr>

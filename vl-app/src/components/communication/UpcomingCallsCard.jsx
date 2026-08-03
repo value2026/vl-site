@@ -39,7 +39,7 @@ export default function UpcomingCallsCard() {
     const key = callId + '_' + status;
     setActionId(key);
     try {
-      const res = await api.put(`/calls/schedule/${callId}`, { status });
+      const res = await api.post(`/calls/schedule/${callId}/update`, { status });
       if (res.ok) fetchScheduledCalls();
     } catch (e) {
       console.error(e);

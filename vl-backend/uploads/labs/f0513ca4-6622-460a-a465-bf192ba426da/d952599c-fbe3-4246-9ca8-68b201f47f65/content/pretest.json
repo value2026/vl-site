@@ -1,0 +1,77 @@
+{
+  "version": 2.0,
+  "questions": [
+    {
+      "question": "The electric field intensity inside a charged conducting hollow sphere is",
+      "answers": {
+        "a": "Zero",
+        "b": "Inversely proportional to square of its radius",
+        "c": "Directly proportional to its radius",
+        "d": "Infinity"
+      },
+      
+      "correctAnswer": "a",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "Charge density of an irregular shaped conductor is",
+      "answers": {
+        "a": "Constant",
+        "b": "Infinity",
+        "c": "A dimensional quantity",
+        "d": "Different at different points"
+      },
+     
+      "correctAnswer": "d",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "Van de Graaff generator is based on",
+      "answers": {
+        "a": "Coulomb's law",
+        "b": "Phenomenon of corona discharge",
+        "c": "Charge always resides on outer surface of the conductor",
+        "d": "Both b and c"
+      },
+     
+      "correctAnswer": "d",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "A hollow metal sphere of radius 5 cm is charged such that the potential on its surface is 10 V. The potential at the centre of the sphere is",
+      "answers": {
+        "a": "Zero",
+        "b": "10 V",
+        "c": "Same as at a point 5 cm away from the surface",
+        "d": "Same as at a point 10 cm away from the surface"
+      },
+      
+      "correctAnswer": "b",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "What happens when we separate insulated copper spheres of radii 10 cm and 15 cm, having equal charges which are initially connected by a copper wire?",
+      "answers": {
+        "a": "Charges on both sphere become zero",
+        "b": "Charges on 15 cm sphere will be greater than that on 10 cm sphere",
+        "c": "Charges on 10 cm sphere will be greater than that on 15 cm sphere",
+        "d": "Both spheres will have the same charge"
+      },
+      
+      "correctAnswer": "b",
+      "difficulty": "beginner"
+    },
+     {
+      "question": "The force of attraction between two charged spheres separated by a distance Ã¢â‚¬ËœrÃ¢â‚¬â„¢ is proportional to",
+      "answers": {
+        "a": "r<sup>2</sup>",
+        "b": "1/r",
+        "c": "r<sup>3</sup>",
+        "d": "1/r<sup>2</sup>"
+      },
+      
+      "correctAnswer": "d",
+      "difficulty": "beginner"
+    }
+  ]
+}

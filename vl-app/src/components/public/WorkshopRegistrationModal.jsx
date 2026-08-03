@@ -1,11 +1,17 @@
 import React, { useState } from 'react';
 import { X, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
+import { apiUrl } from '../../utils/api';
 
 export default function WorkshopRegistrationModal({ workshop, onClose }) {
   const [formData, setFormData] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
+  
+  const getTodayLocal = () => {
+    const tzOffset = (new Date()).getTimezoneOffset() * 60000;
+    return new Date(Date.now() - tzOffset).toISOString().split('T')[0];
+  };
 
   const questions = Array.isArray(workshop?.formSchema) ? workshop.formSchema : [];
   
@@ -30,7 +36,7 @@ export default function WorkshopRegistrationModal({ workshop, onClose }) {
     setError('');
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/pages/workshop-${workshop.id}/survey`, {
+      const res = await fetch(apiUrl(`/pages/workshop-${workshop.id}/survey`), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ data: formData })
@@ -100,6 +106,7 @@ export default function WorkshopRegistrationModal({ workshop, onClose }) {
                     <input
                       type={q.type}
                       required={q.required}
+                      min={q.type === 'date' ? getTodayLocal() : undefined}
                       onChange={(e) => handleInputChange(q.id, e.target.value)}
                       className="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors"
                       placeholder={`Enter your ${q.type === 'email' ? 'email' : 'answer'}...`}

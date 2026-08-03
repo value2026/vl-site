@@ -1,42 +1,97 @@
-const getBaseUrl = () => {
-  if (import.meta.env.VITE_API_URL) return import.meta.env.VITE_API_URL;
-  if (typeof window !== 'undefined' && window.location.hostname) {
-    return `http://${window.location.hostname}:5000/api`;
-  }
-  return 'http://localhost:5000/api';
-};
-const getFilesUrl = () => {
-  if (import.meta.env.VITE_FILES_URL) return import.meta.env.VITE_FILES_URL;
-  if (typeof window !== 'undefined' && window.location.hostname) {
-    return `http://${window.location.hostname}:5000/files`;
-  }
-  return 'http://localhost:5000/files';
-};
+import { getApiBaseUrl, getFilesBaseUrl } from './url';
 
-const BASE = getBaseUrl();
-const FILES = getFilesUrl();
+const BASE = getApiBaseUrl();
+const FILES = getFilesBaseUrl();
 
-const token = () => localStorage.getItem('vl_token');
+let isRefreshing = false;
+let failedQueue = [];
+
+const processQueue = (error, token = null) => {
+  failedQueue.forEach(prom => {
+    if (error) prom.reject(error);
+    else prom.resolve(token);
+  });
+  failedQueue = [];
+};
 
 const apiFetch = async (endpoint, options = {}) => {
-  const t = token();
-  const isFormData = options.body instanceof FormData;
-  const res = await fetch(`${BASE}${endpoint}`, {
-    ...options,
-    headers: {
-      ...(t ? { Authorization: `Bearer ${t}` } : {}),
-      ...(!isFormData ? { 'Content-Type': 'application/json' } : {}),
-      ...(options.headers || {}),
-    },
+  const getHeaders = (t) => ({
+    ...(t ? { Authorization: `Bearer ${t}` } : {}),
+    ...(!(options.body instanceof FormData) ? { 'Content-Type': 'application/json' } : {}),
+    ...(options.headers || {}),
   });
+
+  const doRequest = (t) => fetch(`${BASE}${endpoint}`, { ...options, headers: getHeaders(t) });
+
+  const res = await doRequest(localStorage.getItem('vl_token'));
+
+  if (res.status === 401 || (res.status === 403 && endpoint !== '/auth/login')) {
+    const clone = res.clone();
+    try {
+      const data = await clone.json();
+      
+      if (data?.message === 'Invalid or expired token') {
+        const refreshToken = localStorage.getItem('vl_refresh_token');
+        if (!refreshToken) {
+          window.dispatchEvent(new CustomEvent('vl_session_expired', { detail: { reason: 'TOKEN_EXPIRED' } }));
+          return res;
+        }
+
+        if (isRefreshing) {
+          try {
+            const token = await new Promise((resolve, reject) => {
+              failedQueue.push({ resolve, reject });
+            });
+            return await doRequest(token);
+          } catch (e) {
+            return res;
+          }
+        }
+
+        isRefreshing = true;
+        try {
+          const refreshRes = await fetch(`${BASE}/auth/refresh`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ refreshToken })
+          });
+          const refreshData = await refreshRes.json();
+
+          if (refreshRes.ok && refreshData.token) {
+            localStorage.setItem('vl_token', refreshData.token);
+            if (refreshData.refreshToken) {
+              localStorage.setItem('vl_refresh_token', refreshData.refreshToken);
+            }
+            isRefreshing = false;
+            processQueue(null, refreshData.token);
+            return await doRequest(refreshData.token);
+          } else {
+            throw new Error('Refresh failed');
+          }
+        } catch (err) {
+          isRefreshing = false;
+          processQueue(err, null);
+          window.dispatchEvent(new CustomEvent('vl_session_expired', { detail: { reason: 'TOKEN_EXPIRED' } }));
+          return res;
+        }
+      } else if (data?.message === 'Access token required') {
+        window.dispatchEvent(new CustomEvent('vl_session_expired', { detail: { reason: 'INVALID_TOKEN' } }));
+      }
+    } catch (_) {
+      // ignore parse errors
+    }
+  }
+
   return res;
 };
+
+export const apiUrl = (endpoint = '') => `${BASE}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
 
 export const api = {
   get:    (url)           => apiFetch(url),
   post:   (url, body)     => apiFetch(url, { method: 'POST', body: JSON.stringify(body) }),
-  put:    (url, body)     => apiFetch(url, { method: 'PUT',  body: JSON.stringify(body) }),
-  delete: (url)           => apiFetch(url, { method: 'DELETE' }),
+  put:    (url, body)     => apiFetch(url, { method: 'POST',  body: JSON.stringify(body) }),
+  delete: (url)           => apiFetch(url, { method: 'POST' }),
   upload: (url, formData) => apiFetch(url, { method: 'POST', body: formData }),
 };
 

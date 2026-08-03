@@ -1,0 +1,465 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: d\n"
+"POT-Creation-Date: 2015-12-17 11:19+0530\n"
+"PO-Revision-Date: 2015-12-17 11:21+0530\n"
+"Last-Translator: \n"
+"Language-Team: d\n"
+"Language: hi\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.8.2\n"
+"X-Poedit-KeywordsList: _;gettext;gettext_noop;gt.gettext\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: experiment.js:338
+msgid "help1"
+msgstr "व्हेअतसोंस पुल के लिए तारों कनेक्ट"
+
+#: experiment.js:338
+msgid "help2"
+msgstr "बटन \"पर पावर\" पर क्लिक करें"
+
+#: experiment.js:338
+msgid "help3"
+msgstr "प्रतिरोध प्रपत्र प्रतिरोध बॉक्स का चयन"
+
+#: experiment.js:338
+msgid "help4"
+msgstr "\"एंडरसन पुल\" बटन पर व्हेअतसोंस के पुल क्लिक संतुलन के बाद"
+
+#: experiment.js:338
+msgid "help5"
+msgstr "एंडरसन प्रयोग के लिए तारों कनेक्ट"
+
+#: experiment.js:338
+msgid "help6"
+msgstr "एंडरसन प्रयोग शुरू करने के लिए बटन \"पर पावर\" पर क्लिक करें"
+
+#: experiment.js:338
+msgid "help7"
+msgstr "मूल्यों में परिवर्तन के लिए स्लाइडर मूल्यों को बदलने"
+
+#: experiment.js:338
+msgid "help8"
+msgstr "तरंगों को देखने के लिए \"शो सीआरओ\" पर क्लिक करें"
+
+#: experiment.js:339
+msgid "help9"
+msgstr "प्रयोग रीसेट करने के लिए \"रीसेट\" बटन पर क्लिक करें"
+
+#: experiment.js:339
+msgid "Next"
+msgstr "अगला"
+
+#: experiment.js:339 experiment.js:368
+msgid "Close"
+msgstr "बंद करे"
+
+#: experiment.js:340 experiment.js:356 experiment.js:1012 experiment.js:1029
+#: experiment.js:1044 experiment.js:1098
+msgid "Power On"
+msgstr "पावर ऑन"
+
+#: experiment.js:341 experiment.js:346
+msgid "Anderson's Bridge"
+msgstr "एंडरसन की पुल"
+
+#: experiment.js:342
+msgid "Signal Generator:"
+msgstr "संकेतक उत्पादक:"
+
+#: experiment.js:343
+msgid "Voltage:"
+msgstr "वोल्टेज:"
+
+#: experiment.js:344
+msgid "Frequency:"
+msgstr "आवृत्ति:"
+
+#: experiment.js:345
+msgid "Wheatson's bridge"
+msgstr "व्हेअतसोंस की पुल"
+
+#: experiment.js:347
+msgid "Result"
+msgstr "परिणाम"
+
+#: experiment.js:348
+msgid "copyright"
+msgstr "कॉपीराइट © अमृता विश्वविद्यालय 2015 - 2009"
+
+#: experiment.js:351
+msgid "Inductance coil:"
+msgstr "अधिष्ठापन का तार :"
+
+#: experiment.js:352
+msgid "Coil Length:"
+msgstr "कुंडल लंबाई :"
+
+#: experiment.js:354
+msgid "Coil Diameter:"
+msgstr "कुंडल व्यास:"
+
+#: experiment.js:357
+msgid "Variable resistance:"
+msgstr "चर प्रतिरोध :"
+
+#: experiment.js:359
+msgid "Show Result"
+msgstr "परिणाम दिखाओ"
+
+#: experiment.js:360
+msgid "Reset"
+msgstr "रीसेट"
+
+#: experiment.js:361
+msgid "Inductance:"
+msgstr "अधिष्ठापन :"
+
+#: experiment.js:362
+msgid "Inductive Reactance:"
+msgstr "आगमनात्मक मुक़ाबला :"
+
+#: experiment.js:363 experiment.js:1121 experiment.js:1151
+msgid "Show CRO"
+msgstr "दिखाएँ सीआरओ"
+
+#: experiment.js:364
+msgid "Anderson's bridge"
+msgstr "एंडरसन की पुल"
+
+#: experiment.js:365
+msgid "Select Resistance"
+msgstr "चुनें प्रतिरोध"
+
+#: experiment.js:366
+msgid "Fractional"
+msgstr "आंशिक"
+
+#: experiment.js:367
+msgid "Small"
+msgstr "छोटा"
+
+#: experiment.js:369
+msgid "To start"
+msgstr "शुरू करना"
+
+#: experiment.js:370
+msgid "After balancing, proceed with"
+msgstr "संतुलन के बाद, के साथ आगे बढ़ना"
+
+#: experiment.js:371
+msgid "V"
+msgstr "वाल्ट"
+
+#: experiment.js:372
+msgid "Hz"
+msgstr "हर्ट्ज"
+
+#: experiment.js:373
+msgid "cm"
+msgstr "से.मी"
+
+#: experiment.js:1017 experiment.js:1084
+msgid "Power Off"
+msgstr "बिजली बंद"
+
+#: experiment.js:1138
+msgid "Hide CRO"
+msgstr "सीआरओ छुपाएं"
+
+#~ msgid "After balancing Wheatson's bridge"
+#~ msgstr "व्हेअतसोंस  के पुल के बीच संतुलन साधने के बाद"
+
+#~ msgid "Andersons Bridge"
+#~ msgstr "एंडरसन ब्रिज"
+
+#~ msgid "Variables"
+#~ msgstr "चर"
+
+#~ msgid "Wheatsons Bridge"
+#~ msgstr "व्हेअतसोंस ब्रिज"
+
+#~ msgid "Anderson Bridge"
+#~ msgstr "एंडरसन ब्रिज"
+
+#~ msgid "Temperature (Y axis) Vs Time (X axis)"
+#~ msgstr "तापमान (वाई अक्ष ) बनाम समय ( एक्स अक्ष)"
+
+#~ msgid "Time (in minutes)"
+#~ msgstr "समय ( मिनट में )"
+
+#~ msgid "Temperature"
+#~ msgstr "तापमान"
+
+#~ msgid "START"
+#~ msgstr "प्रारंभ"
+
+#~ msgid "Start Experiment"
+#~ msgstr "प्रयोग शुरू"
+
+#~ msgid "Measurements"
+#~ msgstr "माप"
+
+#~ msgid "Thermometer reading:"
+#~ msgstr "थर्मामीटर पढ़ना:"
+
+#~ msgid "Show Graph"
+#~ msgstr "दिखाएँ ग्राफ"
+
+#~ msgid "Brass"
+#~ msgstr "पीतल"
+
+#~ msgid "Water"
+#~ msgstr "पानी"
+
+#~ msgid "Plot Graph"
+#~ msgstr "प्लॉट ग्राफ़"
+
+#~ msgid "Newton's Law of Cooling"
+#~ msgstr "ठंडा करने की न्यूटन का कानून"
+
+#~ msgid "Select material:"
+#~ msgstr "सामग्री का चयन करें :"
+
+#~ msgid "Select liquid:"
+#~ msgstr "चयन करें तरल :"
+
+#~ msgid "Copper"
+#~ msgstr "तांबा"
+
+#~ msgid "Aluminium"
+#~ msgstr "अल्युमीनियम"
+
+#~ msgid "Silver"
+#~ msgstr "चांदी"
+
+#~ msgid "Milk"
+#~ msgstr "दूध"
+
+#~ msgid "Vegetable oil"
+#~ msgstr "वनस्पति तेल"
+
+#~ msgid "Olive oil"
+#~ msgstr "जैतून का तेल"
+
+#~ msgid "Start Heating"
+#~ msgstr "प्रारंभ करें ताप"
+
+#~ msgid "Stop Heating"
+#~ msgstr "बंद करो ताप"
+
+#~ msgid "STOP"
+#~ msgstr "रुकें"
+
+#~ msgid "Stop Plotting"
+#~ msgstr "बंद करो साजिश रचने"
+
+#~ msgid "Thermometer reading: "
+#~ msgstr "थर्मामीटर पढ़ना:"
+
+#~ msgid "Iron"
+#~ msgstr "ഇരുമ്പ്"
+
+#~ msgid "Steel"
+#~ msgstr "ഉരുക്ക്"
+
+#~ msgid "Heat Transfer by Radiation"
+#~ msgstr "റേഡിയേഷൻ പ്രകാരം ഹീറ്റ് ട്രാൻസ്ഫർ"
+
+#~ msgid "Power on"
+#~ msgstr "പവർ ഓണ്‍ "
+
+#~ msgid "Choose material:"
+#~ msgstr "മെറ്റീരിയൽ തിരഞ്ഞെടുക്കുക:"
+
+#~ msgid "Diameter of the plates (cm):"
+#~ msgstr "പ്ലേറ്റുകൾ വ്യാസം ( സെ.മീ ) :"
+
+#~ msgid "Thickness of the plates (cm):"
+#~ msgstr "പ്ലേറ്റുകൾ കനം ( സെ.മീ ):"
+
+#~ msgid "Chamber temperature :"
+#~ msgstr "ചേംബർ താപനില :"
+
+#~ msgid "Show result"
+#~ msgstr "കാണിക്കുക ഫലം"
+
+#~ msgid "Voltage of both heaters must be same."
+#~ msgstr "ഇരു ഹീറ്റർ എന്ന വോൾട്ടേജ് ഇതേ ആവശ്യം."
+
+#~ msgid "Emissivity of the test plate:"
+#~ msgstr "ടെസ്റ്റ് പ്ലാറ്റ്ഫോമിന്റെ Emissivity:"
+
+#~ msgid "Solution Controls"
+#~ msgstr "Solution Controls"
+
+#~ msgid "Select Environment"
+#~ msgstr "Select Environment"
+
+#~ msgid "Select type of test"
+#~ msgstr "Select type of test"
+
+#~ msgid "Enter the readings:"
+#~ msgstr "Enter the readings:"
+
+#~ msgid "Gravitational Mass (in g):"
+#~ msgstr "Gravitational Mass (in g):"
+
+#~ msgid "Mass of Object, m(g):"
+#~ msgstr "Mass of Object, m(g):"
+
+#~ msgid "Volume (in ml):"
+#~ msgstr "Volume (in ml):"
+
+#~ msgid "Density (g/cc):"
+#~ msgstr "Density (g/cc):"
+
+#~ msgid "1cubic centimetre=1ml"
+#~ msgstr "1cubic centimetre=1ml"
+
+#~ msgid "Check"
+#~ msgstr "Check"
+
+#~ msgid "Earth (9.8m/s&#178;)"
+#~ msgstr "Earth (9.8m/s&#178;)"
+
+#~ msgid "Moon (1.6m/s&#178;)"
+#~ msgstr "Moon (1.6m/s&#178;)"
+
+#~ msgid "Mercury (3.7m/s&#178;)"
+#~ msgstr "Mercury (3.7m/s&#178;)"
+
+#~ msgid "Find Mass"
+#~ msgstr "Find Mass"
+
+#~ msgid "Find Volume"
+#~ msgstr "Find Volume"
+
+#~ msgid "Determination of Density of Solid"
+#~ msgstr "Determination of Density of Solid"
+
+#~ msgid "SAVE"
+#~ msgstr "SAVE"
+
+#~ msgid "FULLSCREEN"
+#~ msgstr "FULLSCREEN"
+
+#~ msgid "EXIT"
+#~ msgstr "EXIT"
+
+#~ msgid "Developed by CDAC Mumbai & Amrita University <br> Under research grant from department of IT"
+#~ msgstr "Developed by CDAC Mumbai & Amrita University <br> Under research grant from department of IT"
+
+#~ msgid "The mass of the object due to gravity that displayed in the spring balance"
+#~ msgstr "The mass of the object due to gravity that displayed in the spring balance"
+
+#~ msgid "The actual mass of the body calculated using the equation, m = gravitational mass(w) x 9.8 / g(environment)"
+#~ msgstr "The actual mass of the body calculated using the equation, m = gravitational mass(w) x 9.8 / g(environment)"
+
+#~ msgid "Final level of water (with block immersed) - Initial level of water (without block immersed)"
+#~ msgstr "Final level of water (with block immersed) - Initial level of water (without block immersed)"
+
+#~ msgid "Density, D(g/cc) = m/v = mass divided by volume"
+#~ msgstr "Density, D(g/cc) = m/v = mass divided by volume"
+
+#~ msgid "Please enter the values"
+#~ msgstr "Please enter the values"
+
+#~ msgid "Good! Answer is correct"
+#~ msgstr "Good! Answer is correct"
+
+#~ msgid "Try Again!"
+#~ msgstr "Try Again!"
+
+#~ msgid "Cylinder"
+#~ msgstr "Cylinder"
+
+#~ msgid "Lock"
+#~ msgstr "Lock"
+
+#~ msgid "Wood"
+#~ msgstr "Wood"
+
+#~ msgid "Stone"
+#~ msgstr "Stone"
+
+#~ msgid "Bob"
+#~ msgstr "Bob"
+
+#, fuzzy
+#~ msgid "Plants"
+#~ msgstr "Plants"
+
+#, fuzzy
+#~ msgid "Animals"
+#~ msgstr "Animals"
+
+#, fuzzy
+#~ msgid "2 hours"
+#~ msgstr "2 hours"
+
+#, fuzzy
+#~ msgid "Role of Carbon Dioxide During Respiration"
+#~ msgstr "Role of Carbon Dioxide During Respiration"
+
+#~ msgid "Start"
+#~ msgstr "Start"
+
+#, fuzzy
+#~ msgid "Number of grasshoppers:"
+#~ msgstr "Number of grasshoppers:"
+
+#, fuzzy
+#~ msgid "Select the animal:"
+#~ msgstr "Select the animal:"
+
+#, fuzzy
+#~ msgid "Select the indicator:"
+#~ msgstr "Select the indicator:"
+
+#, fuzzy
+#~ msgid "Grasshopper"
+#~ msgstr "Grasshopper"
+
+#, fuzzy
+#~ msgid "Human being"
+#~ msgstr "Human being"
+
+#, fuzzy
+#~ msgid "Lime water"
+#~ msgstr "Lime water"
+
+#~ msgid "Click on the information icon to see the inference."
+#~ msgstr "Click on the information icon to see the inference."
+
+#, fuzzy
+#~ msgid "Number of seeds : 10"
+#~ msgstr "Number of seeds : 10"
+
+#, fuzzy
+#~ msgid "Number of seeds : "
+#~ msgstr "Number of seeds : "
+
+#, fuzzy
+#~ msgid "Number of grasshoppers : "
+#~ msgstr "Number of grasshoppers : "
+
+#, fuzzy
+#~ msgid "Presence of CO<sub>2</sub> in the test tube, turns the blue BTB indicator to green."
+#~ msgstr "Presence of CO<sub>2</sub> in the test tube, turns the blue BTB indicator to green."
+
+#, fuzzy
+#~ msgid "Presence of CO<sub>2</sub> in the test tube, turns limewater milky."
+#~ msgstr "Presence of CO<sub>2</sub> in the test tube, turns limewater milky."
+
+#, fuzzy
+#~ msgid "Level of water in the delivery tube rises up due to the release of CO<sub>2</sub> in the conical flask during the respiration of the grasshoppers."
+#~ msgstr "Level of water in the delivery tube rises up due to the release of CO<sub>2</sub> in the conical flask during the respiration of the grasshoppers."
+
+#, fuzzy
+#~ msgid "Level of water in the delivery tube rises up due to the release of CO<sub>2</sub> in the conical flask during the respiration of the seeds."
+#~ msgstr "Level of water in the delivery tube rises up due to the release of CO<sub>2</sub> in the conical flask during the respiration of the seeds."

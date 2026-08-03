@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <title></title>
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="description" content="">
+      <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
+      <link rel='stylesheet' href='../template/assets/css/fonts.googleapis.css'>
+      <link rel="stylesheet" href="../template/bower_components/angular-material/angular-material.css" />
+      <link rel="stylesheet" href="../template/assets/css/app.css" />
+      <link rel="stylesheet" href="css/experiment.css" />
+      <script src="../template/js/createjs-2013.12.12.min.js"></script>
+      <script src="../template/js/easeljs-0.7.0.min.js"></script>
+      <script src="../template/bower_components/angular/angular.min.js"></script>
+      <script src="../template/bower_components/angular-animate/angular-animate.js"></script>
+      <script src="../template/bower_components/angular-aria/angular-aria.js"></script>
+      <script src="../template/bower_components/angular-fullscreen/angular-fullscreen.js"></script>
+      <script src="../template/js/Gettext.js"></script>
+      <script type="text/javascript" src="../template/bower_components/angular-material/angular-material.js"></script>
+      <script src="../template/js/getlanguage.js"></script>
+      <script src="./src/user_controller.js"></script>
+      <script src="./src/experiment.js"></script>
+      <script type="text/javascript">
+         angular
+             .module('starterApp', ['ngMaterial', 'users'])
+             .config(function($mdThemingProvider, $mdIconProvider) {
+                 $mdIconProvider
+                     .icon("menu", "../template/assets/svg/menu.svg", 24)
+                     .icon("fullscreen", "../template/assets/icons/Icon3.svg", 24)
+                     .icon("help", "../template/assets/icons/Icon2.svg", 24);
+                 $mdThemingProvider.theme('default')
+                     .primaryPalette('blue')
+                     .accentPalette('red');
+             });
+      </script>
+   </head>
+   <body style="background-color: #f2f2f2;" ng-app="starterApp" ng-controller="userController as ul">
+      <md-toolbar class="md-toolbar-tools" id="main">
+         <md-button class="md-icon-button" hide-gt-md ng-click="ul.toggleList()" aria-label="Show User List">
+            <md-icon md-svg-icon="menu"></md-icon>
+         </md-button>
+         <!-- Experiment title -->
+         <h1 flex="" layout="row" class="expTitle" id="expTitle">{{heading}}</h1>
+         <md-button class="md-icon-button" aria-label="help" ng-click="showActionToast()">
+            <md-icon md-svg-icon="help"></md-icon>
+         </md-button>
+         <!-- Full screen -->
+         <md-button class="md-icon-button" aria-label="fullscreen" ng-click="goFullscreen()">
+            <md-icon md-svg-icon="fullscreen"></md-icon>
+         </md-button>
+      </md-toolbar>
+      <md-content flex layout="row" style="background-color: #f2f2f2;">
+         <md-content id="content" layout="column" style="background-color: #f2f2f2;" md-swipe-right="toggleSidenav()">
+            <canvas id="demoCanvas" width="700" height="700" align="center" layout-fill experiment></canvas>
+            <!-- Resistance select dialog box  -->
+            <md-dialog ng-model="dialog_box" ng-show="dialog_box_show" ng-init="dialog_box_show=flase">
+               <md-dialog-content style="text-align:center;">
+                  <!-- Dialog box title -->
+                  <md-toolbar>
+                     <div class="md-toolbar-tools">
+                        <h2>{{select_resistance}}</h2>
+                     </div>
+                  </md-toolbar>
+                  <md-radio-group  ng-model="resistance_group" ng-change="resistanceGroupSelected()" ng-init="resistance_group='fractional'">
+                     <div class="radio-btn-div">
+                        <!--Fractional  label  -->
+                        <md-radio-button value="fractional" aria-label="rdo1">{{fractional_lbl}}</md-radio-button>
+                        <!--Small label  -->
+                        <md-radio-button value="small" aria-label="rdosmall">{{small_lbl}}</md-radio-button>
+                     </div>
+                  </md-radio-group>
+                  <md-dialog-content style="text-align:center; ">
+                     <!--Fractional  resistance  -->
+                     <div ng-show="fractional_show">
+                        <!--For Q resistance  box-->
+                        <p ng-show="fractional_resistance_box_show">
+                           <md-checkbox ng-repeat="item_fractional in item_fractional_resistance_fractional" ng-model="item_fractional.name"  ng-init="item_fractional.name=(item_fractional.value != 0.2) ?  true : false" ng-change="checkFractionalResistanceBox(item_fractional.name,item_fractional.value);">{{item_fractional.value}} </md-checkbox>
+                        </p>
+                        <!--For P resistance  box-->
+                        <p ng-show="resistance_box_show">
+                           <md-checkbox ng-repeat="item_back_resistance in item_back_resistance_fractional" ng-model="item_back_resistance.name" ng-init="item_back_resistance.name=(item_back_resistance.value != 0.1) ?  true : false" ng-change="checkBackResistanceBox(item_back_resistance.name,item_back_resistance.value);">{{item_back_resistance.value}} </md-checkbox>
+                        </p>
+						<!--For R resistance  box-->
+                        <p ng-show="resistanceR_box_show">
+                           <md-checkbox ng-repeat="item_R_resistance in item_resR_checkbox_model_fractional" ng-model="item_R_resistance.name" ng-init="item_R_resistance.name=(item_R_resistance.value != 0.1) ?  true : false" ng-change="checkResistanceBoxR(item_R_resistance.name,item_R_resistance.value);">{{item_R_resistance.value}} </md-checkbox>
+                        </p>
+						<!--For R resistance  box-->
+                        <p ng-show="resistanceS_box_show">
+                           <md-checkbox ng-repeat="item_S_resistance in item_resS_checkbox_model_fractional" ng-model="item_S_resistance.name" ng-init="item_S_resistance.name=(item_S_resistance.value != 0.5) ?  true : false" ng-change="checkResistanceBoxS(item_S_resistance.name,item_S_resistance.value);">{{item_S_resistance.value}} </md-checkbox>
+                        </p>
+                     </div>
+                     <!--Small  resistance  -->
+                     <div ng-show="small_show">
+                        <!--For Q  resistance  box-->
+                        <p ng-show="fractional_resistance_box_show">
+                           <md-checkbox ng-repeat="item_fractional in item_fractional_resistance_small" ng-model="item_fractional.name" ng-init="item_fractional.name=true" ng-change="checkFractionalResistanceBox(item_fractional.name,item_fractional.value);">{{item_fractional.value}} </md-checkbox>
+                        </p>
+                        <!--For P resistance  box-->
+                        <p ng-show="resistance_box_show">
+                           <md-checkbox ng-repeat="item_back_resistance in item_back_resistance_small" ng-model="item_back_resistance.name" ng-init="item_back_resistance.name=true" ng-change="checkBackResistanceBox(item_back_resistance.name,item_back_resistance.value);">{{item_back_resistance.value}} </md-checkbox>
+                        </p>
+						<!--For R resistance  box-->
+                        <p ng-show="resistanceR_box_show">
+                           <md-checkbox ng-repeat="item_R_resistance in item_resR_checkbox_model_small" ng-model="item_R_resistance.name" ng-init="item_R_resistance.name=true " ng-change="checkResistanceBoxR(item_R_resistance.name,item_R_resistance.value);">{{item_R_resistance.value}} </md-checkbox>
+                        </p>
+						<!--For S resistance  box-->
+                        <p ng-show="resistanceS_box_show">
+                           <md-checkbox ng-repeat="item_S_resistance in item_resS_checkbox_model_small" ng-model="item_S_resistance.name" ng-init="item_S_resistance.name=true " ng-change="checkResistanceBoxS(item_S_resistance.name,item_S_resistance.value);">{{item_S_resistance.value}} </md-checkbox>
+                        </p>
+                     </div>
+                  </md-dialog-content>
+                  <section layout="row" class="md-actions close-btn">
+                     <md-button class="md-raised" ng-click="hideDialog();">
+                        {{close_lbl}}
+                     </md-button>
+                  </section>
+               </md-dialog-content>
+            </md-dialog>
+            <div id="Copyright">{{copyright}}</div>
+         </md-content>
+         <md-sidenav class="site-sidenav md-sidenav-left" md-component-id="right" md-is-locked-open="$mdMedia('gt-md')" md-swipe-left="toggleSidenav()">
+            <div>
+               <md-button id="variables" class="md-raised md-primary toolbarbutton subTitle" ng-click="toggle1()">
+                  {{variables}}
+				  <!-- //inset toolbar //   -->
+                  <span aria-hidden="true">
+                     <md-icon md-svg-src="md-toggle-arrow"  aria-hidden="true" ng-animate="{enter: 'rotate', leave: 'rotateCounterwise'}" ng-class="{true: 'rotate', false: 'rotateCounterwise'}[isActive2]" ></md-icon>
+                  </span>
+               </md-button>
+               <!-- ////////////   -->
+               <div ng-hide="showVariablesWheat" class="div">
+                  <!-- //inset label //   -->
+                  <md-content id="startLbl" class="md-title selectable" layout-padding>{{start_label}}</md-content>
+                  <!-- //inset power  button //   -->
+                  <section layout="row" layout-align="center center">
+                     <md-button ng-disabled="powerButton" ng-show="powerOn_wheatson" class="md-raised" id="powerBtnWheatson" ng-click="powerOnWheatson();" >{{powerOnLbl}}</md-button>
+                  </section>
+                  <!-- //inset label //   -->
+                  <md-content id="startLblWheatson" class="md-title selectable" layout-padding>{{balancing_label}}</md-content>
+				  <!-- //inset start button //   -->
+                  <section layout="row" layout-align="center center">
+                     <md-button ng-disabled="exptMainBtn" class="md-raised" ng-click="startInitial();" >{{StartExperiment}}</md-button>
+                  </section>
+               </div>
+			   <!-- //inset label //   -->
+               <md-button id="andersonTab" class="md-raised md-primary toolbarbutton subTitle" ng-click="toggle2()">
+                  {{variables_anderson}}
+				  <!-- //inset toolbar //   -->
+                  <span aria-hidden="true">
+                     <md-icon md-svg-src="md-toggle-arrow"  aria-hidden="true" ng-animate="{enter: 'rotate', leave: 'rotateCounterwise'}" ng-class="{true: 'rotate', false: 'rotateCounterwise'}[isActive3]" ></md-icon>
+                  </span>
+               </md-button>
+               <div ng-hide="showVariables">
+                  <!-- //insert power button //   -->
+                  <section layout="row" layout-align="center center">
+                     <md-button ng-disabled="andersonPowrBtn" class="md-raised" ng-show="showPowerAnderson" id="powerBtnAnderson" ng-click="initandersonExpPower();" >{{anderson_powerOn}}</md-button>
+                  </section>
+                  <!-- //insert label //   -->
+                  <md-content id="inductnceCoilLbl" ng-show="hideCroSliders" class="md-title selectable" layout-padding>{{inductance_coil}}</md-content>
+                  <!-- //insert coil length slider //   -->
+                  <md-content class="md-title selectable" ng-model="coilLenValue" ng-show="hideCroSliders" layout-padding id="coilLenLabel">{{coilLengthLbl}} {{coil_length}} {{cm}}</md-content>
+                  <div layout>
+                     <md-slider flex md-discrete ng-disabled="length_control" ng-model="coilLen" ng-change="coilLengthslider();" ng-show="hideCroSliders" step="1" min="5" max="35" aria-label="rating"></md-slider>
+                  </div>
+                  <!-- //insert coil diameter slider //   -->
+                  <md-content class="md-title selectable" ng-model="coilDiamtrValue" ng-show="hideCroSliders" layout-padding id="coilDiaLabel">{{coilDiameterLbl}} {{coil_diameter}} {{cm}}</md-content>
+                  <div layout>
+                     <md-slider flex md-discrete ng-disabled="diameter_control" ng-model="coilDiameter" ng-change="coilDiamterslider();" ng-show="hideCroSliders" step=".2" min=".1" max="8" aria-label="rating"></md-slider>
+                  </div>
+                  <!-- //insert label //   -->
+                  <md-content id="signlGenLbl" ng-show="hideControls" class="md-title selectable" layout-padding>{{signal_generator}}</md-content>
+                  <!-- //insert voltage slider //   -->
+                  <md-content class="md-title selectable" ng-show="hideControls" ng-model="voltValue" layout-padding id="voltageLabel">{{voltageLbl}} {{voltage}} {{v}}</md-content>
+                  <div layout>
+                     <md-slider flex md-discrete ng-disabled="control_disable" ng-show="hideControls" ng-change="voltageslider();" ng-model="volt" step=".2" min="2" max="5" aria-label="rating"></md-slider>
+                  </div>
+                  <!-- //insert frequency slider //   -->
+                  <md-content class="md-title selectable" ng-disabled="disabled" ng-show="hideControls" ng-model="frequencyValue" layout-padding id="frequencyLabel">{{frequencyLbl}} {{frequency}} {{f}}</md-content>
+                  <div layout>
+                     <md-slider flex md-discrete ng-disabled="control_disable" ng-model="freq" ng-change="frequencyslider();" ng-show="hideControls" step="1" min="20" max="1000" aria-label="rating"></md-slider>
+                  </div>
+                  <!-- //insert variable resistance slider //   -->
+                  <md-content class="md-title selectable" ng-model="varbleResValue" ng-show="hideControls" layout-padding id="variableResLabel">{{variableResistrLbl}} {{variable_resistance}} {{res}}</md-content>
+                  <div layout>
+                     <md-slider flex md-discrete ng-disabled="control_disable" ng-model="varRes" ng-change="variableResistorslider();" ng-show="hideControls" step=".1" min="1" max="15000" aria-label="rating"></md-slider>
+                  </div>
+                  <!-- //insert show cro button -->
+                  <section layout="row" layout-align="center center">
+                     <md-button ng-show="ShowHideCRO" ng-disabled="crodisabled" class="md-raised" id="showCRO" ng-click="showCroFn();" >{{show_cro}}</md-button>
+                  </section>
+               </div>
+            </div>
+            <!-- ////////////   Result Toolbar-->
+            <md-button id="result" class="md-raised md-primary toolbarbutton subTitle" ng-click="toggle()">
+               {{result}}
+               <span aria-hidden="true">
+                  <md-icon md-svg-src="md-toggle-arrow"  aria-hidden="true" ng-animate="{enter: 'rotate', leave: 'rotateCounterwise'}" ng-class="{true: 'rotate', false: 'rotateCounterwise'}[isActive1]" ></md-icon>
+               </span>
+            </md-button>
+            <div ng-hide="showValue">
+               <!-- //insert inductance result label // -->   
+               <div  class="div">
+                  <md-content class="md-title selectable" ng-model="InductanceVal" ng-show="hideResult" layout-padding id="inductanceValue">{{inductanceLbl}} {{inductance}} x 10<sup>{{inductanceSubVal}}</sup> H
+                  </md-content>
+               </div>
+               <!-- //insert inductive reatance result label // -->   
+               <div class="div">
+                  <md-content class="md-title selectable" ng-model="inducReactVal" ng-show="hideResult" layout-padding id="inductReatncValue">{{inductanceReactnceLbl}} {{inductive_reactance}} x 10<sup>{{reactanceSubVal}}</sup> Ω
+                  </md-content>
+               </div>
+               <!-- //insert reset button //   -->
+               <section layout="row" layout-align="center center">
+                  <md-button ng-disabled="control_disable" class="md-raised" ng-show="hideControls" id="resetBtn" ng-click="resetExperiment();" >{{reset_Lbl}}</md-button>
+               </section>
+            </div>
+            </div>  
+         </md-sidenav>
+      </md-content>
+   </body>
+</html>

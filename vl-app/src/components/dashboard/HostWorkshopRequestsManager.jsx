@@ -1,9 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { FileText, Users, Eye, GripVertical, ChevronLeft, Plus, Trash2, Save, X, Loader2, AlertCircle } from 'lucide-react';
+import { FileText, Users, Eye, GripVertical, ChevronLeft, Plus, Trash2, Save, X, Loader2, AlertCircle, Play, Check } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 export default function HostWorkshopRequestsManager() {
-  const { token, API_URL } = useAuth();
+  const { token, API_URL, user } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const rolePath = location.pathname.split('/')[2];
   
   const [activeTab, setActiveTab] = useState('requests'); // 'requests', 'form'
   const [error, setError] = useState('');
@@ -18,6 +22,8 @@ export default function HostWorkshopRequestsManager() {
   const [requests, setRequests] = useState([]);
   const [loadingReq, setLoadingReq] = useState(false);
   const [viewingRequest, setViewingRequest] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
+  const [requestToDelete, setRequestToDelete] = useState(null);
 
   // --- Fetch Form Schema ---
   const fetchFormSchema = useCallback(async () => {
@@ -69,6 +75,34 @@ export default function HostWorkshopRequestsManager() {
     }
   }, [activeTab, fetchFormSchema, fetchRequests]);
 
+  const requestDelete = (req) => {
+    setRequestToDelete(req);
+  };
+
+  const deleteRequest = async () => {
+    if (!requestToDelete) return;
+    
+    const id = requestToDelete.id;
+    setDeletingId(id);
+    try {
+      const res = await fetch(`${API_URL}/pages/nodal-centre-request/survey/responses/${id}/delete`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.message || 'Failed to delete request');
+      }
+      setRequests(requests.filter(r => r.id !== id));
+      setRequestToDelete(null);
+    } catch (err) {
+      console.error(err);
+      setError('Failed to delete request');
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
   // --- Form Builder Handlers ---
   const addQuestion = () => setQuestions([...questions, { id: Date.now().toString(), text: 'New Question', type: 'text', required: true, options: [] }]);
   const updateQuestion = (qId, field, value) => setQuestions(questions.map(q => q.id === qId ? { ...q, [field]: value } : q));
@@ -95,8 +129,8 @@ export default function HostWorkshopRequestsManager() {
     if (!formSectionId) return;
     setSavingForm(true);
     try {
-      const res = await fetch(`${API_URL}/pages/nodal-centre-request/sections/${formSectionId}`, {
-        method: 'PUT',
+      const res = await fetch(`${API_URL}/pages/nodal-centre-request/sections/${formSectionId}/update`, {
+        method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ content: { questions } })
       });
@@ -131,6 +165,66 @@ export default function HostWorkshopRequestsManager() {
     return '-';
   };
 
+  const handleProceed = () => {
+    if (!viewingRequest) return;
+    const readable = getReadableData(viewingRequest.data);
+    const instName = extractField(readable, ['institution', 'college', 'university', 'nodal centre']);
+    const contactEmail = extractField(readable, ['email', 'mail', 'contact']);
+    const phone = extractField(readable, ['phone', 'mobile', 'number']);
+    const reqDate = extractField(readable, ['date']);
+    const reqTime = extractField(readable, ['time']);
+    const reqMode = extractField(readable, ['mode', 'training']);
+    
+    const prefillTitle = instName !== '-' ? `${instName} Workshop` : 'New Workshop';
+    let prefillDesc = '';
+    
+    // Add date and time to description
+    if (reqDate !== '-' || reqTime !== '-') {
+      prefillDesc += `Requested Schedule:\n`;
+      if (reqDate !== '-') prefillDesc += `- Date: ${reqDate}\n`;
+      if (reqTime !== '-') prefillDesc += `- Time: ${reqTime}\n`;
+      prefillDesc += `\n`;
+    }
+
+    if (contactEmail !== '-' || phone !== '-') {
+      prefillDesc += `Contact Information from Request:\n`;
+      if (contactEmail !== '-') prefillDesc += `- Email: ${contactEmail}\n`;
+      if (phone !== '-') prefillDesc += `- Phone: ${phone}\n`;
+    }
+
+    let prefillDate = '';
+    if (reqDate !== '-') {
+      // Attempt to format the date to YYYY-MM-DD for the date picker
+      try {
+        const d = new Date(reqDate);
+        if (!isNaN(d.getTime())) {
+          prefillDate = d.toISOString().split('T')[0];
+        } else {
+          prefillDate = reqDate;
+        }
+      } catch (e) {
+        prefillDate = reqDate;
+      }
+    }
+    
+    let prefillMode = 'Online';
+    if (reqMode.toLowerCase().includes('offline') || reqMode.toLowerCase().includes('in-person')) {
+      prefillMode = 'In-person';
+    }
+
+    navigate(`/dashboard/${rolePath}/workshops/new`, {
+      state: {
+        prefill: {
+          title: prefillTitle,
+          description: prefillDesc,
+          date: prefillDate,
+          mode: prefillMode
+        },
+        deleteRequestId: viewingRequest.id
+      }
+    });
+  };
+
   return (
     <div className="bg-slate-900/50 backdrop-blur-xl border border-slate-800 rounded-3xl overflow-hidden shadow-2xl flex flex-col min-h-[600px]">
       {/* Internal Tabs */}
@@ -144,14 +238,16 @@ export default function HostWorkshopRequestsManager() {
           >
             <Users className="w-4 h-4" /> Received Requests
           </button>
-          <button
-            onClick={() => setActiveTab('form')}
-            className={`px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 transition-all ${
-              activeTab === 'form' ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800 border border-transparent'
-            }`}
-          >
-            <FileText className="w-4 h-4" /> Edit Request Form
-          </button>
+          {(user?.role === 'admin' || user?.role === 'vl_manager') && (
+            <button
+              onClick={() => setActiveTab('form')}
+              className={`px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 transition-all ${
+                activeTab === 'form' ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800 border border-transparent'
+              }`}
+            >
+              <FileText className="w-4 h-4" /> Edit Request Form
+            </button>
+          )}
         </div>
         {activeTab === 'form' && (
           <button onClick={saveFormSchema} disabled={savingForm} className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-purple-600 hover:bg-purple-700 shadow-lg shadow-purple-500/20 transition-all disabled:opacity-50">
@@ -179,11 +275,22 @@ export default function HostWorkshopRequestsManager() {
                 <ChevronLeft className="w-4 h-4" /> Back to List
               </button>
               <div className="bg-slate-900 border border-slate-700/50 rounded-2xl p-6 shadow-xl">
-                <div className="mb-6 pb-4 border-b border-slate-800 flex justify-between items-center">
-                  <h3 className="text-xl font-bold text-white">Host Workshop Request Details</h3>
-                  <span className="text-xs text-slate-500 bg-slate-800 px-3 py-1 rounded-full font-semibold">
-                    {new Date(viewingRequest.createdAt).toLocaleString()}
-                  </span>
+                <div className="mb-6 pb-4 border-b border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div>
+                    <h3 className="text-xl font-bold text-white">Host Workshop Request Details</h3>
+                    <span className="text-xs text-slate-500 bg-slate-800 px-3 py-1 rounded-full font-semibold mt-2 inline-block">
+                      {new Date(viewingRequest.createdAt).toLocaleString()}
+                    </span>
+                  </div>
+                  {(user?.role === 'admin' || user?.role === 'vl_manager' || user?.role === 'vl_coordinator') && (
+                    <button 
+                      onClick={handleProceed}
+                      className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 shadow-lg shadow-emerald-500/25 transition-all transform hover:-translate-y-0.5"
+                    >
+                      <Check className="w-4 h-4" />
+                      {user?.role === 'vl_coordinator' ? 'Create Pending Workshop' : 'Approve & Create Workshop'}
+                    </button>
+                  )}
                 </div>
                 <div className="space-y-5">
                   {Object.entries(getReadableData(viewingRequest.data)).map(([q, a], i) => (
@@ -227,12 +334,24 @@ export default function HostWorkshopRequestsManager() {
                             </div>
                           </td>
                           <td className="px-6 py-4 text-right">
-                            <button
-                              onClick={() => setViewingRequest(req)}
-                              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-purple-500/10 text-purple-400 hover:bg-purple-500/20 text-xs font-bold transition-colors"
-                            >
-                              <Eye className="w-4 h-4" /> View Application
-                            </button>
+                            <div className="flex items-center justify-end gap-2">
+                              <button
+                                onClick={() => setViewingRequest(req)}
+                                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-purple-500/10 text-purple-400 hover:bg-purple-500/20 text-xs font-bold transition-colors"
+                              >
+                                <Eye className="w-4 h-4" /> View Application
+                              </button>
+                              {(user?.role === 'admin' || user?.role === 'vl_manager') && (
+                                <button
+                                  onClick={() => requestDelete(req)}
+                                  disabled={deletingId === req.id}
+                                  className="p-2 rounded-xl text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-colors disabled:opacity-50"
+                                  title="Delete Request"
+                                >
+                                  {deletingId === req.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                                </button>
+                              )}
+                            </div>
                           </td>
                         </tr>
                       );
@@ -357,6 +476,43 @@ export default function HostWorkshopRequestsManager() {
           )
         )}
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {requestToDelete && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm" onClick={() => !deletingId && setRequestToDelete(null)} />
+          <div className="relative bg-slate-900 border border-slate-700 rounded-2xl p-6 w-full max-w-md shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 rounded-full bg-red-500/20 flex items-center justify-center flex-shrink-0 border border-red-500/30">
+                <Trash2 className="w-6 h-6 text-red-500" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-white mb-2">Delete Request?</h3>
+                <p className="text-sm text-slate-300 leading-relaxed mb-6">
+                  Are you sure you want to delete this host workshop request? This action cannot be undone.
+                </p>
+                <div className="flex gap-3">
+                  <button
+                    disabled={deletingId === requestToDelete.id}
+                    onClick={() => setRequestToDelete(null)}
+                    className="flex-1 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-300 bg-slate-800 hover:bg-slate-700 transition-colors disabled:opacity-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    disabled={deletingId === requestToDelete.id}
+                    onClick={deleteRequest}
+                    className="flex-1 px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-red-500 hover:bg-red-600 shadow-lg shadow-red-500/20 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+                  >
+                    {deletingId === requestToDelete.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
