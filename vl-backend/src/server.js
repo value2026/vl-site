@@ -33,11 +33,28 @@ const PORT = process.env.PORT || 5000;
 app.set('trust proxy', 1);
 
 // ── Middleware ────────────────────────────────────────────────
+// ── Middleware ────────────────────────────────────────────────
+const toOrigin = (value) => {
+  const trimmed = value && value.trim();
+  if (!trimmed) return '';
+
+  try {
+    return new URL(trimmed).origin;
+  } catch (_) {
+    return trimmed.replace(/\/+$/, '');
+  }
+};
+
 const allowedOrigins = [
   process.env.FRONTEND_URL,
   ...(process.env.CORS_ORIGINS || '').split(',')
-].map(origin => origin && origin.trim()).filter(Boolean);
+].map(toOrigin).filter(Boolean);
 
+/*const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  ...(process.env.CORS_ORIGINS || '').split(',')
+].map(origin => origin && origin.trim()).filter(Boolean);
+*/
 app.use(cors((req, callback) => {
   const requestOrigin = `${req.protocol}://${req.get('host')}`;
   callback(null, {
