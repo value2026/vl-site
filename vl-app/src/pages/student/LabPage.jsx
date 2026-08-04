@@ -103,45 +103,46 @@ export default function LabPage() {
               <p className="text-gray-500 text-sm">Experiments for this lab will appear here once added.</p>
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
               {experiments.map((exp, index) => (
                 <Link
                   key={exp.id}
                   to={`/experiment/${exp.id}`}
-                  className="group flex items-center gap-5 bg-white border border-gray-200 rounded-2xl p-5 hover:border-blue-300 hover:shadow-md transition-all duration-200"
+                  className="group flex flex-col bg-white border border-gray-200 rounded-2xl p-5 hover:border-blue-300 hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
                 >
-                  {/* Number */}
-                  <div className={`w-10 h-10 flex-shrink-0 rounded-xl flex items-center justify-center text-sm font-bold bg-gradient-to-br ${subject?.gradient || 'from-blue-600 to-indigo-700'} text-white shadow-sm`}>
-                    {String(index + 1).padStart(2, '0')}
+                  {/* Top: Number and Badge */}
+                  <div className="flex items-start justify-between mb-4">
+                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-lg font-bold bg-gradient-to-br ${subject?.gradient || 'from-blue-600 to-indigo-700'} text-white shadow-sm`}>
+                      {String(index + 1).padStart(2, '0')}
+                    </div>
+                    <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border ${DIFFICULTY_STYLE[exp.difficulty] || 'bg-gray-100 border-gray-200 text-gray-700'}`}>
+                      {exp.difficulty}
+                    </span>
                   </div>
 
                   {/* Info */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between gap-4">
-                      <div>
-                        <h3 className="text-gray-900 font-semibold text-sm mb-0.5 group-hover:text-blue-700 transition-colors">
-                          {exp.title}
-                        </h3>
-                        <p className="text-gray-400 text-xs leading-relaxed line-clamp-2">{exp.description}</p>
-                      </div>
-                      {/* Badges */}
-                      <div className="flex items-center gap-2 flex-shrink-0">
-                        <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border ${DIFFICULTY_STYLE[exp.difficulty] || 'bg-gray-100 border-gray-200 text-gray-700'}`}>
-                          {exp.difficulty}
-                        </span>
-                        <span className="hidden sm:inline-flex items-center gap-1 text-xs text-gray-400">
-                          <Clock className="w-3 h-3" /> {exp.duration}
-                        </span>
-                      </div>
-                    </div>
+                  <div className="flex-1 min-w-0 mb-5">
+                    <h3 className="text-gray-900 font-bold text-[15px] mb-2 group-hover:text-blue-700 transition-colors leading-snug line-clamp-2">
+                      {exp.title}
+                    </h3>
+                    <p className="text-gray-500 text-xs leading-relaxed line-clamp-3">
+                      {exp.description}
+                    </p>
                   </div>
 
-                  {/* Arrow */}
-                  <div className="flex-shrink-0 flex items-center gap-2">
-                    <span className="hidden sm:flex items-center gap-1.5 text-xs font-semibold text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity">
-                      Start <Play className="w-3 h-3 fill-current" />
+                  {/* Footer */}
+                  <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-100">
+                    <span className="flex items-center gap-1.5 text-xs text-gray-500 font-medium">
+                      <Clock className="w-3.5 h-3.5 text-gray-400" /> {exp.duration}
                     </span>
-                    <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-gray-500 transition-colors" />
+                    <div className="flex items-center gap-1.5 overflow-hidden">
+                      <span className="flex items-center gap-1 text-xs font-bold text-blue-600 opacity-0 group-hover:opacity-100 transition-all translate-x-4 group-hover:translate-x-0 duration-300">
+                        Start <Play className="w-3 h-3 fill-current" />
+                      </span>
+                      <div className="w-6 h-6 rounded-full bg-gray-50 group-hover:bg-blue-50 flex items-center justify-center transition-colors">
+                        <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-blue-600 transition-colors" />
+                      </div>
+                    </div>
                   </div>
                 </Link>
               ))}
