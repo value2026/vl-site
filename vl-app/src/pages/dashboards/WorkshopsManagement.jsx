@@ -27,6 +27,7 @@ export default function WorkshopsManagement() {
 
 
   const [deleteConfirm, setDeleteConfirm] = useState(null);
+  const [statusConfirm, setStatusConfirm] = useState(null);
   const [actionLoading, setActionLoading] = useState(null);
 
   const fetchWorkshops = useCallback(async () => {
@@ -53,10 +54,18 @@ export default function WorkshopsManagement() {
   const openCreateModal = () => navigate(`/dashboard/${rolePath}/workshops/new`);
   const openEditModal = (w) => navigate(`/dashboard/${rolePath}/workshops/${w.id}`);
 
-  const updateStatus = async (id, status) => {
-    if (!window.confirm(`Are you sure you want to ${status} this workshop?`)) return;
+  const requestStatusUpdate = (workshop, status) => {
+    setStatusConfirm({ workshop, status });
+  };
+
+  const confirmStatusUpdate = async () => {
+    if (!statusConfirm) return;
+    const { workshop, status } = statusConfirm;
+    setStatusConfirm(null);
+    setActionLoading(workshop.id);
+
     try {
-      const res = await fetch(`${API_URL}/workshops/${id}/update`, {
+      const res = await fetch(`${API_URL}/workshops/${workshop.id}/update`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -70,7 +79,9 @@ export default function WorkshopsManagement() {
       }
       fetchWorkshops();
     } catch (err) {
-      alert(err.message);
+      console.error(err);
+    } finally {
+      setActionLoading(null);
     }
   };
 
@@ -275,7 +286,7 @@ export default function WorkshopsManagement() {
                   onEdit={() => openEditModal(w)}
                   onDelete={() => requestDeleteWorkshop(w)}
 
-                  onStatusUpdate={(status) => updateStatus(w.id, status)}
+                  onStatusUpdate={(status) => requestStatusUpdate(w, status)}
                   actionLoading={actionLoading}
                 />
               ))}
@@ -300,7 +311,7 @@ export default function WorkshopsManagement() {
                       onEdit={() => openEditModal(w)}
                       onDelete={() => requestDeleteWorkshop(w)}
 
-                      onStatusUpdate={(status) => updateStatus(w.id, status)}
+                      onStatusUpdate={(status) => requestStatusUpdate(w, status)}
                       actionLoading={actionLoading}
                     />
                   ))}
@@ -339,6 +350,50 @@ export default function WorkshopsManagement() {
                     className="flex-1 px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-red-500 hover:bg-red-600 shadow-lg shadow-red-500/20 transition-colors"
                   >
                     Yes, Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Status Confirmation Modal */}
+      {statusConfirm && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm" onClick={() => setStatusConfirm(null)} />
+          <div className="relative bg-slate-900 border border-slate-700 rounded-2xl p-6 w-full max-w-md shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-start gap-4">
+              <div className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 border ${
+                statusConfirm.status === 'approved' 
+                  ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' 
+                  : 'bg-red-500/20 text-red-400 border-red-500/30'
+              }`}>
+                {statusConfirm.status === 'approved' ? <Check className="w-6 h-6" /> : <XCircle className="w-6 h-6" />}
+              </div>
+              <div className="flex-1">
+                <h3 className="text-xl font-bold text-white mb-2 capitalize">
+                  {statusConfirm.status} Workshop?
+                </h3>
+                <p className="text-sm text-slate-300 leading-relaxed mb-6">
+                  Are you sure you want to <strong className="text-white capitalize">{statusConfirm.status}</strong> the workshop <strong className="text-white">"{statusConfirm.workshop?.title}"</strong>?
+                </p>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setStatusConfirm(null)}
+                    className="flex-1 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-300 bg-slate-800 hover:bg-slate-700 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={confirmStatusUpdate}
+                    className={`flex-1 px-4 py-2.5 rounded-xl text-sm font-bold text-white shadow-lg transition-colors capitalize ${
+                      statusConfirm.status === 'approved'
+                        ? 'bg-emerald-500 hover:bg-emerald-600 shadow-emerald-500/20'
+                        : 'bg-red-500 hover:bg-red-600 shadow-red-500/20'
+                    }`}
+                  >
+                    Yes, {statusConfirm.status}
                   </button>
                 </div>
               </div>
@@ -426,9 +481,7 @@ function WorkshopCard({ workshop, user, onEdit, onDelete, onStatusUpdate, action
       </div>
 
       <div className="p-3 bg-slate-950/50 rounded-b-[22px] border-t border-slate-800 flex flex-wrap gap-2 justify-end">
-        {(user?.role === 'admin' || user?.role === 'vl_manager') && (
-          <>
-            {workshop.status === 'pending' && user?.role === 'admin' && (
+            {workshop.status === 'pending' && (user?.role === 'admin' || user?.role === 'vl_manager') && (
               <>
                 <button onClick={() => onStatusUpdate('approved')} className="p-2 rounded-xl text-emerald-400 hover:bg-emerald-500/10 transition-colors" title="Approve">
                   <Check className="w-4 h-4" />
@@ -438,24 +491,21 @@ function WorkshopCard({ workshop, user, onEdit, onDelete, onStatusUpdate, action
                 </button>
               </>
             )}
-            {(user?.role === 'admin' || workshop.createdBy?.id === user?.id) && (
-              <>
-
-                <button onClick={onEdit} className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors" title="Edit">
-                  <Edit className="w-4 h-4" />
-                </button>
-                <button 
-                  onClick={onDelete} 
-                  disabled={actionLoading === workshop.id}
-                  className="p-2 rounded-xl text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-colors disabled:opacity-50" 
-                  title="Delete"
-                >
-                  {actionLoading === workshop.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
-                </button>
-              </>
+            {(user?.role === 'admin' || user?.role === 'vl_manager' || workshop.createdBy?.id === user?.id) && (
+              <button onClick={onEdit} className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors" title="Edit">
+                <Edit className="w-4 h-4" />
+              </button>
             )}
-          </>
-        )}
+            {(user?.role === 'admin' || user?.role === 'vl_manager') && (
+              <button 
+                onClick={onDelete} 
+                disabled={actionLoading === workshop.id}
+                className="p-2 rounded-xl text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-colors disabled:opacity-50" 
+                title="Delete"
+              >
+                {actionLoading === workshop.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+              </button>
+            )}
       </div>
     </div>
   );
@@ -507,9 +557,7 @@ function WorkshopListItem({ workshop, user, onEdit, onDelete, onStatusUpdate, ac
       </td>
       <td className="px-4 py-4 text-right">
         <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-          {(user?.role === 'admin' || user?.role === 'vl_manager') && (
-            <>
-              {workshop.status === 'pending' && user?.role === 'admin' && (
+              {workshop.status === 'pending' && (user?.role === 'admin' || user?.role === 'vl_manager') && (
                 <>
                   <button onClick={() => onStatusUpdate('approved')} className="p-2 rounded-xl text-emerald-400 hover:bg-emerald-500/10 transition-colors" title="Approve">
                     <Check className="w-4 h-4" />
@@ -519,25 +567,25 @@ function WorkshopListItem({ workshop, user, onEdit, onDelete, onStatusUpdate, ac
                   </button>
                 </>
               )}
-              {(user?.role === 'admin' || workshop.createdBy?.id === user?.id) && (
-                <>
-
-                  <div className="w-px h-6 bg-slate-700 mx-1"></div>
-                  <button onClick={onEdit} className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors" title="Edit">
-                    <Edit className="w-4 h-4" />
-                  </button>
-                  <button 
-                    onClick={onDelete} 
-                    disabled={actionLoading === workshop.id}
-                    className="p-2 rounded-xl text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-colors disabled:opacity-50" 
-                    title="Delete"
-                  >
-                    {actionLoading === workshop.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
-                  </button>
-                </>
+              
+              <div className="w-px h-6 bg-slate-700 mx-1"></div>
+              
+              {(user?.role === 'admin' || user?.role === 'vl_manager' || workshop.createdBy?.id === user?.id) && (
+                <button onClick={onEdit} className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors" title="Edit">
+                  <Edit className="w-4 h-4" />
+                </button>
               )}
-            </>
-          )}
+              
+              {(user?.role === 'admin' || user?.role === 'vl_manager') && (
+                <button 
+                  onClick={onDelete} 
+                  disabled={actionLoading === workshop.id}
+                  className="p-2 rounded-xl text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-colors disabled:opacity-50" 
+                  title="Delete"
+                >
+                  {actionLoading === workshop.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                </button>
+              )}
         </div>
       </td>
     </tr>

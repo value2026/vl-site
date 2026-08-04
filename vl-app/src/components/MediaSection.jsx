@@ -126,9 +126,8 @@ export default function MediaSection({ sectionTitle, sectionSubtitle, content = 
           ))}
         </div>
 
-        {/* Stats banner */}
         <div className="bg-hero-gradient rounded-3xl overflow-hidden">
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-white/10">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-white/10">
             {stats.map((stat) => (
               <StatCounter key={stat.label} {...stat} />
             ))}

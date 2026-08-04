@@ -1,9 +1,11 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   FlaskConical, Mail, Phone, MapPin,
   AtSign, Rss, Globe, Share2,
 } from 'lucide-react';
 import { assetUrl } from '../utils/url';
+import { apiUrl } from '../utils/api';
 
 const quickLinks = [
   { label: 'Home', href: '/' },
@@ -30,6 +32,30 @@ const socials = [
 ];
 
 export default function Footer() {
+  const [dynamicContent, setDynamicContent] = useState(null);
+
+  useEffect(() => {
+    const fetchFooter = async () => {
+      try {
+        const res = await fetch(apiUrl('/pages/home/sections'));
+        if (res.ok) {
+          const sections = await res.json();
+          const footerSec = sections.find(s => s.sectionKey === 'footer');
+          if (footerSec && footerSec.content) {
+            setDynamicContent(footerSec.content);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to fetch footer content', err);
+      }
+    };
+    fetchFooter();
+  }, []);
+
+  const email = dynamicContent?.email || 'virtual_labs@am.amrita.edu';
+  const phone = dynamicContent?.phone || '+91 9446 007 135';
+  const address = dynamicContent?.address || 'Amrita Virtual Labs\nAmrita Vishwa Vidyapeetham\nAmritapuri Campus, Kollam\nKerala — 690 525';
+
   return (
     <footer className="bg-[#0F172A] text-slate-400" aria-labelledby="footer-heading">
       <div className="container-custom py-16">
@@ -86,13 +112,20 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Lab links */}
+          {/* Important Links */}
           <div>
             <h3 className="text-white font-semibold text-sm uppercase tracking-wider mb-5">
-              Lab Categories
+              Important Links
             </h3>
             <ul className="space-y-2.5">
-              {labLinks.map(({ label, href }) => (
+              {(dynamicContent?.importantLinks || [
+                { label: 'Amrita University', href: '#' },
+                { label: 'NMEICT', href: '#' },
+                { label: 'AICTE', href: '#' },
+                { label: 'UGC', href: '#' },
+                { label: 'National Education Policy', href: '#' },
+                { label: 'Virtual Labs India', href: '#' }
+              ]).map(({ label, href }) => (
                 <li key={label}>
                   <Link
                     to={href}
@@ -114,22 +147,24 @@ export default function Footer() {
               <li className="flex gap-3">
                 <MapPin className="w-4 h-4 text-primary-400 flex-shrink-0 mt-0.5" />
                 <span>
-                  Amrita Virtual Labs<br />
-                  Amrita Vishwa Vidyapeetham<br />
-                  Amritapuri Campus, Kollam<br />
-                  Kerala — 690 525
+                  {address.split('\n').map((line, i) => (
+                    <span key={i}>
+                      {line}
+                      <br />
+                    </span>
+                  ))}
                 </span>
               </li>
               <li className="flex items-center gap-3">
                 <Mail className="w-4 h-4 text-primary-400 flex-shrink-0" />
-                <a href="mailto:virtual_labs@am.amrita.edu" className="hover:text-white transition-colors">
-                  virtual_labs@am.amrita.edu
+                <a href={`mailto:${email}`} className="hover:text-white transition-colors">
+                  {email}
                 </a>
               </li>
               <li className="flex items-center gap-3">
                 <Phone className="w-4 h-4 text-primary-400 flex-shrink-0" />
-                <a href="tel:+914222685000" className="hover:text-white transition-colors">
-                  +91 422 268 5000
+                <a href={`tel:${phone.replace(/\s+/g, '')}`} className="hover:text-white transition-colors">
+                  {phone}
                 </a>
               </li>
             </ul>

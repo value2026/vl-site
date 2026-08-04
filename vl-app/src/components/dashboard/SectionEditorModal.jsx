@@ -663,6 +663,15 @@ const REPEATABLE_CONFIGS = {
       ],
     },
   },
+  footer: {
+    importantLinks: {
+      label: 'Important Links',
+      fields: [
+        { key: 'label', label: 'Link Text', placeholder: 'Amrita University' },
+        { key: 'href', label: 'URL', placeholder: 'https://...' },
+      ],
+    },
+  },
 };
 
 // ── Simple text input ─────────────────────────────────────────
@@ -1343,6 +1352,34 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
           )}
 
 
+
+          {/* ── FOOTER ─────────────────────────────────────── */}
+          {section.sectionKey === 'footer' && (
+            <>
+              <SectionDivider label="Contact Information" />
+              <TextField label="Contact Email" value={content.email} onChange={v => setContentKey('email', v)} placeholder="virtual_labs@am.amrita.edu" />
+              <TextField label="Contact Phone" value={content.phone} onChange={v => setContentKey('phone', v)} placeholder="+91 9446 007 135" />
+              <div className="mb-6">
+                <label className="block text-[13px] font-semibold text-slate-300 mb-2">Office Address</label>
+                <textarea
+                  value={content.address || ''}
+                  onChange={e => setContentKey('address', e.target.value)}
+                  className="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-3 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[100px]"
+                  placeholder="Amrita Virtual Labs..."
+                />
+              </div>
+
+              <SectionDivider label="Important Links" />
+              <RepeatableList
+                label="Links"
+                items={content.importantLinks || []}
+                onChange={v => setContentKey('importantLinks', v)}
+                onAutoSave={v => handleAutoSave('importantLinks', v)}
+                fields={REPEATABLE_CONFIGS.footer.importantLinks.fields}
+                onConfirmRequest={setConfirmConfig}
+              />
+            </>
+          )}
 
           {/* ── NODAL CENTRES ───────────────────────────────── */}
           {section.sectionKey === 'nc_benefits' && (

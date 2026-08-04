@@ -46,11 +46,6 @@ async function main() {
   // Create Default Institutions with Legacy Metadata
   const defaultInstitutions = [
     { legacyId: 1, name: 'Amrita Vishwa Vidyapeetham', code: 'amrita', oldCreatedAt: '01-01-2015' },
-    { legacyId: 2, name: 'VMKV Engineering College',  code: 'vmkv',   oldCreatedAt: '2/3/2015' },
-    { legacyId: 3, name: 'IIT Bombay',                 code: 'iitb',   oldCreatedAt: '01-01-2015' },
-    { legacyId: 4, name: 'NIT Warangal',               code: 'nitw',   oldCreatedAt: '01-01-2015' },
-    { legacyId: 5, name: 'MET Nashik',                 code: 'met',    oldCreatedAt: '01-05-2015' },
-    { legacyId: 6, name: 'IIIT Hyderabad',             code: 'iiith',  oldCreatedAt: '01-01-2015' },
   ];
   
   let primaryInstitution = null;
@@ -108,57 +103,6 @@ async function main() {
     });
     console.log('✅ Nodal Admin user created!');
   }
-
-  // Create default teacher if not exists
-  const teacherEmail = 'teacher@virtuallabs.in';
-  let teacherExists = await prisma.user.findUnique({ where: { email: teacherEmail } });
-  if (!teacherExists && primaryInstitution) {
-    const hashed = await bcrypt.hash('VLTeacher@2024', 12);
-    teacherExists = await prisma.user.create({
-      data: {
-        name: 'Jane Teacher',
-        email: teacherEmail,
-        password: hashed,
-        role: 'teacher',
-        nodalCentreId: primaryInstitution.id, // Linking to Institution
-      },
-    });
-    console.log('✅ Teacher user created!');
-  }
-
-  // Create default student if not exists
-  const studentEmail = 'student@virtuallabs.in';
-  let studentExists = await prisma.user.findUnique({ where: { email: studentEmail } });
-  if (!studentExists && primaryInstitution) {
-    const hashed = await bcrypt.hash('VLStudent@2024', 12);
-    studentExists = await prisma.user.create({
-      data: {
-        name: 'John Student',
-        email: studentEmail,
-        password: hashed,
-        role: 'student',
-        nodalCentreId: primaryInstitution.id, // Linking to Institution
-      },
-    });
-    console.log('✅ Student user created!');
-  }
-
-  // Ensure extra students (alice, bob, charlie) if they exist are linked to the primary institution
-  const extraStudentEmails = ['alice@virtuallabs.in', 'bob@virtuallabs.in', 'charlie@virtuallabs.in'];
-  for (const email of extraStudentEmails) {
-    const s = await prisma.user.findUnique({ where: { email } });
-    if (s && primaryInstitution) {
-      await prisma.user.update({
-        where: { id: s.id },
-        data: {
-          nodalCentreId: primaryInstitution.id
-        }
-      });
-    }
-  }
-
-
-
 
   // 3. Define Seed Data
   const subjectsData = [
@@ -417,108 +361,6 @@ async function main() {
         console.log(`      ⚗️ Upserted Experiment: ${exp.title} (${exp.id})`);
       }
     }
-  }
-
-  // 5. Insert Mock Analytics Data
-  const student = await prisma.user.findFirst({ where: { role: 'student' } });
-  const teacherForAnalytics = await prisma.user.findFirst({ where: { role: 'teacher' } });
-  const allExps = await prisma.experiment.findMany();
-
-  if (student && allExps.length > 0) {
-    console.log('📈 Seeding mock analytics events...');
-    const nowTime = new Date();
-
-    // Add extra mock students for academic reports to look rich
-    const extraStudents = [
-      { name: 'Alice Johnson', email: 'alice@virtuallabs.in' },
-      { name: 'Bob Roberts', email: 'bob@virtuallabs.in' },
-      { name: 'Charlie Brown', email: 'charlie@virtuallabs.in' },
-    ];
-
-    const studentUsers = [student];
-    for (const est of extraStudents) {
-      let estUser = await prisma.user.findUnique({ where: { email: est.email } });
-      if (!estUser) {
-        const hashed = await bcrypt.hash('VLStudent@2024', 12);
-        estUser = await prisma.user.create({
-          data: {
-            name: est.name,
-            email: est.email,
-            password: hashed,
-            role: 'student',
-            nodalCentreId: student?.nodalCentreId || null, // Group them to make report work
-          },
-        });
-      }
-      studentUsers.push(estUser);
-    }
-
-    // Generate visits over past 15 days
-    const devicesList = ['desktop', 'mobile', 'tablet'];
-    const browsersList = ['chrome', 'firefox', 'safari'];
-
-    for (const sUser of studentUsers) {
-      for (let i = 0; i < 15; i++) {
-        // Random date in the past
-        const date = new Date(nowTime.getTime() - i * 24 * 60 * 60 * 1000);
-        // Random experiment
-        const randomExp = allExps[Math.floor(Math.random() * allExps.length)];
-
-        // Record 1-3 visits per day
-        const visitCount = Math.floor(Math.random() * 3) + 1;
-        for (let vc = 0; vc < visitCount; vc++) {
-          await prisma.experimentVisit.create({
-            data: {
-              userId: sUser.id,
-              experimentId: randomExp.id,
-              duration: Math.floor(Math.random() * 600) + 120, // 2-12 minutes
-              device: devicesList[Math.floor(Math.random() * devicesList.length)],
-              browser: browsersList[Math.floor(Math.random() * browsersList.length)],
-              createdAt: date,
-            },
-          });
-        }
-
-        // 50% chance of quiz attempt
-        if (Math.random() > 0.5) {
-          const maxScore = 5;
-          const score = Math.floor(Math.random() * 4) + 2; // Score between 2 and 5
-          const passed = score >= 3;
-          await prisma.quizAttempt.create({
-            data: {
-              userId: sUser.id,
-              experimentId: randomExp.id,
-              quizType: Math.random() > 0.5 ? 'pretest' : 'posttest',
-              score,
-              maxScore,
-              passed,
-              createdAt: date,
-            },
-          });
-        }
-
-        // 30% chance of feedback
-        if (Math.random() > 0.7) {
-          const comments = [
-            'Very helpful simulation!',
-            'Understood stack concepts easily.',
-            'Optics lab was realistic.',
-            'Nice explanation of aim and theory.',
-            'Smooth frame rate on simulation.',
-          ];
-          await prisma.feedback.create({
-            data: {
-              userId: sUser.id,
-              experimentId: randomExp.id,
-              rating: Math.floor(Math.random() * 2) + 4, // 4 or 5 stars
-              comment: comments[Math.floor(Math.random() * comments.length)],
-              createdAt: date,
-            },
-          });
-        }
-      }
-    }
-    console.log('✅ Analytics events seeded successfully.');
   }
 
   // Auto-link any uploaded content/simulations on disk

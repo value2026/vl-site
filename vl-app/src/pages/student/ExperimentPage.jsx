@@ -6,6 +6,7 @@ import {
   ListOrdered, ClipboardCheck, Link as LinkIcon, Users, MessageSquare, Gamepad2, MonitorPlay, FileText, Beaker 
 } from 'lucide-react';
 import { api, fileUrl } from '../../utils/api';
+import { getFilesBaseUrl } from '../../utils/url';
 import { trackEvent, trackError, EVENTS } from '../../utils/analytics';
 import QuizBlock from '../../components/student/QuizBlock';
 import { useAuth } from '../../context/AuthContext';
@@ -16,7 +17,7 @@ const SECTIONS = [
   { id: 'theory',       label: 'Theory',       icon: BookOpen,       color: 'text-blue-600',    bg: 'bg-blue-50' },
   { id: 'pretest',      label: 'Pretest',      icon: ClipboardList,  color: 'text-emerald-600', bg: 'bg-emerald-50' },
   { id: 'procedure',    label: 'Procedure',    icon: Beaker,         color: 'text-amber-500',   bg: 'bg-amber-50' },
-  { id: 'simulation',   label: 'Simulation',   icon: MonitorPlay,    color: 'text-violet-600',  bg: 'bg-violet-50' },
+   { id: 'simulation',   label: 'Simulation',   icon: MonitorPlay,    color: 'text-violet-600',  bg: 'bg-violet-50' },
   { id: 'posttest',     label: 'Posttest',     icon: ClipboardCheck, color: 'text-rose-500',    bg: 'bg-rose-50' },
   { id: 'references',   label: 'References',   icon: FileText,       color: 'text-teal-600',    bg: 'bg-teal-50' },
   { id: 'contributors', label: 'Contributors', icon: Users,          color: 'text-indigo-500',  bg: 'bg-indigo-50' },
@@ -233,6 +234,17 @@ export default function ExperimentPage() {
             const docsRes = await api.get(`/experiments/${expId}/docs`);
             if (docsRes.ok) {
               const docsData = await docsRes.json();
+              
+              // Post-process HTML sections to ensure any backend-generated absolute paths 
+              // (which might be missing the proxy prefix or have the wrong protocol) 
+              // are replaced with the correct frontend files URL
+              const filesBase = getFilesBaseUrl();
+              Object.keys(docsData).forEach(key => {
+                if (typeof docsData[key] === 'string') {
+                  docsData[key] = docsData[key].replace(/https?:\/\/[^\/]+\/files\//g, `${filesBase}/`);
+                }
+              });
+              
               setSections(docsData);
             }
           }

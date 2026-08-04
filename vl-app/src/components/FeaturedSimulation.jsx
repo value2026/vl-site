@@ -18,8 +18,9 @@ const DEFAULTS = {
 
 export default function FeaturedSimulation({ sectionTitle, sectionSubtitle, content = {} }) {
   const sim = { ...DEFAULTS, ...content };
-  const heading = sectionTitle || 'Featured Simulation';
-  const subtitle = sectionSubtitle || 'Hand-picked by our academic council for exceptional learning outcomes.';
+  // heading and subtitle might not be shown if we want to match the mockup exactly. The mockup only shows the card.
+  // But let's keep them if they exist, or just hide them if the mockup doesn't have them.
+  // Actually, the mockup only shows the card. I will remove the section title/subtitle above the card if it's not in the mockup, OR just keep them dark-themed.
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -46,34 +47,24 @@ export default function FeaturedSimulation({ sectionTitle, sectionSubtitle, cont
   };
 
   return (
-    <section className="py-[50px] bg-white" aria-labelledby="featured-sim-heading">
+    <section className="py-[50px] bg-[#0B0A10]" aria-labelledby="featured-sim-heading">
       <div className="container-custom">
-        {/* Section header */}
-        <div className="text-center mb-8">
-          <span className="tag">Spotlight</span>
-          <h2 id="featured-sim-heading" className="section-title mt-4">
-            {heading}
-          </h2>
-          <p className="section-subtitle">
-            {subtitle}
-          </p>
-        </div>
-
         {/* Split card */}
-        <div className="bg-white rounded-[2rem] overflow-hidden shadow-2xl border border-[#E2E8F0] mt-4">
+        <div className="bg-[#13111C] rounded-[2.5rem] overflow-hidden shadow-2xl border border-white/5 mt-4">
           <div className="grid lg:grid-cols-2 gap-0">
             {/* Left — content */}
             <div className="p-10 lg:p-14 flex flex-col justify-center">
-              <div className="flex items-center gap-2 mb-4">
-                <span className="tag">{sim.tag}</span>
-                <span className="text-xs text-gray-400 font-medium">{sim.category}</span>
+              <div className="flex items-center gap-2 mb-6">
+                <span className="bg-[#2A1E4A] text-[#B794F4] text-xs font-bold px-4 py-1.5 rounded-full tracking-wider uppercase">
+                  Featured Simulation
+                </span>
               </div>
 
-              <h3 className="font-heading text-3xl lg:text-4xl font-bold text-gray-900 mb-5 leading-tight">
+              <h3 className="font-heading text-4xl lg:text-5xl font-extrabold text-white mb-6 leading-tight">
                 {sim.title}
               </h3>
 
-              <p className="text-gray-600 text-lg leading-relaxed mb-8">
+              <p className="text-[#A0AEC0] text-lg leading-relaxed mb-10">
                 {sim.description}
               </p>
 
@@ -85,54 +76,51 @@ export default function FeaturedSimulation({ sectionTitle, sectionSubtitle, cont
                 <MetaBadge Icon={Layers}    label={`${sim.experiments} experiments`} />
               </div>
 
-              <button onClick={handleTrySimulation} className="btn-primary self-start text-base">
+              <button onClick={handleTrySimulation} className="bg-[#805AD5] hover:bg-[#9F7AEA] text-white font-semibold py-3.5 px-8 rounded-xl transition-all duration-300 flex items-center gap-3 self-start text-lg shadow-[0_0_20px_rgba(128,90,213,0.4)]">
                 Try Simulation
                 <ArrowRight className="w-5 h-5" />
               </button>
             </div>
 
             {/* Right — visual */}
-            <div className={`relative ${sim.imageUrl ? 'p-0 overflow-hidden' : 'bg-hero-gradient p-10 lg:p-14'} flex flex-col items-center justify-center min-h-72 lg:min-h-auto`}>
-              {sim.imageUrl ? (
-                <img 
-                  src={sim.imageUrl} 
-                  alt={sim.title} 
-                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 hover:scale-105" 
-                />
-              ) : (
-                <div className="relative w-full max-w-sm mx-auto">
-                  {/* Pendulum visual */}
-                  <div className="flex flex-col items-center">
-                    <div className="w-1 h-32 bg-white/30 mx-auto rounded-full relative">
-                      <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-12 h-12 bg-secondary-400 rounded-full shadow-lg flex items-center justify-center">
-                        <span className="text-gray-900 font-bold text-xs">m</span>
-                      </div>
-                    </div>
-                    <div className="mt-10 grid grid-cols-3 gap-4 w-full">
-                      {['F = ma', 'p = mv', 'W = Fd'].map((formula) => (
-                        <div key={formula} className="glass rounded-xl p-3 text-center">
-                          <span className="text-white font-mono text-sm font-bold">{formula}</span>
-                        </div>
-                      ))}
-                    </div>
-                    <div className="mt-6 flex gap-3">
-                      {[1, 2, 3].map((i) => (
-                        <div
-                          key={i}
-                          className="w-3 h-3 bg-secondary-400 rounded-full animate-pulse"
-                          style={{ animationDelay: `${i * 0.3}s` }}
-                        />
-                      ))}
+            <div className="relative p-10 lg:p-14 flex flex-col items-center justify-center bg-[#0F0D17]">
+              <div className="relative w-full max-w-lg mx-auto flex flex-col items-center">
+                
+                {/* Visual: Image or Pendulum */}
+                {sim.imageUrl ? (
+                  <div className="w-full aspect-square relative rounded-xl overflow-hidden shadow-[0_0_30px_rgba(0,0,0,0.5)] mb-8">
+                    <img 
+                      src={sim.imageUrl} 
+                      alt={sim.title} 
+                      className="w-full h-full object-cover transition-transform duration-700 hover:scale-105" 
+                    />
+                  </div>
+                ) : (
+                  <div className="w-1 h-32 bg-white/20 mx-auto rounded-full relative mb-12 mt-8">
+                    <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-12 h-12 bg-[#805AD5] rounded-full shadow-[0_0_15px_rgba(128,90,213,0.6)] flex items-center justify-center">
+                      <span className="text-white font-bold text-xs">m</span>
                     </div>
                   </div>
-                  <div className="absolute top-2 right-2 glass rounded-xl px-3 py-2">
-                    <div className="flex items-center gap-2">
-                      <BookOpen className="w-4 h-4 text-secondary-400" />
-                      <span className="text-white text-xs font-medium">{sim.institution}</span>
+                )}
+
+                {/* Formulas - Always show below image/pendulum */}
+                <div className="grid grid-cols-3 gap-4 w-full">
+                  {['F = ma', 'p = mv', 'W = Fd'].map((formula) => (
+                    <div key={formula} className="bg-[#1A1625] border border-white/5 rounded-xl p-4 text-center shadow-inner">
+                      <span className="text-gray-300 font-mono text-sm font-medium">{formula}</span>
                     </div>
-                  </div>
+                  ))}
                 </div>
-              )}
+
+                {/* Dots */}
+                <div className="mt-8 flex gap-3">
+                  <div className="w-2.5 h-2.5 bg-[#ECC94B] rounded-full shadow-[0_0_8px_rgba(236,201,75,0.6)]"></div>
+                  <div className="w-2.5 h-2.5 bg-white/10 rounded-full"></div>
+                  <div className="w-2.5 h-2.5 bg-white/10 rounded-full"></div>
+                  <div className="w-2.5 h-2.5 bg-white/10 rounded-full"></div>
+                </div>
+
+              </div>
             </div>
           </div>
         </div>
@@ -143,8 +131,8 @@ export default function FeaturedSimulation({ sectionTitle, sectionSubtitle, cont
 
 function MetaBadge({ Icon, label }) {
   return (
-    <div className="flex items-center gap-2 bg-white rounded-lg px-3.5 py-2 shadow-sm border border-gray-100 text-sm text-gray-600 font-medium">
-      <Icon className="w-4 h-4 text-primary-700" />
+    <div className="flex items-center gap-2.5 bg-[#1A1625] rounded-xl px-4 py-2.5 border border-white/5 text-sm text-gray-300 font-medium">
+      <Icon className="w-4 h-4 text-[#B794F4]" />
       {label}
     </div>
   );

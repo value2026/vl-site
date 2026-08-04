@@ -1,5 +1,6 @@
 const { PrismaClient } = require('../generated/client');
 const prisma = new PrismaClient();
+const { sendHostWorkshopRequestEmail } = require('../utils/mailer');
 
 // Default section data for the home page
 const HOME_DEFAULTS = [
@@ -8,7 +9,7 @@ const HOME_DEFAULTS = [
     label: 'Hero Section',
     order: 0,
     title: 'Learn Science Without Limits',
-    subtitle: 'Access 1,800+ virtual experiments across 700 labs from IITs, NITs, and leading institutions — free, anywhere, anytime.',
+    subtitle: 'Access 340 virtual experiments across 37 labs from IITs, NITs, and leading institutions — free, anywhere, anytime.',
     content: {
       badge: 'Ministry of Education Initiative · NMEICT',
       heading: 'Build Your Future with\n*Emerging Technologies*\nand Create Impact.',
@@ -18,10 +19,9 @@ const HOME_DEFAULTS = [
       ctaSecondaryLabel: 'Watch Demo',
       ctaSecondaryHref: 'https://www.youtube.com/watch?v=ViqHtlZSOjM',
       stats: [
-        { n: '700+', label: 'Virtual Labs' },
-        { n: '1,800+', label: 'Experiments' },
-        { n: '14', label: 'Partner IITs/NITs' },
-        { n: '5M+', label: 'Students' },
+        { n: '37', label: 'Total Labs' },
+        { n: '340', label: 'Experiments' },
+        { n: '2,36,237', label: 'Registered Users' },
       ],
     },
   },
@@ -46,7 +46,7 @@ const HOME_DEFAULTS = [
   {
     sectionKey: 'cta',
     label: 'Call to Action',
-    order: 2,
+    order: 3,
     title: 'Take the Next Step',
     subtitle: "Whether you're a student, faculty, or institution — Virtual Labs has something for you.",
     content: {
@@ -85,9 +85,9 @@ const HOME_DEFAULTS = [
   {
     sectionKey: 'sponsors',
     label: 'Partners & Sponsors',
-    order: 3,
+    order: 4,
     title: "Sponsors of Virtual Labs",
-    subtitle: 'This project is an initiative of Ministry of Human Resource Department under National Mission on Education through ICT. These experiments and labs will be hosted for open access through the main project website www.vlab.co.in.',
+    subtitle: 'This project is an initiative of Ministry of Education under National Mission on Education through ICT. These experiments and labs will be hosted for open access through the main project website www.vlab.co.in.',
     content: {
       sectionTag: 'Our Sponsors',
       footerNote: '🇮🇳 A Government of India initiative to democratize quality STEM education',
@@ -103,7 +103,7 @@ const HOME_DEFAULTS = [
   {
     sectionKey: 'ad_banner',
     label: 'Advertisement Banner',
-    order: 4,
+    order: 5,
     title: 'Admissions Open 2026',
     subtitle: 'Amrita Vishwa Vidyapeetham',
     content: {
@@ -118,7 +118,7 @@ const HOME_DEFAULTS = [
   {
     sectionKey: 'lab_categories',
     label: 'Lab Categories',
-    order: 5,
+    order: 2,
     title: 'Explore Virtual Labs',
     subtitle: 'Discover interactive virtual laboratories across science, engineering, and emerging technologies. Explore experiments, strengthen practical skills, and learn through immersive, hands-on experiences.',
     content: {
@@ -196,6 +196,26 @@ const HOME_DEFAULTS = [
       ],
     },
   },
+  {
+    sectionKey: 'footer',
+    label: 'Global Footer',
+    order: 8,
+    title: 'Footer Details',
+    subtitle: 'Manage the official contact information displayed across all pages.',
+    content: {
+      email: 'virtual_labs@am.amrita.edu',
+      phone: '+91 9446 007 135',
+      address: 'Amrita Virtual Labs\nAmrita Vishwa Vidyapeetham\nAmritapuri Campus, Kollam\nKerala — 690 525',
+      importantLinks: [
+        { label: 'Amrita University', href: '#' },
+        { label: 'NMEICT', href: '#' },
+        { label: 'AICTE', href: '#' },
+        { label: 'UGC', href: '#' },
+        { label: 'National Education Policy', href: '#' },
+        { label: 'Virtual Labs India', href: '#' }
+      ]
+    }
+  }
 ];
 
 // ── GET /api/pages/:slug/sections ─────────────────────────────
@@ -220,7 +240,7 @@ async function getSections(req, res) {
     } else {
       // Check if newly added sections are missing
       if (slug === 'nodal-centres' && page.sections.length < 5) needsSeed = true;
-      if (slug === 'home' && page.sections.length < 7) needsSeed = true;
+      if (slug === 'home' && page.sections.length < 9) needsSeed = true;
       if (slug === 'project' && page.sections.length < 4) needsSeed = true;
     }
 
@@ -367,9 +387,9 @@ async function seedHomePage() {
     await prisma.pageSection.upsert({
       where: { pageId_sectionKey: { pageId: page.id, sectionKey: sec.sectionKey } },
       update: {
-        title: sec.title,
-        subtitle: sec.subtitle,
-        content: sec.content,
+        // Only update structural metadata if needed, do NOT overwrite content
+        label: sec.label,
+        order: sec.order,
       },
       create: {
         pageId: page.id,
@@ -506,7 +526,7 @@ async function seedProjectPage() {
     content: {
       tag: 'Overview',
       paragraph1: 'Amrita Virtual Labs is a major initiative by Amrita Vishwa Vidyapeetham funded by the Ministry of Education under the National Mission on Education through ICT (NMEICT). It provides interactive simulation-based online experiment environments across engineering and sciences.',
-      paragraph2: 'The platform provides students access to over 700 virtual labs and 1,800+ experiments spanning core science and engineering disciplines — accessible anytime, anywhere without requiring physical lab equipment.'
+      paragraph2: 'The platform provides students access to over 37 virtual labs and 340 experiments spanning core science and engineering disciplines — accessible anytime, anywhere without requiring physical lab equipment.'
     }
   };
 
@@ -548,7 +568,7 @@ async function seedNodalCentresPage() {
     title: 'Benefits of Becoming a Nodal Centre',
     content: {
       items: [
-        { text: 'Free access to all 700+ virtual labs for your institution' },
+        { text: 'Free access to all 37 virtual labs for your institution' },
         { text: 'Priority support and technical assistance' },
         { text: 'Dedicated workshops and faculty training sessions' },
         { text: 'Certificate of recognition from Ministry of Education' },
@@ -608,7 +628,7 @@ async function seedNodalCentresPage() {
     content: {
       tag: 'Access',
       instructions: 'Nodal coordinator can submit the list of students and faculty members for obtaining the unique login id in the prescribed format to virtual_labs@am.amrita.edu with the subject line - Login ID request - your institute name.',
-      templateLink: 'https://vlab.amrita.edu/userfiles/1/file/login_id_template.xlsx',
+      templateLink: '/login_id_template.xlsx',
       templateLabel: 'Click Here To Download Login ID Template',
       features: [
         { icon: 'KeyRound', title: 'Institutional Login', desc: 'A dedicated login ID tied to your institution for centralized access management.' },
@@ -835,6 +855,42 @@ const submitSurveyResponse = async (req, res) => {
         data,
       }
     });
+
+    if (slug === 'nodal-centre-request') {
+      const managers = await prisma.user.findMany({
+        where: {
+          role: { in: ['admin', 'vl_manager'] },
+          isActive: true,
+        },
+        select: { email: true }
+      });
+      const managerEmails = managers.map(m => m.email).filter(Boolean);
+      if (managerEmails.length > 0) {
+        let mappedData = data;
+        try {
+          const page = await prisma.page.findUnique({
+            where: { slug: 'nodal-centre-request' },
+            include: { sections: { where: { sectionKey: 'formSchema' } } }
+          });
+          if (page && page.sections && page.sections.length > 0) {
+            const schema = page.sections[0].content;
+            if (schema && schema.questions) {
+              mappedData = {};
+              const qMap = {};
+              schema.questions.forEach(q => { qMap[q.id] = q.text; });
+              Object.keys(data).forEach(k => {
+                mappedData[qMap[k] || k] = data[k];
+              });
+            }
+          }
+        } catch (err) {
+          console.error("Error mapping survey data:", err);
+        }
+
+        sendHostWorkshopRequestEmail(managerEmails, mappedData).catch(console.error);
+      }
+    }
+
     res.json({ success: true, id: response.id });
   } catch (error) {
     console.error('Failed to submit survey:', error);

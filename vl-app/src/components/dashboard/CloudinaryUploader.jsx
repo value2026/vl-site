@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { Upload, X, ImageIcon, Loader2 } from 'lucide-react';
 import { api } from '../../utils/api';
+import { getFilesBaseUrl } from '../../utils/url';
 import ConfirmModal from './ConfirmModal';
 
 /**
@@ -39,7 +40,14 @@ export default function CloudinaryUploader({ value, onChange, label = 'Upload Im
         const res = await api.upload('/upload', formData);
         if (!res.ok) throw new Error('Local upload failed');
         const data = await res.json();
-        onChange(data.url);
+        
+        let finalUrl = data.url;
+        if (finalUrl && finalUrl.includes('/files/media/')) {
+          const filename = finalUrl.split('/').pop();
+          finalUrl = `${getFilesBaseUrl()}/media/${filename}`;
+        }
+        
+        onChange(finalUrl);
       } catch (err) {
         setError('Local upload failed. Please try again.');
         console.error('Local media upload error:', err);

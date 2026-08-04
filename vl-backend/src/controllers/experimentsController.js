@@ -46,6 +46,16 @@ const getAllExperiments = async (req, res) => {
         select: { id: true },
       });
       where.labId = { in: labs.map((l) => l.id) };
+    } else if (req.user.role === 'vl_coordinator') {
+      const user = await prisma.user.findUnique({
+        where: { id: req.user.id },
+        select: { managedSubjectIds: true }
+      });
+      const labs = await prisma.lab.findMany({
+        where: { subjectId: { in: user?.managedSubjectIds || [] } },
+        select: { id: true },
+      });
+      where.labId = { in: labs.map((l) => l.id) };
     }
 
     const experiments = await prisma.experiment.findMany({

@@ -12,8 +12,7 @@ export const featuredSimulation = {
 };
 
 export const stats = [
-  { label: 'Virtual Labs', value: 700, suffix: '+' },
-  { label: 'Experiments', value: 1800, suffix: '+' },
-  { label: 'Partner Institutes', value: 14, suffix: '' },
-  { label: 'Students Reached', value: 5, suffix: 'M+' },
+  { label: 'Total Labs', value: 37, suffix: '' },
+  { label: 'Experiments', value: 340, suffix: '' },
+  { label: 'Registered Users', value: 236237, suffix: '' },
 ];

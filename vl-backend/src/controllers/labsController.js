@@ -34,6 +34,12 @@ const getAllLabs = async (req, res) => {
       where.createdById = req.user.id;
     } else if (req.user.role === 'nodal_centre') {
       where.nodalCentreId = req.user.id;
+    } else if (req.user.role === 'vl_coordinator') {
+      const user = await prisma.user.findUnique({
+        where: { id: req.user.id },
+        select: { managedSubjectIds: true }
+      });
+      where.subjectId = { in: user?.managedSubjectIds || [] };
     }
 
     const labs = await prisma.lab.findMany({

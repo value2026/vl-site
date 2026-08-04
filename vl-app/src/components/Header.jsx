@@ -21,11 +21,12 @@ export default function Header() {
   const getDashboardLink = () => {
     if (!user) return '/login';
     const map = {
-      admin:        '/dashboard/admin',
-      vl_manager:   '/dashboard/vl-manager',
-      nodal_centre: '/dashboard/nodal',
-      teacher:      '/dashboard/teacher',
-      student:      '/student',
+      admin:          '/dashboard/admin',
+      vl_manager:     '/dashboard/vl-manager',
+      vl_coordinator: '/dashboard/vl-coordinator',
+      nodal_centre:   '/dashboard/nodal',
+      teacher:        '/dashboard/teacher',
+      student:        '/student',
     };
     return map[user.role] || '/student';
   };

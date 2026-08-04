@@ -22,7 +22,7 @@ const SECTION_MAP = {
  * Renders a home page section from a PageSection DB record.
  * Falls back gracefully if the sectionKey is unknown.
  */
-export default function SectionRenderer({ section }) {
+export default function SectionRenderer({ section, allSections }) {
   const Component = SECTION_MAP[section.sectionKey];
   if (!Component) return null;
 
@@ -32,6 +32,7 @@ export default function SectionRenderer({ section }) {
       sectionTitle={section.title}
       sectionSubtitle={section.subtitle}
       content={section.content ?? {}}
+      allSections={allSections}
     />
   );
 }

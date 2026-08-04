@@ -1,12 +1,13 @@
 import { useState, useRef, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { FlaskConical, Search, User, LogOut, LayoutDashboard, ChevronDown, X, Bell, ClipboardList, Globe } from 'lucide-react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { FlaskConical, Search, User, LogOut, LayoutDashboard, ChevronDown, X, Bell, ClipboardList, Globe, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { api } from '../../utils/api';
 
 export default function StudentNav({ breadcrumb = [] }) {
   const { user, logout } = useAuth();
   const navigate          = useNavigate();
+  const location          = useLocation();
   const [dropOpen, setDropOpen]   = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const dropRef = useRef(null);
@@ -70,6 +71,20 @@ export default function StudentNav({ breadcrumb = [] }) {
           </span>
         </div>
       </Link>
+
+      {location.pathname !== '/student' && location.pathname !== '/' && location.pathname !== '/labs' && location.pathname !== '/dashboard/student' && (
+        <>
+          <div className="h-5 w-px bg-gray-200 mx-2 hidden md:block" />
+          <button
+            onClick={() => navigate(-1)}
+            title="Go Back"
+            aria-label="Go Back"
+            className="p-1.5 rounded-md border border-gray-200 shadow-sm bg-white text-gray-500 hover:text-gray-900 hover:bg-gray-50 transition-all hidden md:flex"
+          >
+            <ArrowLeft className="w-4.5 h-4.5" />
+          </button>
+        </>
+      )}
 
       {/* Breadcrumb */}
       {breadcrumb.length > 0 && (

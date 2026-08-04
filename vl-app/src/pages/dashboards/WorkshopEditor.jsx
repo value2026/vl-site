@@ -28,10 +28,9 @@ export default function WorkshopEditor() {
   const [details, setDetails] = useState({
     title: prefill.title || '',
     description: prefill.description || '',
-    date: '',
+    date: prefill.date || '',
     location: '',
-    mode: 'Online',
-    mode: 'Online',
+    mode: prefill.mode || 'Online',
   });
 
   const [saving, setSaving] = useState(false);
@@ -112,6 +111,19 @@ export default function WorkshopEditor() {
         const data = await res.json();
         throw new Error(data.message || 'Failed to save workshop');
       }
+
+      // If this workshop was created from a Host Workshop Request, mark it as approved by deleting it
+      if (isNew && location.state?.deleteRequestId) {
+        try {
+          await fetch(`${API_URL}/pages/nodal-centre-request/survey/responses/${location.state.deleteRequestId}/delete`, {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${token}` }
+          });
+        } catch (delErr) {
+          console.error("Failed to delete the original host request:", delErr);
+        }
+      }
+
       navigate(`/dashboard/${rolePath}/workshops`);
     } catch (err) {
       setError(err.message);
@@ -173,7 +185,7 @@ export default function WorkshopEditor() {
           </div>
         </div>
         <div className="flex items-center gap-3 flex-wrap justify-end">
-          {!isNew && (user?.role === 'admin' || workshop?.createdBy?.id === user?.id) && (
+          {!isNew && (user?.role === 'admin' || user?.role === 'vl_manager' || workshop?.createdBy?.id === user?.id) && (
             <button 
               onClick={() => setShowDeleteConfirm(true)}
               className="px-4 py-3 rounded-xl text-sm font-bold text-red-400 hover:text-white bg-red-500/10 hover:bg-red-500 border border-red-500/20 transition-all flex items-center gap-2"
@@ -306,14 +318,14 @@ export default function WorkshopEditor() {
                 />
               </div>
 
-              {user?.role !== 'admin' && isNew && (
+              {(user?.role !== 'admin' && user?.role !== 'vl_manager') && isNew && (
                 <div className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-5 flex items-start gap-4">
                   <div className="w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center flex-shrink-0">
                     <Info className="w-5 h-5 text-amber-500" />
                   </div>
                   <div>
                     <h4 className="text-amber-400 font-bold mb-1">Approval Required</h4>
-                    <p className="text-sm text-amber-200/70">Your new workshop will remain in a "Pending" state until reviewed and approved by an administrator.</p>
+                    <p className="text-sm text-amber-200/70">Your new workshop will remain in a "Pending" state until reviewed and approved by an administrator or VL manager.</p>
                   </div>
                 </div>
               )}

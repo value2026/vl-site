@@ -189,7 +189,151 @@ This link is valid for 1 hour. If you did not request this, please ignore this e
   }
 }
 
+/**
+ * Sends an email to managers to approve a newly requested workshop.
+ */
+async function sendWorkshopApprovalEmail(managerEmails, workshop, requesterName) {
+  const from = process.env.SMTP_FROM || '"Virtual Labs Admin" <no-reply@virtuallabs.in>';
+  const frontendUrl = (process.env.FRONTEND_URL || '').replace(/\/+$/, '');
+  const adminUrl = `${frontendUrl}/admin/workshops`;
+
+  const htmlContent = `
+    <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 550px; margin: 0 auto; padding: 24px; border: 1px solid #f1f5f9; border-radius: 16px; background-color: #ffffff;">
+      <div style="text-align: center; margin-bottom: 24px; border-bottom: 1px solid #f1f5f9; padding-bottom: 16px;">
+        <span style="font-size: 24px;">📅</span>
+        <h2 style="color: #0f172a; margin-top: 10px; margin-bottom: 0;">New Workshop Request</h2>
+        <p style="color: #64748b; font-size: 13px; margin: 4px 0 0 0;">Approval Required</p>
+      </div>
+
+      <p style="color: #334155; font-size: 14px; line-height: 1.5;">Hello Manager,</p>
+      <p style="color: #334155; font-size: 14px; line-height: 1.5;"><strong>${requesterName}</strong> has requested a new workshop that requires your approval.</p>
+
+      <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; margin: 20px 0; font-size: 14px;">
+        <div style="margin-bottom: 8px;"><strong style="color: #475569;">Title:</strong> <span style="color: #0f172a;">${workshop.title}</span></div>
+        <div style="margin-bottom: 8px;"><strong style="color: #475569;">Date:</strong> <span style="color: #0f172a;">${new Date(workshop.date).toLocaleString()}</span></div>
+        <div style="margin-bottom: 8px;"><strong style="color: #475569;">Mode:</strong> <span style="color: #0f172a;">${workshop.mode || 'Online'}</span></div>
+        <div style="margin-bottom: 8px;"><strong style="color: #475569;">Location:</strong> <span style="color: #0f172a;">${workshop.location || 'N/A'}</span></div>
+      </div>
+
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="${adminUrl}" target="_blank" style="background-color: #2563eb; color: #ffffff; padding: 12px 28px; border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: bold; display: inline-block;">Review Request</a>
+      </div>
+    </div>
+  `;
+
+  const textContent = `
+Hello Manager,
+
+${requesterName} has requested a new workshop that requires your approval.
+
+Title: ${workshop.title}
+Date: ${new Date(workshop.date).toLocaleString()}
+Mode: ${workshop.mode || 'Online'}
+Location: ${workshop.location || 'N/A'}
+
+Please log in to the admin dashboard to review and approve this request:
+${adminUrl}
+  `;
+
+  try {
+    const transporter = await getTransporter();
+    const info = await transporter.sendMail({
+      from,
+      to: managerEmails.join(', '),
+      subject: 'New Workshop Request Requires Approval',
+      text: textContent,
+      html: htmlContent,
+    });
+    console.log(`✉️ Mailer: Workshop approval email sent successfully to managers (Id: ${info.messageId})`);
+    
+    if (info.messageId && info.messageId.includes('ethereal')) {
+      const nodemailerLib = require('nodemailer');
+      console.log('✉️ Ethereal Approval Request Preview URL:', nodemailerLib.getTestMessageUrl(info));
+    }
+
+    return true;
+  } catch (err) {
+    console.error('❌ Mailer Error: Failed to send workshop approval email.', err);
+    return false;
+  }
+}
+
+/**
+ * Sends an email to managers when a new Host Workshop Request is submitted.
+ */
+async function sendHostWorkshopRequestEmail(managerEmails, requestData) {
+  const from = process.env.SMTP_FROM || '"Virtual Labs Admin" <no-reply@virtuallabs.in>';
+  const frontendUrl = (process.env.FRONTEND_URL || '').replace(/\/+$/, '');
+  
+  // Try to extract some useful information from the survey data keys
+  // Keys might be "Email", "Name of the nodal centre...", etc.
+  const getVal = (possibleKeys) => {
+    for (const key of Object.keys(requestData)) {
+      if (possibleKeys.some(pk => key.toLowerCase().includes(pk))) {
+        return requestData[key];
+      }
+    }
+    return 'N/A';
+  };
+  
+  const requesterName = getVal(['name of the faculty', 'name']);
+  const institution = getVal(['nodal centre', 'institute']);
+  const requesterEmail = getVal(['email']);
+
+  const htmlContent = `
+    <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 550px; margin: 0 auto; padding: 24px; border: 1px solid #f1f5f9; border-radius: 16px; background-color: #ffffff;">
+      <div style="text-align: center; margin-bottom: 24px; border-bottom: 1px solid #f1f5f9; padding-bottom: 16px;">
+        <span style="font-size: 24px;">📋</span>
+        <h2 style="color: #0f172a; margin-top: 10px; margin-bottom: 0;">Host Workshop Request</h2>
+        <p style="color: #64748b; font-size: 13px; margin: 4px 0 0 0;">New Submission</p>
+      </div>
+
+      <p style="color: #334155; font-size: 14px; line-height: 1.5;">Hello Manager,</p>
+      <p style="color: #334155; font-size: 14px; line-height: 1.5;">A new <strong>Host Workshop Request</strong> has been submitted on the Virtual Labs portal.</p>
+
+      <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; margin: 20px 0; font-size: 14px;">
+        <div style="margin-bottom: 8px;"><strong style="color: #475569;">Name:</strong> <span style="color: #0f172a;">${requesterName}</span></div>
+        <div style="margin-bottom: 8px;"><strong style="color: #475569;">Email:</strong> <span style="color: #0f172a;">${requesterEmail}</span></div>
+        <div style="margin-bottom: 8px;"><strong style="color: #475569;">Institution:</strong> <span style="color: #0f172a;">${institution}</span></div>
+      </div>
+    </div>
+  `;
+
+  const textContent = `
+Hello Manager,
+
+A new Host Workshop Request has been submitted.
+
+Name: ${requesterName}
+Email: ${requesterEmail}
+Institution: ${institution}
+  `;
+
+  try {
+    const transporter = await getTransporter();
+    const info = await transporter.sendMail({
+      from,
+      to: managerEmails.join(', '),
+      subject: 'New Host Workshop Request Received',
+      text: textContent,
+      html: htmlContent,
+    });
+    console.log(`✉️ Mailer: Host workshop request email sent successfully to managers (Id: ${info.messageId})`);
+    
+    if (info.messageId && info.messageId.includes('ethereal')) {
+      const nodemailerLib = require('nodemailer');
+      console.log('✉️ Ethereal Host Request Preview URL:', nodemailerLib.getTestMessageUrl(info));
+    }
+    return true;
+  } catch (err) {
+    console.error('❌ Mailer Error: Failed to send host workshop request email.', err);
+    return false;
+  }
+}
+
 module.exports = {
   sendWelcomeEmail,
   sendPasswordResetEmail,
+  sendWorkshopApprovalEmail,
+  sendHostWorkshopRequestEmail,
 };
