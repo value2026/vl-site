@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { 
@@ -37,6 +38,7 @@ function PerformanceCard({ icon: Icon, iconColor, label, value, subText, badgeTe
 
 export default function StudentHome() {
   const { user } = useAuth();
+  const [showAllActivities, setShowAllActivities] = useState(false);
   const isStudent = user?.role === 'student';
 
   // 1. Fetch Subjects list
@@ -286,7 +288,7 @@ export default function StudentHome() {
 
           {/* RIGHT 1-COLUMN AREA (Analytics Panel - Only for students) */}
           {isStudent && (
-            <div className="space-y-6 flex flex-col h-full">
+            <div className="space-y-6 flex flex-col sticky top-24 self-start max-h-[calc(100vh-6rem)] w-full">
               
               {/* Upcoming Exams Card */}
               {!assignmentsLoading && upcomingExams.length > 0 && (
@@ -323,12 +325,18 @@ export default function StudentHome() {
 
 
               {/* Activity Logs (Recent 4) */}
-              <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm flex-1 flex flex-col min-h-[300px]">
-                <div className="mb-5 pb-5 border-b border-slate-50 flex-shrink-0">
+              <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm flex-1 flex flex-col min-h-0">
+                <div className="mb-5 pb-5 border-b border-slate-50 flex-shrink-0 flex items-center justify-between">
                   <h2 className="text-slate-900 font-extrabold text-sm flex items-center gap-2">
                     <Clock className="w-4.5 h-4.5 text-indigo-600" />
                     Activity Log
                   </h2>
+                  <button 
+                    onClick={() => setShowAllActivities(!showAllActivities)}
+                    className="text-[10px] font-bold text-indigo-600 hover:text-indigo-800 uppercase tracking-wider flex items-center gap-1 group"
+                  >
+                    {showAllActivities ? 'View Less' : 'View All'} <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+                  </button>
                 </div>
                 {perfLoading ? (
                   <div className="flex justify-center py-10"><Loader2 className="w-5 h-5 text-slate-400 animate-spin" /></div>
@@ -336,7 +344,7 @@ export default function StudentHome() {
                   <div className="text-center py-8 text-slate-400 text-xs italic">No recent activity</div>
                 ) : (
                   <div className="space-y-4 overflow-y-auto pr-2 flex-1 scrollbar-thin scrollbar-thumb-slate-200">
-                    {perfData?.recentVisits?.slice(0, 4).map((visit, i) => {
+                    {perfData?.recentVisits?.slice(0, showAllActivities ? undefined : 4).map((visit, i, arr) => {
                       const formatDuration = (seconds) => {
                         if (!seconds) return '0s';
                         const m = Math.floor(seconds / 60);
@@ -348,7 +356,7 @@ export default function StudentHome() {
                         <div key={i} className="flex gap-4">
                           <div className="flex flex-col items-center">
                             <div className="w-2 h-2 bg-indigo-500 rounded-full mt-1.5 flex-shrink-0" />
-                            {i !== (perfData.recentVisits.slice(0, 4).length - 1) && <div className="w-px h-full bg-slate-100 mt-2 min-h-[20px]" />}
+                            {i !== (arr.length - 1) && <div className="w-px h-full bg-slate-100 mt-2 min-h-[20px]" />}
                           </div>
                           <div className="pb-4 flex-1">
                             <div className="text-xs font-bold text-slate-900 line-clamp-1">{visit.experiment?.title}</div>
