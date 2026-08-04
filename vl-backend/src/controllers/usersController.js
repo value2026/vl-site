@@ -331,6 +331,9 @@ const deleteUser = async (req, res) => {
     res.json({ message: 'User deleted successfully' });
   } catch (err) {
     console.error('Delete user error:', err);
+    if (err.code === 'P2003') {
+      return res.status(400).json({ message: 'Cannot delete user because they are linked to existing records (like workshops). Please remove those records first.' });
+    }
     res.status(500).json({ message: 'Internal server error' });
   }
 };
