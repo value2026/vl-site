@@ -388,7 +388,7 @@ export default function UserTable({ users, loading, onRefresh, hideActions = fal
                         { admin: 'from-red-500 to-rose-600', nodal_centre: 'from-orange-500 to-amber-500',
                           teacher: 'from-blue-500 to-indigo-600', student: 'from-emerald-500 to-green-600',
                           content_admin: 'from-purple-500 to-fuchsia-600', sim_admin: 'from-indigo-500 to-violet-600',
-                          vl_manager: 'from-pink-500 to-rose-500' }[u.role]
+                          vl_manager: 'from-pink-500 to-rose-500', vl_coordinator: 'from-violet-500 to-purple-600' }[u.role]
                       }`}>
                         {u.name[0]?.toUpperCase()}
                       </div>

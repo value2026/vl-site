@@ -172,6 +172,12 @@ const createUser = async (req, res) => {
       centreId = teacher?.nodalCentreId ?? null;
     }
 
+    if ((callerRole === 'admin' || callerRole === 'vl_manager') && ['student', 'teacher', 'nodal_centre', 'vl_coordinator'].includes(newRole)) {
+      if (!centreId) {
+        return res.status(400).json({ message: 'Institution (Nodal Centre) is required.' });
+      }
+    }
+
     // Autogenerate a secure password
     const plainTextPassword = generateRandomPassword();
     const hashed = await bcrypt.hash(plainTextPassword, 12);
@@ -419,6 +425,10 @@ const bulkCreateStudents = async (req, res) => {
     } else if (callerRole === 'admin' || callerRole === 'vl_manager' || callerRole === 'vl_coordinator') {
       // Admin, VL Manager, and Coordinator can specify the institution explicitly
       centreId = nodalCentreId || null;
+    }
+
+    if (!centreId) {
+      return res.status(400).json({ message: 'Institution (Nodal Centre) is required for bulk import.' });
     }
 
     let createdCount = 0;

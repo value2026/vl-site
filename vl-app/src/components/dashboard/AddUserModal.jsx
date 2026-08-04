@@ -154,6 +154,7 @@ export default function AddUserModal({ isOpen, onClose, onSuccess, defaultRole }
     if (!form.username.trim()) return 'Username is required.';
     if (!form.email.trim())    return 'Email is required.';
     if (isTeacher && !form.dept.trim()) return 'Department is required for teachers.';
+    if (needsInstitution && !form.nodalCentreId) return 'Institution (Nodal Centre) is required.';
     return null;
   };
 
@@ -389,7 +390,7 @@ export default function AddUserModal({ isOpen, onClose, onSuccess, defaultRole }
               {/* Institution (for admin/vl_manager assigning nodal/teacher/student) */}
               {needsInstitution && (
                 <div className="col-span-full">
-                  <Field label="Institution (Nodal Centre)">
+                  <Field label="Institution (Nodal Centre)" required>
                     {institutions.length > 5 && (
                       <input
                         type="text"
@@ -421,13 +422,13 @@ export default function AddUserModal({ isOpen, onClose, onSuccess, defaultRole }
               {/* Full Name */}
               <Field label="Full Name" required>
                 <input name="name" type="text" value={form.name} onChange={set}
-                  placeholder="e.g. Anandi Sharma" className={inputCls} />
+                  placeholder="" className={inputCls} />
               </Field>
 
               {/* Username */}
               <Field label="Username" required>
                 <input name="username" type="text" value={form.username} onChange={set}
-                  placeholder="e.g. anandi_sharma" className={inputCls} />
+                  placeholder="" className={inputCls} />
               </Field>
 
               {/* Email */}
