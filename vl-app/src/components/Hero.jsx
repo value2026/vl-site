@@ -13,12 +13,19 @@ const DEFAULTS = {
   stats: [
     { n: '37', label: 'Total Labs', icon: Landmark, color: 'text-rose-400' },
     { n: '340', label: 'Experiments', icon: FlaskConical, color: 'text-blue-400' },
-    { n: '2,36,237', label: 'Registered Users', icon: Users, color: 'text-emerald-400' },
+    { n: '2 Lakh+', label: 'Registered Users', icon: Users, color: 'text-emerald-400' },
   ],
 };
 
 export default function Hero({ sectionTitle, sectionSubtitle, content = {}, allSections = [] }) {
   const d = { ...DEFAULTS, ...content };
+  
+  // Force the 3rd stat to show "2 Lakh+" if the DB still has the old hardcoded number
+  if (d.stats && d.stats[2] && d.stats[2].n === '2,36,237') {
+    d.stats = [...d.stats];
+    d.stats[2] = { ...d.stats[2], n: '2 Lakh+' };
+  }
+
   const heading = content.heading || sectionTitle || d.heading;
   const subheading = content.subheading || sectionSubtitle || d.subheading;
   const [isVideoOpen, setIsVideoOpen] = useState(false);
@@ -28,18 +35,26 @@ export default function Hero({ sectionTitle, sectionSubtitle, content = {}, allS
   const fsContent = fsSection?.content || {};
   
   const FS_DEFAULTS = {
-    tag: 'Physics',
-    category: 'Mechanics',
-    title: 'Simple Pendulum Simulation',
-    description: 'Explore the physics of oscillatory motion with our interactive pendulum simulation. Adjust parameters like length, mass, and gravity to observe real-time changes.',
+    tag: 'COMPUTER SCIENCE',
+    category: 'Computer Science',
+    title: 'Expectation Value Calculation in Quantum Systems',
+    description: 'Calculate expectation values of observables for various parameterized quantum state vectors.',
     institution: 'Amrita Vishwa Vidyapeetham',
-    duration: '45 min',
+    duration: '10 min',
     difficulty: 'Intermediate',
-    experiments: 12,
-    href: '/simulations/pendulum',
+    experiments: 1,
+    href: '/simulations/quantum-expectation',
+    imageUrl: '/quantum-core.jpg',
   };
 
   const sim = { ...FS_DEFAULTS, ...fsContent };
+  
+  // Ensure fallback is used if DB returned empty strings for these fields
+  sim.title = sim.title || FS_DEFAULTS.title;
+  sim.description = sim.description || FS_DEFAULTS.description;
+  sim.imageUrl = sim.imageUrl || FS_DEFAULTS.imageUrl;
+  sim.tag = sim.tag || FS_DEFAULTS.tag;
+  sim.institution = sim.institution || FS_DEFAULTS.institution;
 
   // Retroactive fix: rewrite legacy student/plural routes to clean public route format
   if (sim.href) {
