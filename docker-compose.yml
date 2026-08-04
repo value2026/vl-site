@@ -41,7 +41,7 @@ services:
       DATABASE_URL: postgresql://vluser:vlpassword@db:5432/virtuallabs_db
       JWT_SECRET: ${JWT_SECRET:-vl-super-secret-change-this-in-production}
       PORT: 5000
-      FRONTEND_URL: ${FRONTEND_URL:-http://localhost}
+      FRONTEND_URL: ${FRONTEND_URL:-https://vlab.amrita.edu/v2}
       CORS_ORIGINS: ${CORS_ORIGINS:-}
       SMTP_HOST: smtp.gmail.com
       SMTP_PORT: 587
@@ -62,9 +62,9 @@ services:
       context: ./vl-app
       dockerfile: Dockerfile
       args:
-        VITE_API_URL: ${VITE_API_URL:-/api}
-        VITE_FILES_URL: ${VITE_FILES_URL:-/files}
-        VITE_SOCKET_PATH: ${VITE_SOCKET_PATH:-/socket.io}
+        VITE_API_URL: ${VITE_API_URL:-/v2/api}
+        VITE_FILES_URL: ${VITE_FILES_URL:-/v2/files}
+        VITE_SOCKET_PATH: ${VITE_SOCKET_PATH:-/v2/socket.io}
     container_name: vl-frontend
     restart: unless-stopped
     depends_on:

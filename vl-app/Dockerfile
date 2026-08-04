@@ -6,6 +6,9 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci || npm install
 COPY . .
+ARG VITE_API_URL=/v2/api
+ARG VITE_FILES_URL=/v2/files
+ARG VITE_SOCKET_PATH=/v2/socket.io
 RUN npm run build
 
 FROM nginx:alpine
