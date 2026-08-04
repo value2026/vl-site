@@ -65,10 +65,10 @@ export default function Home() {
   return (
     <main>
       {pageSections
-        .filter(s => s.isVisible)
+        .filter(s => s.isVisible && s.sectionKey !== 'featured_simulation')
         .sort((a, b) => a.order - b.order)
         .map(section => (
-          <SectionRenderer key={section.id} section={section} />
+          <SectionRenderer key={section.id} section={section} allSections={pageSections} />
         ))
       }
     </main>

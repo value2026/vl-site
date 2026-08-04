@@ -317,8 +317,12 @@ function LabsTab({ onSelectLab }) {
         <div className="space-y-3">
           {filtered.map((l) => (
             <div key={l.id} className="bg-slate-900/40 border border-white/10 rounded-xl p-4 hover:border-blue-500/20 transition-all flex items-center gap-4">
-              <div className="w-11 h-11 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center text-xl flex-shrink-0">
-                {l.icon}
+              <div className="w-12 h-12 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center text-xl flex-shrink-0 overflow-hidden relative">
+                {l.coverPic ? (
+                  <img src={l.coverPic} alt="" className="w-full h-full object-cover" />
+                ) : (
+                  l.icon
+                )}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">

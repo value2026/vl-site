@@ -1,21 +1,19 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight, FlaskConical, Loader2 } from 'lucide-react';
+import { ArrowRight, Loader2, FlaskConical, LayoutGrid, ShieldCheck, BadgeCheck, Activity, Microscope, Atom, Laptop, Cpu, HeartPulse } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { api, getSlug } from '../utils/api';
+import { api } from '../utils/api';
 
-const THEMES = [
-  { icon: '💻', color: 'from-blue-500 to-indigo-600', cardBg: 'bg-[#F7FAFF]', badgeBg: 'bg-indigo-50', badgeText: 'text-indigo-600', badgeBorder: 'border-indigo-100', textColor: 'text-indigo-600' },
-  { icon: '⚗️', color: 'from-cyan-400 to-blue-600', cardBg: 'bg-[#F7FCFF]', badgeBg: 'bg-cyan-50', badgeText: 'text-cyan-600', badgeBorder: 'border-cyan-100', textColor: 'text-cyan-600' },
-  { icon: '⚛️', color: 'from-emerald-400 to-teal-600', cardBg: 'bg-[#F8FFF9]', badgeBg: 'bg-emerald-50', badgeText: 'text-emerald-600', badgeBorder: 'border-emerald-100', textColor: 'text-emerald-600' },
-  { icon: '🧬', color: 'from-orange-400 to-amber-600', cardBg: 'bg-[#FFFDF7]', badgeBg: 'bg-orange-50', badgeText: 'text-orange-600', badgeBorder: 'border-orange-100', textColor: 'text-orange-600' },
-  { icon: '⚙️', color: 'from-rose-400 to-red-600', cardBg: 'bg-[#FFF5F5]', badgeBg: 'bg-rose-50', badgeText: 'text-rose-600', badgeBorder: 'border-rose-100', textColor: 'text-rose-600' },
-  { icon: '⚡', color: 'from-purple-500 to-fuchsia-600', cardBg: 'bg-[#F9F5FF]', badgeBg: 'bg-purple-50', badgeText: 'text-purple-600', badgeBorder: 'border-purple-100', textColor: 'text-purple-600' },
-];
+const ICONS = {
+  'Computer Science': Laptop,
+  'Physical Sciences': FlaskConical,
+  'Electronics & Communications': Cpu,
+  'Biological Sciences': HeartPulse,
+};
 
 export default function LabCategories({ sectionTitle, sectionSubtitle, content = {} }) {
-  const heading  = sectionTitle || 'Explore Virtual Labs';
-  const subtitle = sectionSubtitle || 'Discover interactive virtual laboratories across science, engineering, and emerging technologies. Explore experiments, strengthen practical skills, and learn through immersive, hands-on experiences.';
-  const tag      = content.sectionTag || 'Disciplines';
+  const heading  = sectionTitle || 'Explore by Discipline';
+  const subtitle = sectionSubtitle || 'From quantum physics to molecular biology — our labs span every branch of science and engineering.';
+  const tag      = content.sectionTag || 'LAB CATEGORIES';
 
   const [subjects, setSubjects] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -37,86 +35,170 @@ export default function LabCategories({ sectionTitle, sectionSubtitle, content =
     fetchSubjects();
   }, []);
 
+  // For the exact UI match, we might want to split the heading if it contains "by Discipline" to color it blue.
+  const renderHeading = (text) => {
+    // If it's the exact string, we color the second part
+    if (text === 'Explore by Discipline') {
+      return (
+        <>
+          <span className="text-[#0B1021]">Explore </span>
+          <span className="text-[#3B41E3]">by Discipline</span>
+        </>
+      );
+    }
+    return <span className="text-[#0B1021]">{text}</span>;
+  };
+
   return (
-    <section
-      id="labs-heading"
-      className="pt-6 pb-20"
-      style={{ background: 'radial-gradient(circle at top, #eef4ff 0, #ffffff 60%)', scrollMarginTop: '80px' }}
-      aria-labelledby="labs-heading-title"
-    >
-      <div className="container-custom">
-        <div className="text-center">
-          <span className="tag">{tag}</span>
-          <h2 id="labs-heading-title" className="section-title mt-4">
-            {heading}
+    <section className="relative pt-10 pb-16 overflow-hidden bg-[#FAFBFF]">
+      
+      {/* Background Decorative Elements */}
+      <div className="absolute top-10 left-[-5%] opacity-10 pointer-events-none">
+        <Atom className="w-[400px] h-[400px] text-blue-600" strokeWidth={0.5} />
+      </div>
+      <div className="absolute top-20 right-[-2%] opacity-10 pointer-events-none">
+        <Microscope className="w-[350px] h-[350px] text-blue-600" strokeWidth={0.5} />
+      </div>
+      
+      {/* Dot patterns */}
+      <div className="absolute bottom-20 left-10 opacity-20 pointer-events-none">
+         <div className="grid grid-cols-4 gap-3">
+            {[...Array(16)].map((_, i) => <div key={i} className="w-1 h-1 bg-blue-400 rounded-full"></div>)}
+         </div>
+      </div>
+      <div className="absolute bottom-40 right-10 opacity-20 pointer-events-none">
+         <div className="grid grid-cols-4 gap-3">
+            {[...Array(16)].map((_, i) => <div key={i} className="w-1 h-1 bg-blue-400 rounded-full"></div>)}
+         </div>
+      </div>
+
+      <div className="container-custom relative z-10 max-w-[1200px]">
+        
+        {/* Section Header */}
+        <div className="text-center mb-10 flex flex-col items-center">
+          <div className="flex items-center justify-center gap-2 bg-white border border-[#E2E8F0] px-5 py-2.5 rounded-full shadow-sm mb-6">
+            <FlaskConical className="w-4 h-4 text-[#5D64F5]" />
+            <span className="text-[#5D64F5] text-xs font-bold tracking-widest uppercase">{tag}</span>
+          </div>
+          <h2 className="text-4xl md:text-[2.75rem] font-extrabold mb-5 tracking-tight">
+            {renderHeading(heading)}
           </h2>
-          <p className="section-subtitle">{subtitle}</p>
+          <p className="text-[#64748B] text-lg max-w-2xl font-medium leading-relaxed">
+            {subtitle}
+          </p>
         </div>
 
         {loading ? (
           <div className="flex justify-center py-12">
-            <Loader2 className="w-8 h-8 text-primary-600 animate-spin" />
+            <Loader2 className="w-8 h-8 text-[#3B41E3] animate-spin" />
           </div>
         ) : (
-          <div className="flex flex-wrap justify-center gap-6 mt-[50px]">
-            {subjects.map((subject, index) => {
-              const theme = THEMES[index % THEMES.length];
-              const labCount = subject.categories?.length || 0;
-              const badgeLabel = labCount > 0 ? `${labCount} Labs` : 'Available Soon';
+          <div className="flex flex-wrap justify-center gap-10">
+            {subjects.map((subject) => {
+              const IconComp = ICONS[subject.title] || Atom;
+              
+              // Define distinct colors for the cards
+              const isComputerScience = subject.title.includes('Computer');
+              const gradient = isComputerScience 
+                ? 'from-[#6B21A8] to-[#3B82F6]' // Purple to Blue
+                : 'from-[#0EA5E9] to-[#2563EB]'; // Cyan to Blue
 
               return (
                 <Link
                   key={subject.id}
                   to={`/subject/${subject.id}`}
-                  className={`w-full sm:w-[calc(50%-12px)] lg:w-[calc(25%-18px)] min-w-[260px] max-w-[320px] border border-slate-200 transition-all duration-300 shadow-[0_12px_40px_rgba(15,23,42,0.04)] hover:shadow-[0_12px_40px_rgba(15,23,42,0.08)] hover:-translate-y-2 rounded-[20px] group p-7 flex flex-col h-[340px] ${theme.cardBg}`}
+                  state={{ fromHome: true }}
+                  className="relative w-full max-w-[420px] sm:w-[calc(50%-20px)] lg:w-[calc(50%-20px)] bg-white rounded-[2rem] p-10 border border-[#E2E8F0] shadow-[0_15px_50px_rgba(0,0,0,0.03)] hover:shadow-[0_25px_70px_rgba(59,65,227,0.1)] hover:-translate-y-2 transition-all duration-300 group overflow-hidden flex flex-col h-[420px]"
                 >
-                  {/* Icon row */}
-                  <div className="flex items-start justify-between mb-6">
-                    <div className={`w-14 h-14 rounded-full flex items-center justify-center bg-gradient-to-br ${theme.color} shadow-sm group-hover:scale-110 group-hover:shadow-md transition-all duration-300`}>
-                      <span className="text-2xl text-white drop-shadow-sm">{theme.icon}</span>
-                    </div>
-                    {/* {labCount > 0 && (
-                      <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold border ${theme.badgeBg} ${theme.badgeText} ${theme.badgeBorder}`}>
-                        {badgeLabel}
-                      </div>
-                    )} */}
+                  {/* Faint wavy top background - simple css shape */}
+                  <div className="absolute top-0 left-0 w-full h-40 bg-gradient-to-br from-[#F4F7FF] to-transparent rounded-t-[2rem] opacity-70"></div>
+                  
+                  {/* Top Right Grid Icon */}
+                  <div className="absolute top-8 right-8">
+                    <LayoutGrid className="w-6 h-6 text-[#94A3B8]" strokeWidth={1.5} />
                   </div>
 
-                  {/* Title & Meta */}
-                  <div className="mb-4">
-                    <h3 className="font-heading text-[22px] font-bold text-[#0F172A] mb-1.5 leading-snug group-hover:text-blue-700 transition-colors line-clamp-2">
+                  {/* Icon */}
+                  <div className={`relative w-[72px] h-[72px] rounded-full bg-gradient-to-b ${gradient} flex items-center justify-center shadow-[0_10px_20px_rgba(0,0,0,0.1)] mb-10 group-hover:scale-110 transition-transform duration-300`}>
+                    <IconComp className="w-8 h-8 text-white" />
+                  </div>
+
+                  {/* Title & Tags */}
+                  <div className="relative">
+                    <h3 className="font-heading text-[28px] font-extrabold text-[#0F172A] mb-3 leading-tight group-hover:text-[#3B41E3] transition-colors">
                       {subject.title}
                     </h3>
-                    <div className="text-xs font-semibold text-slate-400 tracking-wide uppercase line-clamp-1">
-                      {subject.tags?.join(' • ') || 'Interactive • Simulations'}
+                    <div className="text-[11px] font-bold text-[#5D64F5] tracking-widest uppercase mb-3">
+                      INTERACTIVE • SIMULATIONS
                     </div>
+                    <div className="w-10 h-0.5 bg-[#5D64F5] opacity-50 mb-6"></div>
                   </div>
 
                   {/* Description */}
-                  <p className="text-[#475569] text-[13.5px] leading-relaxed flex-1 mb-6 line-clamp-3">
-                    {subject.description || 'Learn through interactive simulations, virtual experiments, and guided activities.'}
+                  <p className="relative text-[#64748B] text-[16px] leading-relaxed flex-1 line-clamp-3 font-medium">
+                    {subject.description || 'Explore programming, algorithms, data structures, and computer networking.'}
                   </p>
 
-                  {/* CTA */}
-                  <div className={`flex items-center gap-2 text-[14px] font-bold ${theme.textColor} group-hover:gap-3 transition-all`}>
-                    View Laboratories
-                    <ArrowRight className="w-4 h-4" />
+                  {/* Button */}
+                  <div className="relative mt-auto">
+                    <div className="inline-flex items-center justify-center gap-3 border border-[#E2E8F0] rounded-full px-6 py-2.5 text-[14px] font-bold text-[#5D64F5] group-hover:bg-[#F4F7FF] group-hover:border-[#C7D2FE] transition-colors">
+                      View Laboratories
+                      <ArrowRight className="w-4 h-4" />
+                    </div>
                   </div>
+                  
+                  {/* Bottom decorative dots inside card */}
+                  <div className="absolute bottom-10 right-10 opacity-[0.07] pointer-events-none">
+                     <div className="grid grid-cols-4 gap-2">
+                        {[...Array(16)].map((_, i) => <div key={i} className="w-1.5 h-1.5 bg-[#0F172A] rounded-full"></div>)}
+                     </div>
+                  </div>
+                  <div className="absolute bottom-10 left-10 opacity-[0.05] pointer-events-none">
+                     <div className="grid grid-cols-3 gap-2">
+                        {[...Array(9)].map((_, i) => <div key={i} className="w-1.5 h-1.5 bg-[#0F172A] rounded-full"></div>)}
+                     </div>
+                  </div>
+
                 </Link>
               );
             })}
           </div>
         )}
 
-        {/* View All Labs button hidden until /labs is ready
-        <div className="mt-12 text-center">
-          <Link to="/labs" className="btn-outline-primary">
-            <FlaskConical className="w-4 h-4" />
-            View All Labs
-            <ArrowRight className="w-4 h-4" />
-          </Link>
+        {/* Bottom Features Row */}
+        <div className="mt-16 flex flex-wrap justify-center gap-10 lg:gap-24 relative">
+          
+          <div className="flex items-center gap-4">
+            <div className="w-10 h-10 rounded-full bg-[#F5F3FF] flex items-center justify-center">
+              <ShieldCheck className="w-5 h-5 text-[#8B5CF6]" />
+            </div>
+            <div>
+              <div className="text-[13px] font-extrabold text-[#0F172A] mb-0.5">Trusted & Secure</div>
+              <div className="text-[12px] font-medium text-[#64748B]">Safe learning environment</div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <div className="w-10 h-10 rounded-full bg-[#ECFDF5] flex items-center justify-center">
+              <BadgeCheck className="w-5 h-5 text-[#10B981]" />
+            </div>
+            <div>
+              <div className="text-[13px] font-extrabold text-[#0F172A] mb-0.5">Expert Designed</div>
+              <div className="text-[12px] font-medium text-[#64748B]">By academic experts</div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <div className="w-10 h-10 rounded-full bg-[#FFF7ED] flex items-center justify-center">
+              <Activity className="w-5 h-5 text-[#F97316]" />
+            </div>
+            <div>
+              <div className="text-[13px] font-extrabold text-[#0F172A] mb-0.5">Hands-on Learning</div>
+              <div className="text-[12px] font-medium text-[#64748B]">Interactive & engaging</div>
+            </div>
+          </div>
         </div>
-        */}
+
       </div>
     </section>
   );

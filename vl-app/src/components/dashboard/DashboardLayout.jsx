@@ -141,9 +141,9 @@ export default function DashboardLayout({ children, title }) {
       <div className="p-4 border-t border-white/10 bg-slate-900/50 mt-auto">
         <button
           onClick={() => setShowSignOutConfirm(true)}
-          className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:text-white hover:bg-red-500/10 hover:text-red-400 transition-all duration-200 group"
+          className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium border border-red-500/30 bg-red-500/5 text-red-400 hover:bg-red-500/10 hover:border-red-500/50 hover:text-red-300 transition-all duration-200 group shadow-sm shadow-red-500/5"
         >
-          <LogOut className="w-4 h-4" />
+          <LogOut className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
           Sign Out
         </button>
       </div>
@@ -195,9 +195,7 @@ export default function DashboardLayout({ children, title }) {
           <button className="relative text-slate-400 hover:text-white transition-colors mr-3" aria-label="Notifications">
             <Bell className="w-5 h-5" />
           </button>
-          <div className={`w-8 h-8 bg-gradient-to-br ${cfg.gradient} rounded-lg flex items-center justify-center text-white text-xs font-bold`}>
-            {user?.name?.[0]?.toUpperCase() || '?'}
-          </div>
+
         </header>
 
         {/* Page content */}

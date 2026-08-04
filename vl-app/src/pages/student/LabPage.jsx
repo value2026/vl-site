@@ -74,12 +74,6 @@ export default function LabPage() {
         {/* Lab header */}
         <div className="bg-white border-b border-gray-200 px-6 py-10">
           <div className="max-w-5xl mx-auto">
-            <Link
-              to={`/subject/${lab.subjectId}`}
-              className="inline-flex items-center gap-1.5 text-gray-400 hover:text-blue-600 text-sm mb-5 transition-colors"
-            >
-              ← Back to {subject?.title}
-            </Link>
             <div className="flex items-start gap-5">
               <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center text-3xl flex-shrink-0">
                 {lab.icon}
