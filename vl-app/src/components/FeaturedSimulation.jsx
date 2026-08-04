@@ -5,22 +5,35 @@ import {
 import { useAuth } from '../context/AuthContext';
 
 const DEFAULTS = {
-  tag: 'Physics',
-  category: 'Mechanics',
-  title: 'Simple Pendulum Simulation',
-  description: 'Explore the physics of oscillatory motion with our interactive pendulum simulation. Adjust parameters like length, mass, and gravity to observe real-time changes.',
+  tag: 'COMPUTER SCIENCE',
+  category: 'Computer Science',
+  title: 'Expectation Value Calculation in Quantum Systems',
+  description: 'Calculate expectation values of observables for various parameterized quantum state vectors.',
   institution: 'Amrita Vishwa Vidyapeetham',
-  duration: '45 min',
+  duration: '10 min',
   difficulty: 'Intermediate',
-  experiments: 12,
-  href: '/simulations/pendulum',
+  experiments: 1,
+  href: '/simulations/quantum-expectation',
+  imageUrl: import.meta.env.BASE_URL + 'quantum-core.jpg',
 };
 
 export default function FeaturedSimulation({ sectionTitle, sectionSubtitle, content = {} }) {
   const sim = { ...DEFAULTS, ...content };
-  // heading and subtitle might not be shown if we want to match the mockup exactly. The mockup only shows the card.
-  // But let's keep them if they exist, or just hide them if the mockup doesn't have them.
-  // Actually, the mockup only shows the card. I will remove the section title/subtitle above the card if it's not in the mockup, OR just keep them dark-themed.
+
+  // Ensure empty strings from database fall back to defaults
+  sim.title = sim.title || DEFAULTS.title;
+  sim.description = sim.description || DEFAULTS.description;
+  sim.imageUrl = sim.imageUrl || DEFAULTS.imageUrl;
+  sim.tag = sim.tag || DEFAULTS.tag;
+  sim.institution = sim.institution || DEFAULTS.institution;
+  
+  // Format local paths from DB if necessary
+  if (sim.imageUrl && sim.imageUrl.startsWith('/') && !sim.imageUrl.startsWith('http') && !sim.imageUrl.startsWith(import.meta.env.BASE_URL)) {
+    sim.imageUrl = import.meta.env.BASE_URL + sim.imageUrl.slice(1);
+  }
+
+  const heading = sectionTitle || 'Featured Simulation';
+  const subtitle = sectionSubtitle || 'Hand-picked by our academic council for exceptional learning outcomes.';
   const { user } = useAuth();
   const navigate = useNavigate();
 

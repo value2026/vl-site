@@ -3,6 +3,10 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, PlayCircle, FlaskConical, Atom, Landmark, Users, Clock, BarChart2, Layers } from 'lucide-react';
 import VideoPlayerModal from './VideoPlayerModal';
 
+const ICON_MAP = {
+  Landmark, Users, FlaskConical, Atom, Clock, BarChart2, Layers
+};
+
 const DEFAULTS = {
   heading: 'Build Your Future with\n*Emerging Technologies*\nand Create Impact.',
   subheading: 'Access 1,800+ virtual experiments across 700 labs from IITs, NITs, and leading institutions — free, anywhere, anytime.',
@@ -20,12 +24,6 @@ const DEFAULTS = {
 export default function Hero({ sectionTitle, sectionSubtitle, content = {}, allSections = [] }) {
   const d = { ...DEFAULTS, ...content };
   
-  // Force the 3rd stat to show "2 Lakh+" if the DB still has the old hardcoded number
-  if (d.stats && d.stats[2] && d.stats[2].n === '2,36,237') {
-    d.stats = [...d.stats];
-    d.stats[2] = { ...d.stats[2], n: '2 Lakh+' };
-  }
-
   const heading = content.heading || sectionTitle || d.heading;
   const subheading = content.subheading || sectionSubtitle || d.subheading;
   const [isVideoOpen, setIsVideoOpen] = useState(false);
@@ -104,10 +102,20 @@ export default function Hero({ sectionTitle, sectionSubtitle, content = {}, allS
               />
 
               <div className="flex flex-col sm:flex-row gap-5 mb-14">
-                <Link to={d.ctaPrimaryHref} className="bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 text-white font-bold text-[15px] px-8 py-3.5 rounded-xl flex items-center justify-center gap-2 transition-all">
+                <button 
+                  onClick={() => {
+                    const el = document.getElementById('lab-categories');
+                    if (el) {
+                      el.scrollIntoView({ behavior: 'smooth' });
+                    } else {
+                      window.location.href = d.ctaPrimaryHref;
+                    }
+                  }} 
+                  className="bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 text-white font-bold text-[15px] px-8 py-3.5 rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer"
+                >
                   {d.ctaPrimaryLabel}
                   <ArrowRight className="w-4 h-4" />
-                </Link>
+                </button>
                 <button onClick={() => setIsVideoOpen(true)} className="bg-transparent border border-white/20 hover:bg-white/5 text-white font-bold text-[15px] px-8 py-3.5 rounded-xl flex items-center justify-center gap-2 transition-all">
                   <PlayCircle className="w-5 h-5" />
                   {d.ctaSecondaryLabel}
@@ -119,7 +127,16 @@ export default function Hero({ sectionTitle, sectionSubtitle, content = {}, allS
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 sm:divide-x divide-white/10">
                   {d.stats.map((stat, idx) => {
                     const fallback = DEFAULTS.stats[idx] || {};
-                    const Icon = typeof stat.icon === 'function' || typeof stat.icon === 'object' ? stat.icon : fallback.icon || Landmark;
+                    let Icon = fallback.icon || Landmark;
+                    
+                    if (stat.icon) {
+                      if (typeof stat.icon === 'string' && ICON_MAP[stat.icon]) {
+                        Icon = ICON_MAP[stat.icon];
+                      } else if (typeof stat.icon === 'function' || typeof stat.icon === 'object') {
+                        Icon = stat.icon;
+                      }
+                    }
+
                     const color = stat.color || fallback.color || 'text-cyan-400';
                     
                     return (

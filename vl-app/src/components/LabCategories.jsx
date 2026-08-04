@@ -50,7 +50,7 @@ export default function LabCategories({ sectionTitle, sectionSubtitle, content =
   };
 
   return (
-    <section className="relative pt-10 pb-16 overflow-hidden bg-[#FAFBFF]">
+    <section id="lab-categories" className="relative pt-10 pb-16 overflow-hidden bg-[#FAFBFF] scroll-mt-20">
       
       {/* Background Decorative Elements */}
       <div className="absolute top-10 left-[-5%] opacity-10 pointer-events-none">
