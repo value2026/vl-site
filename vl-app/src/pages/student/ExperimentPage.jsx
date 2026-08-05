@@ -692,16 +692,6 @@ export default function ExperimentPage() {
           <span className="text-gray-900 font-medium truncate max-w-[140px] lg:max-w-[200px]">{experiment.title}</span>
         </div>
 
-        <div className="flex-1" />
-
-        <div className="flex items-center gap-2 flex-shrink-0">
-          <button className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-50 text-amber-700 hover:bg-amber-100 text-xs font-semibold border border-amber-200 transition-colors">
-            <Star className="w-3.5 h-3.5" /> Rate Me
-          </button>
-          <button className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 text-xs font-semibold border border-red-200 transition-colors">
-            <Bug className="w-3.5 h-3.5" /> Report a Bug
-          </button>
-        </div>
       </header>
 
       <div className="flex flex-1 w-full">
