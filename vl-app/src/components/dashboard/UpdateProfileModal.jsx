@@ -11,9 +11,12 @@ export default function UpdateProfileModal({ isOpen, onClose }) {
   const [username, setUsername] = useState('');
   const [mobile, setMobile] = useState('');
   const [dept, setDept] = useState('');
+  const [otp, setOtp] = useState('');
+  const [requiresOtp, setRequiresOtp] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -23,8 +26,11 @@ export default function UpdateProfileModal({ isOpen, onClose }) {
       setUsername(user.username || '');
       setMobile(user.mobile || '');
       setDept(user.dept || user.facultyDept || '');
+      setOtp('');
+      setRequiresOtp(false);
       setError('');
       setSuccess(false);
+      setSuccessMessage('');
     }
   }, [isOpen, user]);
 
@@ -39,6 +45,10 @@ export default function UpdateProfileModal({ isOpen, onClose }) {
       setError('Name and Email are required.');
       return;
     }
+    if (requiresOtp && !otp) {
+      setError('OTP is required to verify your new email address.');
+      return;
+    }
 
     setLoading(true);
     try {
@@ -47,7 +57,8 @@ export default function UpdateProfileModal({ isOpen, onClose }) {
         email,
         username: username || null,
         mobile: mobile || null,
-        dept: dept || null
+        dept: dept || null,
+        otp: otp || undefined
       };
 
       // Since Nodal Centres/Teachers are updating their own profile:
@@ -55,12 +66,21 @@ export default function UpdateProfileModal({ isOpen, onClose }) {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Failed to update profile.');
       
+      if (data.requiresOtp) {
+        setRequiresOtp(true);
+        setSuccess(true);
+        setSuccessMessage(data.message || 'OTP sent successfully!');
+        setTimeout(() => setSuccess(false), 5000);
+        return;
+      }
+      
       // Update local storage so changes persist instantly on refresh
       const storedUser = JSON.parse(localStorage.getItem('vl_user') || '{}');
       const updatedUser = { ...storedUser, ...payload };
       localStorage.setItem('vl_user', JSON.stringify(updatedUser));
       
       setSuccess(true);
+      setSuccessMessage('Your profile information has been successfully saved.');
     } catch (err) {
       setError(err.message);
     } finally {
@@ -71,8 +91,9 @@ export default function UpdateProfileModal({ isOpen, onClose }) {
   const handleClose = () => {
     setError('');
     setSuccess(false);
+    setSuccessMessage('');
     onClose();
-    if (success) {
+    if (success && !requiresOtp) {
       window.location.reload();
     }
   };
@@ -117,18 +138,18 @@ export default function UpdateProfileModal({ isOpen, onClose }) {
               <CheckCircle2 className="w-6 h-6" />
             </div>
             <div className="space-y-1">
-              <h3 className="text-white font-bold text-base">Profile Updated</h3>
+              <h3 className="text-white font-bold text-base">{requiresOtp ? 'Check Your Email' : 'Profile Updated'}</h3>
               <p className="text-slate-400 text-xs max-w-[240px] mx-auto leading-relaxed">
-                Your profile information has been successfully saved.
+                {successMessage}
               </p>
             </div>
             <div className="pt-4">
               <button
                 type="button"
-                onClick={handleClose}
+                onClick={requiresOtp ? () => setSuccess(false) : handleClose}
                 className="w-full py-2.5 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white rounded-xl text-sm font-semibold transition-all"
               >
-                Close & Refresh
+                {requiresOtp ? 'Continue' : 'Close & Refresh'}
               </button>
             </div>
           </div>
@@ -150,18 +171,51 @@ export default function UpdateProfileModal({ isOpen, onClose }) {
             </div>
 
             {/* Email Address */}
-            <div>
+            <div className="relative">
               <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
                 Email Address
               </label>
               <input
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (requiresOtp && e.target.value === user?.email) {
+                    setRequiresOtp(false);
+                    setOtp('');
+                  }
+                }}
                 placeholder="Enter email address"
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
+                disabled={requiresOtp}
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all disabled:opacity-50"
               />
+              {requiresOtp && (
+                <button
+                  type="button"
+                  onClick={() => { setRequiresOtp(false); setOtp(''); }}
+                  className="absolute right-4 top-10 text-xs font-bold text-blue-400 hover:text-blue-300"
+                >
+                  Change
+                </button>
+              )}
             </div>
+
+            {/* Verification OTP */}
+            {requiresOtp && (
+              <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+                <label className="block text-xs font-semibold text-emerald-400 uppercase tracking-wider mb-2">
+                  Verification OTP
+                </label>
+                <input
+                  type="text"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                  placeholder="Enter 6-digit OTP"
+                  className="w-full bg-emerald-500/5 border border-emerald-500/30 rounded-xl px-4 py-2.5 text-sm text-white placeholder-emerald-600/50 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all"
+                />
+                <p className="text-[10px] text-slate-500 mt-2">Please check your new email inbox for the verification code.</p>
+              </div>
+            )}
 
             {/* Username */}
             <div>
