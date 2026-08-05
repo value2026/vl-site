@@ -50,8 +50,9 @@ export function AuthProvider({ children }) {
         setSigningOut(false);
         setLogoutReason(null);
         isLoggingOutRef.current = false;
-        if (window.location.pathname !== '/') {
-          window.location.href = '/';
+        const basePath = import.meta.env.BASE_URL || '/';
+        if (window.location.pathname !== basePath && window.location.pathname !== basePath.replace(/\/$/, '')) {
+          window.location.href = basePath;
         }
       }, 2000); // slightly longer for reading "Session Expired"
     } else {
