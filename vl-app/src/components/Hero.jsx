@@ -139,13 +139,26 @@ export default function Hero({ sectionTitle, sectionSubtitle, content = {}, allS
 
                     const color = stat.color || fallback.color || 'text-cyan-400';
                     
+                    const formatStat = (val) => {
+                      if (!val) return val;
+                      const strVal = String(val).trim();
+                      if (/[a-zA-Z+]/.test(strVal)) return strVal; // already formatted (e.g. '2 Lakh+')
+                      const num = parseInt(strVal.replace(/,/g, ''), 10);
+                      if (!isNaN(num)) {
+                        if (num >= 100000) return `${Math.floor(num / 100000)} Lakh+`;
+                        return new Intl.NumberFormat('en-IN').format(num);
+                      }
+                      return strVal;
+                    };
+                    
+                    
                     return (
                       <div key={idx} className="flex items-center justify-center gap-4 w-full">
                          <div className={`w-12 h-12 rounded-full bg-white/5 flex items-center justify-center border border-white/5 flex-shrink-0`}>
                            <Icon className={`w-6 h-6 ${color}`} strokeWidth={1.5} />
                          </div>
                          <div className="text-left">
-                           <div className="text-2xl font-black text-white leading-none mb-1 tracking-tight">{stat.n}</div>
+                           <div className="text-2xl font-black text-white leading-none mb-1 tracking-tight">{formatStat(stat.n)}</div>
                            <div className="text-[12px] font-medium text-slate-400">{stat.label}</div>
                          </div>
                       </div>

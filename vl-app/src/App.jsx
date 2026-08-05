@@ -188,7 +188,12 @@ function getDashboardLabel(path) {
 function FloatingDashboardButton() {
   const { user } = useAuth();
   const { pathname } = useLocation();
-  if (!user || user.role === 'student' || pathname.startsWith('/dashboard')) return null;
+  
+  if (!user || user.role === 'student') return null;
+  
+  // Hide on dashboard pages and student learning pages (immersive view)
+  const hidePaths = ['/dashboard', '/labs', '/subject', '/lab', '/experiment', '/student'];
+  if (hidePaths.some(p => pathname.startsWith(p))) return null;
   
   const defaultMap = {
     admin:        '/dashboard/admin',
