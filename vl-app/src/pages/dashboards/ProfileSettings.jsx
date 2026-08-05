@@ -44,8 +44,11 @@ export default function ProfileSettings() {
   // Profile Form
   const [name,  setName]  = useState(user?.name  || '');
   const [email, setEmail] = useState(user?.email || '');
+  const [otp, setOtp] = useState('');
+  const [requiresOtp, setRequiresOtp] = useState(false);
   const [profileLoading, setProfileLoading] = useState(false);
   const [profileSuccess, setProfileSuccess] = useState(false);
+  const [profileSuccessMessage, setProfileSuccessMessage] = useState('');
   const [profileError,   setProfileError]   = useState('');
 
   // Password Reset
@@ -56,6 +59,8 @@ export default function ProfileSettings() {
   const handleCancelEdit = () => {
     setName(user?.name || '');
     setEmail(user?.email || '');
+    setOtp('');
+    setRequiresOtp(false);
     setProfileError('');
     setEditing(false);
   };
@@ -65,15 +70,29 @@ export default function ProfileSettings() {
     setProfileError('');
     setProfileSuccess(false);
     if (!name || !email) { setProfileError('Name and email are required.'); return; }
+    if (requiresOtp && !otp) { setProfileError('OTP is required to verify your new email address.'); return; }
 
     setProfileLoading(true);
     try {
-      const res  = await api.post(`/users/${user.id}/update`, { name, email });
+      const res  = await api.post(`/users/${user.id}/update`, { name, email, otp });
       const data = await res.json();
+      
       if (!res.ok) throw new Error(data.message || 'Failed to update profile.');
+      
+      if (data.requiresOtp) {
+        setRequiresOtp(true);
+        setProfileSuccess(true);
+        setProfileSuccessMessage(data.message || 'OTP sent successfully!');
+        setTimeout(() => setProfileSuccess(false), 5000);
+        return;
+      }
+
       setProfileSuccess(true);
+      setProfileSuccessMessage('Profile saved successfully!');
       updateProfile({ name, email });
       setEditing(false);
+      setRequiresOtp(false);
+      setOtp('');
       setTimeout(() => setProfileSuccess(false), 4000);
     } catch (err) {
       setProfileError(err.message);
@@ -183,7 +202,7 @@ export default function ProfileSettings() {
 
           {profileSuccess && (
             <div className="mb-5 bg-emerald-500/10 border border-emerald-500/30 rounded-xl px-4 py-3 text-xs text-emerald-400 flex gap-2 items-center">
-              <CheckCircle2 className="w-4 h-4 flex-shrink-0" /> <span>Profile saved successfully!</span>
+              <CheckCircle2 className="w-4 h-4 flex-shrink-0" /> <span>{profileSuccessMessage || 'Profile saved successfully!'}</span>
             </div>
           )}
 
@@ -229,12 +248,45 @@ export default function ProfileSettings() {
                   <input
                     type="email"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      if (requiresOtp && e.target.value === user?.email) {
+                        setRequiresOtp(false);
+                        setOtp('');
+                      }
+                    }}
                     placeholder="you@institution.edu"
-                    className="w-full bg-white/5 border border-blue-500/30 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-all"
+                    disabled={requiresOtp}
+                    className="w-full bg-white/5 border border-blue-500/30 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-all disabled:opacity-50"
                   />
+                  {requiresOtp && (
+                    <button
+                      type="button"
+                      onClick={() => { setRequiresOtp(false); setOtp(''); }}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-blue-400 hover:text-blue-300"
+                    >
+                      Change
+                    </button>
+                  )}
                 </div>
               </div>
+
+              {requiresOtp && (
+                <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+                  <label className="block text-xs font-semibold text-emerald-400 uppercase tracking-wider mb-2">Verification OTP</label>
+                  <div className="relative">
+                    <KeyRound className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-emerald-500 pointer-events-none" />
+                    <input
+                      type="text"
+                      value={otp}
+                      onChange={(e) => setOtp(e.target.value)}
+                      placeholder="Enter 6-digit OTP"
+                      className="w-full bg-emerald-500/5 border border-emerald-500/30 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-emerald-600/50 focus:outline-none focus:ring-2 focus:ring-emerald-500/40 transition-all"
+                    />
+                  </div>
+                  <p className="text-[10px] text-slate-500 mt-2">Please check your new email inbox for the verification code.</p>
+                </div>
+              )}
 
               <div>
                 <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Role</label>

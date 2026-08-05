@@ -671,7 +671,7 @@ export default function ExperimentPage() {
             <ChevronLeft className="w-4 h-4" />
           </button>
           
-          <Link to="/student" className="hover:text-blue-600 transition-colors flex-shrink-0">Home</Link>
+          <Link to={user?.role === 'student' ? '/labs' : '/'} className="hover:text-blue-600 transition-colors flex-shrink-0">Home</Link>
           <span className="text-gray-300">/</span>
           {subject && (
             <>

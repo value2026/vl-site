@@ -331,9 +331,66 @@ Institution: ${institution}
   }
 }
 
+/**
+ * Sends an OTP for verifying a new email address.
+ */
+async function sendEmailVerificationOtp(email, userName, otp) {
+  const from = process.env.SMTP_FROM || '"Virtual Labs Admin" <no-reply@virtuallabs.in>';
+
+  const htmlContent = `
+    <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 550px; margin: 0 auto; padding: 24px; border: 1px solid #f1f5f9; border-radius: 16px; background-color: #ffffff;">
+      <div style="text-align: center; margin-bottom: 24px; border-bottom: 1px solid #f1f5f9; padding-bottom: 16px;">
+        <span style="font-size: 24px;">🛡️</span>
+        <h2 style="color: #0f172a; margin-top: 10px; margin-bottom: 0;">Verify Your Email Address</h2>
+      </div>
+      <p style="color: #334155; font-size: 14px; line-height: 1.5;">Hello <strong>${userName}</strong>,</p>
+      <p style="color: #334155; font-size: 14px; line-height: 1.5;">You requested to change your email address. Please use the OTP below to complete the verification process:</p>
+      <div style="text-align: center; margin: 30px 0;">
+        <span style="background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 12px 24px; border-radius: 8px; font-size: 24px; font-weight: bold; letter-spacing: 4px; color: #0f172a;">${otp}</span>
+      </div>
+      <p style="color: #64748b; font-size: 12px; line-height: 1.5;">
+        This OTP will expire in <strong>10 minutes</strong>. If you did not request this change, please ignore this email.
+      </p>
+    </div>
+  `;
+
+  const textContent = `
+Hello ${userName},
+
+You requested to change your email address on the Virtual Labs platform. 
+Please use the following OTP to verify your new email address:
+
+${otp}
+
+This OTP is valid for 10 minutes. If you did not request this change, please ignore this email.
+  `;
+
+  try {
+    const transporter = await getTransporter();
+    const info = await transporter.sendMail({
+      from,
+      to: email,
+      subject: 'Verify Your New Email Address',
+      text: textContent,
+      html: htmlContent,
+    });
+    console.log(`✉️ Mailer: OTP sent successfully to ${email} (Id: ${info.messageId})`);
+    
+    if (info.messageId && info.messageId.includes('ethereal')) {
+      const nodemailerLib = require('nodemailer');
+      console.log('✉️ Ethereal OTP Preview URL:', nodemailerLib.getTestMessageUrl(info));
+    }
+    return true;
+  } catch (err) {
+    console.error('❌ Mailer Error: Failed to send OTP email.', err);
+    return false;
+  }
+}
+
 module.exports = {
   sendWelcomeEmail,
   sendPasswordResetEmail,
   sendWorkshopApprovalEmail,
   sendHostWorkshopRequestEmail,
+  sendEmailVerificationOtp,
 };

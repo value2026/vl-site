@@ -21,7 +21,7 @@ const HOME_DEFAULTS = [
       stats: [
         { n: '37', label: 'Total Labs' },
         { n: '340', label: 'Experiments' },
-        { n: '2,36,237', label: 'Registered Users' },
+        { n: '2 Lakh+', label: 'Registered Users' },
       ],
     },
   },

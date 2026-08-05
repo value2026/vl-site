@@ -76,7 +76,7 @@ export default function Project() {
               {[
                 { n: '37', l: 'Total Labs', Icon: Calendar },
                 { n: '340', l: 'Experiments', Icon: Users },
-                { n: '2,36,237', l: 'Registered Users', Icon: Users },
+                { n: '2 Lakh+', l: 'Registered Users', Icon: Users },
               ].map(({ n, l, Icon }) => (
                 <div key={l} className="bg-primary-50 border border-primary-100 rounded-2xl p-6">
                   <div className="text-3xl font-heading font-extrabold text-primary-800 mb-1">{n}</div>

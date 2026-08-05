@@ -1,6 +1,17 @@
 const bcrypt           = require('bcryptjs');
 const prisma           = require('../db');
-const { sendWelcomeEmail } = require('../utils/mailer');
+const { sendWelcomeEmail, sendEmailVerificationOtp } = require('../utils/mailer');
+
+// Store pending email updates in memory: targetId -> { email, otp, expiresAt }
+const emailUpdateOtps = new Map();
+
+// Helper to clean up expired OTPs
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, value] of emailUpdateOtps.entries()) {
+    if (value.expiresAt < now) emailUpdateOtps.delete(key);
+  }
+}, 60 * 60 * 1000);
 
 // Which roles each role is allowed to create
 const CREATION_RULES = {
@@ -250,7 +261,7 @@ const updateUser = async (req, res) => {
   try {
     const { role: callerRole, id: callerId } = req.user;
     const { id: targetId } = req.params;
-    const { name, email, password, isActive, customPermissions, managedSubjectIds } = req.body;
+    const { name, email, password, isActive, customPermissions, managedSubjectIds, otp } = req.body;
 
     const target = await prisma.user.findUnique({ where: { id: targetId } });
     if (!target) return res.status(404).json({ message: 'User not found' });
@@ -283,7 +294,45 @@ const updateUser = async (req, res) => {
 
     const data = {};
     if (name)                       data.name     = name.trim();
-    if (email)                      data.email    = email.toLowerCase().trim();
+    
+    if (email) {
+      const cleanEmail = email.toLowerCase().trim();
+      if (cleanEmail !== target.email) {
+        // If email is changing, we require OTP verification ONLY if they are updating their own profile
+        if (callerId === targetId && !otp) {
+          const exists = await prisma.user.findUnique({ where: { email: cleanEmail } });
+          if (exists) {
+            return res.status(409).json({ message: 'This email address is already registered' });
+          }
+          
+          const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
+          emailUpdateOtps.set(targetId, {
+            email: cleanEmail,
+            otp: generatedOtp,
+            expiresAt: Date.now() + 10 * 60 * 1000 // 10 minutes
+          });
+          
+          await sendEmailVerificationOtp(cleanEmail, target.name || name || 'User', generatedOtp);
+          
+          return res.status(200).json({ 
+            message: 'An OTP has been sent to your new email address for verification.',
+            requiresOtp: true
+          });
+        } else if (callerId === targetId) {
+          // Verify OTP
+          const pendingUpdate = emailUpdateOtps.get(targetId);
+          if (!pendingUpdate || pendingUpdate.email !== cleanEmail || pendingUpdate.otp !== otp || pendingUpdate.expiresAt < Date.now()) {
+            return res.status(400).json({ message: 'Invalid or expired OTP' });
+          }
+          // OTP is valid
+          data.email = cleanEmail;
+          emailUpdateOtps.delete(targetId);
+        } else {
+          // Admin/Manager updating another user's email, no OTP required
+          data.email = cleanEmail;
+        }
+      }
+    }
     if (typeof isActive === 'boolean') data.isActive = isActive;
     if (password)                   data.password = await bcrypt.hash(password, 12);
     if (customPermissions)          data.customPermissions = customPermissions;
@@ -331,6 +380,9 @@ const deleteUser = async (req, res) => {
     res.json({ message: 'User deleted successfully' });
   } catch (err) {
     console.error('Delete user error:', err);
+    if (err.code === 'P2003') {
+      return res.status(400).json({ message: 'Cannot delete user because they are linked to existing records (like workshops). Please remove those records first.' });
+    }
     res.status(500).json({ message: 'Internal server error' });
   }
 };

@@ -89,7 +89,7 @@ export default function StudentNav({ breadcrumb = [] }) {
       {/* Breadcrumb */}
       {breadcrumb.length > 0 && (
         <div className="hidden md:flex items-center gap-1.5 text-sm text-gray-500 overflow-hidden">
-          <Link to="/student" className="hover:text-blue-600 transition-colors flex-shrink-0">Home</Link>
+          <Link to={user?.role === 'student' ? '/labs' : '/'} className="hover:text-blue-600 transition-colors flex-shrink-0">Home</Link>
           {breadcrumb.map((crumb, i) => (
             <span key={i} className="flex items-center gap-1.5 min-w-0">
               <span className="text-gray-300">/</span>
