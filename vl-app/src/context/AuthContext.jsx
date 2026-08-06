@@ -50,8 +50,8 @@ export function AuthProvider({ children }) {
         setSigningOut(false);
         setLogoutReason(null);
         isLoggingOutRef.current = false;
-        if (window.location.pathname !== '/login') {
-          window.location.href = '/login';
+        if (window.location.pathname !== '/') {
+          window.location.href = '/';
         }
       }, 2000); // slightly longer for reading "Session Expired"
     } else {

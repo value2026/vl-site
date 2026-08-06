@@ -476,8 +476,8 @@ export default function ExperimentPage() {
           <div>
             <SectionHeader title="Theory" />
             {sections.theory ? (
-              <div className="bg-slate-50/50 border border-slate-200 shadow-sm rounded-2xl p-6 sm:p-8 mt-2 overflow-hidden">
-                <div dangerouslySetInnerHTML={{ __html: sections.theory }} className="prose prose-slate max-w-none" />
+              <div className="bg-slate-50/50 border border-slate-200 shadow-sm rounded-2xl p-6 sm:p-8 mt-2 overflow-x-auto">
+                <div dangerouslySetInnerHTML={{ __html: sections.theory }} className="prose prose-slate max-w-none break-words" />
               </div>
             ) : (
               <p className="text-gray-500 italic">Theory content has not been uploaded yet.</p>
@@ -504,8 +504,8 @@ export default function ExperimentPage() {
           <div>
             <SectionHeader title="Procedure" subtitle="Follow these steps carefully during the simulation." />
             {sections.procedure ? (
-              <div className="bg-slate-50/50 border border-slate-200 shadow-sm rounded-2xl p-6 sm:p-8 mt-2 overflow-hidden">
-                <div dangerouslySetInnerHTML={{ __html: sections.procedure }} className="prose prose-slate max-w-none" />
+              <div className="bg-slate-50/50 border border-slate-200 shadow-sm rounded-2xl p-6 sm:p-8 mt-2 overflow-x-auto">
+                <div dangerouslySetInnerHTML={{ __html: sections.procedure }} className="prose prose-slate max-w-none break-words" />
               </div>
             ) : (
               <p className="text-gray-500 italic">Procedure steps have not been uploaded yet.</p>
@@ -600,8 +600,8 @@ export default function ExperimentPage() {
           <div>
             <SectionHeader title="References" subtitle="Supporting materials and bibliography." />
             {sections.references ? (
-              <div className="bg-slate-50/50 border border-slate-200 shadow-sm rounded-2xl p-6 sm:p-8 mt-2 overflow-hidden">
-                <div dangerouslySetInnerHTML={{ __html: sections.references }} className="prose prose-slate max-w-none" />
+              <div className="bg-slate-50/50 border border-slate-200 shadow-sm rounded-2xl p-6 sm:p-8 mt-2 overflow-x-auto">
+                <div dangerouslySetInnerHTML={{ __html: sections.references }} className="prose prose-slate max-w-none break-words" />
               </div>
             ) : (
               <p className="text-gray-500 italic">No reference links available.</p>
@@ -614,8 +614,8 @@ export default function ExperimentPage() {
           <div>
             <SectionHeader title="Contributors" subtitle="The team who designed and developed this experiment." />
             {sections.contributors ? (
-              <div className="bg-slate-50/50 border border-slate-200 shadow-sm rounded-2xl p-6 sm:p-8 mt-2 overflow-hidden">
-                <div dangerouslySetInnerHTML={{ __html: sections.contributors }} className="prose prose-slate max-w-none" />
+              <div className="bg-slate-50/50 border border-slate-200 shadow-sm rounded-2xl p-6 sm:p-8 mt-2 overflow-x-auto">
+                <div dangerouslySetInnerHTML={{ __html: sections.contributors }} className="prose prose-slate max-w-none [&_table]:w-full [&_table]:min-w-[800px]" />
               </div>
             ) : (
               <p className="text-gray-500 italic">No contributor information uploaded.</p>
@@ -692,16 +692,6 @@ export default function ExperimentPage() {
           <span className="text-gray-900 font-medium truncate max-w-[140px] lg:max-w-[200px]">{experiment.title}</span>
         </div>
 
-        <div className="flex-1" />
-
-        <div className="flex items-center gap-2 flex-shrink-0">
-          <button className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-50 text-amber-700 hover:bg-amber-100 text-xs font-semibold border border-amber-200 transition-colors">
-            <Star className="w-3.5 h-3.5" /> Rate Me
-          </button>
-          <button className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 text-xs font-semibold border border-red-200 transition-colors">
-            <Bug className="w-3.5 h-3.5" /> Report a Bug
-          </button>
-        </div>
       </header>
 
       <div className="flex flex-1 w-full">
@@ -795,8 +785,8 @@ export default function ExperimentPage() {
         </aside>
 
         {/* Main content */}
-        <main className="flex-1 flex flex-col bg-white min-h-[calc(100vh-3rem)]">
-          <div className={`${active === 'simulation' ? 'w-full flex-1 flex flex-col p-4 md:p-6' : 'max-w-3xl mx-auto px-6 py-8'} transition-all duration-300 h-full`}>
+        <main className="flex-1 flex flex-col bg-white min-h-[calc(100vh-3rem)] w-full overflow-hidden">
+          <div className={`${active === 'simulation' ? 'w-full flex-1 flex flex-col p-4 md:p-6' : 'max-w-5xl mx-auto px-6 py-8 w-full'} transition-all duration-300 h-full`}>
             {renderContent()}
           </div>
         </main>

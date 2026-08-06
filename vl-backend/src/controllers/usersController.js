@@ -42,8 +42,16 @@ const getUsers = async (req, res) => {
 
     let where = {};
 
-    if (role === 'admin' || role === 'vl_manager') {
+    if (role === 'admin') {
       where = { ...searchFilter, ...roleFilter };
+    } else if (role === 'vl_manager') {
+      where = { ...searchFilter, ...roleFilter };
+      // Prevent VL Managers from viewing admins and other VL managers
+      if (filterRole === 'admin' || filterRole === 'vl_manager') {
+        return res.json([]);
+      } else if (!filterRole) {
+        where.role = { notIn: ['admin', 'vl_manager'] };
+      }
     } else if (role === 'vl_coordinator') {
       where = { createdById: id, ...searchFilter, ...roleFilter };
     } else if (role === 'nodal_centre') {
@@ -266,8 +274,12 @@ const updateUser = async (req, res) => {
     if (!target) return res.status(404).json({ message: 'User not found' });
 
     // Permission check — self-edit always allowed; otherwise scope-check
-    if (callerId !== targetId && callerRole !== 'admin' && callerRole !== 'vl_manager') {
-      if (callerRole === 'vl_coordinator') {
+    if (callerId !== targetId && callerRole !== 'admin') {
+      if (callerRole === 'vl_manager') {
+        if (target.role === 'admin' || target.role === 'vl_manager') {
+          return res.status(403).json({ message: 'VL Managers cannot edit admins or other managers' });
+        }
+      } else if (callerRole === 'vl_coordinator') {
          if (target.role === 'admin' || target.role === 'vl_manager' || target.role === 'vl_coordinator') {
             return res.status(403).json({ message: 'Insufficient permissions to update higher-level roles' });
          }
@@ -371,6 +383,10 @@ const deleteUser = async (req, res) => {
       return res.status(403).json({ message: 'Only administrators, VL Managers, and Co-ordinators can delete users' });
     }
     
+    if (callerRole === 'vl_manager' && (target.role === 'admin' || target.role === 'vl_manager')) {
+      return res.status(403).json({ message: 'VL Managers cannot delete admins or other managers' });
+    }
+
     if (callerRole === 'vl_coordinator' && (target.role === 'admin' || target.role === 'vl_manager' || target.role === 'vl_coordinator')) {
       return res.status(403).json({ message: 'Co-ordinators cannot delete admins or managers' });
     }
