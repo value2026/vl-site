@@ -224,7 +224,6 @@ const createUser = async (req, res) => {
         designation:   newRole === 'teacher' && designation ? designation.trim() : null,
         facultyDept:   newRole === 'teacher' && facultyDept ? facultyDept.trim() : null,
         facultyInst:   newRole === 'teacher' && facultyInst ? facultyInst.trim() : null,
-        
         customPermissions: req.body.customPermissions ? req.body.customPermissions : [],
         managedSubjectIds: req.body.managedSubjectIds ? req.body.managedSubjectIds : [],
       },
@@ -539,34 +538,38 @@ const bulkCreateStudents = async (req, res) => {
       const plainTextPassword = (password && password.trim()) ? password.trim() : generateRandomPassword();
       const hashed = await bcrypt.hash(plainTextPassword, 12);
 
-      const newStudent = await prisma.user.create({
-        data: {
-          name:          name.trim(),
-          email:         cleanEmail,
-          password:      hashed,
-          role:          'student',
-          createdById:   callerId,
-          nodalCentreId: centreId,
-          username,
-          // Academic & extra details
-          org:           student.org || req.user.org || 'Virtual Labs Partner',
-          dept:          student.dept || req.user.dept || 'Science',
-          country:       student.country || 'India',
-          course:        student.course || null,
-          yearSemester:  student.yearSemester || null,
-          batch:         student.batch || null,
-          studentId:     student.studentId || null,
-          section:       student.section || null,
-          mobile:        student.mobile || null,
-        },
-      });
+      try {
+        const newStudent = await prisma.user.create({
+          data: {
+            name:          name.trim(),
+            email:         cleanEmail,
+            password:      hashed,
+            role:          'student',
+            createdById:   callerId,
+            nodalCentreId: centreId,
+            username,
+            // Academic & extra details
+            org:           student.org || req.user.org || 'Virtual Labs Partner',
+            dept:          student.dept || req.user.dept || 'Science',
+            country:       student.country || 'India',
+            course:        student.course || null,
+            yearSemester:  student.yearSemester || null,
+            batch:         student.batch || null,
+            studentId:     student.studentId || null,
+            section:       student.section ? String(student.section).trim() : null,
+            mobile:        student.mobile || null,
+          },
+        });
 
-      // Dispatch email in background
-      sendWelcomeEmail(newStudent, plainTextPassword).catch(err => {
-        console.error(`❌ Mailer error: Failed to send welcome email for bulk student ${cleanEmail}:`, err);
-      });
-
-      createdCount++;
+        // Dispatch email in background
+        sendWelcomeEmail(newStudent, plainTextPassword).catch(err => {
+          console.error(`❌ Mailer error: Failed to send welcome email for bulk student ${cleanEmail}:`, err);
+        });
+        createdCount++;
+      } catch (err) {
+        console.error('Error creating student:', err);
+        skipped.push({ email: cleanEmail, reason: 'Database error during creation' });
+      }
     }
 
     res.status(200).json({
