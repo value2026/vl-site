@@ -158,27 +158,24 @@ export default function InstitutionsManagement() {
     let oldCreatedAtIdx = -1;
 
     // Try mapping headers based on user description:
-    // Sl No | College ID | Institute Name | college abrivation | Created date
+    // College ID | Institute Name | Abbreviation
     headerRow.forEach((h, idx) => {
       if (h.includes('institute name') || h.includes('institution name') || h === 'name') {
         nameIdx = idx;
       } else if (h.includes('college id') || h.includes('institute id') || h.includes('legacy id') || h === 'id') {
         legacyIdIdx = idx;
-      } else if (h.includes('abrivation') || h.includes('abbreviation') || h.includes('code')) {
+      } else if (h.includes('abrivation') || h.includes('abbreviation') || h.includes('code') || h.includes('abbr')) {
         codeIdx = idx;
-      } else if (h.includes('created date') || h.includes('date')) {
-        oldCreatedAtIdx = idx;
       }
     });
 
     // Fallbacks to default TSV positions if headers not recognized
     if (nameIdx === -1) {
-      if (headerRow.length >= 3) {
-        // Col 0: Sl No, Col 1: College ID, Col 2: Institute Name, Col 3: abrivation, Col 4: Created date
-        legacyIdIdx = 1;
-        nameIdx = 2;
-        codeIdx = 3;
-        oldCreatedAtIdx = 4;
+      if (headerRow.length >= 2) {
+        // Col 0: College ID, Col 1: Institute Name, Col 2: Abbreviation
+        legacyIdIdx = 0;
+        nameIdx = 1;
+        codeIdx = 2;
       } else {
         nameIdx = 0;
       }
@@ -232,11 +229,11 @@ export default function InstitutionsManagement() {
   };
 
   const downloadTemplate = () => {
-    const headers = ['Sl No', 'College ID', 'Institute Name', 'college abrivation', 'Created date'];
+    const headers = ['College ID', 'Institute Name', 'Abbreviation'];
     const rows = [
-      ['1', '2', 'VMKV Engineering College', 'vmkv', '2/3/2015'],
-      ['2', '5', 'MET Nashik', 'met', '01-05-2015'],
-      ['3', '6', 'Global Academy Of Technolgy', 'glat/gat', '8/3/2015']
+      ['2', 'VMKV Engineering College', 'vmkv'],
+      ['5', 'MET Nashik', 'met'],
+      ['6', 'Global Academy Of Technolgy', 'glat/gat']
     ];
     const content = [headers.join('\t'), ...rows.map(r => r.join('\t'))].join('\n');
     const blob = new Blob([content], { type: 'text/tab-separated-values;charset=utf-8;' });
@@ -524,11 +521,9 @@ export default function InstitutionsManagement() {
                   </div>
                   <p className="text-xs text-slate-300 leading-relaxed">
                     Upload a <strong>colleges.tsv</strong> file or copy-paste directly from Excel/Spreadsheet. Columns should be: 
-                    <code className="bg-black/40 px-1.5 py-0.5 rounded text-blue-300 mx-1">Sl No</code> | 
                     <code className="bg-black/40 px-1.5 py-0.5 rounded text-blue-300 mx-1">College ID</code> | 
                     <code className="bg-black/40 px-1.5 py-0.5 rounded text-blue-300 mx-1">Institute Name</code> | 
-                    <code className="bg-black/40 px-1.5 py-0.5 rounded text-blue-300 mx-1">college abrivation</code> | 
-                    <code className="bg-black/40 px-1.5 py-0.5 rounded text-blue-300 mx-1">Created date</code>.
+                    <code className="bg-black/40 px-1.5 py-0.5 rounded text-blue-300 mx-1">Abbreviation</code>.
                   </p>
                 </div>
 
@@ -544,7 +539,7 @@ export default function InstitutionsManagement() {
                         setBulkText(e.target.value);
                         parseBulkInput(e.target.value);
                       }}
-                      placeholder={`Sl No\tCollege ID\tInstitute Name\tcollege abrivation\tCreated date\n1\t2\tVMKV Engineering College\tvmkv\t2/3/2015`}
+                      placeholder={`College ID\tInstitute Name\tAbbreviation\n2\tVMKV Engineering College\tvmkv`}
                       className="w-full flex-1 bg-white/5 border border-white/10 rounded-2xl p-4 text-xs font-mono text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 resize-none min-h-[200px]"
                     />
                     <div className="mt-2 flex items-center justify-between">

@@ -168,4 +168,19 @@ process.on('unhandledRejection', (reason, promise) => {
 app.listen(PORT, () => {
   console.log(`\nVirtual Labs API listening on port ${PORT}`);
   console.log(`   Health: /api/health\n`);
+  
+  // Launch student migration as a completely separate background process!
+  // This prevents the heavy password hashing from blocking the web server!
+  const { fork } = require('child_process');
+  const path = require('path');
+  const migrationScript = path.join(__dirname, 'background_migration.js');
+  
+  console.log('🚀 Spawning background worker for student migrations...');
+  const worker = fork(migrationScript);
+  
+  worker.on('exit', (code) => {
+    if (code !== 0) {
+      console.log(`⚠️ Background migration worker exited with code ${code}`);
+    }
+  });
 });
