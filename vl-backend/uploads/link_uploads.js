@@ -139,6 +139,15 @@ async function linkUploads() {
     removeEmptyDirs(uploadsDir);
 
     console.log(`🎉 Auto-linking complete! Updated ${foundUpdates.length} experiments in database.`);
+
+    // --- Institution Migration Hook ---
+    try {
+      const migrateInstitutions = require('./migrate_institutions.js');
+      await migrateInstitutions(prisma);
+    } catch (e) {
+      console.log('Institution auto-migration skipped or failed:', e.message);
+    }
+
   } catch (err) {
     console.error('Error in linkUploads:', err);
   } finally {

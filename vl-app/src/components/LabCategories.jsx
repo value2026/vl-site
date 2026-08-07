@@ -93,7 +93,7 @@ export default function LabCategories({ sectionTitle, sectionSubtitle, content =
             <Loader2 className="w-8 h-8 text-[#3B41E3] animate-spin" />
           </div>
         ) : (
-          <div className="flex flex-wrap justify-center gap-10">
+          <div className="flex flex-wrap justify-center gap-8 xl:gap-10">
             {subjects.map((subject) => {
               const IconComp = ICONS[subject.title] || Atom;
               
@@ -108,7 +108,7 @@ export default function LabCategories({ sectionTitle, sectionSubtitle, content =
                   key={subject.id}
                   to={`/subject/${subject.id}`}
                   state={{ fromHome: true }}
-                  className="relative w-full max-w-[420px] sm:w-[calc(50%-20px)] lg:w-[calc(50%-20px)] bg-white rounded-[2rem] p-10 border border-[#E2E8F0] shadow-[0_15px_50px_rgba(0,0,0,0.03)] hover:shadow-[0_25px_70px_rgba(59,65,227,0.1)] hover:-translate-y-2 transition-all duration-300 group overflow-hidden flex flex-col h-[420px]"
+                  className="relative w-full max-w-[340px] sm:max-w-[320px] lg:max-w-[340px] sm:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1.5rem)] xl:w-[calc(33.333%-1.666rem)] bg-white rounded-[1.5rem] p-6 xl:p-8 border border-[#E2E8F0] shadow-[0_15px_50px_rgba(0,0,0,0.03)] hover:shadow-[0_25px_70px_rgba(59,65,227,0.1)] hover:-translate-y-2 transition-all duration-300 group overflow-hidden flex flex-col h-[360px]"
                 >
                   {/* Faint wavy top background - simple css shape */}
                   <div className="absolute top-0 left-0 w-full h-40 bg-gradient-to-br from-[#F4F7FF] to-transparent rounded-t-[2rem] opacity-70"></div>

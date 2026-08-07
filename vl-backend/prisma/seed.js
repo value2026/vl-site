@@ -8,7 +8,7 @@ async function main() {
 
   // 1. Create or Find default users and institutions
   const adminEmail = 'admin@virtuallabs.in';
-  let admin = await prisma.user.findUnique({ where: { email: adminEmail } });
+  let admin = await prisma.user.findFirst({ where: { role: 'admin' } });
 
   if (!admin) {
     const hashed = await bcrypt.hash('VLAdmin@2024', 12);
@@ -22,26 +22,9 @@ async function main() {
     });
     console.log('✅ Admin user created!');
   } else {
-    console.log('ℹ️ Admin user already exists.');
+    console.log('ℹ️ Admin user already exists (found by role).');
   }
 
-  // Create default VL Manager
-  const managerEmail = 'manager@virtuallabs.in';
-  let manager = await prisma.user.findUnique({ where: { email: managerEmail } });
-  if (!manager) {
-    const hashed = await bcrypt.hash('VLManager@2024', 12);
-    manager = await prisma.user.create({
-      data: {
-        name: 'VL Manager',
-        email: managerEmail,
-        password: hashed,
-        role: 'vl_manager',
-      },
-    });
-    console.log('✅ VL Manager created!');
-  } else {
-    console.log('ℹ️ VL Manager already exists.');
-  }
 
   // Create Default Institutions with Legacy Metadata
   const defaultInstitutions = [
@@ -86,23 +69,6 @@ async function main() {
     }
   }
 
-  // Create default nodal admin (Nodal Centre role)
-  const nodalEmail = 'nodal@amrita.edu';
-  let nodalAdmin = await prisma.user.findUnique({ where: { email: nodalEmail } });
-  if (!nodalAdmin && primaryInstitution) {
-    const hashed = await bcrypt.hash('VLNodal@2024', 12);
-    nodalAdmin = await prisma.user.create({
-      data: {
-        name: 'Amrita Nodal Admin',
-        email: nodalEmail,
-        password: hashed,
-        role: 'nodal_centre',
-        nodalCentreId: primaryInstitution.id, // Linking to Institution
-        createdById: admin.id,
-      },
-    });
-    console.log('✅ Nodal Admin user created!');
-  }
 
   // 3. Define Seed Data
   const subjectsData = [
