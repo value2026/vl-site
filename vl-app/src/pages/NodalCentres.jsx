@@ -304,7 +304,10 @@ export default function NodalCentres() {
     { icon: Award, title: 'Results Reporting', desc: 'Generate and export detailed performance reports for students and faculty.' },
   ];
   const uniqueIdInstructions = uniqueIdSec?.content?.instructions || 'Nodal coordinator can submit the list of students and faculty members for obtaining the unique login id in the prescribed format to virtual_labs@am.amrita.edu with the subject line - Login ID request - your institute name.';
-  const templateLink = uniqueIdSec?.content?.templateLink || '/login_id_template.xlsx';
+  let templateLink = uniqueIdSec?.content?.templateLink || '/login_id_template.xlsx';
+  if (templateLink.includes('vlab.amrita.edu')) {
+    templateLink = '/login_id_template.xlsx';
+  }
   const templateLabel = uniqueIdSec?.content?.templateLabel || 'Click Here To Download Login ID Template';
 
 
@@ -514,7 +517,7 @@ export default function NodalCentres() {
               <p className="text-gray-500 text-sm mb-6">Download and fill the EOI form, then send it to <strong>virtual_labs@am.amrita.edu</strong></p>
               <div className="flex justify-center">
                 <a
-                  href="https://vlab.amrita.edu/userfiles/1/file/workshop_NodalCentre.PDF"
+                  href="/workshop_NodalCentre.pdf"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="btn-primary"

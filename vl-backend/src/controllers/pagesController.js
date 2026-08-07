@@ -58,7 +58,7 @@ const HOME_DEFAULTS = [
           title: 'Download Brochure',
           description: 'Get the complete guide to Virtual Labs including lab list, institution details, and usage instructions.',
           action: 'Download PDF',
-          href: '#',
+          href: '/brochure.pdf',
           gradient: 'from-primary-800 to-primary-900',
         },
         {
