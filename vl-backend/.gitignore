@@ -3,7 +3,4 @@ node_modules/
 dist/
 *.log
 
-uploads/*.csv
-uploads/*.tsv
-data/student*.csv
 failed_migrations.json
