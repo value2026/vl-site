@@ -365,6 +365,11 @@ function AppLayout() {
             <DashboardLayout title="Surveys"><SurveysDashboard /></DashboardLayout>
           </ProtectedRoute>
         } />
+        <Route path="/dashboard/vl-coordinator/pages" element={
+          <ProtectedRoute allowedRole="vl_coordinator">
+            <DashboardLayout title="Manage Pages"><ManagePages /></DashboardLayout>
+          </ProtectedRoute>
+        } />
         <Route path="/dashboard/vl-coordinator/workshops/:id" element={
           <ProtectedRoute allowedRole="vl_coordinator">
             <DashboardLayout title="Workshop Editor"><WorkshopEditor /></DashboardLayout>

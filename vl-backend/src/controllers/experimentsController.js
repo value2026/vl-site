@@ -214,6 +214,13 @@ const uploadZip = async (req, res) => {
       return res.status(404).json({ message: 'Experiment not found' });
     }
 
+    // Role & ownership check
+    if (req.user.role !== 'admin' && req.user.role !== 'vl_manager' && req.user.role !== 'vl_coordinator' && req.user.role !== 'content_admin') {
+      if (exp.createdById !== req.user.id) {
+        return res.status(403).json({ message: 'Insufficient permissions to modify this experiment' });
+      }
+    }
+
     // Target sub-directories (relative to uploads/) using ID-based directory naming grouped by lab
     const relativeContentSubDir = `labs/${exp.labId}/${id}/content`;
 

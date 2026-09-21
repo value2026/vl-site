@@ -553,6 +553,18 @@ const REPEATABLE_CONFIGS = {
       ],
     },
   },
+  outreach_stats: {
+    stats: {
+      label: 'Stat Cards',
+      fields: [
+        { key: 'icon',   label: 'Emoji Icon',              placeholder: '🎓' },
+        { key: 'value',  label: 'Number (digits only)',    placeholder: '236237' },
+        { key: 'suffix', label: 'Suffix (e.g. + or %)',   placeholder: '+' },
+        { key: 'label',  label: 'Stat Label',              placeholder: 'Registered Users' },
+        { key: 'sub',    label: 'Sub-label (optional)',    placeholder: 'On Amrita Virtual Labs' },
+      ],
+    },
+  },
   news: {
     items: {
       label: 'News Items',
@@ -1203,6 +1215,28 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
                 onChange={v => setContentKey('sponsors', v)}
                 onAutoSave={v => handleAutoSave('sponsors', v)}
                 fields={REPEATABLE_CONFIGS.sponsors.sponsors.fields}
+                onConfirmRequest={setConfirmConfig}
+              />
+            </>
+          )}
+
+          {/* ── OUTREACH STATS ───────────────────────────── */}
+          {section.sectionKey === 'outreach_stats' && (
+            <>
+              <SectionDivider label="Outreach Stats Settings" />
+              <TextField label="Section Tag" value={content.sectionTag} onChange={v => setContentKey('sectionTag', v)} placeholder="Outreach & Impact" />
+              <TextField label="Footer Note" value={content.footerNote} onChange={v => setContentKey('footerNote', v)} placeholder="All statistical metrics updated periodically..." />
+
+              <SectionDivider label="Stat Cards (Numbers, Labels & Icons)" />
+              <p className="text-slate-500 text-xs -mt-2">
+                💡 Enter numbers without commas (e.g. 236237). They will automatically format using Indian numbering system (2,36,237) with smooth counting animations.
+              </p>
+              <RepeatableList
+                label="Stat Cards"
+                items={content.stats || []}
+                onChange={v => setContentKey('stats', v)}
+                onAutoSave={v => handleAutoSave('stats', v)}
+                fields={REPEATABLE_CONFIGS.outreach_stats.stats.fields}
                 onConfirmRequest={setConfirmConfig}
               />
             </>

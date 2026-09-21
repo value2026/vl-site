@@ -83,20 +83,44 @@ const HOME_DEFAULTS = [
     },
   },
   {
+    sectionKey: 'outreach_stats',
+    label: 'Outreach & Impact Stats',
+    order: 1,
+    title: 'Outreach of Amrita Virtual Labs',
+    subtitle: 'Reaching students and educators across India and the world through open-access virtual laboratories.',
+    content: {
+      sectionTag: 'Our Outreach',
+      stats: [
+        { value: '276',     suffix: '',  label: 'Nodal Centres',          sub: 'Across India',             icon: '🏛️' },
+        { value: '236237',  suffix: '',  label: 'Registered Users',        sub: 'On Amrita Virtual Labs',   icon: '👤' },
+        { value: '4408490', suffix: '',  label: 'Unique Visitors',         sub: 'From around the world',    icon: '🌐' },
+        { value: '2950',    suffix: '',  label: 'Workshops Conducted',     sub: 'Across India',             icon: '🏫' },
+        { value: '103737',  suffix: '',  label: 'Students Trained',        sub: 'Through outreach programs',icon: '🎓' },
+        { value: '69158',   suffix: '',  label: 'Teachers Trained',        sub: 'Empowering educators',     icon: '👩‍🏫' },
+        { value: '145',     suffix: '',  label: 'Engineering Colleges',    sub: 'Nodal Centres',            icon: '⚙️' },
+        { value: '131',     suffix: '',  label: 'Arts & Science Colleges', sub: 'Nodal Centres',            icon: '🔬' },
+        { value: '18',      suffix: '',  label: 'States Covered',          sub: 'Pan-India Presence',       icon: '🗺️' },
+        { value: '140',     suffix: '+', label: 'Countries Reached',       sub: 'Global Impact',            icon: '🌍' },
+        { value: '257',     suffix: '+', label: 'Total Digital Assets',    sub: '',                         icon: '💾' },
+        { value: '495',     suffix: '',  label: 'Total Experiments',       sub: '',                         icon: '⚗️' },
+      ],
+    },
+  },
+  {
     sectionKey: 'sponsors',
     label: 'Partners & Sponsors',
     order: 4,
-    title: "Sponsors of Virtual Labs",
+    title: "Partners & Sponsors of Virtual Labs",
     subtitle: 'This project is an initiative of Ministry of Education under National Mission on Education through ICT. These experiments and labs will be hosted for open access through the main project website www.vlab.co.in.',
     content: {
-      sectionTag: 'Our Sponsors',
+      sectionTag: 'OUR PARTNERS',
       footerNote: '🇮🇳 A Government of India initiative to democratize quality STEM education',
       sponsors: [
-        { id: 'moe', name: 'Ministry of Education', acronym: 'MoE', description: 'Government of India', color: 'from-orange-500 to-red-500' },
-        { id: 'iit-bombay', name: 'IIT Bombay', acronym: 'IITB', description: 'Lead Institute', color: 'from-blue-600 to-blue-800' },
-        { id: 'nmeict', name: 'NMEICT', acronym: 'NMEICT', description: 'National Mission', color: 'from-green-600 to-teal-700' },
-        { id: 'iit-delhi', name: 'IIT Delhi', acronym: 'IITD', description: 'Partner Institute', color: 'from-purple-600 to-indigo-700' },
-        { id: 'iit-madras', name: 'IIT Madras', acronym: 'IITM', description: 'Partner Institute', color: 'from-yellow-500 to-orange-600' },
+        { id: 'moe', name: 'Ministry of Education', acronym: 'MoE', description: 'Government of India', color: 'from-orange-500 to-red-500', isSponsor: true },
+        { id: 'iit-bombay', name: 'IIT Bombay', acronym: 'IITB', description: 'Lead Institute', color: 'from-blue-600 to-blue-800', isSponsor: false },
+        { id: 'nmeict', name: 'NMEICT', acronym: 'NMEICT', description: 'National Mission', color: 'from-green-600 to-teal-700', isSponsor: false },
+        { id: 'iit-delhi', name: 'IIT Delhi', acronym: 'IITD', description: 'Partner Institute', color: 'from-purple-600 to-indigo-700', isSponsor: false },
+        { id: 'iit-madras', name: 'IIT Madras', acronym: 'IITM', description: 'Partner Institute', color: 'from-yellow-500 to-orange-600', isSponsor: false },
       ],
     },
   },
@@ -240,7 +264,7 @@ async function getSections(req, res) {
     } else {
       // Check if newly added sections are missing
       if (slug === 'nodal-centres' && page.sections.length < 5) needsSeed = true;
-      if (slug === 'home' && page.sections.length < 9) needsSeed = true;
+      if (slug === 'home' && (!page.sections.some(s => s.sectionKey === 'outreach_stats') || page.sections.length < 10)) needsSeed = true;
       if (slug === 'project' && page.sections.length < 4) needsSeed = true;
     }
 

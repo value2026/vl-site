@@ -20,7 +20,7 @@ import {
   GripVertical, Eye, EyeOff, Pencil, ExternalLink,
   RefreshCw, Globe, AlertCircle, Loader2, CheckCircle2, ChevronDown, DownloadCloud,
   Home, Microscope, Megaphone, Landmark, FlaskConical, Newspaper, Clapperboard, FileText,
-  BookOpen, Clock, Target, Gift, Building2, Ribbon, KeyRound
+  BookOpen, Clock, Target, Gift, Building2, Ribbon, KeyRound, BarChart3
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import SectionEditorModal from '../../components/dashboard/SectionEditorModal';
@@ -46,6 +46,7 @@ function usePageSections(slug, token, API_URL) {
 const SECTION_ICONS = {
   hero:                <Home className="w-5 h-5 text-blue-400" />,
   featured_simulation: <Microscope className="w-5 h-5 text-indigo-400" />,
+  outreach_stats:      <BarChart3 className="w-5 h-5 text-teal-400" />,
   cta:                 <Megaphone className="w-5 h-5 text-amber-400" />,
   sponsors:            <Landmark className="w-5 h-5 text-emerald-400" />,
   lab_categories:      <FlaskConical className="w-5 h-5 text-purple-400" />,
