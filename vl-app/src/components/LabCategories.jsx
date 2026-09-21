@@ -93,7 +93,7 @@ export default function LabCategories({ sectionTitle, sectionSubtitle, content =
             <Loader2 className="w-8 h-8 text-[#3B41E3] animate-spin" />
           </div>
         ) : (
-          <div className="flex flex-wrap justify-center gap-8 xl:gap-10">
+          <div className="flex flex-wrap justify-center gap-6 xl:gap-8">
             {subjects.map((subject) => {
               const IconComp = ICONS[subject.title] || Atom;
               
@@ -108,53 +108,53 @@ export default function LabCategories({ sectionTitle, sectionSubtitle, content =
                   key={subject.id}
                   to={`/subject/${subject.id}`}
                   state={{ fromHome: true }}
-                  className="relative w-full max-w-[340px] sm:max-w-[320px] lg:max-w-[340px] sm:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1.5rem)] xl:w-[calc(33.333%-1.666rem)] bg-white rounded-[1.5rem] p-6 xl:p-8 border border-[#E2E8F0] shadow-[0_15px_50px_rgba(0,0,0,0.03)] hover:shadow-[0_25px_70px_rgba(59,65,227,0.1)] hover:-translate-y-2 transition-all duration-300 group overflow-hidden flex flex-col min-h-[430px]"
+                  className="relative w-full max-w-[350px] sm:max-w-[320px] lg:max-w-[350px] sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1.125rem)] xl:w-[calc(33.333%-1.333rem)] bg-white rounded-2xl p-6 xl:p-7 border border-[#E2E8F0] shadow-[0_10px_35px_rgba(0,0,0,0.03)] hover:shadow-[0_20px_50px_rgba(59,65,227,0.12)] hover:-translate-y-1.5 transition-all duration-300 group overflow-hidden flex flex-col min-h-[330px]"
                 >
-                  {/* Faint wavy top background - simple css shape */}
-                  <div className="absolute top-0 left-0 w-full h-40 bg-gradient-to-br from-[#F4F7FF] to-transparent rounded-t-[2rem] opacity-70"></div>
+                  {/* Faint wavy top background */}
+                  <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-br from-[#F4F7FF] to-transparent rounded-t-2xl opacity-70"></div>
                   
                   {/* Top Right Grid Icon */}
-                  <div className="absolute top-8 right-8">
-                    <LayoutGrid className="w-6 h-6 text-[#94A3B8]" strokeWidth={1.5} />
+                  <div className="absolute top-6 right-6">
+                    <LayoutGrid className="w-5 h-5 text-[#94A3B8]" strokeWidth={1.5} />
                   </div>
 
                   {/* Icon */}
-                  <div className={`relative w-[72px] h-[72px] rounded-full bg-gradient-to-b ${gradient} flex items-center justify-center shadow-[0_10px_20px_rgba(0,0,0,0.1)] mb-6 group-hover:scale-110 transition-transform duration-300`}>
-                    <IconComp className="w-8 h-8 text-white" />
+                  <div className={`relative w-14 h-14 rounded-2xl bg-gradient-to-b ${gradient} flex items-center justify-center shadow-md mb-5 group-hover:scale-105 transition-transform duration-300`}>
+                    <IconComp className="w-7 h-7 text-white" />
                   </div>
 
                   {/* Title & Tags */}
                   <div className="relative">
-                    <h3 className="font-heading text-[26px] xl:text-[28px] font-extrabold text-[#0F172A] mb-2 leading-tight group-hover:text-[#3B41E3] transition-colors">
+                    <h3 className="font-heading text-xl font-bold text-[#0F172A] mb-2 leading-tight group-hover:text-[#3B41E3] transition-colors">
                       {subject.title}
                     </h3>
-                    <div className="text-[11px] font-bold text-[#5D64F5] tracking-widest uppercase mb-3">
+                    <div className="text-[10px] font-bold text-[#5D64F5] tracking-wider uppercase mb-2">
                       INTERACTIVE • SIMULATIONS
                     </div>
-                    <div className="w-10 h-0.5 bg-[#5D64F5] opacity-50 mb-4"></div>
+                    <div className="w-8 h-0.5 bg-[#5D64F5] opacity-50 mb-4"></div>
                   </div>
 
                   {/* Description */}
-                  <p className="relative text-[#64748B] text-[15px] sm:text-[16px] leading-relaxed flex-1 line-clamp-3 font-medium mb-6">
+                  <p className="relative text-[#64748B] text-sm leading-relaxed mb-6 font-medium">
                     {subject.description || 'Explore programming, algorithms, data structures, and computer networking.'}
                   </p>
 
                   {/* Button */}
                   <div className="relative mt-auto pt-2">
-                    <div className="inline-flex items-center justify-center gap-3 border border-[#E2E8F0] rounded-full px-6 py-2.5 text-[14px] font-bold text-[#5D64F5] group-hover:bg-[#F4F7FF] group-hover:border-[#C7D2FE] transition-colors">
+                    <div className="inline-flex items-center justify-center gap-2.5 border border-[#E2E8F0] rounded-full px-5 py-2 text-[13px] font-bold text-[#5D64F5] group-hover:bg-[#F4F7FF] group-hover:border-[#C7D2FE] transition-colors">
                       View Laboratories
-                      <ArrowRight className="w-4 h-4" />
+                      <ArrowRight className="w-3.5 h-3.5" />
                     </div>
                   </div>
                   
                   {/* Bottom decorative dots inside card */}
-                  <div className="absolute bottom-10 right-10 opacity-[0.07] pointer-events-none">
-                     <div className="grid grid-cols-4 gap-2">
+                  <div className="absolute bottom-6 right-6 opacity-[0.07] pointer-events-none">
+                     <div className="grid grid-cols-4 gap-1.5">
                         {[...Array(16)].map((_, i) => <div key={i} className="w-1.5 h-1.5 bg-[#0F172A] rounded-full"></div>)}
                      </div>
                   </div>
-                  <div className="absolute bottom-10 left-10 opacity-[0.05] pointer-events-none">
-                     <div className="grid grid-cols-3 gap-2">
+                  <div className="absolute bottom-6 left-6 opacity-[0.05] pointer-events-none">
+                     <div className="grid grid-cols-3 gap-1.5">
                         {[...Array(9)].map((_, i) => <div key={i} className="w-1.5 h-1.5 bg-[#0F172A] rounded-full"></div>)}
                      </div>
                   </div>

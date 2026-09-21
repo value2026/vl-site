@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, PlayCircle, FlaskConical, Atom, Landmark, Users, Clock, BarChart2, Layers } from 'lucide-react';
 import VideoPlayerModal from './VideoPlayerModal';
+import { api } from '../utils/api';
 
 const ICON_MAP = {
   Landmark, Users, FlaskConical, Atom, Clock, BarChart2, Layers
@@ -13,7 +14,7 @@ const DEFAULTS = {
   ctaPrimaryLabel: 'Explore Labs',
   ctaPrimaryHref: '/labs',
   ctaSecondaryLabel: 'Watch Demo',
-  ctaSecondaryHref: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+  ctaSecondaryHref: 'https://www.youtube.com/watch?v=IwxOpEUXm6A',
   stats: [
     { n: '37', label: 'Total Labs', icon: Landmark, color: 'text-rose-400' },
     { n: '340', label: 'Experiments', icon: FlaskConical, color: 'text-blue-400' },
@@ -27,39 +28,89 @@ export default function Hero({ sectionTitle, sectionSubtitle, content = {}, allS
   const heading = content.heading || sectionTitle || d.heading;
   const subheading = content.subheading || sectionSubtitle || d.subheading;
   const [isVideoOpen, setIsVideoOpen] = useState(false);
+  const [dynamicSims, setDynamicSims] = useState([]);
 
   // Extract featured_simulation section content from allSections
   const fsSection = allSections.find(s => s.sectionKey === 'featured_simulation');
   const fsContent = fsSection?.content || {};
-  
-  const FS_DEFAULTS = {
-    tag: 'COMPUTER SCIENCE',
-    category: 'Computer Science',
-    title: 'Expectation Value Calculation in Quantum Systems',
-    description: 'Calculate expectation values of observables for various parameterized quantum state vectors.',
-    institution: 'Amrita Vishwa Vidyapeetham',
-    duration: '10 min',
-    difficulty: 'Intermediate',
-    experiments: 1,
-    href: '/simulations/quantum-expectation',
-    imageUrl: '/quantum-core.jpg',
-  };
 
-  const sim = { ...FS_DEFAULTS, ...fsContent };
-  
-  // Ensure fallback is used if DB returned empty strings for these fields
-  sim.title = sim.title || FS_DEFAULTS.title;
-  sim.description = sim.description || FS_DEFAULTS.description;
-  sim.imageUrl = sim.imageUrl || FS_DEFAULTS.imageUrl;
-  sim.tag = sim.tag || FS_DEFAULTS.tag;
-  sim.institution = sim.institution || FS_DEFAULTS.institution;
+  // Fetch real database experiments dynamically if no custom simulations are configured in section content
+  useEffect(() => {
+    const hasConfigured = (content.simulations && content.simulations.length > 0) || (fsContent.simulations && fsContent.simulations.length > 0);
+    if (!hasConfigured) {
+      const fetchTopExperiments = async () => {
+        try {
+          const res = await api.get('/experiments');
+          if (res.ok) {
+            const data = await res.json();
+            if (Array.isArray(data) && data.length > 0) {
+              const mapped = data.slice(0, 3).map(exp => ({
+                id: exp.id,
+                tag: (exp.lab?.subject?.title || exp.lab?.title || 'SCIENCE').toUpperCase(),
+                category: exp.lab?.title || 'Virtual Lab',
+                title: exp.title,
+                description: exp.description || 'Interactive virtual simulation for hands-on learning.',
+                institution: 'Amrita Vishwa Vidyapeetham',
+                duration: exp.duration || '15 min',
+                difficulty: exp.difficulty || 'Intermediate',
+                experiments: 1,
+                href: `/experiment/${exp.id}`,
+                imageUrl: exp.coverPic || exp.lab?.coverPic || (import.meta.env.BASE_URL + 'quantum-core.jpg'),
+              }));
+              setDynamicSims(mapped);
+            }
+          }
+        } catch (err) {
+          console.error('Error fetching dynamic experiments for Hero:', err);
+        }
+      };
+      fetchTopExperiments();
+    }
+  }, [content.simulations, fsContent.simulations]);
 
-  // Retroactive fix: rewrite legacy student/plural routes to clean public route format
-  if (sim.href) {
-    sim.href = sim.href
-      .replace('/student/experiments/', '/experiment/')
-      .replace('/student/experiment/', '/experiment/');
-  }
+  // Resolve list of simulations dynamically from DB content or dynamic DB fetch
+  const rawSimList = (content.simulations && content.simulations.length > 0)
+    ? content.simulations
+    : (fsContent.simulations && fsContent.simulations.length > 0)
+      ? fsContent.simulations
+      : (content.title || fsContent.title)
+        ? [{
+            tag: content.tag || fsContent.tag || 'SCIENCE',
+            title: content.title || fsContent.title || 'Virtual Simulation',
+            description: content.description || fsContent.description || 'Interactive virtual lab simulation.',
+            institution: content.institution || fsContent.institution || 'Amrita Vishwa Vidyapeetham',
+            duration: content.duration || fsContent.duration || '15 min',
+            difficulty: content.difficulty || fsContent.difficulty || 'Intermediate',
+            experiments: content.experiments || fsContent.experiments || 1,
+            href: content.href || fsContent.href || '/labs',
+            imageUrl: content.imageUrl || fsContent.imageUrl || (import.meta.env.BASE_URL + 'quantum-core.jpg'),
+          }]
+        : dynamicSims;
+
+  const simulations = rawSimList.map(sim => {
+    let href = sim.href || '/labs';
+    if (href) {
+      href = href.replace('/student/experiments/', '/experiment/').replace('/student/experiment/', '/experiment/');
+    }
+    let img = sim.imageUrl || (import.meta.env.BASE_URL + 'quantum-core.jpg');
+    if (img && img.startsWith('/') && !img.startsWith('http') && !img.startsWith(import.meta.env.BASE_URL)) {
+      img = import.meta.env.BASE_URL + img.slice(1);
+    }
+    return { ...sim, href, imageUrl: img };
+  });
+
+  const [activeSimIdx, setActiveSimIdx] = useState(0);
+
+  // Auto rotate simulations every 5 seconds
+  useEffect(() => {
+    if (simulations.length <= 1) return;
+    const interval = setInterval(() => {
+      setActiveSimIdx((prev) => (prev + 1) % simulations.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [simulations.length]);
+
+  const currentSim = simulations[activeSimIdx] || simulations[0] || {};
 
   return (
     <div className="relative bg-[#0B0B1E] overflow-hidden">
@@ -142,7 +193,7 @@ export default function Hero({ sectionTitle, sectionSubtitle, content = {}, allS
                     const formatStat = (val) => {
                       if (!val) return val;
                       const strVal = String(val).trim();
-                      if (/[a-zA-Z+]/.test(strVal)) return strVal; // already formatted (e.g. '2 Lakh+')
+                      if (/[a-zA-Z+]/.test(strVal)) return strVal;
                       const num = parseInt(strVal.replace(/,/g, ''), 10);
                       if (!isNaN(num)) {
                         if (num >= 100000) return `${Math.floor(num / 100000)} Lakh+`;
@@ -150,7 +201,6 @@ export default function Hero({ sectionTitle, sectionSubtitle, content = {}, allS
                       }
                       return strVal;
                     };
-                    
                     
                     return (
                       <div key={idx} className="flex items-center justify-center gap-4 w-full">
@@ -169,52 +219,81 @@ export default function Hero({ sectionTitle, sectionSubtitle, content = {}, allS
             </div>
           </div>
 
-          {/* Right Column (Featured Simulation Card) */}
+          {/* Right Column (Featured Simulation Showcase Card with Dots & Carousel) */}
           <div className="w-full xl:w-[45%] flex justify-center xl:justify-end">
-            <div className="bg-[#121127] border border-[#2A2944] rounded-[32px] p-8 lg:p-10 shadow-2xl w-full max-w-[650px] flex flex-col md:flex-row gap-8 relative z-20">
+            <div className="bg-[#121127] border border-[#2A2944] rounded-[32px] p-8 lg:p-10 shadow-2xl w-full max-w-[650px] flex flex-col justify-between relative z-20 transition-all duration-300">
               
-              <div className="flex-1 flex flex-col items-start justify-center">
-                <div className="bg-[#2D1F49] text-[#A78BFA] text-[10px] font-bold tracking-wider uppercase px-3 py-1.5 rounded-full mb-6">
-                  {sim.tag || 'FEATURED SIMULATION'}
-                </div>
-                <h3 className="font-heading text-2xl lg:text-[28px] font-bold text-white mb-4 leading-tight">
-                  {sim.title}
-                </h3>
-                <p className="text-slate-400 text-sm leading-relaxed mb-8">
-                  {sim.description}
-                </p>
+              <div className="flex flex-col md:flex-row gap-8">
+                <div className="flex-1 flex flex-col items-start justify-center">
+                  <div className="bg-[#2D1F49] text-[#A78BFA] text-[10px] font-bold tracking-wider uppercase px-3 py-1.5 rounded-full mb-4">
+                    {currentSim.tag || 'FEATURED SIMULATION'}
+                  </div>
+                  <h3 className="font-heading text-xl lg:text-2xl font-bold text-white mb-3 leading-tight transition-all">
+                    {currentSim.title}
+                  </h3>
+                  <p className="text-slate-400 text-sm leading-relaxed mb-6 line-clamp-3">
+                    {currentSim.description}
+                  </p>
 
-                <div className="grid grid-cols-2 gap-3 w-full mb-8">
-                  <div className="bg-[#1B1A3A] border border-[#2A2944] rounded-lg px-3 py-2 flex items-center gap-2">
-                    <Landmark className="w-3.5 h-3.5 text-purple-400" />
-                    <span className="text-xs text-slate-300 font-medium">{sim.institution}</span>
+                  <div className="grid grid-cols-2 gap-2.5 w-full mb-6">
+                    <div className="bg-[#1B1A3A] border border-[#2A2944] rounded-lg px-3 py-2 flex items-center gap-2">
+                      <Landmark className="w-3.5 h-3.5 text-purple-400 flex-shrink-0" />
+                      <span className="text-[11px] text-slate-300 font-medium truncate">{currentSim.institution || 'Amrita Vishwa Vidyapeetham'}</span>
+                    </div>
+                    <div className="bg-[#1B1A3A] border border-[#2A2944] rounded-lg px-3 py-2 flex items-center gap-2">
+                      <Clock className="w-3.5 h-3.5 text-purple-400 flex-shrink-0" />
+                      <span className="text-[11px] text-slate-300 font-medium">{currentSim.duration || '10 min'}</span>
+                    </div>
+                    <div className="bg-[#1B1A3A] border border-[#2A2944] rounded-lg px-3 py-2 flex items-center gap-2">
+                      <BarChart2 className="w-3.5 h-3.5 text-purple-400 flex-shrink-0" />
+                      <span className="text-[11px] text-slate-300 font-medium">{currentSim.difficulty || 'Intermediate'}</span>
+                    </div>
+                    <div className="bg-[#1B1A3A] border border-[#2A2944] rounded-lg px-3 py-2 flex items-center gap-2">
+                      <Layers className="w-3.5 h-3.5 text-purple-400 flex-shrink-0" />
+                      <span className="text-[11px] text-slate-300 font-medium">{currentSim.experiments || 1} experiments</span>
+                    </div>
                   </div>
-                  <div className="bg-[#1B1A3A] border border-[#2A2944] rounded-lg px-3 py-2 flex items-center gap-2">
-                    <Clock className="w-3.5 h-3.5 text-purple-400" />
-                    <span className="text-xs text-slate-300 font-medium">{sim.duration}</span>
-                  </div>
-                  <div className="bg-[#1B1A3A] border border-[#2A2944] rounded-lg px-3 py-2 flex items-center gap-2">
-                    <BarChart2 className="w-3.5 h-3.5 text-purple-400" />
-                    <span className="text-xs text-slate-300 font-medium">{sim.difficulty}</span>
-                  </div>
-                  <div className="bg-[#1B1A3A] border border-[#2A2944] rounded-lg px-3 py-2 flex items-center gap-2">
-                    <Layers className="w-3.5 h-3.5 text-purple-400" />
-                    <span className="text-xs text-slate-300 font-medium">{sim.experiments} experiments</span>
-                  </div>
+
+                  <Link 
+                    to={currentSim.href || '/labs'} 
+                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-bold text-xs px-6 py-2.5 rounded-xl flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-purple-500/25 cursor-pointer"
+                  >
+                    Try Simulation <ArrowRight className="w-4 h-4" />
+                  </Link>
                 </div>
 
-                <Link to={sim.href} className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-bold text-sm px-6 py-3 rounded-xl flex items-center justify-center gap-2 transition-all">
-                  Try Simulation <ArrowRight className="w-4 h-4" />
-                </Link>
+                <div className="w-full md:w-[220px] flex flex-col justify-center items-center">
+                  {currentSim.imageUrl && (
+                    <div className="relative w-full aspect-square flex items-center justify-center">
+                      <img 
+                        src={currentSim.imageUrl} 
+                        alt={currentSim.title} 
+                        className="w-full h-full object-cover rounded-xl drop-shadow-xl border border-white/5 transition-all duration-300" 
+                      />
+                    </div>
+                  )}
+                </div>
               </div>
 
-              <div className="w-full md:w-[260px] flex flex-col justify-center pt-4">
-                {sim.imageUrl && (
-                  <div className="relative w-full aspect-square flex items-center justify-center">
-                    <img src={sim.imageUrl} alt={sim.title} className="w-full h-full object-cover rounded-xl drop-shadow-xl" />
-                  </div>
-                )}
-              </div>
+              {/* 3-Dot Navigation Controls for Switching Simulations */}
+              {simulations.length > 1 && (
+                <div className="flex items-center justify-center gap-2.5 mt-6 pt-4 border-t border-[#2A2944]/60">
+                  {simulations.map((_, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => setActiveSimIdx(idx)}
+                      className={`transition-all duration-300 rounded-full cursor-pointer ${
+                        activeSimIdx === idx
+                          ? 'w-7 h-2.5 bg-gradient-to-r from-cyan-400 to-blue-500 shadow-[0_0_10px_rgba(56,189,248,0.5)]'
+                          : 'w-2.5 h-2.5 bg-white/20 hover:bg-white/50'
+                      }`}
+                      title={`Switch to experiment ${idx + 1}`}
+                      aria-label={`Go to simulation ${idx + 1}`}
+                    />
+                  ))}
+                </div>
+              )}
 
             </div>
           </div>
@@ -238,3 +317,4 @@ export default function Hero({ sectionTitle, sectionSubtitle, content = {}, allS
     </div>
   );
 }
+

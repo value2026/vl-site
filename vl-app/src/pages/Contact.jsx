@@ -62,7 +62,7 @@ export default function Contact() {
                   content: 'Amrita Virtual Labs\nAmrita Vishwa Vidyapeetham\nAmritapuri Campus, Kollam\nKerala — 690 525',
                 },
                 { Icon: Mail,  label: 'Email',   content: 'virtual_labs@am.amrita.edu' },
-                { Icon: Phone, label: 'Phone',   content: '+91 422 268 5000' },
+                { Icon: Phone, label: 'Phone',   content: '+91 9446007135 / 0476 280 4528' },
               ].map(({ Icon, label, content }) => (
                 <div key={label} className="flex gap-4 mb-6">
                   <div className="w-11 h-11 bg-primary-50 rounded-xl flex items-center justify-center flex-shrink-0">

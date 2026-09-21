@@ -71,10 +71,10 @@ export function AuthProvider({ children }) {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     
     if (token) {
-      // 20 minutes inactivity timeout
+      // 2 hours inactivity timeout (Idle timeout 1–2 hours)
       timeoutRef.current = setTimeout(() => {
         logout({ animate: true, reason: 'SESSION_TIMEOUT' });
-      }, 20 * 60 * 1000);
+      }, 2 * 60 * 60 * 1000);
     }
   }, [token, logout]);
 
@@ -99,8 +99,15 @@ export function AuthProvider({ children }) {
         logout({ animate: true, reason });
       };
 
+      const handleTokenRefreshed = (e) => {
+        if (e.detail?.token) {
+          setToken(e.detail.token);
+        }
+      };
+
       window.addEventListener('storage', handleStorage);
       window.addEventListener('vl_session_expired', handleSessionExpired);
+      window.addEventListener('vl_token_refreshed', handleTokenRefreshed);
       
       return () => {
         if (timeoutRef.current) clearTimeout(timeoutRef.current);
@@ -109,21 +116,94 @@ export function AuthProvider({ children }) {
         });
         window.removeEventListener('storage', handleStorage);
         window.removeEventListener('vl_session_expired', handleSessionExpired);
+        window.removeEventListener('vl_token_refreshed', handleTokenRefreshed);
       };
     }
   }, [token, resetTimeout]);
 
+  // Initial load and profile fetch with silent refresh on startup / reload
   useEffect(() => {
     if (!token) { setLoading(false); return; }
 
-    fetch(`${API_URL}/auth/me`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((r) => (r.ok ? r.json() : Promise.reject()))
-      .then((data) => setUser(data))
-      .catch(() => logout(false))
-      .finally(() => setLoading(false));
+    const fetchUserWithSilentRefresh = async () => {
+      try {
+        let currentToken = token;
+        let res = await fetch(`${API_URL}/auth/me`, {
+          headers: { Authorization: `Bearer ${currentToken}` },
+        });
+
+        // If access token is expired, silently refresh using refresh token
+        if (!res.ok && (res.status === 401 || res.status === 403)) {
+          const refreshToken = localStorage.getItem('vl_refresh_token');
+          if (refreshToken) {
+            const refreshRes = await fetch(`${API_URL}/auth/refresh`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ refreshToken }),
+            });
+            if (refreshRes.ok) {
+              const refreshData = await refreshRes.json();
+              if (refreshData.token) {
+                currentToken = refreshData.token;
+                localStorage.setItem('vl_token', refreshData.token);
+                if (refreshData.refreshToken) {
+                  localStorage.setItem('vl_refresh_token', refreshData.refreshToken);
+                }
+                setToken(refreshData.token);
+                res = await fetch(`${API_URL}/auth/me`, {
+                  headers: { Authorization: `Bearer ${currentToken}` },
+                });
+              }
+            }
+          }
+        }
+
+        if (res.ok) {
+          const data = await res.json();
+          setUser(data);
+        } else {
+          logout(false);
+        }
+      } catch (err) {
+        logout(false);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserWithSilentRefresh();
   }, [token, logout]);
+
+  // Periodic silent refresh every 12 hours while active to keep session alive
+  useEffect(() => {
+    if (!token) return;
+
+    const interval = setInterval(async () => {
+      const refreshToken = localStorage.getItem('vl_refresh_token');
+      if (!refreshToken) return;
+      try {
+        const res = await fetch(`${API_URL}/auth/refresh`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ refreshToken }),
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.token) {
+            localStorage.setItem('vl_token', data.token);
+            if (data.refreshToken) {
+              localStorage.setItem('vl_refresh_token', data.refreshToken);
+            }
+            setToken(data.token);
+          }
+        }
+      } catch (e) {
+        // silent fail
+      }
+    }, 12 * 60 * 60 * 1000);
+
+    return () => clearInterval(interval);
+  }, [token]);
 
   const login = async (email, password) => {
     let res;

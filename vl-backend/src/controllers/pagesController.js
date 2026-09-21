@@ -266,6 +266,7 @@ async function getSections(req, res) {
       if (slug === 'nodal-centres' && page.sections.length < 5) needsSeed = true;
       if (slug === 'home' && (!page.sections.some(s => s.sectionKey === 'outreach_stats') || page.sections.length < 10)) needsSeed = true;
       if (slug === 'project' && page.sections.length < 4) needsSeed = true;
+      if (slug === 'workshop' && page.sections.length < 4) needsSeed = true;
     }
 
     if (needsSeed) {
@@ -277,6 +278,8 @@ async function getSections(req, res) {
         page = await seedProjectPage();
       } else if (slug === 'nodal-centres') {
         page = await seedNodalCentresPage();
+      } else if (slug === 'workshop') {
+        page = await seedWorkshopPage();
       } else if (slug === 'student-survey') {
         page = await seedStudentSurveyPage();
       } else if (slug === 'faculty-survey') {
@@ -377,7 +380,7 @@ async function reorderSections(req, res) {
 async function seedPage(req, res) {
   try {
     const { slug } = req.params;
-    if (!['home', 'publications', 'project', 'nodal-centres', 'student-survey', 'faculty-survey'].includes(slug)) {
+    if (!['home', 'publications', 'project', 'nodal-centres', 'student-survey', 'faculty-survey', 'workshop'].includes(slug)) {
       return res.status(400).json({ message: 'Page seeding is not supported for this slug' });
     }
 
@@ -386,6 +389,7 @@ async function seedPage(req, res) {
     else if (slug === 'publications') page = await seedPublicationsPage();
     else if (slug === 'project') page = await seedProjectPage();
     else if (slug === 'nodal-centres') page = await seedNodalCentresPage();
+    else if (slug === 'workshop') page = await seedWorkshopPage();
     else if (slug === 'student-survey') page = await seedStudentSurveyPage();
     else if (slug === 'faculty-survey') page = await seedFacultySurveyPage();
     else if (slug === 'nodal-centre-request') page = await seedNodalCentreRequestPage();
@@ -681,6 +685,91 @@ async function seedNodalCentresPage() {
 
   return prisma.page.findUnique({
     where: { slug: 'nodal-centres' },
+    include: { sections: { orderBy: { order: 'asc' } } },
+  });
+}
+
+async function seedWorkshopPage() {
+  const page = await prisma.page.upsert({
+    where: { slug: 'workshop' },
+    update: { title: 'Workshops' },
+    create: { slug: 'workshop', title: 'Workshops' },
+  });
+
+  const sectionsToSeed = [
+    {
+      sectionKey: 'workshop_hero',
+      label: 'Workshop Hero Header',
+      title: 'Virtual Labs Workshops',
+      subtitle: 'Empowering educators and students through immersive, hands-on digital laboratory training.',
+      order: 1,
+      isVisible: true,
+      content: { tag: 'Workshops' },
+    },
+    {
+      sectionKey: 'workshop_intro',
+      label: 'Workshop Overview & Intro',
+      title: 'Virtual Labs Workshops Overview',
+      subtitle: 'Learn about Virtual Labs workshops for Physical, Chemical, Biological, Mechanical and Computer Sciences.',
+      order: 2,
+      isVisible: true,
+      content: {
+        p1: "Amrita Vishwa Vidyapeetham's VALUE project is running a series of workshops on Virtual Labs in Physical & Chemical Sciences, Biological Sciences, Mechanical Engineering and Computer Science. These workshops will offer an introduction to the innovative world of Virtual Laboratories for both physical and chemical sciences.",
+        p2: "Virtual Labs are a new immersive e-learning tool that provides a media-rich, interactive user interface that teachers can use to supplement their curriculum. These Virtual Labs are located on an open webpage that can be accessed by anyone through a web browser, on any Internet-connected computer in the world. A variety of laboratory experiments can be conducted virtually using animation, simulation or remotely triggered hardware. Laboratory experiments are modeled very close to real-life experiments and when used as a learning tool by students it allows them to learn the material more efficiently and can actually make doing the practical experiments easier.",
+        p3: "The workshop offers a fantastic opportunity for all faculty members involved in the education of physics, chemistry, biological sciences, computer science and mechanical engineering to learn more about Virtual Labs. We will showcase our online laboratory experiments including a hands-on training session in using the Virtual Labs website.",
+        initiativeText: "This project is an initiative of MoE (Ministry of Education) under National Mission on Education through ICT (NME-ICT). These experiments and labs are hosted for open access through www.vlab.co.in.",
+        imageUrl: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+      },
+    },
+    {
+      sectionKey: 'workshop_forum',
+      label: 'Nodal Centre Forum Banner',
+      title: 'Nodal Centre Forum',
+      subtitle: 'Nodal Centre Forum will be held in addition to the workshop.',
+      order: 3,
+      isVisible: true,
+      content: {
+        p1: "Nodal Centre Forum will be held in addition to the workshop. This is an exciting new venture which allows people to follow the progress of the VALUE Virtual Labs and provides a platform for everyone to contribute towards the future development of labs and experiments.",
+        p2: "By simply registering your institution you benefit from a whole host of services and resources. Nodal Centres as proposed by MoE (Ministry of Education) will help promote the use of Virtual Labs in Higher Education.",
+        btnLabel: "Learn more about Nodal Centres →",
+        btnHref: "/nodal-centres"
+      },
+    },
+    {
+      sectionKey: 'workshop_cta',
+      label: 'Host a Workshop CTA Banner',
+      title: 'Host a Workshop at Your Institute',
+      subtitle: 'Are you interested to conduct a workshop at your institute? Bring the Virtual Labs experience directly to your faculty and students.',
+      order: 4,
+      isVisible: true,
+      content: {
+        btnLabel: "Submit a Request"
+      },
+    }
+  ];
+
+  for (const s of sectionsToSeed) {
+    await prisma.pageSection.upsert({
+      where: { pageId_sectionKey: { pageId: page.id, sectionKey: s.sectionKey } },
+      create: {
+        pageId: page.id,
+        sectionKey: s.sectionKey,
+        label: s.label,
+        title: s.title,
+        subtitle: s.subtitle,
+        content: s.content,
+        isVisible: true,
+        order: s.order,
+      },
+      update: {
+        label: s.label,
+        order: s.order,
+      }
+    });
+  }
+
+  return prisma.page.findUnique({
+    where: { slug: 'workshop' },
     include: { sections: { orderBy: { order: 'asc' } } },
   });
 }

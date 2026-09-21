@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight, Calendar, X } from 'lucide-react';
 import { useState } from 'react';
+import DynamicBlockRenderer from './public/DynamicBlockRenderer';
 
 const DEFAULT_ITEMS = [
   {
@@ -142,7 +143,10 @@ export default function NewsSection({ sectionTitle, sectionSubtitle, content = {
               ))}
             </div>
           </div>
-        </div> </div>
+        </div>
+
+        <DynamicBlockRenderer blocks={content.customBlocks} fields={content.customFields} />
+      </div>
       
 
       {/* News Modal */}

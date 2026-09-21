@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, createContext, useContext } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Link from '@tiptap/extension-link';
@@ -14,6 +14,121 @@ import CloudinaryUploader from './CloudinaryUploader';
 import ConfirmModal from './ConfirmModal';
 import { useAuth } from '../../context/AuthContext';
 import { api } from '../../utils/api';
+
+const LinkModalContext = createContext(null);
+
+// ── In-App Styled Link Insertion Modal ─────────────────────────
+function InsertLinkModal({ config, onClose }) {
+  const [text, setText] = useState('Click Here');
+  const [url, setUrl] = useState('https://www.vlab.co.in');
+
+  useEffect(() => {
+    if (config) {
+      setText(config.defaultText || 'Click Here');
+      setUrl(config.defaultUrl || 'https://www.vlab.co.in');
+    }
+  }, [config]);
+
+  if (!config) return null;
+
+  const handleSubmit = (e) => {
+    e?.preventDefault();
+    if (!url.trim()) return;
+    let cleanUrl = url.trim();
+    if (!cleanUrl.startsWith('http://') && !cleanUrl.startsWith('https://') && !cleanUrl.startsWith('/') && !cleanUrl.startsWith('#')) {
+      cleanUrl = 'https://' + cleanUrl;
+    }
+    config.onInsert(text.trim() || cleanUrl, cleanUrl);
+    onClose();
+  };
+
+  return (
+    <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="bg-slate-900 border border-white/10 rounded-2xl p-6 w-full max-w-md shadow-2xl space-y-4">
+        <div className="flex items-center justify-between pb-3 border-b border-white/10">
+          <div className="flex items-center gap-2 text-white font-bold">
+            <Link2 className="w-5 h-5 text-blue-400" />
+            <span>Insert Interactive Link</span>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="p-1.5 text-slate-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors cursor-pointer"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-xs font-semibold text-slate-300 mb-1.5">Link Display Text</label>
+            <input
+              type="text"
+              value={text}
+              onChange={e => setText(e.target.value)}
+              placeholder="e.g. Visit www.vlab.co.in or Click Here"
+              className="w-full bg-slate-800 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors"
+              autoFocus
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-slate-300 mb-1.5">Target Web URL</label>
+            <input
+              type="text"
+              value={url}
+              onChange={e => setUrl(e.target.value)}
+              placeholder="e.g. https://www.vlab.co.in"
+              className="w-full bg-slate-800 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors"
+            />
+          </div>
+
+          {/* Quick Presets */}
+          <div>
+            <span className="text-[11px] font-medium text-slate-400 block mb-1.5">Quick Presets:</span>
+            <div className="flex flex-wrap gap-1.5">
+              {[
+                { label: 'www.vlab.co.in', url: 'https://www.vlab.co.in' },
+                { label: 'Amrita VALUE', url: 'https://vlab.amrita.edu' },
+                { label: 'Nodal Centres', url: '/nodal-centres' },
+                { label: 'Workshops', url: '/workshop' },
+              ].map(p => (
+                <button
+                  key={p.url}
+                  type="button"
+                  onClick={() => {
+                    setUrl(p.url);
+                    if (!text || text === 'Click Here') setText(p.label);
+                  }}
+                  className="px-2 py-1 rounded text-xs bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 transition-colors cursor-pointer"
+                >
+                  {p.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex items-center justify-end gap-3 pt-3 border-t border-white/10">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="px-5 py-2 rounded-xl text-xs font-bold text-white bg-blue-600 hover:bg-blue-500 shadow-lg shadow-blue-500/20 transition-all cursor-pointer flex items-center gap-1.5"
+            >
+              <Link2 className="w-3.5 h-3.5" />
+              Insert Link
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
 
 // ── Tiptap toolbar ────────────────────────────────────────────
 function ToolbarButton({ onClick, active, title, children }) {
@@ -34,6 +149,7 @@ function ToolbarButton({ onClick, active, title, children }) {
 }
 
 function TiptapEditor({ content, onChange, placeholder = 'Start writing…' }) {
+  const openLinkModal = useContext(LinkModalContext);
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -54,8 +170,15 @@ function TiptapEditor({ content, onChange, placeholder = 'Start writing…' }) {
   if (!editor) return null;
 
   const addLink = () => {
-    const url = prompt('Enter URL');
-    if (url) editor.chain().focus().setLink({ href: url }).run();
+    if (openLinkModal) {
+      openLinkModal({
+        defaultText: 'Link',
+        defaultUrl: 'https://www.vlab.co.in',
+        onInsert: (_txt, url) => {
+          editor.chain().focus().setLink({ href: url }).run();
+        }
+      });
+    }
   };
 
   return (
@@ -94,6 +217,7 @@ function TiptapEditor({ content, onChange, placeholder = 'Start writing…' }) {
 
 // ── Repeatable rows ───────────────────────────────────────────
 function RepeatableList({ label, items = [], onChange, fields, onConfirmRequest, onAutoSave }) {
+  const openLinkModal = useContext(LinkModalContext);
   // Ensure items have stable IDs for React keys
   const stableItems = items.map(item => {
     if (!item._id) return { ...item, _id: Math.random().toString(36).substring(2, 9) };
@@ -481,13 +605,25 @@ function RepeatableList({ label, items = [], onChange, fields, onConfirmRequest,
             </div>
             {fields.map(f => (
               <div key={f.key}>
-                <label className="text-xs text-slate-500 mb-1 block">{f.label}</label>
-                {f.type === 'textarea' ? (
+                <div className="flex items-center justify-between mb-1">
+                  <label className="text-xs text-slate-400 font-medium block">{f.label}</label>
+                </div>
+                {f.type === 'select' ? (
+                  <select
+                    value={item[f.key] || f.options?.[0]?.value || ''}
+                    onChange={e => update(i, f.key, e.target.value)}
+                    className="w-full bg-slate-800 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500/50 cursor-pointer"
+                  >
+                    {f.options?.map(opt => (
+                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    ))}
+                  </select>
+                ) : f.type === 'textarea' ? (
                   <textarea
                     value={item[f.key] || ''}
                     onChange={e => update(i, f.key, e.target.value)}
                     rows={2}
-                    className="w-full bg-slate-800 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 resize-none focus:outline-none focus:border-red-500/50"
+                    className="w-full bg-slate-800 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 resize-y focus:outline-none focus:border-red-500/50"
                     placeholder={f.placeholder || ''}
                   />
                 ) : f.type === 'image' ? (
@@ -516,6 +652,44 @@ function RepeatableList({ label, items = [], onChange, fields, onConfirmRequest,
     </div>
   );
 }
+
+const UNIVERSAL_BLOCK_FIELDS = [
+  {
+    key: 'type',
+    label: 'Block Type',
+    type: 'select',
+    options: [
+      { value: 'paragraph',  label: '📝 Paragraph / Text' },
+      { value: 'heading',    label: '📌 Heading 2 (H2)' },
+      { value: 'subheading', label: '🏷️ Subheading (H3)' },
+      { value: 'note',       label: '💡 Callout Note / Highlight Box' },
+      { value: 'link',       label: '🔗 Link / Action Button' },
+      { value: 'image',      label: '🖼️ Custom Image' },
+    ],
+  },
+  {
+    key: 'text',
+    label: 'Content / Text (Supports links like www.vlab.co.in or [Text](url))',
+    type: 'textarea',
+    placeholder: 'Enter paragraph text, heading, or link display title...',
+  },
+  {
+    key: 'linkUrl',
+    label: 'Target Link URL (optional, for link/button/image)',
+    type: 'text',
+    placeholder: 'https://www.vlab.co.in',
+  },
+  {
+    key: 'imageUrl',
+    label: '🖼️ Image File / URL (for Image Block)',
+    type: 'image',
+  },
+];
+
+const UNIVERSAL_CUSTOM_FIELDS = [
+  { key: 'label', label: 'Custom Field Label / Title', placeholder: 'e.g. Working Hours, Eligibility, Contact' },
+  { key: 'value', label: 'Field Value (Supports links & formatting)', type: 'textarea', placeholder: 'e.g. Mon-Fri 9:00 AM - 5:00 PM or www.vlab.co.in' },
+];
 
 // ── Field configs per section type (with image fields) ────────
 const REPEATABLE_CONFIGS = {
@@ -593,11 +767,14 @@ const REPEATABLE_CONFIGS = {
     items: {
       label: 'Publication Items',
       fields: [
-        { key: 'year',     label: 'Year',    placeholder: 'e.g., 2024' },
-        { key: 'title',    label: 'Title',   placeholder: 'Paper Title', type: 'textarea' },
-        { key: 'authors',  label: 'Authors', placeholder: 'Sharma, R., Verma, A.' },
-        { key: 'journal',  label: 'Journal', placeholder: 'Journal of Engineering Education...' },
-        { key: 'doi',      label: 'DOI/URL', placeholder: 'https://doi.org/...' },
+        { key: 'year',         label: 'Year',                      placeholder: 'e.g. 2025' },
+        { key: 'type',         label: 'Publication Type',          placeholder: 'Journal Article or Conference Paper' },
+        { key: 'title',        label: 'Paper Title',               placeholder: 'Paper Title…', type: 'textarea' },
+        { key: 'authors',      label: 'Authors',                   placeholder: 'Renuka S., Sasikumar P., Aravindh P.' },
+        { key: 'journal',      label: 'Journal / Venue Name',      placeholder: 'Mathematics or Frontiers in Education' },
+        { key: 'researchArea', label: 'Research Area (Discipline)', placeholder: 'e.g. Mathematics, Education Technology' },
+        { key: 'doi',          label: 'Publication Link / DOI URL', placeholder: 'https://doi.org/...' },
+        { key: 'pdfUrl',       label: 'PDF Download URL',          placeholder: 'https://... or /files/paper.pdf' },
       ],
     },
   },
@@ -683,20 +860,41 @@ const REPEATABLE_CONFIGS = {
         { key: 'href', label: 'URL', placeholder: 'https://...' },
       ],
     },
+    phoneNumbers: {
+      label: 'Contact Phone Numbers',
+      fields: [
+        { key: 'number', label: 'Phone Number', placeholder: '+91 9446 007 135' },
+        { key: 'label',  label: 'Label / Note (optional)', placeholder: 'e.g. Main Helpline, Toll Free' },
+      ],
+    },
+    customFields: {
+      label: 'Custom Contact Fields',
+      fields: UNIVERSAL_CUSTOM_FIELDS,
+    },
+  },
+  workshop_intro: {
+    blocks: {
+      label: 'Custom Dynamic Content Blocks & Links',
+      fields: UNIVERSAL_BLOCK_FIELDS,
+    },
   },
 };
 
 // ── Simple text input ─────────────────────────────────────────
-function TextField({ label, value, onChange, placeholder, multiline = false }) {
+function TextField({ label, value, onChange, placeholder, multiline = false, helperText = null }) {
   const cls = "w-full bg-slate-800 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-red-500/50 transition-colors";
+
   return (
     <div>
-      <label className="text-sm font-medium text-slate-300 block mb-2">{label}</label>
+      <div className="mb-2">
+        <label className="text-sm font-medium text-slate-300 block">{label}</label>
+      </div>
       {multiline ? (
-        <textarea value={value || ''} onChange={e => onChange(e.target.value)} placeholder={placeholder} rows={3} className={`${cls} resize-none`} />
+        <textarea value={value || ''} onChange={e => onChange(e.target.value)} placeholder={placeholder} rows={3} className={`${cls} resize-y`} />
       ) : (
         <input type="text" value={value || ''} onChange={e => onChange(e.target.value)} placeholder={placeholder} className={cls} />
       )}
+      {helperText && <p className="text-xs text-slate-400 mt-1">{helperText}</p>}
     </div>
   );
 }
@@ -723,8 +921,10 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
   const [experiments, setExperiments] = useState([]);
   const [expSearch,   setExpSearch]   = useState('');
   const [expLoading,  setExpLoading]  = useState(false);
+  const [editingSimIdx, setEditingSimIdx] = useState(0);
   const [successMsg,  setSuccessMsg]  = useState('');
   const [confirmConfig, setConfirmConfig] = useState(null);
+  const [linkModalConfig, setLinkModalConfig] = useState(null);
 
   useEffect(() => {
     if (section.sectionKey === 'featured_simulation') {
@@ -801,7 +1001,8 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
   }, [autoSaveMutation, title, subtitle, content]);
 
   return (
-    <div className="fixed inset-0 z-50 flex">
+    <LinkModalContext.Provider value={setLinkModalConfig}>
+      <div className="fixed inset-0 z-50 flex">
       {/* Backdrop */}
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
 
@@ -827,7 +1028,14 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
             <>
               <SectionDivider label="Section Header" />
               <TextField label="Section Title" value={title} onChange={setTitle} placeholder="Section heading…" />
-              <TextField label="Section Subtitle" value={subtitle} onChange={setSubtitle} placeholder="Supporting text…" multiline />
+              <TextField 
+                label="Section Subtitle" 
+                value={subtitle} 
+                onChange={setSubtitle} 
+                placeholder="Supporting text…" 
+                multiline 
+                helperText="Supports web URLs (e.g. www.vlab.co.in) and Markdown links [Text](https://url)." 
+              />
             </>
           )}
 
@@ -1033,7 +1241,68 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
           {/* ── FEATURED SIMULATION ──────────────────────── */}
           {section.sectionKey === 'featured_simulation' && (
             <>
-              <SectionDivider label="Select Featured Lab / Experiment" />
+              <SectionDivider label="Hero & Showcase Experiments (Multi-Simulation Carousel)" />
+              <p className="text-slate-400 text-xs -mt-1 mb-2">
+                Click any experiment below to add it to the Hero showcase. Multiple experiments will enable automatic rotation and 3-dot navigation controls.
+              </p>
+
+              {/* Configured Simulations List Badge & Cards */}
+              {(() => {
+                const simList = Array.isArray(content.simulations) && content.simulations.length > 0
+                  ? content.simulations
+                  : (content.title ? [{
+                      id: content.experimentId || 'exp-1',
+                      tag: content.tag || 'COMPUTER SCIENCE',
+                      title: content.title,
+                      description: content.description || '',
+                      institution: content.institution || 'Amrita Vishwa Vidyapeetham',
+                      duration: content.duration || '10 min',
+                      difficulty: content.difficulty || 'Intermediate',
+                      experiments: content.experiments || 1,
+                      href: content.href || '/labs',
+                      imageUrl: content.imageUrl || ''
+                    }] : []);
+
+                return simList.length > 0 ? (
+                  <div className="space-y-2 mb-4 bg-slate-900/60 p-4 border border-white/10 rounded-2xl">
+                    <div className="flex items-center justify-between text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
+                      <span>Featured Carousel Experiments ({simList.length})</span>
+                      <span className="text-[10px] text-purple-400 font-semibold lowercase">3-dot navigation enabled</span>
+                    </div>
+
+                    <div className="space-y-2">
+                      {simList.map((s, idx) => (
+                        <div key={s.id || idx} className="flex items-center justify-between gap-3 p-3 bg-slate-800 border border-white/10 rounded-xl">
+                          <div className="flex items-center gap-3 min-w-0 flex-1">
+                            <span className="w-6 h-6 rounded-full bg-purple-500/20 text-purple-300 text-xs font-bold flex items-center justify-center flex-shrink-0">
+                              {idx + 1}
+                            </span>
+                            <div className="min-w-0">
+                              <div className="text-white text-sm font-semibold truncate">{s.title}</div>
+                              <div className="text-slate-400 text-xs truncate">{s.tag} • {s.duration}</div>
+                            </div>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const updated = simList.filter((_, i) => i !== idx);
+                              setContent(prev => ({
+                                ...prev,
+                                simulations: updated,
+                                ...(updated.length > 0 ? updated[0] : { title: '', description: '' })
+                              }));
+                            }}
+                            className="p-1.5 text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors flex-shrink-0"
+                            title="Remove from showcase"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : null;
+              })()}
 
               {/* Search box */}
               <div className="relative">
@@ -1042,33 +1311,10 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
                   type="text"
                   value={expSearch}
                   onChange={e => setExpSearch(e.target.value)}
-                  placeholder="Search experiments by name, lab or subject…"
+                  placeholder="Search experiments by name, lab or subject to add to hero showcase…"
                   className="w-full bg-slate-800 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-red-500/40 transition-colors"
                 />
               </div>
-
-              {/* Currently selected badge */}
-              {content.experimentId && (() => {
-                const sel = experiments.find(x => x.id === content.experimentId);
-                return sel ? (
-                  <div className="flex items-center gap-3 px-4 py-3 bg-primary-900/30 border border-primary-700/40 rounded-xl">
-                    <Check className="w-4 h-4 text-primary-400 flex-shrink-0" />
-                    <div className="min-w-0">
-                      <div className="text-white text-sm font-semibold truncate">{sel.title}</div>
-                      <div className="text-primary-300 text-xs">
-                        {sel.lab?.subject?.title} › {sel.lab?.title}
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => setContentKey('experimentId', '')}
-                      className="ml-auto p-1 text-slate-500 hover:text-red-400 transition-colors flex-shrink-0"
-                      title="Clear selection"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  </div>
-                ) : null;
-              })()}
 
               {/* Experiment card grid */}
               {expLoading ? (
@@ -1087,36 +1333,51 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
                         x.lab?.subject?.title?.toLowerCase().includes(q);
                     })
                     .map(x => {
-                      const isSelected = content.experimentId === x.id;
+                      const currentSims = Array.isArray(content.simulations) && content.simulations.length > 0
+                        ? content.simulations
+                        : (content.title ? [{ title: content.title }] : []);
+                      const isAdded = currentSims.some(s => s.id === x.id || s.title === x.title);
+
                       return (
                         <button
                           key={x.id}
                           type="button"
                           onClick={() => {
-                            setContent(prev => ({
-                              ...prev,
-                              experimentId: x.id,
-                              tag:          x.lab?.subject?.title || 'Science',
-                              category:     x.lab?.title || 'Virtual Lab',
-                              title:        x.title,
-                              description:  x.description || '',
-                              duration:     x.duration || '60 min',
-                              difficulty:   x.difficulty || 'Intermediate',
-                              institution:  'Amrita Vishwa Vidyapeetham',
-                              experiments:  1,
-                              href:         `/experiment/${x.id}`,
-                              imageUrl:     x.coverPic || x.lab?.coverPic || '',
-                            }));
+                            const newSimItem = {
+                              id: x.id,
+                              tag: (x.lab?.subject?.title || 'SCIENCE').toUpperCase(),
+                              category: x.lab?.title || 'Virtual Lab',
+                              title: x.title,
+                              description: x.description || '',
+                              duration: x.duration || '15 min',
+                              difficulty: x.difficulty || 'Intermediate',
+                              institution: 'Amrita Vishwa Vidyapeetham',
+                              experiments: 1,
+                              href: `/experiment/${x.id}`,
+                              imageUrl: x.coverPic || x.lab?.coverPic || '',
+                            };
+
+                            setContent(prev => {
+                              const existing = Array.isArray(prev.simulations) ? prev.simulations : [];
+                              if (existing.some(s => s.id === x.id || s.title === x.title)) {
+                                return prev;
+                              }
+                              const updated = [...existing, newSimItem];
+                              return {
+                                ...prev,
+                                simulations: updated,
+                                ...updated[0]
+                              };
+                            });
                           }}
                           className={`w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl border transition-all ${
-                            isSelected
-                              ? 'bg-primary-900/40 border-primary-600/60 ring-1 ring-primary-500/40'
+                            isAdded
+                              ? 'bg-purple-900/40 border-purple-600/60 ring-1 ring-purple-500/40'
                               : 'bg-white/3 border-white/10 hover:bg-white/8 hover:border-white/20'
                           }`}
                         >
-                          {/* icon */}
                           <div className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 ${
-                            isSelected ? 'bg-primary-700' : 'bg-slate-700'
+                            isAdded ? 'bg-purple-700' : 'bg-slate-700'
                           }`}>
                             {x.coverPic ? (
                               <img src={x.coverPic} alt="" className="w-full h-full object-cover rounded-xl" />
@@ -1124,17 +1385,24 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
                               <FlaskConical className="w-4 h-4 text-white/70" />
                             )}
                           </div>
-                          {/* info */}
                           <div className="min-w-0 flex-1">
                             <div className={`text-sm font-medium truncate ${
-                              isSelected ? 'text-primary-200' : 'text-white'
+                              isAdded ? 'text-purple-200' : 'text-white'
                             }`}>{x.title}</div>
                             <div className="text-xs text-slate-500 truncate">
                               {x.lab?.subject?.title && <span className="text-slate-400">{x.lab.subject.title}</span>}
                               {x.lab?.title && <span> › {x.lab.title}</span>}
                             </div>
                           </div>
-                          {isSelected && <Check className="w-4 h-4 text-primary-400 flex-shrink-0" />}
+                          {isAdded ? (
+                            <span className="text-xs font-bold text-purple-300 bg-purple-500/20 px-2 py-0.5 rounded">
+                              Added
+                            </span>
+                          ) : (
+                            <span className="text-xs font-semibold text-slate-400 group-hover:text-white">
+                              + Add
+                            </span>
+                          )}
                         </button>
                       );
                     })}
@@ -1149,31 +1417,162 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
                 </div>
               )}
 
-              <SectionDivider label="Customize Spotlight Content" />
-              <p className="text-slate-500 text-xs -mt-2">Fields below are auto-filled when you pick an experiment above. You can fine-tune them here.</p>
-              <div className="grid grid-cols-2 gap-4">
-                <TextField label="Tag (e.g., Physics)" value={content.tag} onChange={v => setContentKey('tag', v)} placeholder="Physics" />
-                <TextField label="Category (e.g., Mechanics)" value={content.category} onChange={v => setContentKey('category', v)} placeholder="Mechanics" />
-              </div>
-              <TextField label="Simulation Title" value={content.title} onChange={v => setContentKey('title', v)} placeholder="Simple Pendulum Simulation" />
-              <TextField label="Description" value={content.description} onChange={v => setContentKey('description', v)} placeholder="Describe the simulation…" multiline />
-              <div className="grid grid-cols-3 gap-4">
-                <TextField label="Institution" value={content.institution} onChange={v => setContentKey('institution', v)} placeholder="Amrita Vishwa Vidyapeetham" />
-                <TextField label="Duration" value={content.duration} onChange={v => setContentKey('duration', v)} placeholder="45 min" />
-                <TextField label="Difficulty" value={content.difficulty} onChange={v => setContentKey('difficulty', v)} placeholder="Intermediate" />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <TextField label="No. of Experiments" value={content.experiments} onChange={v => setContentKey('experiments', v)} placeholder="1" />
-                <TextField label="Link URL (href)" value={content.href} onChange={v => setContentKey('href', v)} placeholder="/experiment/..." />
-              </div>
+              {/* Active Simulation Selector & Per-Item Customization */}
+              {(() => {
+                const simList = Array.isArray(content.simulations) && content.simulations.length > 0
+                  ? content.simulations
+                  : (content.title ? [{
+                      id: content.experimentId || 'exp-1',
+                      tag: content.tag || 'COMPUTER SCIENCE',
+                      category: content.category || 'Computer Science',
+                      title: content.title,
+                      description: content.description || '',
+                      institution: content.institution || 'Amrita Vishwa Vidyapeetham',
+                      duration: content.duration || '10 min',
+                      difficulty: content.difficulty || 'Intermediate',
+                      experiments: content.experiments || 1,
+                      href: content.href || '/labs',
+                      imageUrl: content.imageUrl || ''
+                    }] : []);
 
-              <SectionDivider label="Preview Image" />
-              <p className="text-slate-500 text-xs -mt-2">Auto-filled from the experiment's cover image. Upload a custom image to override.</p>
-              <CloudinaryUploader
-                label="Simulation Preview Image — shown on the right panel"
-                value={content.imageUrl || ''}
-                onChange={v => setContentKey('imageUrl', v)}
-              />
+                const activeIdx = Math.min(editingSimIdx, Math.max(0, simList.length - 1));
+                const activeSim = simList[activeIdx] || {};
+
+                const updateActiveSim = (field, value) => {
+                  setContent(prev => {
+                    const currentList = Array.isArray(prev.simulations) && prev.simulations.length > 0
+                      ? [...prev.simulations]
+                      : [{
+                          id: prev.experimentId || 'exp-1',
+                          tag: prev.tag || 'COMPUTER SCIENCE',
+                          category: prev.category || 'Computer Science',
+                          title: prev.title || '',
+                          description: prev.description || '',
+                          institution: prev.institution || 'Amrita Vishwa Vidyapeetham',
+                          duration: prev.duration || '10 min',
+                          difficulty: prev.difficulty || 'Intermediate',
+                          experiments: prev.experiments || 1,
+                          href: prev.href || '/labs',
+                          imageUrl: prev.imageUrl || ''
+                        }];
+
+                    if (!currentList[activeIdx]) {
+                      currentList[activeIdx] = {};
+                    }
+
+                    currentList[activeIdx] = {
+                      ...currentList[activeIdx],
+                      [field]: value
+                    };
+
+                    return {
+                      ...prev,
+                      [field]: activeIdx === 0 ? value : prev[field],
+                      simulations: currentList
+                    };
+                  });
+                };
+
+                return (
+                  <>
+                    <SectionDivider label="Customize Spotlight Content" />
+                    <p className="text-slate-400 text-xs -mt-2 mb-3">
+                      Select which carousel simulation card you want to customize below.
+                    </p>
+
+                    {/* Tabs for Carousel Items */}
+                    {simList.length > 1 && (
+                      <div className="flex flex-wrap gap-2 mb-4 p-2 bg-slate-900/80 border border-white/10 rounded-xl">
+                        {simList.map((s, idx) => (
+                          <button
+                            key={idx}
+                            type="button"
+                            onClick={() => setEditingSimIdx(idx)}
+                            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
+                              activeIdx === idx
+                                ? 'bg-purple-600 text-white shadow-md'
+                                : 'bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white'
+                            }`}
+                          >
+                            <span>#{idx + 1}</span>
+                            <span className="max-w-[140px] truncate">{s.title || `Simulation ${idx + 1}`}</span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <TextField 
+                        label={`Tag (Simulation #${activeIdx + 1})`} 
+                        value={activeSim.tag || ''} 
+                        onChange={v => updateActiveSim('tag', v)} 
+                        placeholder="COMPUTER SCIENCE" 
+                      />
+                      <TextField 
+                        label="Category" 
+                        value={activeSim.category || ''} 
+                        onChange={v => updateActiveSim('category', v)} 
+                        placeholder="Quantum Computing Lab" 
+                      />
+                    </div>
+                    <TextField 
+                      label={`Simulation Title (Item #${activeIdx + 1})`} 
+                      value={activeSim.title || ''} 
+                      onChange={v => updateActiveSim('title', v)} 
+                      placeholder="Simulation title…" 
+                    />
+                    <TextField 
+                      label="Description" 
+                      value={activeSim.description || ''} 
+                      onChange={v => updateActiveSim('description', v)} 
+                      placeholder="Describe the simulation…" 
+                      multiline 
+                    />
+                    <div className="grid grid-cols-3 gap-4">
+                      <TextField 
+                        label="Institution" 
+                        value={activeSim.institution || ''} 
+                        onChange={v => updateActiveSim('institution', v)} 
+                        placeholder="Amrita Vishwa Vidyapeetham" 
+                      />
+                      <TextField 
+                        label="Duration" 
+                        value={activeSim.duration || ''} 
+                        onChange={v => updateActiveSim('duration', v)} 
+                        placeholder="10 min" 
+                      />
+                      <TextField 
+                        label="Difficulty" 
+                        value={activeSim.difficulty || ''} 
+                        onChange={v => updateActiveSim('difficulty', v)} 
+                        placeholder="Intermediate" 
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <TextField 
+                        label="No. of Experiments" 
+                        value={activeSim.experiments || ''} 
+                        onChange={v => updateActiveSim('experiments', v)} 
+                        placeholder="1" 
+                      />
+                      <TextField 
+                        label="Link URL (href)" 
+                        value={activeSim.href || ''} 
+                        onChange={v => updateActiveSim('href', v)} 
+                        placeholder="/experiment/..." 
+                      />
+                    </div>
+
+                    <SectionDivider label={`Preview Image (Item #${activeIdx + 1})`} />
+                    <p className="text-slate-500 text-xs -mt-2">Upload or customize the right-panel image for this specific carousel item.</p>
+                    <CloudinaryUploader
+                      label={`Simulation Preview Image for Item #${activeIdx + 1}`}
+                      value={activeSim.imageUrl || ''}
+                      onChange={v => updateActiveSim('imageUrl', v)}
+                    />
+                  </>
+                );
+              })()}
             </>
           )}
 
@@ -1387,12 +1786,99 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
 
 
 
+          {/* ── WORKSHOP INTRO ────────────────────────────── */}
+          {section.sectionKey === 'workshop_intro' && (
+            <>
+              <SectionDivider label="Workshop Intro & Overview Content" />
+              <TextField 
+                label="Paragraph 1 (Intro)" 
+                value={content.p1 !== undefined && content.p1 !== '' ? content.p1 : "Amrita Vishwa Vidyapeetham's VALUE project is running a series of workshops on Virtual Labs in Physical & Chemical Sciences, Biological Sciences, Mechanical Engineering and Computer Science. These workshops will offer an introduction to the innovative world of Virtual Laboratories for both physical and chemical sciences."} 
+                onChange={v => setContentKey('p1', v)} 
+                multiline 
+                helperText="First introductory paragraph" 
+              />
+              <TextField 
+                label="Paragraph 2 (Virtual Labs Detail)" 
+                value={content.p2 !== undefined && content.p2 !== '' ? content.p2 : "Virtual Labs are a new immersive e-learning tool that provides a media-rich, interactive user interface that teachers can use to supplement their curriculum. These Virtual Labs are located on an open webpage that can be accessed by anyone through a web browser, on any Internet-connected computer in the world. A variety of laboratory experiments can be conducted virtually using animation, simulation or remotely triggered hardware. Laboratory experiments are modeled very close to real-life experiments and when used as a learning tool by students it allows them to learn the material more efficiently and can actually make doing the practical experiments easier."} 
+                onChange={v => setContentKey('p2', v)} 
+                multiline 
+                helperText="Second paragraph explaining Virtual Labs platform" 
+              />
+              <TextField 
+                label="Paragraph 3 (Opportunity & Hands-on)" 
+                value={content.p3 !== undefined && content.p3 !== '' ? content.p3 : "The workshop offers a fantastic opportunity for all faculty members involved in the education of physics, chemistry, biological sciences, computer science and mechanical engineering to learn more about Virtual Labs. We will showcase our online laboratory experiments including a hands-on training session in using the Virtual Labs website."} 
+                onChange={v => setContentKey('p3', v)} 
+                multiline 
+                helperText="Third paragraph explaining faculty opportunity & hands-on sessions" 
+              />
+              <TextField 
+                label="Initiative / MoE Note" 
+                value={content.initiativeText !== undefined && content.initiativeText !== '' ? content.initiativeText : "This project is an initiative of MoE (Ministry of Education) under National Mission on Education through ICT (NME-ICT). These experiments and labs are hosted for open access through www.vlab.co.in."} 
+                onChange={v => setContentKey('initiativeText', v)} 
+                multiline 
+                helperText="Italic note at bottom of intro section" 
+              />
+              
+              <SectionDivider label="Dynamic Custom Content Blocks, Headings & Links" />
+              <p className="text-slate-400 text-xs -mt-2">
+                💡 Add dynamic blocks below (Paragraph, Heading, Callout Note, or Link). If custom blocks are added below, they will be rendered in sequence on the Workshop page!
+              </p>
+              <RepeatableList
+                label="Dynamic Content Blocks"
+                items={content.customBlocks || []}
+                onChange={v => setContentKey('customBlocks', v)}
+                onAutoSave={v => handleAutoSave('customBlocks', v)}
+                fields={REPEATABLE_CONFIGS.workshop_intro.blocks.fields}
+                onConfirmRequest={setConfirmConfig}
+              />
+
+              <SectionDivider label="Intro Section Image" />
+              <CloudinaryUploader
+                label="Section Image (Displayed alongside text)"
+                value={content.imageUrl || ''}
+                onChange={v => setContentKey('imageUrl', v)}
+              />
+            </>
+          )}
+
+          {/* ── WORKSHOP FORUM ────────────────────────────── */}
+          {section.sectionKey === 'workshop_forum' && (
+            <>
+              <SectionDivider label="Nodal Centre Forum Banner" />
+              <TextField label="Paragraph 1" value={content.p1} onChange={v => setContentKey('p1', v)} multiline />
+              <TextField label="Paragraph 2" value={content.p2} onChange={v => setContentKey('p2', v)} multiline />
+              <div className="grid grid-cols-2 gap-4">
+                <TextField label="Button Text" value={content.btnLabel} onChange={v => setContentKey('btnLabel', v)} placeholder="Learn more about Nodal Centres →" />
+                <TextField label="Button Link" value={content.btnHref} onChange={v => setContentKey('btnHref', v)} placeholder="/nodal-centres" />
+              </div>
+            </>
+          )}
+
+          {/* ── WORKSHOP CTA ──────────────────────────────── */}
+          {section.sectionKey === 'workshop_cta' && (
+            <>
+              <SectionDivider label="Host a Workshop Call-to-Action Banner" />
+              <TextField label="Button Text" value={content.btnLabel} onChange={v => setContentKey('btnLabel', v)} placeholder="Submit a Request" />
+            </>
+          )}
+
           {/* ── FOOTER ─────────────────────────────────────── */}
           {section.sectionKey === 'footer' && (
             <>
               <SectionDivider label="Contact Information" />
               <TextField label="Contact Email" value={content.email} onChange={v => setContentKey('email', v)} placeholder="virtual_labs@am.amrita.edu" />
-              <TextField label="Contact Phone" value={content.phone} onChange={v => setContentKey('phone', v)} placeholder="+91 9446 007 135" />
+              <TextField label="Default Phone Number (Fallback)" value={content.phone} onChange={v => setContentKey('phone', v)} placeholder="+91 9446 007 135" />
+              
+              <SectionDivider label="Multiple Phone Numbers" />
+              <RepeatableList
+                label="Contact Phone Numbers"
+                items={content.phoneNumbers || []}
+                onChange={v => setContentKey('phoneNumbers', v)}
+                onAutoSave={v => handleAutoSave('phoneNumbers', v)}
+                fields={REPEATABLE_CONFIGS.footer.phoneNumbers.fields}
+                onConfirmRequest={setConfirmConfig}
+              />
+
               <div className="mb-6">
                 <label className="block text-[13px] font-semibold text-slate-300 mb-2">Office Address</label>
                 <textarea
@@ -1402,6 +1888,16 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
                   placeholder="Amrita Virtual Labs..."
                 />
               </div>
+
+              <SectionDivider label="Custom Contact Fields" />
+              <RepeatableList
+                label="Custom Contact Fields (Hours, Toll-Free, Fax)"
+                items={content.customFields || []}
+                onChange={v => setContentKey('customFields', v)}
+                onAutoSave={v => handleAutoSave('customFields', v)}
+                fields={REPEATABLE_CONFIGS.footer.customFields.fields}
+                onConfirmRequest={setConfirmConfig}
+              />
 
               <SectionDivider label="Important Links" />
               <RepeatableList
@@ -1464,6 +1960,45 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
             </>
           )}
 
+          {/* ── UNIVERSAL DYNAMIC CUSTOM CONTENT BLOCKS & EXTRA FIELDS (For All Sections) ────── */}
+          <SectionDivider label="Universal Dynamic Custom Content Blocks & Extra Fields" />
+          <div className="space-y-6 bg-slate-950/60 p-5 border border-white/10 rounded-2xl">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <Plus className="w-4 h-4 text-blue-400" />
+                <h4 className="text-sm font-bold text-white">Custom Content Blocks (Headings, Notes, Links, Images)</h4>
+              </div>
+              <p className="text-xs text-slate-400 mb-3">
+                Add dynamic custom content blocks (Headings H2/H3, Callout Notes, Links/Buttons, Images) to this section. Any blocks added here will render live on the website!
+              </p>
+              <RepeatableList
+                label="Custom Dynamic Content Blocks"
+                items={content.customBlocks || []}
+                onChange={v => setContentKey('customBlocks', v)}
+                onAutoSave={v => handleAutoSave('customBlocks', v)}
+                fields={UNIVERSAL_BLOCK_FIELDS}
+                onConfirmRequest={setConfirmConfig}
+              />
+            </div>
+
+            <div className="pt-4 border-t border-white/10">
+              <div className="flex items-center gap-2 mb-1">
+                <Plus className="w-4 h-4 text-purple-400" />
+                <h4 className="text-sm font-bold text-white">Custom Extra Key-Value Fields</h4>
+              </div>
+              <p className="text-xs text-slate-400 mb-3">
+                Create custom key-value pairs (e.g. Operating Hours, Support Helpline, Accreditation) for this section.
+              </p>
+              <RepeatableList
+                label="Custom Fields"
+                items={content.customFields || []}
+                onChange={v => setContentKey('customFields', v)}
+                onAutoSave={v => handleAutoSave('customFields', v)}
+                fields={UNIVERSAL_CUSTOM_FIELDS}
+                onConfirmRequest={setConfirmConfig}
+              />
+            </div>
+          </div>
 
         </div>
 
@@ -1499,7 +2034,9 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
           </div>
         )}
       </div>
-      <ConfirmModal isOpen={!!confirmConfig} {...(confirmConfig || {})} onClose={() => setConfirmConfig(null)} />
-    </div>
+        <ConfirmModal isOpen={!!confirmConfig} {...(confirmConfig || {})} onClose={() => setConfirmConfig(null)} />
+      </div>
+      <InsertLinkModal config={linkModalConfig} onClose={() => setLinkModalConfig(null)} />
+    </LinkModalContext.Provider>
   );
 }

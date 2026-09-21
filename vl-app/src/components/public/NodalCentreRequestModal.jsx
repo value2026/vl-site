@@ -218,7 +218,7 @@ export default function NodalCentreRequestModal({ onClose }) {
         {!success && questions.length > 0 && !loading && (
           <div className="p-6 border-t border-slate-100 bg-slate-50 rounded-b-2xl flex justify-between items-center">
             <p className="text-xs text-slate-500 italic max-w-[60%]">
-              By submitting this form, you express interest in becoming an official MHRD Nodal Centre.
+              By submitting this form, you express interest in becoming an official MoE (Ministry of Education) Nodal Centre.
             </p>
             <div className="flex gap-3">
               <button
