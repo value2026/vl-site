@@ -467,16 +467,24 @@ function ExperimentsTab({ role, initialLabId = '' }) {
   const save = async () => {
     if (!form.title.trim() || !form.labId) { setError('Title and lab are required'); return; }
     setSaving(true);
+    setError('');
     const isEdit = modal?.edit;
     const res = isEdit ? await api.post(`/experiments/${isEdit.id}/update`, form) : await api.post('/experiments', form);
     
     if (res.ok) { 
       const savedExp = await safeJson(res);
+      const targetExpId = savedExp?.id || isEdit?.id;
       // Upload ZIP if provided
-      if (form.zipFile) {
+      if (form.zipFile && targetExpId) {
         const fd = new FormData();
         fd.append('file', form.zipFile);
-        await api.upload(`/experiments/${savedExp.id || isEdit.id}/upload-zip`, fd);
+        const uploadRes = await api.upload(`/experiments/${targetExpId}/upload-zip`, fd);
+        if (!uploadRes.ok) {
+          const errData = await safeJson(uploadRes);
+          setSaving(false);
+          setError(errData.message || 'Failed to upload and extract ZIP file');
+          return;
+        }
       }
       setSaving(false);
       setModal(null); 

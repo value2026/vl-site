@@ -42,11 +42,24 @@ export default function EditUserModal({ isOpen, onClose, onSuccess, userToEdit }
     }
   }, [isOpen, API_URL]);
 
+const ROLE_DEFAULT_PERMISSIONS = {
+  nodal_centre:  ['manage_users'],
+  vl_manager:    ['manage_users', 'manage_content', 'manage_simulations', 'manage_institutions', 'manage_workshops'],
+  vl_coordinator:['manage_users', 'manage_content', 'manage_simulations', 'manage_institutions', 'manage_workshops'],
+  teacher:       [],
+  student:       [],
+  admin:         [],
+};
+
   useEffect(() => {
     if (isOpen && userToEdit) {
+      const existingPerms = (Array.isArray(userToEdit.customPermissions) && userToEdit.customPermissions.length > 0)
+        ? userToEdit.customPermissions
+        : (ROLE_DEFAULT_PERMISSIONS[userToEdit.role] || []);
+
       setForm({
         name: userToEdit.name || '',
-        customPermissions: userToEdit.customPermissions || [],
+        customPermissions: existingPerms,
         managedSubjectIds: userToEdit.managedSubjectIds || [],
       });
       setError('');

@@ -23,6 +23,15 @@ const CREATION_RULES = {
   student:      [],
 };
 
+const ROLE_DEFAULT_PERMISSIONS = {
+  nodal_centre:  ['manage_users'],
+  vl_manager:    ['manage_users', 'manage_content', 'manage_simulations', 'manage_institutions', 'manage_workshops'],
+  vl_coordinator:['manage_users', 'manage_content', 'manage_simulations', 'manage_institutions', 'manage_workshops'],
+  teacher:       [],
+  student:       [],
+  admin:         [],
+};
+
 // ── GET /api/users ─────────────────────────────────────────────
 const getUsers = async (req, res) => {
   try {
@@ -96,6 +105,8 @@ const getUsers = async (req, res) => {
         designation:  true,
         facultyDept:  true,
         facultyInst:  true,
+        customPermissions: true,
+        managedSubjectIds: true,
         nodalCentre:  { select: { name: true } },
         createdBy:    { select: { name: true } },
       },
@@ -240,7 +251,9 @@ const createUser = async (req, res) => {
         designation:   newRole === 'teacher' && designation ? designation.trim() : null,
         facultyDept:   newRole === 'teacher' && facultyDept ? facultyDept.trim() : null,
         facultyInst:   newRole === 'teacher' && facultyInst ? facultyInst.trim() : null,
-        customPermissions: req.body.customPermissions ? req.body.customPermissions : [],
+        customPermissions: (Array.isArray(req.body.customPermissions) && req.body.customPermissions.length > 0)
+          ? req.body.customPermissions
+          : (ROLE_DEFAULT_PERMISSIONS[newRole] || []),
         managedSubjectIds: req.body.managedSubjectIds ? req.body.managedSubjectIds : [],
       },
       select: {
@@ -472,134 +485,150 @@ const getStats = async (req, res) => {
 const bulkCreateStudents = async (req, res) => {
   try {
     const { role: callerRole, id: callerId } = req.user;
-    const { students, nodalCentreId } = req.body;
+    const { students, nodalCentreId, sendEmails = false, isMigration = false } = req.body;
 
     if (!Array.isArray(students) || students.length === 0) {
       return res.status(400).json({ message: 'students must be a non-empty array' });
     }
 
     // Only Admin, VL Manager, Co-ordinator, and Teacher can bulk add students
-    if (!['admin', 'vl_manager', 'vl_coordinator', 'teacher'].includes(callerRole)) {
+    if (!['admin', 'vl_manager', 'vl_coordinator', 'teacher', 'nodal_centre'].includes(callerRole)) {
       return res.status(403).json({ message: 'Insufficient permissions to bulk add users' });
     }
 
     // Nodal centre id resolution
-    let centreId = null;
+    let defaultCentreId = null;
     if (callerRole === 'nodal_centre') {
       const nodalAdmin = await prisma.user.findUnique({
         where: { id: callerId },
         select: { nodalCentreId: true },
       });
-      centreId = nodalAdmin?.nodalCentreId ?? null;
+      defaultCentreId = nodalAdmin?.nodalCentreId ?? null;
     } else if (callerRole === 'teacher') {
       const teacher = await prisma.user.findUnique({
         where: { id: callerId },
         select: { nodalCentreId: true },
       });
-      centreId = teacher?.nodalCentreId ?? null;
+      defaultCentreId = teacher?.nodalCentreId ?? null;
     } else if (callerRole === 'admin' || callerRole === 'vl_manager' || callerRole === 'vl_coordinator') {
-      // Admin, VL Manager, and Coordinator can specify the institution explicitly
-      centreId = nodalCentreId || null;
+      defaultCentreId = nodalCentreId || null;
     }
 
-    if (!centreId) {
-      return res.status(400).json({ message: 'Institution (Nodal Centre) is required for bulk import.' });
-    }
+    // Cache institution collegeId map for fast lookup
+    const allInstitutions = await prisma.institution.findMany({
+      select: { id: true, collegeId: true }
+    });
+    const collegeIdMap = new Map();
+    allInstitutions.forEach(inst => {
+      if (inst.collegeId) {
+        collegeIdMap.set(String(inst.collegeId).trim(), inst.id);
+      }
+    });
 
-    let createdCount = 0;
     const skipped = [];
+    const batchToInsert = [];
 
-    // Parallel hashing/insertion or sequential
-    for (const student of students) {
-      const { name, email } = student;
-      let { username, password } = student;
+    // Process students batch
+    for (let i = 0; i < students.length; i++) {
+      const student = students[i];
+      let { name, email, username, password, schoolId, collegeId } = student;
       
       if (!name?.trim() || !email?.trim()) {
-        skipped.push({ email: email || 'unknown', reason: 'Missing name or email' });
+        skipped.push({ email: email || 'unknown', reason: 'Missing required name or email' });
         continue;
       }
 
       const cleanEmail = email.toLowerCase().trim();
 
-      // Check duplicate email
-      const exists = await prisma.user.findUnique({
-        where: { email: cleanEmail },
-      });
-
-      if (exists) {
-        skipped.push({ email: cleanEmail, reason: 'Email already registered' });
-        continue;
-      }
-
       // Resolve username
-      if (!username || !username.trim()) {
-        const emailPrefix = cleanEmail.split('@')[0].replace(/[^a-zA-Z0-9_.]/g, '');
-        // Check uniqueness of generated username
-        let checkUsername = emailPrefix;
-        let suffix = 1;
-        while (true) {
-          const userWithUsername = await prisma.user.findFirst({
-            where: { username: checkUsername }
-          });
-          if (!userWithUsername) break;
-          checkUsername = `${emailPrefix}${suffix}`;
-          suffix++;
-        }
-        username = checkUsername;
-      } else {
-        username = username.trim();
-        // Check duplicate username
-        const usernameExists = await prisma.user.findFirst({
-          where: { username }
-        });
-        if (usernameExists) {
-          skipped.push({ email: cleanEmail, reason: `Username "${username}" is already taken` });
-          continue;
-        }
+      let finalUsername = username ? username.trim() : cleanEmail.split('@')[0].replace(/[^a-zA-Z0-9_.]/g, '');
+      if (!finalUsername) {
+        finalUsername = `user_${Math.random().toString(36).substring(2, 8)}`;
       }
 
-      // Generate password if missing
-      const plainTextPassword = (password && password.trim()) ? password.trim() : generateRandomPassword();
-      const hashed = await bcrypt.hash(plainTextPassword, 12);
+      // Resolve Nodal Centre ID
+      const targetSchoolId = schoolId || collegeId || student['School id'] || student['College ID'];
+      let targetCentreId = defaultCentreId;
+      if (targetSchoolId && collegeIdMap.has(String(targetSchoolId).trim())) {
+        targetCentreId = collegeIdMap.get(String(targetSchoolId).trim());
+      }
+
+      // Password handling
+      const rawPassword = (password && String(password).trim()) ? String(password).trim() : generateRandomPassword();
+      let hashedPassword;
+
+      // Check if password is already a bcrypt hash (starts with $2a$, $2b$, $2y$)
+      if (/^\$2[aby]\$/.test(rawPassword)) {
+        hashedPassword = rawPassword;
+      } else {
+        // Fast hashing
+        hashedPassword = await bcrypt.hash(rawPassword, 10);
+      }
+
+      batchToInsert.push({
+        name:          name.trim(),
+        email:         cleanEmail,
+        password:      hashedPassword,
+        role:          'student',
+        createdById:   callerId,
+        nodalCentreId: targetCentreId,
+        username:      finalUsername,
+        org:           student.org || req.user.org || 'Virtual Labs Partner',
+        dept:          student.dept || req.user.dept || 'Science',
+        country:       student.country || 'India',
+        course:        student.course || null,
+        yearSemester:  student.yearSemester || null,
+        batch:         student.batch || null,
+        studentId:     student.studentId || null,
+        section:       student.section ? String(student.section).trim() : null,
+        mobile:        student.mobile || null,
+        // Save unhashed password strictly if email sending is enabled for NEW users, otherwise ignored
+        _plainPassword: rawPassword,
+      });
+    }
+
+    let totalInserted = 0;
+
+    if (batchToInsert.length > 0) {
+      // Prepare array for createMany (strip temporary fields)
+      const dataForDb = batchToInsert.map(({ _plainPassword, ...userObj }) => userObj);
 
       try {
-        const newStudent = await prisma.user.create({
-          data: {
-            name:          name.trim(),
-            email:         cleanEmail,
-            password:      hashed,
-            role:          'student',
-            createdById:   callerId,
-            nodalCentreId: centreId,
-            username,
-            // Academic & extra details
-            org:           student.org || req.user.org || 'Virtual Labs Partner',
-            dept:          student.dept || req.user.dept || 'Science',
-            country:       student.country || 'India',
-            course:        student.course || null,
-            yearSemester:  student.yearSemester || null,
-            batch:         student.batch || null,
-            studentId:     student.studentId || null,
-            section:       student.section ? String(student.section).trim() : null,
-            mobile:        student.mobile || null,
-          },
+        const result = await prisma.user.createMany({
+          data: dataForDb,
+          skipDuplicates: true,
         });
+        totalInserted = result.count;
+      } catch (dbErr) {
+        console.error('❌ Batch insertion error:', dbErr.message);
+        // Fallback to row-by-row if createMany has schema issues
+        for (const item of dataForDb) {
+          try {
+            await prisma.user.create({ data: item });
+            totalInserted++;
+          } catch (e) {
+            skipped.push({ email: item.email, reason: e.message });
+          }
+        }
+      }
 
-        // Dispatch email in background
-        sendWelcomeEmail(newStudent, plainTextPassword).catch(err => {
-          console.error(`❌ Mailer error: Failed to send welcome email for bulk student ${cleanEmail}:`, err);
-        });
-        createdCount++;
-      } catch (err) {
-        console.error('Error creating student:', err);
-        skipped.push({ email: cleanEmail, reason: 'Database error during creation' });
+      // STRICT CHECK: Send welcome emails ONLY if sendEmails is true AND NOT in migration mode
+      if (sendEmails && !isMigration) {
+        // Send welcome emails in background for new users
+        for (const item of batchToInsert) {
+          sendWelcomeEmail(item, item._plainPassword).catch(err => {
+            console.error(`❌ Mailer error for ${item.email}:`, err.message);
+          });
+        }
       }
     }
 
+    const totalSkippedInBatch = Math.max(0, students.length - totalInserted);
+
     res.status(200).json({
-      message: `Successfully registered ${createdCount} students`,
-      createdCount,
-      skippedCount: skipped.length,
+      message: `Processed ${students.length} rows. Inserted ${totalInserted} new users.`,
+      createdCount: totalInserted,
+      skippedCount: skipped.length + totalSkippedInBatch,
       skipped,
     });
   } catch (err) {

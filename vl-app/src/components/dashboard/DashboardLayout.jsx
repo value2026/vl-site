@@ -37,6 +37,7 @@ const NAV = {
     { icon: Presentation,    label: 'Workshops',       path: '/dashboard/vl-coordinator/workshops' },
     { icon: FlaskConical,    label: 'Lab Management',  path: '/dashboard/vl-coordinator/labs' },
     { icon: ClipboardList,   label: 'Surveys',          path: '/dashboard/vl-coordinator/surveys' },
+    { icon: Globe,           label: 'Manage Pages',    path: '/dashboard/vl-coordinator/pages' },
     { icon: TrendingUp,      label: 'Usage Analytics',  path: '/dashboard/vl-coordinator/analytics' },
   ],
   nodal_centre: [

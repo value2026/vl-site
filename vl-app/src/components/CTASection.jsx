@@ -12,7 +12,7 @@ const DEFAULT_CARDS = [
     title: 'Download Brochure',
     description: 'Get the complete guide to Virtual Labs including lab list, institution details, and usage instructions.',
     action: 'Download PDF',
-    href: '#',
+    href: '/brochure.pdf',
     gradient: 'from-primary-800 to-primary-900',
   },
   {
@@ -85,6 +85,17 @@ export default function CTASection({ sectionTitle, sectionSubtitle, content = {}
                       {action}
                       <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                     </button>
+                  ) : href.toLowerCase().endsWith('.pdf') || href.startsWith('http') ? (
+                    <a
+                      href={href}
+                      id={`cta-${id}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 text-sm font-semibold bg-white/15 hover:bg-white/25 border border-white/30 rounded-lg px-5 py-2.5 transition-all duration-200 self-start"
+                    >
+                      {action}
+                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    </a>
                   ) : (
                     <Link
                       to={href}

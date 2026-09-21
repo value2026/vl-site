@@ -108,7 +108,7 @@ export default function LabCategories({ sectionTitle, sectionSubtitle, content =
                   key={subject.id}
                   to={`/subject/${subject.id}`}
                   state={{ fromHome: true }}
-                  className="relative w-full max-w-[340px] sm:max-w-[320px] lg:max-w-[340px] sm:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1.5rem)] xl:w-[calc(33.333%-1.666rem)] bg-white rounded-[1.5rem] p-6 xl:p-8 border border-[#E2E8F0] shadow-[0_15px_50px_rgba(0,0,0,0.03)] hover:shadow-[0_25px_70px_rgba(59,65,227,0.1)] hover:-translate-y-2 transition-all duration-300 group overflow-hidden flex flex-col h-[360px]"
+                  className="relative w-full max-w-[340px] sm:max-w-[320px] lg:max-w-[340px] sm:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1.5rem)] xl:w-[calc(33.333%-1.666rem)] bg-white rounded-[1.5rem] p-6 xl:p-8 border border-[#E2E8F0] shadow-[0_15px_50px_rgba(0,0,0,0.03)] hover:shadow-[0_25px_70px_rgba(59,65,227,0.1)] hover:-translate-y-2 transition-all duration-300 group overflow-hidden flex flex-col min-h-[430px]"
                 >
                   {/* Faint wavy top background - simple css shape */}
                   <div className="absolute top-0 left-0 w-full h-40 bg-gradient-to-br from-[#F4F7FF] to-transparent rounded-t-[2rem] opacity-70"></div>
@@ -119,28 +119,28 @@ export default function LabCategories({ sectionTitle, sectionSubtitle, content =
                   </div>
 
                   {/* Icon */}
-                  <div className={`relative w-[72px] h-[72px] rounded-full bg-gradient-to-b ${gradient} flex items-center justify-center shadow-[0_10px_20px_rgba(0,0,0,0.1)] mb-10 group-hover:scale-110 transition-transform duration-300`}>
+                  <div className={`relative w-[72px] h-[72px] rounded-full bg-gradient-to-b ${gradient} flex items-center justify-center shadow-[0_10px_20px_rgba(0,0,0,0.1)] mb-6 group-hover:scale-110 transition-transform duration-300`}>
                     <IconComp className="w-8 h-8 text-white" />
                   </div>
 
                   {/* Title & Tags */}
                   <div className="relative">
-                    <h3 className="font-heading text-[28px] font-extrabold text-[#0F172A] mb-3 leading-tight group-hover:text-[#3B41E3] transition-colors">
+                    <h3 className="font-heading text-[26px] xl:text-[28px] font-extrabold text-[#0F172A] mb-2 leading-tight group-hover:text-[#3B41E3] transition-colors">
                       {subject.title}
                     </h3>
                     <div className="text-[11px] font-bold text-[#5D64F5] tracking-widest uppercase mb-3">
                       INTERACTIVE • SIMULATIONS
                     </div>
-                    <div className="w-10 h-0.5 bg-[#5D64F5] opacity-50 mb-6"></div>
+                    <div className="w-10 h-0.5 bg-[#5D64F5] opacity-50 mb-4"></div>
                   </div>
 
                   {/* Description */}
-                  <p className="relative text-[#64748B] text-[16px] leading-relaxed flex-1 line-clamp-3 font-medium">
+                  <p className="relative text-[#64748B] text-[15px] sm:text-[16px] leading-relaxed flex-1 line-clamp-3 font-medium mb-6">
                     {subject.description || 'Explore programming, algorithms, data structures, and computer networking.'}
                   </p>
 
                   {/* Button */}
-                  <div className="relative mt-auto">
+                  <div className="relative mt-auto pt-2">
                     <div className="inline-flex items-center justify-center gap-3 border border-[#E2E8F0] rounded-full px-6 py-2.5 text-[14px] font-bold text-[#5D64F5] group-hover:bg-[#F4F7FF] group-hover:border-[#C7D2FE] transition-colors">
                       View Laboratories
                       <ArrowRight className="w-4 h-4" />

@@ -6,10 +6,12 @@ import LabCategories       from './LabCategories';
 import NewsSection         from './NewsSection';
 import MediaSection        from './MediaSection';
 import AdBanner            from './AdBanner';
+import OutreachStats       from './OutreachStats';
 
 const SECTION_MAP = {
   hero:                Hero,
   featured_simulation: FeaturedSimulation,
+  outreach_stats:      OutreachStats,
   cta:                 CTASection,
   sponsors:            SponsorsSection,
   lab_categories:      LabCategories,

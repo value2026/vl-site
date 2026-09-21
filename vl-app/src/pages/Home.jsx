@@ -12,13 +12,14 @@ import MediaSection        from '../components/MediaSection';
 // Fallback static order if API is unavailable
 const STATIC_FALLBACK = [
   { id: 'hero',    sectionKey: 'hero',                isVisible: true, order: 0, title: null, subtitle: null, content: {} },
-  { id: 'fs',      sectionKey: 'featured_simulation', isVisible: true, order: 1, title: null, subtitle: null, content: {} },
-  { id: 'lc',      sectionKey: 'lab_categories',      isVisible: true, order: 2, title: null, subtitle: null, content: {} },
-  { id: 'cta',     sectionKey: 'cta',                 isVisible: true, order: 3, title: null, subtitle: null, content: {} },
-  { id: 'sp',      sectionKey: 'sponsors',            isVisible: true, order: 4, title: null, subtitle: null, content: {} },
-  { id: 'ad',      sectionKey: 'ad_banner',           isVisible: true, order: 5, title: null, subtitle: null, content: {} },
-  { id: 'news',    sectionKey: 'news',                isVisible: true, order: 6, title: null, subtitle: null, content: {} },
-  { id: 'media',   sectionKey: 'media',               isVisible: true, order: 7, title: null, subtitle: null, content: {} },
+  { id: 'os',      sectionKey: 'outreach_stats',       isVisible: true, order: 1, title: null, subtitle: null, content: {} },
+  { id: 'fs',      sectionKey: 'featured_simulation', isVisible: true, order: 2, title: null, subtitle: null, content: {} },
+  { id: 'lc',      sectionKey: 'lab_categories',      isVisible: true, order: 3, title: null, subtitle: null, content: {} },
+  { id: 'cta',     sectionKey: 'cta',                 isVisible: true, order: 4, title: null, subtitle: null, content: {} },
+  { id: 'sp',      sectionKey: 'sponsors',            isVisible: true, order: 5, title: null, subtitle: null, content: {} },
+  { id: 'ad',      sectionKey: 'ad_banner',           isVisible: true, order: 6, title: null, subtitle: null, content: {} },
+  { id: 'news',    sectionKey: 'news',                isVisible: true, order: 7, title: null, subtitle: null, content: {} },
+  { id: 'media',   sectionKey: 'media',               isVisible: true, order: 8, title: null, subtitle: null, content: {} },
 ];
 
 async function fetchHomeSections() {

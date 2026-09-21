@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
-import { GraduationCap, BookOpen, RefreshCw, Building2 } from 'lucide-react';
+import { GraduationCap, BookOpen, RefreshCw, Building2, UserPlus } from 'lucide-react';
 import DashboardLayout from '../../components/dashboard/DashboardLayout';
 import UserTable       from '../../components/dashboard/UserTable';
+import AddUserModal    from '../../components/dashboard/AddUserModal';
 import UpcomingCallsCard from '../../components/communication/UpcomingCallsCard';
 import { useAuth }     from '../../context/AuthContext';
 import { useLocation } from 'react-router-dom';
@@ -27,6 +28,7 @@ export default function NodalCentreDashboard() {
   const [stats,    setStats]    = useState(null);
   const [users,    setUsers]    = useState([]);
   const [loading,  setLoading]  = useState(true);
+  const [showModal, setShowModal] = useState(false);
   const location = useLocation();
 
   const isTeachersPage = location.pathname.endsWith('/teachers');
@@ -68,12 +70,20 @@ export default function NodalCentreDashboard() {
             {isOverviewPage ? 'Nodal Centre Portal' : (isTeachersPage ? 'View all institute teachers' : 'View all institute students')}
           </p>
         </div>
-        <button
-          onClick={fetchAll}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 transition-all"
-        >
-          <RefreshCw className="w-4 h-4" /> Refresh
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={fetchAll}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 transition-all"
+          >
+            <RefreshCw className="w-4 h-4" /> Refresh
+          </button>
+          <button
+            onClick={() => setShowModal(true)}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 shadow-lg shadow-blue-500/20 transition-all"
+          >
+            <UserPlus className="w-4 h-4" /> Add / Import User
+          </button>
+        </div>
       </div>
 
       {/* Stats - Only on Overview */}
@@ -109,6 +119,12 @@ export default function NodalCentreDashboard() {
           <UserTable users={isStudentsPage ? students : students.slice(0, 5)} loading={loading} onRefresh={fetchAll} hideActions />
         </div>
       )}
+
+      <AddUserModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        onSuccess={fetchAll}
+      />
     </DashboardLayout>
   );
 }
