@@ -1,4 +1,5 @@
 import { ArrowRight, GraduationCap } from 'lucide-react';
+import DynamicBlockRenderer from './public/DynamicBlockRenderer';
 
 const DEFAULTS = {
   heading: 'PhD Admissions 2026',
@@ -74,6 +75,8 @@ export default function AdBanner({ sectionTitle, sectionSubtitle, content = {} }
 
           </div>
         </div>
+
+        <DynamicBlockRenderer blocks={content.customBlocks} fields={content.customFields} />
       </div>
     </section>
   );

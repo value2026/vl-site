@@ -229,7 +229,7 @@ function InlineFreeDemoForm() {
 
           <div className="flex items-center justify-between pt-2">
             <p className="text-xs text-gray-400 italic max-w-[60%]">
-              By submitting, you express interest in becoming an official MHRD Nodal Centre.
+              By submitting, you express interest in becoming an official MoE (Ministry of Education) Nodal Centre.
             </p>
             <button type="submit" form="demo-registration-form" disabled={submitting}
               className="btn-primary px-7 py-2.5 flex items-center gap-2 text-sm shadow-lg shadow-primary-500/20 disabled:opacity-70">
@@ -323,7 +323,7 @@ export default function NodalCentres() {
             {heroSec?.title || 'Join the Virtual Labs Network'}
           </h1>
           <p className="text-lg md:text-xl text-white/70 max-w-2xl mx-auto leading-relaxed">
-            {heroSec?.subtitle || 'Become a nodal centre and bring world-class virtual lab experiences to your students. Sponsored by MHRD (NME-ICT) — no registration fees, no hidden costs.'}
+            {heroSec?.subtitle || 'Become a nodal centre and bring world-class virtual lab experiences to your students. Sponsored by MoE (Ministry of Education) — no registration fees, no hidden costs.'}
           </p>
         </div>
       </section>
@@ -362,7 +362,7 @@ export default function NodalCentres() {
                 <span className="tag">About the Program</span>
                 <h2 className="section-title mt-4">What is the Nodal Centre Program?</h2>
                 <p className="section-subtitle">
-                  The Nodal Centre Program allows educational institutions to follow the progress of VALUE Virtual Labs and contribute towards the future development of Virtual Labs and experiments. Sponsored by MHRD (NME-ICT), it comes with no registration fees, no software products, and no hidden costs.
+                  The Nodal Centre Program allows educational institutions to follow the progress of VALUE Virtual Labs and contribute towards the future development of Virtual Labs and experiments. Sponsored by MoE (Ministry of Education), it comes with no registration fees, no software products, and no hidden costs.
                 </p>
               </div>
               <div className="grid sm:grid-cols-3 gap-6 mb-14">
@@ -464,7 +464,7 @@ export default function NodalCentres() {
               <span className="tag">Application</span>
               <h2 className="section-title mt-4">Apply for Nodal Centre Program</h2>
               <p className="section-subtitle">
-                We are looking for expressions of interest from reputed educational and research institutions. The program is completely free — sponsored by MHRD under NME-ICT.
+                We are looking for expressions of interest from reputed educational and research institutions. The program is completely free — sponsored by MoE (Ministry of Education) under NME-ICT.
               </p>
             </div>
 
@@ -564,7 +564,7 @@ export default function NodalCentres() {
 
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-6 text-sm text-gray-500">
               <span className="flex items-center gap-2"><Mail className="w-4 h-4 text-primary-600" /> virtual_labs@am.amrita.edu</span>
-              <span className="flex items-center gap-2"><Phone className="w-4 h-4 text-primary-600" /> +91 422 268 5000</span>
+              <span className="flex items-center gap-2"><Phone className="w-4 h-4 text-primary-600" /> +91 9446007135 / 0476 280 4528</span>
             </div>
           </div>
         </section>

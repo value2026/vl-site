@@ -354,6 +354,16 @@ export default function ManagePages() {
         >
           Nodal Centres
         </button>
+        <button
+          onClick={() => { setPageSlug('workshop'); setLocalOrder(null); setActiveTab('sections'); }}
+          className={`px-5 py-2.5 rounded-lg text-sm font-semibold transition-all ${
+            pageSlug === 'workshop'
+              ? 'bg-red-500/10 text-red-400 border border-red-500/20'
+              : 'text-slate-400 hover:text-white hover:bg-white/5 border border-transparent'
+          }`}
+        >
+          Workshops
+        </button>
         <div className="relative group">
           <button
             className={`px-5 py-2.5 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 ${

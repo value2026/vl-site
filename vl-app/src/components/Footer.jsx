@@ -56,6 +56,17 @@ export default function Footer() {
   const phone = dynamicContent?.phone || '+91 9446 007 135';
   const address = dynamicContent?.address || 'Amrita Virtual Labs\nAmrita Vishwa Vidyapeetham\nAmritapuri Campus, Kollam\nKerala — 690 525';
 
+  // Support multiple phone numbers or fallback to default single phone
+  const rawPhones = dynamicContent?.phoneNumbers;
+  const phonesList = (Array.isArray(rawPhones) && rawPhones.length > 0)
+    ? rawPhones.map(p => typeof p === 'string' ? { number: p } : p).filter(p => p && (p.number || p.phone))
+    : [{ number: phone }];
+
+  // Custom contact fields
+  const customFieldsList = (Array.isArray(dynamicContent?.customFields) && dynamicContent.customFields.length > 0)
+    ? dynamicContent.customFields.filter(f => f && f.label && f.value)
+    : [];
+
   return (
     <footer className="bg-[#0F172A] text-slate-400" aria-labelledby="footer-heading">
       <div className="container-custom py-16">
@@ -143,7 +154,7 @@ export default function Footer() {
             <h3 className="text-white font-semibold text-sm uppercase tracking-wider mb-5">
               Contact Us
             </h3>
-            <ul className="space-y-4 text-sm">
+            <ul className="space-y-3.5 text-sm">
               <li className="flex gap-3">
                 <MapPin className="w-4 h-4 text-primary-400 flex-shrink-0 mt-0.5" />
                 <span>
@@ -161,12 +172,28 @@ export default function Footer() {
                   {email}
                 </a>
               </li>
-              <li className="flex items-center gap-3">
-                <Phone className="w-4 h-4 text-primary-400 flex-shrink-0" />
-                <a href={`tel:${phone.replace(/\s+/g, '')}`} className="hover:text-white transition-colors">
-                  {phone}
-                </a>
-              </li>
+              {phonesList.map((p, idx) => {
+                const num = p.number || p.phone;
+                return (
+                  <li key={idx} className="flex items-start gap-3">
+                    <Phone className="w-4 h-4 text-primary-400 flex-shrink-0 mt-0.5" />
+                    <div className="flex flex-col">
+                      <a href={`tel:${num.replace(/\s+/g, '')}`} className="hover:text-white transition-colors font-medium">
+                        {num}
+                      </a>
+                      {p.label && <span className="text-[11px] text-slate-500">{p.label}</span>}
+                    </div>
+                  </li>
+                );
+              })}
+              {customFieldsList.map((f, idx) => (
+                <li key={idx} className="flex items-start gap-3 border-t border-slate-800/60 pt-2 mt-1">
+                  <div className="flex-1 text-xs">
+                    <span className="font-semibold text-slate-300 block">{f.label}:</span>
+                    <span className="text-slate-400 leading-normal">{f.value}</span>
+                  </div>
+                </li>
+              ))}
             </ul>
           </div>
         </div>

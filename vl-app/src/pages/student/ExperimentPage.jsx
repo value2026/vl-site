@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { 
   FlaskConical, Star, Bug, Menu, X, ChevronLeft, CheckCircle, Circle, 
-  Loader2, Maximize2, Monitor, Target, BookOpen, ClipboardList, 
+  Loader2, Maximize2, Minimize2, Monitor, Target, BookOpen, ClipboardList, 
   ListOrdered, ClipboardCheck, Link as LinkIcon, Users, MessageSquare, Gamepad2, MonitorPlay, FileText, Beaker 
 } from 'lucide-react';
 import { api, fileUrl } from '../../utils/api';
@@ -210,6 +210,8 @@ export default function ExperimentPage() {
 
   const [experiment, setExperiment] = useState(null);
   const [loading, setLoading]       = useState(true);
+  const [simLoading, setSimLoading] = useState(true);
+  const [completedSections, setCompletedSections] = useState({ pretest: false, posttest: false, simulation: false });
   const [sections, setSections]     = useState({
     aim: null,
     theory: null,
@@ -223,6 +225,7 @@ export default function ExperimentPage() {
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
+      setSimLoading(true);
       const perfStart = performance.now();
       try {
         const expRes = await api.get(`/experiments/${expId}`);
@@ -354,16 +357,64 @@ export default function ExperimentPage() {
     return () => window.removeEventListener('message', handleMessage);
   }, [experiment, user, expId]);
 
-  const handleFullscreen = () => {
-    const elem = document.getElementById('simulation-frame-container');
-    if (elem) {
-      if (elem.requestFullscreen) {
-        elem.requestFullscreen();
-      } else if (elem.webkitRequestFullscreen) {
-        elem.webkitRequestFullscreen();
-      } else if (elem.msRequestFullscreen) {
-        elem.msRequestFullscreen();
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      const isFull = !!(
+        document.fullscreenElement ||
+        document.webkitFullscreenElement ||
+        document.mozFullScreenElement ||
+        document.msFullscreenElement
+      );
+      setIsFullscreen(isFull);
+    };
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+    document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+    document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+      document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
+      document.removeEventListener('mozfullscreenchange', handleFullscreenChange);
+      document.removeEventListener('MSFullscreenChange', handleFullscreenChange);
+    };
+  }, []);
+
+  const toggleFullscreen = async () => {
+    const isFull = !!(
+      document.fullscreenElement ||
+      document.webkitFullscreenElement ||
+      document.mozFullScreenElement ||
+      document.msFullscreenElement
+    );
+
+    try {
+      if (isFull) {
+        if (document.exitFullscreen) {
+          await document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+          await document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) {
+          await document.msExitFullscreen();
+        }
+      } else {
+        const elem = document.getElementById('simulation-frame-container');
+        if (elem) {
+          if (elem.requestFullscreen) {
+            await elem.requestFullscreen();
+          } else if (elem.webkitRequestFullscreen) {
+            await elem.webkitRequestFullscreen();
+          } else if (elem.msRequestFullscreen) {
+            await elem.msRequestFullscreen();
+          }
+        }
       }
+    } catch (err) {
+      console.error('Fullscreen toggle error:', err);
+      setIsFullscreen(!isFull);
     }
   };
 
@@ -490,11 +541,13 @@ export default function ExperimentPage() {
           <div>
             <SectionHeader title="Pretest" subtitle="Answer these questions before starting the simulation to assess your prior knowledge." />
             <QuizBlock 
+              key={`pretest-${expId}`}
               experimentId={expId} 
               experimentName={experiment.title}
               userId={user?.id}
               quizType="pretest" 
               questions={sections.pretest?.questions || []} 
+              onComplete={() => setCompletedSections(prev => ({ ...prev, pretest: true }))}
             />
           </div>
         );
@@ -525,7 +578,9 @@ export default function ExperimentPage() {
                 {/* Desktop Window Frame Container */}
                 <div 
                   id="simulation-frame-container" 
-                  className="flex flex-col bg-slate-900 border border-slate-700/60 rounded-2xl overflow-hidden w-full flex-1 shadow-2xl relative animate-in fade-in zoom-in-95 duration-200"
+                  className={`flex flex-col bg-slate-900 border border-slate-700/60 rounded-2xl overflow-hidden w-full shadow-2xl relative transition-all duration-200 ${
+                    isFullscreen ? 'fixed inset-0 z-[9999] rounded-none h-screen w-screen' : 'flex-1 min-h-[680px] h-[720px]'
+                  }`}
                 >
                   {/* Browser Header Bar */}
                   <div className="flex items-center justify-between px-4 py-3 bg-slate-900 border-b border-slate-800 flex-shrink-0 select-none">
@@ -543,34 +598,68 @@ export default function ExperimentPage() {
                     </div>
 
                     {/* Full Screen controls */}
-                    <div className="flex justify-end w-24">
+                    <div className="flex justify-end items-center">
                       <button 
-                        onClick={handleFullscreen}
-                        className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-[9px] text-white font-bold transition-all border border-white/10"
+                        onClick={toggleFullscreen}
+                        className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-indigo-600/30 hover:bg-indigo-600/50 text-indigo-200 text-xs font-bold transition-all border border-indigo-500/30 shadow-sm hover:scale-105 active:scale-95 cursor-pointer"
+                        title={isFullscreen ? "Exit Full Screen" : "Enter Full Screen"}
                       >
-                        <Maximize2 className="w-3 h-3" /> Full Screen
+                        {isFullscreen ? (
+                          <>
+                            <Minimize2 className="w-3.5 h-3.5" /> Exit Full Screen
+                          </>
+                        ) : (
+                          <>
+                            <Maximize2 className="w-3.5 h-3.5" /> Full Screen
+                          </>
+                        )}
                       </button>
                     </div>
                   </div>
 
-                  <iframe
-                    src={fileUrl(`${experiment.simulationPath}/index.html`)}
-                    className="w-full flex-1 border-none bg-white"
-                    title="Simulation"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                    onLoad={(e) => {
-                      const measurementId = import.meta.env.VITE_GA_MEASUREMENT_ID;
-                      if (measurementId) {
-                        e.target.contentWindow.postMessage({ 
-                          type: 'INIT_GA', 
-                          measurementId,
-                          userId: user?.id,
-                          experimentId: expId
-                        }, '*');
-                      }
-                    }}
-                  />
+                  {/* Simulation Iframe Container with Loading Overlay */}
+                  <div className="relative w-full flex-1 flex flex-col min-h-0 bg-slate-900">
+                    {simLoading && (
+                      <div className="absolute inset-0 z-20 bg-slate-950/95 backdrop-blur-sm flex flex-col items-center justify-center text-white p-6 transition-all duration-300">
+                        <div className="relative flex items-center justify-center mb-5">
+                          <div className="w-16 h-16 rounded-full border-4 border-indigo-500/20 border-t-indigo-500 animate-spin" />
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <FlaskConical className="w-7 h-7 text-indigo-400 animate-pulse" />
+                          </div>
+                        </div>
+                        <h4 className="text-base font-extrabold text-white mb-1 tracking-tight">
+                          Loading Experiment Simulator...
+                        </h4>
+                        <p className="text-slate-400 text-xs font-medium max-w-xs text-center leading-relaxed">
+                          Initializing interactive laboratory environment and simulation assets.
+                        </p>
+                        <div className="w-48 h-1.5 bg-slate-800 rounded-full overflow-hidden mt-5 border border-white/5">
+                          <div className="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500 rounded-full animate-pulse w-3/4" />
+                        </div>
+                      </div>
+                    )}
+
+                    <iframe
+                      src={fileUrl(`${experiment.simulationPath}/index.html`)}
+                      className="w-full flex-1 border-none bg-white"
+                      title="Simulation"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      onLoad={(e) => {
+                        setSimLoading(false);
+                        setCompletedSections(prev => ({ ...prev, simulation: true }));
+                        const measurementId = import.meta.env.VITE_GA_MEASUREMENT_ID;
+                        if (measurementId) {
+                          e.target.contentWindow.postMessage({ 
+                            type: 'INIT_GA', 
+                            measurementId,
+                            userId: user?.id,
+                            experimentId: expId
+                          }, '*');
+                        }
+                      }}
+                    />
+                  </div>
                 </div>
               </div>
             ) : (experiment.id === 'stack-ops' || expId === 'stack-ops') ? (
@@ -586,11 +675,13 @@ export default function ExperimentPage() {
           <div>
             <SectionHeader title="Posttest" subtitle="Test your understanding after completing the simulation." />
             <QuizBlock 
+              key={`posttest-${expId}`}
               experimentId={expId} 
               experimentName={experiment.title}
               userId={user?.id}
               quizType="posttest" 
               questions={sections.posttest?.questions || []} 
+              onComplete={() => setCompletedSections(prev => ({ ...prev, posttest: true }))}
             />
           </div>
         );
@@ -775,7 +866,7 @@ export default function ExperimentPage() {
                   <div className={`w-[42px] h-[42px] rounded-[14px] flex items-center justify-center flex-shrink-0 ${bg} ${color}`}>
                     <Icon className="w-[20px] h-[20px]" />
                   </div>
-                  <span className={`text-[15px] ${isActive ? 'font-bold text-slate-800' : 'font-medium text-slate-600'}`}>
+                  <span className={`text-[15px] flex-1 ${isActive ? 'font-bold text-slate-800' : 'font-medium text-slate-600'}`}>
                     {label}
                   </span>
                 </button>

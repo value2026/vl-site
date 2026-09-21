@@ -1,4 +1,6 @@
 import { assetUrl } from '../utils/url';
+import { renderFormattedText } from '../utils/formatText';
+import DynamicBlockRenderer from './public/DynamicBlockRenderer';
 
 const DEFAULT_SPONSORS = [
   { id: 'moe',        name: 'Ministry of Education', acronym: 'MoE',    description: 'Government of India',  color: 'from-orange-500 to-red-500',    isSponsor: true  },
@@ -27,11 +29,29 @@ export default function SponsorsSection({ sectionTitle, sectionSubtitle, content
   return (
     <section className="py-20 lg:py-24 bg-white border-t border-slate-100" aria-labelledby="sponsors-heading">
       <div className="container-custom">
-
-        {/* Section Header */}
-        <div className="text-center mb-14">
-          <span className="tag">{tag}</span>
-          <h2 id="sponsors-heading" className="section-title">{heading}</h2>
+        <div className="text-center mb-12">
+          <span className="tag">
+            {tag}
+          </span>
+          <h2 id="sponsors-heading" className="section-title">
+            {heading}
+          </h2>
+        </div>
+        
+        {/* Emblem & Initiative Text Box */}
+        <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-center md:items-start gap-8 mb-16">
+          <div className="flex-shrink-0 w-32 h-40 flex flex-col items-center justify-center bg-transparent">
+            <img 
+              src={assetUrl('/satyameva-jayate-v2.png')} 
+              alt="Satyameva Jayate - Government of India" 
+              className="w-full object-contain mix-blend-multiply"
+              style={{ clipPath: 'inset(2% 0 0 4%)' }}
+            />
+            <span className="text-[10px] font-bold text-slate-800 mt-2 tracking-wide">सत्यमेव जयते</span>
+          </div>
+          <div className="flex-1 text-[#475569] text-base md:text-[17px] leading-relaxed pt-4 text-center md:text-left">
+            <p>{renderFormattedText(subtitle)}</p>
+          </div>
         </div>
 
         {/* ── SPONSOR block ── */}
@@ -109,6 +129,7 @@ export default function SponsorsSection({ sectionTitle, sectionSubtitle, content
           </div>
         </div>
 
+        <DynamicBlockRenderer blocks={content.customBlocks} fields={content.customFields} />
       </div>
     </section>
   );

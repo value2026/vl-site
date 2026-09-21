@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { Download, MapPin, MonitorPlay, ArrowRight } from 'lucide-react';
 import NodalCentreRequestModal from './public/NodalCentreRequestModal';
 
+import DynamicBlockRenderer from './public/DynamicBlockRenderer';
+
 const ICON_MAP = { Download, MapPin, MonitorPlay };
 
 const DEFAULT_CARDS = [
@@ -110,6 +112,8 @@ export default function CTASection({ sectionTitle, sectionSubtitle, content = {}
               );
             })}
           </div>
+
+          <DynamicBlockRenderer blocks={content.customBlocks} fields={content.customFields} />
         </div>
       </section>
 

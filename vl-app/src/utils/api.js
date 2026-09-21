@@ -62,6 +62,7 @@ const apiFetch = async (endpoint, options = {}) => {
             if (refreshData.refreshToken) {
               localStorage.setItem('vl_refresh_token', refreshData.refreshToken);
             }
+            window.dispatchEvent(new CustomEvent('vl_token_refreshed', { detail: { token: refreshData.token } }));
             isRefreshing = false;
             processQueue(null, refreshData.token);
             return await doRequest(refreshData.token);
