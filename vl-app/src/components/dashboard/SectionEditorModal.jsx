@@ -695,10 +695,12 @@ const UNIVERSAL_CUSTOM_FIELDS = [
 const REPEATABLE_CONFIGS = {
   hero: {
     stats: {
-      label: 'Stats Counter Badges',
+      label: 'Hero Stats Counter Badges',
       fields: [
-        { key: 'n',     label: 'Number (e.g. 700+)', placeholder: '700+' },
-        { key: 'label', label: 'Label',               placeholder: 'Virtual Labs' },
+        { key: 'n',     label: 'Stat Value / Number', placeholder: 'e.g. 37, 340, 2 Lakh+' },
+        { key: 'label', label: 'Stat Label',          placeholder: 'e.g. Total Labs, Experiments' },
+        { key: 'icon',  label: 'Icon (optional: landmark, flask, users, atom, book, layers)', placeholder: 'landmark' },
+        { key: 'color', label: 'Color (optional: rose, blue, emerald, purple, amber)', placeholder: 'rose' },
       ],
     },
   },

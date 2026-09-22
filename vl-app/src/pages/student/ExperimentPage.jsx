@@ -240,11 +240,15 @@ export default function ExperimentPage() {
               
               // Post-process HTML sections to ensure any backend-generated absolute paths 
               // (which might be missing the proxy prefix or have the wrong protocol) 
-              // are replaced with the correct frontend files URL
+              // are replaced with the correct frontend files URL, and all external links open in a new tab
               const filesBase = getFilesBaseUrl();
               Object.keys(docsData).forEach(key => {
                 if (typeof docsData[key] === 'string') {
-                  docsData[key] = docsData[key].replace(/https?:\/\/[^\/]+\/files\//g, `${filesBase}/`);
+                  docsData[key] = docsData[key]
+                    .replace(/https?:\/\/[^\/]+\/files\//g, `${filesBase}/`)
+                    .replace(/<a\s+(?:(?!(?:target=))[^>])+>/gi, (match) => {
+                      return match.replace(/<a\s+/i, '<a target="_blank" rel="noopener noreferrer" ');
+                    });
                 }
               });
               
@@ -691,8 +695,17 @@ export default function ExperimentPage() {
           <div>
             <SectionHeader title="References" subtitle="Supporting materials and bibliography." />
             {sections.references ? (
-              <div className="bg-slate-50/50 border border-slate-200 shadow-sm rounded-2xl p-6 sm:p-8 mt-2 overflow-x-auto">
-                <div dangerouslySetInnerHTML={{ __html: sections.references }} className="prose prose-slate max-w-none break-words" />
+              <div 
+                className="bg-slate-50/50 border border-slate-200 shadow-sm rounded-2xl p-6 sm:p-8 mt-2 overflow-x-auto"
+                onClick={(e) => {
+                  const a = e.target.closest('a');
+                  if (a && a.href) {
+                    a.target = '_blank';
+                    a.rel = 'noopener noreferrer';
+                  }
+                }}
+              >
+                <div dangerouslySetInnerHTML={{ __html: sections.references }} className="prose prose-slate max-w-none break-words [&_a]:text-blue-600 [&_a]:hover:text-blue-800 [&_a]:underline" />
               </div>
             ) : (
               <p className="text-gray-500 italic">No reference links available.</p>

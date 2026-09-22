@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, PlayCircle, FlaskConical, Atom, Landmark, Users, Clock, BarChart2, Layers } from 'lucide-react';
+import { 
+  ArrowRight, PlayCircle, FlaskConical, Atom, Landmark, Clock, 
+  BarChart2, Layers, Users, GraduationCap, Sparkles, BookOpen, Building2
+} from 'lucide-react';
 import VideoPlayerModal from './VideoPlayerModal';
 import { api } from '../utils/api';
-
-const ICON_MAP = {
-  Landmark, Users, FlaskConical, Atom, Clock, BarChart2, Layers
-};
 
 const DEFAULTS = {
   heading: 'Build Your Future with\n*Emerging Technologies*\nand Create Impact.',
@@ -16,11 +15,79 @@ const DEFAULTS = {
   ctaSecondaryLabel: 'Watch Demo',
   ctaSecondaryHref: 'https://www.youtube.com/watch?v=IwxOpEUXm6A',
   stats: [
-    { n: '37', label: 'Total Labs', icon: Landmark, color: 'text-rose-400' },
-    { n: '340', label: 'Experiments', icon: FlaskConical, color: 'text-blue-400' },
-    { n: '2 Lakh+', label: 'Registered Users', icon: Users, color: 'text-emerald-400' },
+    { n: '37', label: 'Total Labs', icon: 'landmark', color: 'rose' },
+    { n: '340', label: 'Experiments', icon: 'flask', color: 'blue' },
+    { n: '2 Lakh+', label: 'Registered Users', icon: 'users', color: 'emerald' },
   ],
 };
+
+function getStatColor(color, index) {
+  const c = (color || '').toLowerCase();
+  if (c === 'rose' || c === 'red' || c === 'pink' || (!c && index === 0)) {
+    return {
+      bg: 'bg-[#241324]',
+      border: 'border-[#F43F5E]/30',
+      text: 'text-[#F43F5E]',
+    };
+  }
+  if (c === 'blue' || c === 'cyan' || c === 'sky' || (!c && index === 1)) {
+    return {
+      bg: 'bg-[#101D35]',
+      border: 'border-[#38BDF8]/30',
+      text: 'text-[#38BDF8]',
+    };
+  }
+  if (c === 'green' || c === 'emerald' || c === 'teal' || (!c && index === 2)) {
+    return {
+      bg: 'bg-[#0E2422]',
+      border: 'border-[#34D399]/30',
+      text: 'text-[#34D399]',
+    };
+  }
+  if (c === 'purple' || c === 'violet') {
+    return {
+      bg: 'bg-[#221435]',
+      border: 'border-[#A855F7]/30',
+      text: 'text-[#C084FC]',
+    };
+  }
+  if (c === 'amber' || c === 'orange' || c === 'yellow') {
+    return {
+      bg: 'bg-[#2A1C10]',
+      border: 'border-[#F59E0B]/30',
+      text: 'text-[#FBBF24]',
+    };
+  }
+  return {
+    bg: 'bg-[#181A38]',
+    border: 'border-white/10',
+    text: 'text-blue-400',
+  };
+}
+
+function getStatIcon(iconName, label = '', index = 0) {
+  const name = (iconName || '').toLowerCase();
+  const lbl = (label || '').toLowerCase();
+
+  if (name.includes('land') || name.includes('bank') || name.includes('building') || name.includes('lab') || lbl.includes('lab')) {
+    return Landmark;
+  }
+  if (name.includes('flask') || name.includes('exp') || name.includes('sci') || lbl.includes('exp')) {
+    return FlaskConical;
+  }
+  if (name.includes('user') || name.includes('people') || name.includes('student') || lbl.includes('user') || lbl.includes('student')) {
+    return Users;
+  }
+  if (name.includes('atom')) return Atom;
+  if (name.includes('grad') || name.includes('cap') || name.includes('teach')) return GraduationCap;
+  if (name.includes('book')) return BookOpen;
+  if (name.includes('layer') || name.includes('asset')) return Layers;
+
+  if (index === 0) return Landmark;
+  if (index === 1) return FlaskConical;
+  if (index === 2) return Users;
+  return Sparkles;
+}
 
 export default function Hero({ sectionTitle, sectionSubtitle, content = {}, allSections = [] }) {
   const d = { ...DEFAULTS, ...content };
@@ -110,6 +177,10 @@ export default function Hero({ sectionTitle, sectionSubtitle, content = {}, allS
     return () => clearInterval(interval);
   }, [simulations.length]);
 
+  const statsList = (Array.isArray(content.stats) && content.stats.length > 0)
+    ? content.stats
+    : (d.stats || []);
+
   const currentSim = simulations[activeSimIdx] || simulations[0] || {};
 
   return (
@@ -152,7 +223,7 @@ export default function Hero({ sectionTitle, sectionSubtitle, content = {}, allS
                 dangerouslySetInnerHTML={{ __html: subheading }}
               />
 
-              <div className="flex flex-col sm:flex-row gap-5 mb-14">
+              <div className="flex flex-col sm:flex-row gap-5">
                 <button 
                   onClick={() => {
                     const el = document.getElementById('lab-categories');
@@ -173,49 +244,36 @@ export default function Hero({ sectionTitle, sectionSubtitle, content = {}, allS
                 </button>
               </div>
 
-              {/* Stats Block (Dark Card) */}
-              <div className="bg-[#13132B] border border-white/10 rounded-2xl py-6 px-8 inline-block w-full max-w-2xl shadow-2xl">
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 sm:divide-x divide-white/10">
-                  {d.stats.map((stat, idx) => {
-                    const fallback = DEFAULTS.stats[idx] || {};
-                    let Icon = fallback.icon || Landmark;
-                    
-                    if (stat.icon) {
-                      if (typeof stat.icon === 'string' && ICON_MAP[stat.icon]) {
-                        Icon = ICON_MAP[stat.icon];
-                      } else if (typeof stat.icon === 'function' || typeof stat.icon === 'object') {
-                        Icon = stat.icon;
-                      }
-                    }
-
-                    const color = stat.color || fallback.color || 'text-cyan-400';
-                    
-                    const formatStat = (val) => {
-                      if (!val) return val;
-                      const strVal = String(val).trim();
-                      if (/[a-zA-Z+]/.test(strVal)) return strVal;
-                      const num = parseInt(strVal.replace(/,/g, ''), 10);
-                      if (!isNaN(num)) {
-                        if (num >= 100000) return `${Math.floor(num / 100000)} Lakh+`;
-                        return new Intl.NumberFormat('en-IN').format(num);
-                      }
-                      return strVal;
-                    };
-                    
+              {/* Stats Bar */}
+              {statsList && statsList.length > 0 && (
+                <div className="mt-8 sm:mt-10 w-full max-w-[560px] bg-[#121127]/90 border border-[#282744] rounded-2xl sm:rounded-3xl p-4 sm:px-6 sm:py-4.5 flex items-center justify-between shadow-2xl backdrop-blur-md">
+                  {statsList.map((stat, idx) => {
+                    const IconComponent = getStatIcon(stat.icon, stat.label, idx);
+                    const colorStyle = getStatColor(stat.color, idx);
                     return (
-                      <div key={idx} className="flex items-center justify-center gap-4 w-full">
-                         <div className={`w-12 h-12 rounded-full bg-white/5 flex items-center justify-center border border-white/5 flex-shrink-0`}>
-                           <Icon className={`w-6 h-6 ${color}`} strokeWidth={1.5} />
-                         </div>
-                         <div className="text-left">
-                           <div className="text-2xl font-black text-white leading-none mb-1 tracking-tight">{formatStat(stat.n)}</div>
-                           <div className="text-[12px] font-medium text-slate-400">{stat.label}</div>
-                         </div>
+                      <div key={idx} className="contents">
+                        <div className="flex items-center gap-3 sm:gap-3.5 flex-1 justify-center sm:justify-start min-w-0">
+                          <div className={`w-10 h-10 sm:w-11 sm:h-11 rounded-full flex items-center justify-center shrink-0 ${colorStyle.bg} border ${colorStyle.border} ${colorStyle.text} shadow-sm`}>
+                            <IconComponent className="w-5 h-5" strokeWidth={1.8} />
+                          </div>
+                          <div className="min-w-0">
+                            <div className="text-xl sm:text-2xl font-black text-white leading-tight tracking-tight">
+                              {stat.n || stat.value}
+                            </div>
+                            <div className="text-[11px] sm:text-xs text-slate-400 font-medium leading-tight truncate">
+                              {stat.label}
+                            </div>
+                          </div>
+                        </div>
+                        {idx < statsList.length - 1 && (
+                          <div className="w-px h-9 bg-white/10 shrink-0 mx-2 sm:mx-3" />
+                        )}
                       </div>
                     );
                   })}
                 </div>
-              </div>
+              )}
+
             </div>
           </div>
 
@@ -301,10 +359,18 @@ export default function Hero({ sectionTitle, sectionSubtitle, content = {}, allS
         </div>
       </section>
 
-      {/* Decorative white bottom curve to match screenshot */}
-      <div className="absolute bottom-0 left-0 w-full overflow-hidden leading-none z-0">
-        <svg viewBox="0 0 1200 120" preserveAspectRatio="none" className="relative block w-full h-[60px] md:h-[100px] rotate-180">
-          <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" fill="#FAFBFF"></path>
+      {/* Seamless Decorative bottom curve */}
+      <div className="absolute -bottom-[2px] -left-[1px] w-[calc(100%+2px)] overflow-hidden leading-none z-0 pointer-events-none">
+        <svg 
+          viewBox="0 0 1440 120" 
+          preserveAspectRatio="none" 
+          className="relative block w-full h-[50px] sm:h-[75px] md:h-[105px] border-0 outline-none"
+        >
+          <path 
+            d="M0,32 C320,10 640,90 960,90 C1200,90 1360,40 1440,25 L1440,120 L0,120 Z" 
+            fill="#FFFFFF"
+            stroke="none"
+          />
         </svg>
       </div>
 

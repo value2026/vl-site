@@ -99,7 +99,7 @@ export default function Header() {
           {/* Right Logo */}
           <Link to="/" className="hidden md:block flex-shrink-0 group">
             <img 
-              src={assetUrl('/amrita-logo.jpg')}
+              src={assetUrl('/amrita-vishwa-vidyapeetham-university-logo-colored-version.svg')}
               alt="Amrita Vishwa Vidyapeetham" 
               className="h-10 sm:h-[3.25rem] w-auto object-contain transition-transform group-hover:scale-105" 
             />

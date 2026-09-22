@@ -48,37 +48,31 @@ export default function Login() {
   };
 
   return (
-    <main className="pt-20 min-h-screen bg-[#1c213f] flex items-center justify-center py-12 px-4 relative overflow-hidden">
+    <main className="pt-20 min-h-screen bg-slate-50 flex items-center justify-center py-12 px-4 relative overflow-hidden">
       {/* Subtle ambient lighting */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-[20%] left-[30%] w-[40rem] h-[40rem] bg-indigo-500/5 rounded-full blur-[120px]" />
+        <div className="absolute top-[15%] left-[25%] w-[45rem] h-[45rem] bg-indigo-100/60 rounded-full blur-[140px]" />
+        <div className="absolute bottom-[10%] right-[20%] w-[35rem] h-[35rem] bg-rose-100/40 rounded-full blur-[120px]" />
       </div>
 
-      <div className="w-full max-w-[26rem] relative z-10">
-        {/* Transparent Logo Construction */}
-        <div className="text-center mb-8 flex flex-col items-center">
-          <Link to="/" className="inline-flex items-center gap-3 mb-6 hover:opacity-90 transition-opacity">
-            <div className="bg-white p-1 rounded-full flex-shrink-0">
-              <img src={assetUrl('/amrita-icon.jpg')} alt="Amrita Logo" className="h-10 w-10 object-contain rounded-full" />
-            </div>
-            <div className="flex flex-col justify-center text-left">
-              <span className="text-white font-serif text-3xl leading-none tracking-wide font-bold">
-                AMRITA
-              </span>
-              <span className="text-white text-[11px] tracking-[0.2em] leading-none mt-1.5 uppercase opacity-90">
-                Vishwa Vidyapeetham
-              </span>
-            </div>
-          </Link>
-          <h1 className="text-[1.75rem] font-bold text-white mb-2">Welcome Back</h1>
-          <p className="text-slate-400 text-[15px]">Sign in to your Amrita Virtual Labs account</p>
-        </div>
-
-        <div className="bg-[#24294a] rounded-[1.5rem] border border-slate-600/30 shadow-2xl p-8">
+      <div className="w-full max-w-[28rem] relative z-10">
+        <div className="bg-white rounded-[1.75rem] border border-slate-200/80 shadow-xl shadow-slate-200/50 p-8 sm:p-10">
+          {/* Amrita Logo & Card Header */}
+          <div className="text-center mb-8 flex flex-col items-center">
+            <Link to="/" className="inline-flex items-center justify-center mb-5 hover:opacity-90 transition-all group">
+              <img 
+                src={assetUrl('/amrita-vishwa-vidyapeetham-university-logo-colored-version.svg')} 
+                alt="Amrita Vishwa Vidyapeetham" 
+                className="h-12 sm:h-14 w-auto object-contain transition-transform duration-300 group-hover:scale-105" 
+              />
+            </Link>
+            <h1 className="text-2xl sm:text-[1.75rem] font-bold text-slate-900 mb-2">Welcome Back</h1>
+            <p className="text-slate-500 text-[14px] sm:text-[15px]">Sign in to your Amrita Virtual Labs account</p>
+          </div>
 
           {/* Error */}
           {error && (
-            <div className="mb-5 bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3 text-sm text-red-400">
+            <div className="mb-5 bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm text-red-600">
               {error}
             </div>
           )}
@@ -86,7 +80,7 @@ export default function Login() {
           <form onSubmit={handleSubmit} noValidate>
             {/* Email / Username */}
             <div className="mb-5">
-              <label htmlFor="login-email" className="block text-[14px] font-semibold text-slate-200 mb-2">
+              <label htmlFor="login-email" className="block text-[14px] font-semibold text-slate-700 mb-2">
                 Email or Username
               </label>
               <input
@@ -97,17 +91,17 @@ export default function Login() {
                 value={form.email}
                 onChange={handleChange}
                 placeholder="you@institution.edu or username"
-                className="w-full bg-[#2a3056] border border-slate-600/40 rounded-xl px-4 py-3.5 text-[15px] text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all"
+                className="w-full bg-slate-50/80 border border-slate-200 rounded-xl px-4 py-3.5 text-[15px] text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-700 transition-all"
               />
             </div>
 
             {/* Password */}
             <div className="mb-8">
               <div className="flex items-center justify-between mb-2">
-                <label htmlFor="login-password" className="text-[14px] font-semibold text-slate-200">
+                <label htmlFor="login-password" className="text-[14px] font-semibold text-slate-700">
                   Password
                 </label>
-                <Link to="/forgot-password" className="text-[13px] text-indigo-400 hover:text-indigo-300 hover:underline">
+                <Link to="/forgot-password" className="text-[13px] text-primary-700 hover:text-primary-800 font-semibold hover:underline">
                   Forgot password?
                 </Link>
               </div>
@@ -120,12 +114,12 @@ export default function Login() {
                   value={form.password}
                   onChange={handleChange}
                   placeholder="••••••••"
-                  className="w-full bg-[#2a3056] border border-slate-600/40 rounded-xl px-4 py-3.5 pr-12 text-[15px] text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all tracking-widest"
+                  className="w-full bg-slate-50/80 border border-slate-200 rounded-xl px-4 py-3.5 pr-12 text-[15px] text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-700 transition-all tracking-widest"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPw(!showPw)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
                   aria-label={showPw ? 'Hide password' : 'Show password'}
                 >
                   {showPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -137,7 +131,7 @@ export default function Login() {
               type="submit"
               id="login-submit"
               disabled={loading}
-              className="w-full bg-[#5d63ec] hover:bg-[#4d53d8] text-white font-bold rounded-xl py-3.5 text-[15px] flex items-center justify-center gap-2 transition-colors shadow-lg shadow-indigo-600/20 disabled:opacity-60 disabled:cursor-not-allowed"
+              className="w-full bg-primary-800 hover:bg-primary-900 text-white font-bold rounded-xl py-3.5 text-[15px] flex items-center justify-center gap-2 transition-all shadow-md shadow-primary-900/10 hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
             >
               {loading ? (
                 <span className="flex items-center gap-2">
@@ -153,13 +147,18 @@ export default function Login() {
             </button>
           </form>
 
-          <div className="mt-8 pt-6 border-t border-slate-600/40 text-center">
-            <p className="text-[14px] text-slate-400">
-              Don't have an account?{' '}
-              <Link to="/contact" className="text-indigo-400 font-bold hover:text-indigo-300 hover:underline">
-                Contact your institution
-              </Link>
-            </p>
+          <div className="mt-8 pt-4">
+            <div className="bg-gradient-to-r from-primary-50/90 via-indigo-50/80 to-blue-50/90 border border-primary-200/60 rounded-2xl p-4 text-center shadow-sm">
+              <p className="text-[14px] text-slate-700 font-medium">
+                Don't have an account?{' '}
+                <Link 
+                  to="/contact" 
+                  className="inline-flex items-center gap-1 text-primary-800 hover:text-primary-900 font-bold underline decoration-primary-300 hover:decoration-primary-800 underline-offset-4 transition-all ml-1"
+                >
+                  Contact your institution &rarr;
+                </Link>
+              </p>
+            </div>
           </div>
         </div>
       </div>
