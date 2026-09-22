@@ -430,6 +430,10 @@ const getExperimentDocs = async (req, res) => {
         let html = marked.parse(rawMarkdown);
         // Rewrite relative image references inside HTML to absolute hosting paths
         html = html.replace(/src=["'](\.\/)?images\//g, `src="${hostPrefix}images/`);
+        // Ensure all markdown links open in a new tab separately
+        html = html.replace(/<a\s+(?:(?!(?:target=))[^>])+>/gi, (match) => {
+          return match.replace(/<a\s+/i, '<a target="_blank" rel="noopener noreferrer" ');
+        });
         docs[key] = html;
       } else {
         docs[key] = '';

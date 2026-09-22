@@ -1,53 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { PlayCircle } from 'lucide-react';
-import { stats } from '../data/simulations';
 import VideoPlayerModal from './VideoPlayerModal';
-
-function useCounter(target, duration = 2000, triggered = false) {
-  const [value, setValue] = useState(0);
-
-  useEffect(() => {
-    if (!triggered) return;
-    let start = 0;
-    const step = Math.ceil(target / (duration / 16));
-    const timer = setInterval(() => {
-      start += step;
-      if (start >= target) {
-        setValue(target);
-        clearInterval(timer);
-      } else {
-        setValue(start);
-      }
-    }, 16);
-    return () => clearInterval(timer);
-  }, [target, duration, triggered]);
-
-  return value;
-}
-
-function StatCounter({ label, value, suffix }) {
-  const [triggered, setTriggered] = useState(false);
-  const ref = useRef(null);
-  const count = useCounter(value, 2000, triggered);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) setTriggered(true); },
-      { threshold: 0.5 }
-    );
-    if (ref.current) observer.observe(ref.current);
-    return () => observer.disconnect();
-  }, []);
-
-  return (
-    <div ref={ref} className="text-center px-6 py-4">
-      <div className="font-heading text-5xl font-extrabold text-white mb-2">
-        {count.toLocaleString()}{suffix}
-      </div>
-      <div className="text-white/60 text-sm font-medium uppercase tracking-widest">{label}</div>
-    </div>
-  );
-}
 
 export default function MediaSection({ sectionTitle, sectionSubtitle, content = {} }) {
   const heading  = sectionTitle  || 'The Making of Virtual Labs';
@@ -86,7 +39,7 @@ export default function MediaSection({ sectionTitle, sectionSubtitle, content = 
         </div>
 
         {/* Video grid area */}
-        <div className="grid md:grid-cols-2 gap-8 mb-20">
+        <div className="grid md:grid-cols-2 gap-8">
           {videos.map((vid) => (
             <div 
               key={vid.id || vid.videoUrl} 
@@ -124,14 +77,6 @@ export default function MediaSection({ sectionTitle, sectionSubtitle, content = 
               </div>
             </div>
           ))}
-        </div>
-
-        <div className="bg-hero-gradient rounded-3xl overflow-hidden">
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-white/10">
-            {stats.map((stat) => (
-              <StatCounter key={stat.label} {...stat} />
-            ))}
-          </div>
         </div>
       </div>
 

@@ -170,12 +170,11 @@ export default function OutreachStats({ sectionTitle, sectionSubtitle, content =
   return (
     <section
       ref={sectionRef}
-      className="py-20 lg:py-24 bg-slate-50/70 border-y border-slate-200/60 relative overflow-hidden"
+      className="py-16 lg:py-20 bg-white relative overflow-hidden"
       aria-labelledby="outreach-heading"
     >
       {/* Background Decorative Gradients */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-blue-500/5 blur-3xl" />
         <div className="absolute -bottom-32 -left-32 w-96 h-96 rounded-full bg-indigo-500/5 blur-3xl" />
       </div>
 
