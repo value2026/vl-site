@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" width="160" height="160">
+  <defs>
+    <radialGradient id="iitm-ring" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#F59E0B" />
+      <stop offset="100%" stop-color="#D97706" />
+    </radialGradient>
+    <radialGradient id="iitm-center" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#B91C1C" />
+      <stop offset="100%" stop-color="#881337" />
+    </radialGradient>
+  </defs>
+
+  <!-- Outer Ring (Gold/Amber) -->
+  <circle cx="80" cy="80" r="74" fill="url(#iitm-ring)" />
+  <circle cx="80" cy="80" r="71" fill="none" stroke="#FEF3C7" stroke-width="1.5" />
+  
+  <!-- Outer decorative beaded ring -->
+  <circle cx="80" cy="80" r="67" fill="none" stroke="#78350F" stroke-width="1" stroke-dasharray="1.5 3" />
+  
+  <!-- Text Ring Background -->
+  <circle cx="80" cy="80" r="62" fill="#D97706" />
+
+  <!-- Inner Maroon / Crimson Disc -->
+  <circle cx="80" cy="80" r="48" fill="url(#iitm-center)" stroke="#FDE68A" stroke-width="2.5" />
+
+  <!-- Diya / Lamp Base & Stand -->
+  <path d="M72 104 L88 104 L84 94 L76 94 Z" fill="#FDE047" stroke="#78350F" stroke-width="1" />
+  <path d="M64 94 Q80 100 96 94 Q80 88 64 94 Z" fill="#FBBF24" stroke="#78350F" stroke-width="1" />
+  
+  <!-- Deepam Flame (Golden glow) -->
+  <path d="M80 54 C84 66 90 74 80 88 C70 74 76 66 80 54 Z" fill="#FBBF24" />
+  <path d="M80 60 C82 68 86 73 80 84 C74 73 78 68 80 60 Z" fill="#EF4444" />
+  <circle cx="80" cy="80" r="3" fill="#FFFFFF" />
+
+  <!-- Twin Hamsa / Swans flanking the flame -->
+  <!-- Left Swan -->
+  <path d="M60 84 C56 76 60 68 66 72 C68 74 67 80 64 84 Z" fill="#FEF3C7" />
+  <!-- Right Swan -->
+  <path d="M100 84 C104 76 100 68 94 72 C92 74 93 80 96 84 Z" fill="#FEF3C7" />
+
+  <!-- Top arc text -->
+  <path id="iitmTopArc" d="M 28,80 A 52,52 0 0,1 132,80" fill="none" />
+  <text font-family="system-ui, -apple-system, sans-serif" font-size="7.5" font-weight="bold" fill="#78350F" letter-spacing="1.2">
+    <textPath href="#iitmTopArc" startOffset="50%" text-anchor="middle">
+      IIT MADRAS
+    </textPath>
+  </text>
+
+  <!-- Bottom motto text -->
+  <path id="iitmBotArc" d="M 28,80 A 52,52 0 0,0 132,80" fill="none" />
+  <text font-family="system-ui, -apple-system, sans-serif" font-size="6.5" font-weight="bold" fill="#78350F" letter-spacing="0.5">
+    <textPath href="#iitmBotArc" startOffset="50%" text-anchor="middle">
+      सिद्धिरभवति कर्मजा
+    </textPath>
+  </text>
+</svg>

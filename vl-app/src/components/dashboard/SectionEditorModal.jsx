@@ -719,13 +719,25 @@ const REPEATABLE_CONFIGS = {
   },
   sponsors: {
     sponsors: {
-      label: 'Sponsor / Partner Cards',
+      label: 'Partner Cards',
       fields: [
-        { key: 'logoUrl',     label: '🖼 Logo Image',        type: 'image' },
-        { key: 'name',        label: 'Full Name',             placeholder: 'IIT Bombay' },
-        { key: 'acronym',     label: 'Acronym / Short Name', placeholder: 'IITB' },
-        { key: 'description', label: 'Subtitle',             placeholder: 'Lead Institute' },
-        { key: 'color',       label: 'Fallback Gradient',    placeholder: 'from-blue-600 to-blue-800' },
+        { key: 'logoUrl',    label: '🖼 Logo Image (Upload PNG / SVG / WebP)', type: 'image' },
+        { key: 'name',       label: 'Institute / Partner Name', placeholder: 'IIT Bombay' },
+        {
+          key: 'theme',
+          label: 'Color Theme',
+          type: 'select',
+          options: [
+            { value: 'blue',    label: '🔵 Blue (e.g. IIT Bombay)' },
+            { value: 'purple',  label: '🟣 Purple (e.g. IIT Delhi)' },
+            { value: 'amber',   label: '🟠 Amber / Gold (e.g. IIT Madras)' },
+            { value: 'emerald', label: '🟢 Emerald / Green' },
+            { value: 'rose',    label: '🔴 Rose / Red' },
+            { value: 'indigo',  label: '🔮 Indigo' },
+            { value: 'cyan',    label: '🌐 Cyan / Teal' },
+          ],
+        },
+        { key: 'websiteUrl', label: 'Website URL (optional click link)', placeholder: 'https://www.iitb.ac.in' },
       ],
     },
   },
@@ -1602,16 +1614,85 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
           {/* ── SPONSORS ─────────────────────────────────── */}
           {section.sectionKey === 'sponsors' && (
             <>
-              <SectionDivider label="Sponsors Settings" />
-              <TextField label="Section Tag" value={content.sectionTag} onChange={v => setContentKey('sectionTag', v)} placeholder="Our Partners" />
-              <TextField label="Footer Note" value={content.footerNote} onChange={v => setContentKey('footerNote', v)} placeholder="🇮🇳 A Government of India initiative…" />
+              <SectionDivider label="Header & Badge Settings" />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <TextField 
+                  label="Section Tag / Badge (Top)" 
+                  value={content.sectionTag || ''} 
+                  onChange={v => setContentKey('sectionTag', v)} 
+                  placeholder="OUR SPONSORS" 
+                  helperText="Badge pill displayed at the top with handshake icon"
+                />
+                <TextField 
+                  label="Title Highlight Word" 
+                  value={content.titleHighlight || ''} 
+                  onChange={v => setContentKey('titleHighlight', v)} 
+                  placeholder="Virtual Labs" 
+                  helperText="Word highlighted with the blue/indigo gradient in the title"
+                />
+              </div>
 
-              <SectionDivider label="Partner Logos & Cards" />
-              <p className="text-slate-500 text-xs -mt-2">
-                💡 Upload a logo to replace the acronym text. If no logo is uploaded, the gradient badge with acronym is shown instead.
-              </p>
+              <SectionDivider label="National Initiative & MoE Details" />
+              <TextField 
+                label="Initiative Description" 
+                value={content.initiativeText !== undefined ? content.initiativeText : (subtitle || '')} 
+                onChange={v => {
+                  setContentKey('initiativeText', v);
+                  setSubtitle(v);
+                }} 
+                placeholder="This project is an initiative of the Ministry of Education (MoE) under the National Mission on Education through ICT. These experiments and virtual labs are hosted for open access through the main project website," 
+                multiline 
+                helperText="Summary text displayed beside the national emblem"
+              />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <TextField 
+                  label="Portal Website Link URL" 
+                  value={content.portalUrl || ''} 
+                  onChange={v => setContentKey('portalUrl', v)} 
+                  placeholder="https://www.vlab.co.in" 
+                />
+                <TextField 
+                  label="Portal Website Label" 
+                  value={content.portalLabel || ''} 
+                  onChange={v => setContentKey('portalLabel', v)} 
+                  placeholder="www.vlab.co.in" 
+                />
+              </div>
+
+              <div className="mt-2">
+                <label className="text-sm font-medium text-slate-300 block mb-2">
+                  🏛 National Emblem Image (Default: Satyameva Jayate)
+                </label>
+                <CloudinaryUploader
+                  label=""
+                  value={content.emblemUrl || ''}
+                  onChange={v => setContentKey('emblemUrl', v)}
+                />
+                <p className="text-slate-500 text-xs mt-1">Leave empty to use the default official Satyameva Jayate emblem.</p>
+              </div>
+
+              <SectionDivider label="Divider Text" />
+              <TextField 
+                label="Partners Sub-divider Text" 
+                value={content.partnersTag || ''} 
+                onChange={v => setContentKey('partnersTag', v)} 
+                placeholder="OUR PARTNERS" 
+                helperText="Text shown on the horizontal divider above cards"
+              />
+
+              <SectionDivider label="Partner Cards Management" />
+              <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-3 text-xs text-blue-200">
+                💡 <strong>How to manage partners:</strong>
+                <ul className="list-disc ml-4 mt-1 space-y-0.5 text-slate-300">
+                  <li>Click <strong>Add Item</strong> to add a new partner card.</li>
+                  <li>Upload a custom logo using <strong>🖼 Logo Image</strong>, or leave blank to use built-in seals (IIT Bombay, IIT Delhi, IIT Madras).</li>
+                  <li>Enter the <strong>Institute / Partner Name</strong> (e.g. <em>IIT Bombay</em>).</li>
+                  <li>Choose a <strong>Color Theme</strong> for the bottom accent border and hover glow.</li>
+                </ul>
+              </div>
+
               <RepeatableList
-                label="Sponsor Cards"
+                label="Partner Cards"
                 items={content.sponsors || []}
                 onChange={v => setContentKey('sponsors', v)}
                 onAutoSave={v => handleAutoSave('sponsors', v)}
