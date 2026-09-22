@@ -70,6 +70,13 @@ export default function Login() {
             <p className="text-slate-500 text-[14px] sm:text-[15px]">Sign in to your Amrita Virtual Labs account</p>
           </div>
 
+          {/* Info notification */}
+          {location.state?.message && !error && (
+            <div className="mb-5 bg-blue-50 border border-blue-200 rounded-xl px-4 py-3 text-xs sm:text-sm text-blue-700 font-medium text-center">
+              {location.state.message}
+            </div>
+          )}
+
           {/* Error */}
           {error && (
             <div className="mb-5 bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm text-red-600">

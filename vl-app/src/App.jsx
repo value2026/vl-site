@@ -446,8 +446,8 @@ function AppLayout() {
           <ProtectedRoute allowedRole="teacher"><AssignmentReport /></ProtectedRoute>
         } />
 
-        {/* Public Virtual Labs Exploration */}
-        <Route path="/labs" element={<StudentHome />} />
+        {/* Virtual Labs Exploration (Protected) */}
+        <Route path="/labs" element={<ProtectedRoute><StudentHome /></ProtectedRoute>} />
         <Route path="/subject/:subjectId" element={<ProtectedRoute><SubjectPage /></ProtectedRoute>} />
         <Route path="/lab/:labId" element={<ProtectedRoute><LabPage /></ProtectedRoute>} />
         <Route path="/experiment/:expId" element={<ProtectedRoute><ExperimentPage /></ProtectedRoute>} />

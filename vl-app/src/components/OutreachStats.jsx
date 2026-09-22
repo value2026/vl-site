@@ -170,7 +170,7 @@ export default function OutreachStats({ sectionTitle, sectionSubtitle, content =
   return (
     <section
       ref={sectionRef}
-      className="py-16 lg:py-20 bg-white relative overflow-hidden"
+      className="py-10 md:py-14 bg-white relative overflow-hidden"
       aria-labelledby="outreach-heading"
     >
       {/* Background Decorative Gradients */}
@@ -180,11 +180,11 @@ export default function OutreachStats({ sectionTitle, sectionSubtitle, content =
 
       <div className="container-custom relative z-10 max-w-[1240px]">
         {/* Header */}
-        <div className="text-center mb-14">
+        <div className="text-center mb-6 md:mb-8">
           <span className="tag">
             {tag}
           </span>
-          <h2 id="outreach-heading" className="section-title">
+          <h2 id="outreach-heading" className="section-title mt-2 mb-2">
             {heading}
           </h2>
           {subtitle && (
@@ -195,7 +195,7 @@ export default function OutreachStats({ sectionTitle, sectionSubtitle, content =
         </div>
 
         {/* Featured Key Metrics (Top 4 Highlight Cards) */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-5">
           {featuredStats.map((stat, i) => (
             <StatCard key={i} stat={stat} index={i} active={isVisible} isFeatured={true} />
           ))}

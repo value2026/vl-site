@@ -14,7 +14,7 @@ export default function AdBanner({ sectionTitle, sectionSubtitle, content = {} }
   const d = { ...DEFAULTS, ...content };
 
   return (
-    <section className="py-16 bg-gray-50" aria-labelledby="ad-heading">
+    <section className="py-10 md:py-14 bg-white border-t border-slate-200/70" aria-labelledby="ad-heading">
       <div className="container-custom">
         <div className="relative bg-gradient-to-r from-slate-900 to-indigo-950 rounded-3xl overflow-hidden shadow-xl border border-white/10">
           

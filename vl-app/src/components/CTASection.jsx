@@ -47,11 +47,11 @@ export default function CTASection({ sectionTitle, sectionSubtitle, content = {}
 
   return (
     <>
-      <section className="py-20 bg-white border-t border-gray-100" aria-labelledby="cta-heading">
+      <section className="py-10 md:py-14 bg-white border-t border-slate-200/70" aria-labelledby="cta-heading">
         <div className="container-custom">
-          <div className="text-center mb-12">
+          <div className="text-center mb-6 md:mb-8">
             <span className="tag">{tag}</span>
-            <h2 id="cta-heading" className="section-title mt-4">
+            <h2 id="cta-heading" className="section-title mt-2 mb-2">
               {heading}
             </h2>
             <p className="section-subtitle">{subtitle}</p>

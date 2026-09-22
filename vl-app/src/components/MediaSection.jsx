@@ -28,11 +28,11 @@ export default function MediaSection({ sectionTitle, sectionSubtitle, content = 
   const videos = content.videos?.length ? content.videos : DEFAULT_VIDEOS;
 
   return (
-    <section className="py-24 bg-white" aria-labelledby="media-heading">
+    <section className="py-10 md:py-14 bg-white border-t border-slate-200/70" aria-labelledby="media-heading">
       <div className="container-custom">
-        <div className="text-center mb-16">
+        <div className="text-center mb-8">
           <span className="tag">{tag}</span>
-          <h2 id="media-heading" className="section-title mt-4">
+          <h2 id="media-heading" className="section-title mt-2 mb-2">
             {heading}
           </h2>
           <p className="section-subtitle">{subtitle}</p>

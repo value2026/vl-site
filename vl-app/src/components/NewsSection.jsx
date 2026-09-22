@@ -55,17 +55,17 @@ export default function NewsSection({ sectionTitle, sectionSubtitle, content = {
   const [selectedNews, setSelectedNews] = useState(null);
 
   return (
-    <section className="py-[100px] bg-[#F8FAFC] relative" aria-labelledby="news-heading">
+    <section className="py-10 md:py-14 bg-[#F8FAFC] border-t border-slate-200/70 relative" aria-labelledby="news-heading">
       <div className="container-custom">
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
           <div>
-            <span className="inline-flex items-center gap-2 bg-orange-50 text-orange-900 text-[0.75rem] font-bold px-4 py-1.5 rounded-full uppercase tracking-[0.15em] mb-3 shadow-sm border border-orange-100">
+            <span className="inline-flex items-center gap-2 bg-orange-50 text-orange-900 text-[0.75rem] font-bold px-4 py-1.5 rounded-full uppercase tracking-[0.15em] mb-2 shadow-sm border border-orange-100">
               📰 {tag}
             </span>
-            <h2 id="news-heading" className="text-4xl sm:text-[48px] font-heading font-extrabold text-[#0F172A] mb-3 tracking-tight">
+            <h2 id="news-heading" className="text-3xl sm:text-4xl font-heading font-extrabold text-[#0F172A] mb-2 tracking-tight">
               {heading}
             </h2>
-            <p className="text-lg text-[#64748B]">Stay updated with the latest Virtual Labs news.</p>
+            <p className="text-base text-[#64748B]">Stay updated with the latest Virtual Labs news.</p>
           </div>
           <Link
             to={viewAllHref}
@@ -77,7 +77,8 @@ export default function NewsSection({ sectionTitle, sectionSubtitle, content = {
             </span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </Link>
-        </div>        <div className="premium-card rounded-3xl mt-[48px] flex flex-col lg:flex-row overflow-hidden shadow-[0_20px_50px_rgba(15,23,42,0.08)]">
+        </div>
+        <div className="premium-card rounded-3xl mt-6 md:mt-8 flex flex-col lg:flex-row overflow-hidden shadow-[0_20px_50px_rgba(15,23,42,0.08)]">
           {/* Left: Featured News */}
           {items.length > 0 && (
             <div className="lg:w-[65%] flex flex-col border-b lg:border-b-0 lg:border-r border-slate-200 bg-white">
