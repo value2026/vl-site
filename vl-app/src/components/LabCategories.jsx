@@ -1,13 +1,64 @@
-import { Link } from 'react-router-dom';
-import { ArrowRight, Loader2, FlaskConical, LayoutGrid, ShieldCheck, BadgeCheck, Activity, Microscope, Atom, Laptop, Cpu, HeartPulse } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { ArrowRight, FlaskConical, LayoutGrid, ShieldCheck, BadgeCheck, Activity, Microscope, Atom, Laptop, Cpu, HeartPulse } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { api } from '../utils/api';
+import { useAuth } from '../context/AuthContext';
+
+const DEFAULT_SUBJECTS = [
+  {
+    id: '1',
+    title: 'Computer Science',
+    description: 'Explore programming, algorithms, data structures, and computer networking.',
+  },
+  {
+    id: '2',
+    title: 'Physical Sciences',
+    description: 'Explore concepts in physics, mechanics, optics, and thermodynamics.',
+  },
+  {
+    id: '3',
+    title: 'Bio Technology',
+    description: 'Explore genetic engineering, biochemistry, and molecular biology simulations.',
+  },
+  {
+    id: '4',
+    title: 'Chemical Science',
+    description: 'Explore organic, inorganic, and physical chemistry laboratory simulations.',
+  },
+  {
+    id: '5',
+    title: 'Maths',
+    description: 'Explore numerical methods, calculus, statistical analysis, and linear algebra.',
+  },
+];
 
 const ICONS = {
   'Computer Science': Laptop,
   'Physical Sciences': FlaskConical,
-  'Electronics & Communications': Cpu,
+  'Bio Technology': HeartPulse,
   'Biological Sciences': HeartPulse,
+  'Chemical Science': Atom,
+  'Chemical Sciences': Atom,
+  'Electronics & Communications': Cpu,
+  'Maths': LayoutGrid,
+  'Mathematics': LayoutGrid,
+};
+
+const getCardGradient = (title = '', index = 0) => {
+  const t = title.toLowerCase();
+  if (t.includes('comp') || t.includes('software')) return 'from-[#6B21A8] to-[#3B82F6]'; // Purple to Blue
+  if (t.includes('phys')) return 'from-[#0EA5E9] to-[#2563EB]'; // Cyan to Blue
+  if (t.includes('bio')) return 'from-[#059669] to-[#0D9488]'; // Emerald to Teal
+  if (t.includes('chem')) return 'from-[#D97706] to-[#EA580C]'; // Amber to Orange
+  if (t.includes('math')) return 'from-[#4F46E5] to-[#7C3AED]'; // Indigo to Violet
+  const gradients = [
+    'from-[#6B21A8] to-[#3B82F6]',
+    'from-[#0EA5E9] to-[#2563EB]',
+    'from-[#059669] to-[#0D9488]',
+    'from-[#D97706] to-[#EA580C]',
+    'from-[#4F46E5] to-[#7C3AED]',
+  ];
+  return gradients[index % gradients.length];
 };
 
 export default function LabCategories({ sectionTitle, sectionSubtitle, content = {} }) {
@@ -15,8 +66,10 @@ export default function LabCategories({ sectionTitle, sectionSubtitle, content =
   const subtitle = sectionSubtitle || 'From quantum physics to molecular biology — our labs span every branch of science and engineering.';
   const tag      = content.sectionTag || 'LAB CATEGORIES';
 
-  const [subjects, setSubjects] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const [subjects, setSubjects] = useState(DEFAULT_SUBJECTS);
 
   useEffect(() => {
     const fetchSubjects = async () => {
@@ -24,20 +77,34 @@ export default function LabCategories({ sectionTitle, sectionSubtitle, content =
         const res = await api.get('/subjects');
         if (res.ok) {
           const data = await res.json();
-          setSubjects(data);
+          if (Array.isArray(data) && data.length > 0) {
+            setSubjects(data);
+          }
         }
       } catch (err) {
         console.error('Error fetching subjects:', err);
-      } finally {
-        setLoading(false);
       }
     };
     fetchSubjects();
   }, []);
 
-  // For the exact UI match, we might want to split the heading if it contains "by Discipline" to color it blue.
+  const handleCardClick = (e, subject) => {
+    e.preventDefault();
+    const target = `/subject/${subject.id}`;
+    if (!user) {
+      navigate('/login', { 
+        state: { 
+          from: target, 
+          message: 'Please sign in to access laboratories and simulations.' 
+        } 
+      });
+    } else {
+      navigate(target, { state: { fromHome: true } });
+    }
+  };
+
+  // Split heading if it contains "by Discipline" to color it blue
   const renderHeading = (text) => {
-    // If it's the exact string, we color the second part
     if (text === 'Explore by Discipline') {
       return (
         <>
@@ -49,8 +116,10 @@ export default function LabCategories({ sectionTitle, sectionSubtitle, content =
     return <span className="text-[#0B1021]">{text}</span>;
   };
 
+  const displaySubjects = (subjects && subjects.length > 0) ? subjects : DEFAULT_SUBJECTS;
+
   return (
-    <section id="lab-categories" className="relative py-8 md:py-12 overflow-hidden bg-white scroll-mt-20">
+    <section id="lab-categories" className="relative py-10 md:py-14 overflow-hidden bg-[#F8FAFC] border-t border-slate-200/80 scroll-mt-20">
       
       {/* Background Decorative Elements */}
       <div className="absolute top-10 left-[-5%] opacity-10 pointer-events-none">
@@ -75,12 +144,12 @@ export default function LabCategories({ sectionTitle, sectionSubtitle, content =
       <div className="container-custom relative z-10 max-w-[1200px]">
         
         {/* Section Header */}
-        <div className="text-center mb-8 flex flex-col items-center">
-          <div className="flex items-center justify-center gap-2 bg-white border border-[#E2E8F0] px-4 py-1.5 rounded-full shadow-sm mb-4">
+        <div className="text-center mb-6 md:mb-8 flex flex-col items-center">
+          <div className="flex items-center justify-center gap-2 bg-white border border-[#E2E8F0] px-4 py-1.5 rounded-full shadow-sm mb-3">
             <FlaskConical className="w-3.5 h-3.5 text-[#5D64F5]" />
             <span className="text-[#5D64F5] text-[11px] font-bold tracking-widest uppercase">{tag}</span>
           </div>
-          <h2 className="text-3xl md:text-4xl font-extrabold mb-3 tracking-tight">
+          <h2 className="text-3xl md:text-4xl font-extrabold mb-2 tracking-tight">
             {renderHeading(heading)}
           </h2>
           <p className="text-[#64748B] text-base max-w-2xl font-medium leading-relaxed">
@@ -88,82 +157,73 @@ export default function LabCategories({ sectionTitle, sectionSubtitle, content =
           </p>
         </div>
 
-        {loading ? (
-          <div className="flex justify-center py-10">
-            <Loader2 className="w-8 h-8 text-[#3B41E3] animate-spin" />
-          </div>
-        ) : (
-          <div className="flex flex-wrap justify-center gap-5 xl:gap-6">
-            {subjects.map((subject) => {
-              const IconComp = ICONS[subject.title] || Atom;
-              
-              // Define distinct colors for the cards
-              const isComputerScience = subject.title.includes('Computer');
-              const gradient = isComputerScience 
-                ? 'from-[#6B21A8] to-[#3B82F6]' // Purple to Blue
-                : 'from-[#0EA5E9] to-[#2563EB]'; // Cyan to Blue
+        {/* Subjects Cards Grid */}
+        <div className="flex flex-wrap justify-center gap-5 xl:gap-6">
+          {displaySubjects.map((subject, idx) => {
+            const IconComp = ICONS[subject.title] || Atom;
+            const gradient = getCardGradient(subject.title, idx);
+            const targetUrl = `/subject/${subject.id}`;
 
-              return (
-                <Link
-                  key={subject.id}
-                  to={`/subject/${subject.id}`}
-                  state={{ fromHome: true }}
-                  className="relative w-full max-w-[340px] sm:max-w-[310px] lg:max-w-[340px] sm:w-[calc(50%-0.625rem)] lg:w-[calc(33.333%-0.875rem)] xl:w-[calc(33.333%-1rem)] bg-white rounded-2xl p-5 sm:p-6 border border-[#E2E8F0] shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_12px_35px_rgba(59,65,227,0.1)] hover:-translate-y-1 transition-all duration-300 group overflow-hidden flex flex-col min-h-[260px]"
-                >
-                  {/* Faint wavy top background */}
-                  <div className="absolute top-0 left-0 w-full h-24 bg-gradient-to-br from-[#F4F7FF] to-transparent rounded-t-2xl opacity-70"></div>
-                  
-                  {/* Top Right Grid Icon */}
-                  <div className="absolute top-5 right-5">
-                    <LayoutGrid className="w-4 h-4 text-[#94A3B8]" strokeWidth={1.5} />
-                  </div>
+            return (
+              <Link
+                key={subject.id || idx}
+                to={user ? targetUrl : '/login'}
+                onClick={(e) => handleCardClick(e, subject)}
+                className="relative w-full max-w-[340px] sm:max-w-[310px] lg:max-w-[340px] sm:w-[calc(50%-0.625rem)] lg:w-[calc(33.333%-0.875rem)] xl:w-[calc(33.333%-1rem)] bg-white rounded-2xl p-5 sm:p-6 border border-[#E2E8F0] shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_12px_35px_rgba(59,65,227,0.1)] hover:-translate-y-1 transition-all duration-300 group overflow-hidden flex flex-col min-h-[260px] cursor-pointer"
+              >
+                {/* Faint wavy top background */}
+                <div className="absolute top-0 left-0 w-full h-24 bg-gradient-to-br from-[#F4F7FF] to-transparent rounded-t-2xl opacity-70"></div>
+                
+                {/* Top Right Grid Icon */}
+                <div className="absolute top-5 right-5">
+                  <LayoutGrid className="w-4 h-4 text-[#94A3B8]" strokeWidth={1.5} />
+                </div>
 
-                  {/* Icon */}
-                  <div className={`relative w-12 h-12 rounded-xl bg-gradient-to-b ${gradient} flex items-center justify-center shadow-sm mb-3.5 group-hover:scale-105 transition-transform duration-300`}>
-                    <IconComp className="w-6 h-6 text-white" />
-                  </div>
+                {/* Icon */}
+                <div className={`relative w-12 h-12 rounded-xl bg-gradient-to-b ${gradient} flex items-center justify-center shadow-sm mb-3.5 group-hover:scale-105 transition-transform duration-300`}>
+                  <IconComp className="w-6 h-6 text-white" />
+                </div>
 
-                  {/* Title & Tags */}
-                  <div className="relative">
-                    <h3 className="font-heading text-lg xl:text-xl font-bold text-[#0F172A] mb-1 leading-snug group-hover:text-[#3B41E3] transition-colors">
-                      {subject.title}
-                    </h3>
-                    <div className="text-[10px] font-bold text-[#5D64F5] tracking-wider uppercase mb-1.5">
-                      INTERACTIVE • SIMULATIONS
-                    </div>
-                    <div className="w-7 h-0.5 bg-[#5D64F5] opacity-50 mb-3"></div>
+                {/* Title & Tags */}
+                <div className="relative">
+                  <h3 className="font-heading text-lg xl:text-xl font-bold text-[#0F172A] mb-1 leading-snug group-hover:text-[#3B41E3] transition-colors">
+                    {subject.title}
+                  </h3>
+                  <div className="text-[10px] font-bold text-[#5D64F5] tracking-wider uppercase mb-1.5">
+                    INTERACTIVE • SIMULATIONS
                   </div>
+                  <div className="w-7 h-0.5 bg-[#5D64F5] opacity-50 mb-3"></div>
+                </div>
 
-                  {/* Description */}
-                  <p className="relative text-[#64748B] text-[13px] leading-relaxed mb-4 font-medium">
-                    {subject.description || 'Explore programming, algorithms, data structures, and computer networking.'}
-                  </p>
+                {/* Description */}
+                <p className="relative text-[#64748B] text-[13px] leading-relaxed mb-4 font-medium">
+                  {subject.description || 'Explore programming, algorithms, data structures, and computer networking.'}
+                </p>
 
-                  {/* Button */}
-                  <div className="relative mt-auto pt-1">
-                    <div className="inline-flex items-center justify-center gap-2 border border-[#E2E8F0] rounded-full px-4 py-1.5 text-[12px] font-bold text-[#5D64F5] group-hover:bg-[#F4F7FF] group-hover:border-[#C7D2FE] transition-colors">
-                      View Laboratories
-                      <ArrowRight className="w-3 h-3" />
-                    </div>
+                {/* Button */}
+                <div className="relative mt-auto pt-1">
+                  <div className="inline-flex items-center justify-center gap-2 border border-[#E2E8F0] rounded-full px-4 py-1.5 text-[12px] font-bold text-[#5D64F5] group-hover:bg-[#F4F7FF] group-hover:border-[#C7D2FE] transition-colors">
+                    View Laboratories
+                    <ArrowRight className="w-3 h-3" />
                   </div>
-                  
-                  {/* Bottom decorative dots inside card */}
-                  <div className="absolute bottom-4 right-4 opacity-[0.06] pointer-events-none">
-                     <div className="grid grid-cols-4 gap-1">
-                        {[...Array(16)].map((_, i) => <div key={i} className="w-1 h-1 bg-[#0F172A] rounded-full"></div>)}
-                     </div>
-                  </div>
-                  <div className="absolute bottom-4 left-4 opacity-[0.04] pointer-events-none">
-                     <div className="grid grid-cols-3 gap-1">
-                        {[...Array(9)].map((_, i) => <div key={i} className="w-1 h-1 bg-[#0F172A] rounded-full"></div>)}
-                     </div>
-                  </div>
+                </div>
+                
+                {/* Bottom decorative dots inside card */}
+                <div className="absolute bottom-4 right-4 opacity-[0.06] pointer-events-none">
+                   <div className="grid grid-cols-4 gap-1">
+                      {[...Array(16)].map((_, i) => <div key={i} className="w-1 h-1 bg-[#0F172A] rounded-full"></div>)}
+                   </div>
+                </div>
+                <div className="absolute bottom-4 left-4 opacity-[0.04] pointer-events-none">
+                   <div className="grid grid-cols-3 gap-1">
+                      {[...Array(9)].map((_, i) => <div key={i} className="w-1 h-1 bg-[#0F172A] rounded-full"></div>)}
+                   </div>
+                </div>
 
-                </Link>
-              );
-            })}
-          </div>
-        )}
+              </Link>
+            );
+          })}
+        </div>
 
         {/* Bottom Features Row */}
         <div className="mt-10 flex flex-wrap justify-center gap-8 lg:gap-16 relative">

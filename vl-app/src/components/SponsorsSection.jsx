@@ -26,56 +26,56 @@ export default function SponsorsSection({ sectionTitle, sectionSubtitle, content
   const footerNote = content.footerNote || '🇮🇳 A Government of India initiative to democratize quality STEM education';
 
   return (
-    <section className="py-20 lg:py-24 bg-white border-t border-slate-100" aria-labelledby="sponsors-heading">
+    <section className="py-10 md:py-14 bg-[#F8FAFC] border-t border-slate-200/70" aria-labelledby="sponsors-heading">
       <div className="container-custom">
-        <div className="text-center mb-12">
+        <div className="text-center mb-6 md:mb-8">
           <span className="tag">
             {tag}
           </span>
-          <h2 id="sponsors-heading" className="section-title">
+          <h2 id="sponsors-heading" className="section-title mt-2 mb-2">
             {heading}
           </h2>
         </div>
         
         {/* Emblem & Initiative Text Box */}
-        <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-center md:items-start gap-8 mb-16">
-          <div className="flex-shrink-0 w-32 h-40 flex flex-col items-center justify-center bg-transparent">
+        <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-center md:items-start gap-6 mb-8 md:mb-10">
+          <div className="flex-shrink-0 w-20 sm:w-24 flex flex-col items-center justify-center bg-transparent">
             <img 
               src={assetUrl('/satyameva-jayate-v2.png')} 
               alt="Satyameva Jayate - Government of India" 
               className="w-full object-contain mix-blend-multiply"
               style={{ clipPath: 'inset(2% 0 0 4%)' }}
             />
-            <span className="text-[10px] font-bold text-slate-800 mt-2 tracking-wide">सत्यमेव जयते</span>
+            <span className="text-[10px] font-bold text-slate-800 mt-1.5 tracking-wide">सत्यमेव जयते</span>
           </div>
-          <div className="flex-1 text-[#475569] text-base md:text-[17px] leading-relaxed pt-4 text-center md:text-left">
+          <div className="flex-1 text-[#475569] text-sm md:text-base leading-relaxed pt-1 text-center md:text-left">
             <p>{renderFormattedText(subtitle)}</p>
           </div>
         </div>
 
         {/* ── PARTNERS block ── */}
         <div>
-          <p className="text-center text-xs font-bold tracking-[0.18em] uppercase text-slate-400 mb-6">
+          <p className="text-center text-[11px] font-bold tracking-[0.18em] uppercase text-slate-400 mb-4">
             Our Partners
           </p>
-          <div className="flex flex-wrap justify-center gap-5">
+          <div className="flex flex-wrap justify-center gap-4 sm:gap-5">
             {partners.map(({ id, name, acronym, description, color, logoUrl }) => (
               <div
                 key={id || name}
-                className="premium-card flex flex-col items-center justify-center gap-3 rounded-2xl p-6 cursor-default w-[190px] text-center"
+                className="premium-card flex flex-col items-center justify-center gap-2.5 rounded-2xl p-4 sm:p-5 cursor-default w-[170px] sm:w-[185px] text-center"
               >
-                <div className="h-14 flex items-center justify-center mb-1">
+                <div className="h-12 flex items-center justify-center mb-0.5">
                   {logoUrl ? (
                     <img src={logoUrl} alt={name} className="max-h-full max-w-full object-contain" />
                   ) : (
-                    <div className={`w-12 h-12 bg-gradient-to-br ${color || 'from-slate-600 to-slate-800'} rounded-xl flex items-center justify-center shadow-sm`}>
-                      <span className="text-white font-heading font-bold text-sm text-center px-1">{acronym || name.substring(0, 3)}</span>
+                    <div className={`w-11 h-11 bg-gradient-to-br ${color || 'from-slate-600 to-slate-800'} rounded-xl flex items-center justify-center shadow-sm`}>
+                      <span className="text-white font-heading font-bold text-xs text-center px-1">{acronym || name.substring(0, 3)}</span>
                     </div>
                   )}
                 </div>
                 <div>
-                  <div className="text-[#0F172A] font-bold text-[14px] leading-tight mb-1">{name}</div>
-                  <div className="text-[#64748B] text-xs font-medium">{description}</div>
+                  <div className="text-[#0F172A] font-bold text-[13px] leading-tight mb-0.5">{name}</div>
+                  <div className="text-[#64748B] text-[11px] font-medium">{description}</div>
                 </div>
               </div>
             ))}
@@ -83,9 +83,9 @@ export default function SponsorsSection({ sectionTitle, sectionSubtitle, content
         </div>
 
         {/* Footer note */}
-        <div className="mt-14 text-center">
-          <div className="inline-flex items-center gap-3 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-6 py-4">
-            <span className="text-[#64748B] text-sm font-medium">{footerNote}</span>
+        <div className="mt-8 text-center">
+          <div className="inline-flex items-center gap-2 bg-white border border-[#E2E8F0] shadow-2xs rounded-xl px-4.5 py-2.5">
+            <span className="text-[#64748B] text-xs sm:text-sm font-medium">{footerNote}</span>
           </div>
         </div>
 
