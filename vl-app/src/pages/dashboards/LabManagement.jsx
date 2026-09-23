@@ -3,8 +3,25 @@ import { createPortal } from 'react-dom';
 import {
   Plus, Pencil, Trash2, ToggleLeft, ToggleRight,
   Upload, CheckCircle2, AlertCircle, Loader2, X,
-  Folder, Layers, Beaker, FileText, Check, ChevronRight
+  Folder, Layers, Beaker, FileText, Check, ChevronRight,
+  GripVertical, ArrowUpDown, ChevronUp, ChevronDown
 } from 'lucide-react';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { api, safeJson } from '../../utils/api';
 import { useAuth } from '../../context/AuthContext';
 import CloudinaryUploader from '../../components/dashboard/CloudinaryUploader';
@@ -233,19 +250,143 @@ function SubjectsTab({ role }) {
   );
 }
 
+// ── Sortable Lab Card ─────────────────────────────────────────
+function SortableLabItem({
+  lab,
+  index,
+  total,
+  isReordering,
+  onMoveUp,
+  onMoveDown,
+  onEdit,
+  onDelete,
+  onToggleActive,
+  onSelectLab,
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: lab.id, disabled: !isReordering });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`border rounded-xl p-4 transition-all flex items-center gap-4 ${
+        isDragging
+          ? 'bg-slate-800 border-blue-500 shadow-2xl shadow-blue-500/20 z-50 opacity-95 ring-2 ring-blue-500/50'
+          : isReordering
+          ? 'bg-slate-900/60 border-blue-500/30 hover:border-blue-500/60 shadow-md'
+          : 'bg-slate-900/40 border-white/10 hover:border-blue-500/20'
+      }`}
+    >
+      {/* Reorder Grip & Controls */}
+      {isReordering && (
+        <div className="flex items-center gap-1.5 flex-shrink-0">
+          <button
+            type="button"
+            {...attributes}
+            {...listeners}
+            className="p-1.5 text-slate-500 hover:text-white bg-white/5 hover:bg-white/10 rounded-lg cursor-grab active:cursor-grabbing transition-colors touch-none"
+            title="Drag to rearrange"
+          >
+            <GripVertical className="w-4 h-4" />
+          </button>
+          <div className="flex flex-col gap-0.5">
+            <button
+              type="button"
+              disabled={index === 0}
+              onClick={onMoveUp}
+              className="p-0.5 text-slate-400 hover:text-blue-400 hover:bg-white/5 rounded disabled:opacity-20 disabled:cursor-not-allowed transition-all"
+              title="Move Up"
+            >
+              <ChevronUp className="w-3.5 h-3.5" />
+            </button>
+            <button
+              type="button"
+              disabled={index === total - 1}
+              onClick={onMoveDown}
+              className="p-0.5 text-slate-400 hover:text-blue-400 hover:bg-white/5 rounded disabled:opacity-20 disabled:cursor-not-allowed transition-all"
+              title="Move Down"
+            >
+              <ChevronDown className="w-3.5 h-3.5" />
+            </button>
+          </div>
+          <span className="w-7 h-7 rounded-lg bg-blue-500/10 border border-blue-500/25 text-blue-400 font-bold text-xs flex items-center justify-center flex-shrink-0 shadow-inner">
+            #{index + 1}
+          </span>
+        </div>
+      )}
+
+      <div className="w-12 h-12 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center text-xl flex-shrink-0 overflow-hidden relative">
+        {lab.coverPic ? (
+          <img src={lab.coverPic} alt="" className="w-full h-full object-cover" />
+        ) : (
+          lab.icon
+        )}
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2 flex-wrap">
+          {!isReordering && (
+            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-white/5 border border-white/5 text-slate-400">
+              #{index + 1}
+            </span>
+          )}
+          <h4 className="text-white font-bold text-sm truncate">{lab.title}</h4>
+          <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400">
+            {lab.subject?.icon} {lab.subject?.title}
+          </span>
+        </div>
+        <p className="text-slate-400 text-xs mt-0.5 truncate">{lab.description || 'No description available'}</p>
+        <div className="text-[10px] text-slate-500 mt-1 flex items-center gap-3">
+          <span>{lab._count?.experiments || 0} Experiments · Created by {lab.createdBy?.name || 'Admin'}</span>
+          {onSelectLab && (
+            <button onClick={() => onSelectLab(lab.id)} className="text-blue-400 hover:text-blue-300 font-semibold underline flex items-center gap-1">
+              View Experiments ➔
+            </button>
+          )}
+        </div>
+      </div>
+      <div className="flex items-center gap-3 flex-shrink-0">
+        <ActiveBadge active={lab.isActive} onClick={onToggleActive} labels={['Published', 'Draft']} />
+        <div className="flex items-center gap-1 border-l border-white/5 pl-3">
+          <button onClick={onEdit} className="p-1.5 text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
+          <button onClick={onDelete} className="p-1.5 text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ════════════════════════════════════════════════════════════════
 //  LABS TAB
 // ════════════════════════════════════════════════════════════════
 function LabsTab({ onSelectLab }) {
-  const [labs,     setLabs]     = useState([]);
-  const [subjects, setSubjects] = useState([]);
-  const [loading,  setLoading]  = useState(true);
-  const [modal,    setModal]    = useState(null);
-  const [deleting, setDeleting] = useState(null);
-  const [filter,   setFilter]   = useState('');
-  const [form,     setForm]     = useState({ title: '', icon: '🔬', description: '', subjectId: '', coverPic: '' });
-  const [saving,   setSaving]   = useState(false);
-  const [error,    setError]    = useState('');
+  const [labs,         setLabs]         = useState([]);
+  const [subjects,     setSubjects]     = useState([]);
+  const [loading,      setLoading]      = useState(true);
+  const [modal,        setModal]        = useState(null);
+  const [deleting,     setDeleting]     = useState(null);
+  const [filter,       setFilter]       = useState('');
+  const [form,         setForm]         = useState({ title: '', icon: '🔬', description: '', subjectId: '', coverPic: '' });
+  const [saving,       setSaving]       = useState(false);
+  const [error,        setError]        = useState('');
+  const [isReordering, setIsReordering] = useState(false);
+  const [saveStatus,   setSaveStatus]   = useState('');
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
 
   const initialized = useRef(false);
 
@@ -271,6 +412,50 @@ function LabsTab({ onSelectLab }) {
 
   const filtered = filter ? labs.filter((l) => l.subjectId === filter) : labs;
 
+  const saveOrder = async (newOrder) => {
+    setSaveStatus('Saving...');
+    try {
+      const items = newOrder.map((l, idx) => ({ id: l.id, order: idx }));
+      const res = await api.post('/labs/reorder', { items });
+      if (res.ok) {
+        setSaveStatus('Saved!');
+        setTimeout(() => setSaveStatus(''), 2500);
+      } else {
+        setSaveStatus('Failed to save');
+      }
+    } catch (err) {
+      console.error(err);
+      setSaveStatus('Error saving');
+    }
+  };
+
+  const handleDragEnd = (event) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = filtered.findIndex((item) => item.id === active.id);
+    const newIndex = filtered.findIndex((item) => item.id === over.id);
+    if (oldIndex !== -1 && newIndex !== -1) {
+      const reordered = arrayMove(filtered, oldIndex, newIndex);
+      setLabs((prev) => {
+        const others = prev.filter((l) => !reordered.some((r) => r.id === l.id));
+        return [...reordered, ...others];
+      });
+      saveOrder(reordered);
+    }
+  };
+
+  const handleMove = (index, direction) => {
+    const targetIndex = index + direction;
+    if (targetIndex < 0 || targetIndex >= filtered.length) return;
+    const reordered = arrayMove(filtered, index, targetIndex);
+    setLabs((prev) => {
+      const others = prev.filter((l) => !reordered.some((r) => r.id === l.id));
+      return [...reordered, ...others];
+    });
+    saveOrder(reordered);
+  };
+
   const openAdd  = () => { setForm({ title: '', icon: '🔬', description: '', subjectId: subjects[0]?.id || '', coverPic: '' }); setError(''); setModal('add'); };
   const openEdit = (l) => { setForm({ title: l.title, icon: l.icon, description: l.description || '', subjectId: l.subjectId, coverPic: l.coverPic || '' }); setError(''); setModal({ edit: l }); };
 
@@ -293,18 +478,54 @@ function LabsTab({ onSelectLab }) {
           <h3 className="text-white font-bold text-lg">Labs</h3>
           <p className="text-slate-400 text-xs mt-0.5">Organize experiments under different subject categories</p>
         </div>
-        <button onClick={openAdd} className="flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white text-sm font-semibold rounded-xl transition-all shadow-lg shadow-blue-500/20">
-          <Plus className="w-4 h-4" /> Add Lab
-        </button>
+        <div className="flex items-center gap-2 flex-wrap">
+          <button
+            onClick={() => {
+              if (!isReordering && !filter && subjects.length > 0) {
+                setFilter(subjects[0].id);
+              }
+              setIsReordering(!isReordering);
+            }}
+            className={`flex items-center justify-center gap-2 px-4 py-2 border rounded-xl text-sm font-semibold transition-all ${
+              isReordering
+                ? 'bg-blue-600/20 border-blue-500 text-blue-300 shadow-lg shadow-blue-500/10'
+                : 'bg-white/5 border-white/10 hover:bg-white/10 text-slate-300 hover:text-white'
+            }`}
+          >
+            <ArrowUpDown className="w-4 h-4" />
+            {isReordering ? 'Done Rearranging' : 'Rearrange Labs'}
+          </button>
+          <button onClick={openAdd} className="flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white text-sm font-semibold rounded-xl transition-all shadow-lg shadow-blue-500/20">
+            <Plus className="w-4 h-4" /> Add Lab
+          </button>
+        </div>
       </div>
 
       {/* Select Filter */}
-      <div className="max-w-xs">
-        <Select value={filter} onChange={(e) => setFilter(e.target.value)}>
-          <option value="">All Subjects</option>
-          {subjects.map((s) => <option key={s.id} value={s.id}>{s.icon} {s.title}</option>)}
-        </Select>
+      <div className="flex items-center justify-between gap-4 flex-wrap">
+        <div className="max-w-xs w-full">
+          <Select value={filter} onChange={(e) => setFilter(e.target.value)}>
+            <option value="">All Subjects</option>
+            {subjects.map((s) => <option key={s.id} value={s.id}>{s.icon} {s.title}</option>)}
+          </Select>
+        </div>
+        {saveStatus && (
+          <span className="flex items-center gap-1.5 text-xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1.5 rounded-xl">
+            <CheckCircle2 className="w-4 h-4" /> {saveStatus}
+          </span>
+        )}
       </div>
+
+      {isReordering && (
+        <div className="flex items-center justify-between p-3.5 bg-gradient-to-r from-blue-900/30 to-indigo-900/30 border border-blue-500/30 rounded-xl text-xs text-blue-200">
+          <div className="flex items-center gap-2">
+            <GripVertical className="w-4 h-4 text-blue-400" />
+            <span>
+              <strong>Rearrange Mode:</strong> Drag labs using the grip handle or click the ▲ / ▼ arrows to adjust their sequence. Changes save automatically.
+            </span>
+          </div>
+        </div>
+      )}
 
       {loading ? (
         <div className="flex justify-center py-20 text-slate-400"><Loader2 className="w-8 h-8 animate-spin" /></div>
@@ -314,43 +535,34 @@ function LabsTab({ onSelectLab }) {
           <p className="text-sm font-medium">No labs found under this category.</p>
         </div>
       ) : (
-        <div className="space-y-3">
-          {filtered.map((l) => (
-            <div key={l.id} className="bg-slate-900/40 border border-white/10 rounded-xl p-4 hover:border-blue-500/20 transition-all flex items-center gap-4">
-              <div className="w-12 h-12 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center text-xl flex-shrink-0 overflow-hidden relative">
-                {l.coverPic ? (
-                  <img src={l.coverPic} alt="" className="w-full h-full object-cover" />
-                ) : (
-                  l.icon
-                )}
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <h4 className="text-white font-bold text-sm truncate">{l.title}</h4>
-                  <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400">
-                    {l.subject?.icon} {l.subject?.title}
-                  </span>
-                </div>
-                <p className="text-slate-400 text-xs mt-0.5 truncate">{l.description || 'No description available'}</p>
-                <div className="text-[10px] text-slate-500 mt-1 flex items-center gap-3">
-                  <span>{l._count?.experiments || 0} Experiments · Created by {l.createdBy?.name || 'Admin'}</span>
-                  {onSelectLab && (
-                    <button onClick={() => onSelectLab(l.id)} className="text-blue-400 hover:text-blue-300 font-semibold underline flex items-center gap-1">
-                      View Experiments ➔
-                    </button>
-                  )}
-                </div>
-              </div>
-              <div className="flex items-center gap-3 flex-shrink-0">
-                <ActiveBadge active={l.isActive} onClick={() => toggleActive(l)} labels={['Published', 'Draft']} />
-                <div className="flex items-center gap-1 border-l border-white/5 pl-3">
-                  <button onClick={() => openEdit(l)} className="p-1.5 text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
-                  <button onClick={() => setDeleting(l)} className="p-1.5 text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
-                </div>
-              </div>
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext
+            items={filtered.map((l) => l.id)}
+            strategy={verticalListSortingStrategy}
+          >
+            <div className="space-y-3">
+              {filtered.map((l, index) => (
+                <SortableLabItem
+                  key={l.id}
+                  lab={l}
+                  index={index}
+                  total={filtered.length}
+                  isReordering={isReordering}
+                  onMoveUp={() => handleMove(index, -1)}
+                  onMoveDown={() => handleMove(index, 1)}
+                  onEdit={() => openEdit(l)}
+                  onDelete={() => setDeleting(l)}
+                  onToggleActive={() => toggleActive(l)}
+                  onSelectLab={onSelectLab}
+                />
+              ))}
             </div>
-          ))}
-        </div>
+          </SortableContext>
+        </DndContext>
       )}
 
       {modal && (
@@ -395,23 +607,151 @@ function LabsTab({ onSelectLab }) {
   );
 }
 
+// ── Sortable Experiment Card ──────────────────────────────────
+function SortableExperimentItem({
+  exp,
+  index,
+  total,
+  isReordering,
+  onMoveUp,
+  onMoveDown,
+  onEdit,
+  onDelete,
+  onToggleActive,
+  diffStyle,
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: exp.id, disabled: !isReordering });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`border rounded-2xl p-5 transition-all ${
+        isDragging
+          ? 'bg-slate-800 border-blue-500 shadow-2xl shadow-blue-500/20 z-50 opacity-95 ring-2 ring-blue-500/50'
+          : isReordering
+          ? 'bg-slate-900/60 border-blue-500/30 hover:border-blue-500/60 shadow-md'
+          : 'bg-slate-900/40 border-white/10 hover:border-blue-500/20'
+      }`}
+    >
+      <div className="flex items-start justify-between gap-4 flex-wrap sm:flex-nowrap">
+        {/* Reorder Grip & Controls */}
+        {isReordering && (
+          <div className="flex items-center gap-1.5 self-center sm:self-auto flex-shrink-0">
+            <button
+              type="button"
+              {...attributes}
+              {...listeners}
+              className="p-2 text-slate-500 hover:text-white bg-white/5 hover:bg-white/10 rounded-xl cursor-grab active:cursor-grabbing transition-colors touch-none"
+              title="Drag to rearrange"
+            >
+              <GripVertical className="w-5 h-5" />
+            </button>
+            <div className="flex flex-col gap-0.5">
+              <button
+                type="button"
+                disabled={index === 0}
+                onClick={onMoveUp}
+                className="p-1 text-slate-400 hover:text-blue-400 hover:bg-white/5 rounded disabled:opacity-20 disabled:hover:text-slate-400 disabled:cursor-not-allowed transition-all"
+                title="Move Up"
+              >
+                <ChevronUp className="w-4 h-4" />
+              </button>
+              <button
+                type="button"
+                disabled={index === total - 1}
+                onClick={onMoveDown}
+                className="p-1 text-slate-400 hover:text-blue-400 hover:bg-white/5 rounded disabled:opacity-20 disabled:hover:text-slate-400 disabled:cursor-not-allowed transition-all"
+                title="Move Down"
+              >
+                <ChevronDown className="w-4 h-4" />
+              </button>
+            </div>
+            <span className="w-8 h-8 rounded-xl bg-blue-500/10 border border-blue-500/25 text-blue-400 font-bold text-xs flex items-center justify-center flex-shrink-0 shadow-inner">
+              #{index + 1}
+            </span>
+          </div>
+        )}
+
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 flex-wrap mb-2">
+            {!isReordering && (
+              <span className="text-[11px] font-bold px-2 py-0.5 rounded-md bg-white/5 border border-white/5 text-slate-400">
+                #{index + 1}
+              </span>
+            )}
+            <h4 className="text-white font-bold text-base truncate">{exp.title}</h4>
+            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${diffStyle[exp.difficulty] || 'bg-slate-800 text-slate-400'}`}>
+              {exp.difficulty}
+            </span>
+            <span className="text-[10px] font-medium text-slate-500 bg-white/5 border border-white/5 px-2 py-0.5 rounded-md">⏱ {exp.duration}</span>
+          </div>
+          {exp.description && <p className="text-slate-400 text-xs mb-3 leading-relaxed">{exp.description}</p>}
+          <div className="text-[10px] text-slate-500 mb-4">{exp.lab?.subject?.title} ➔ {exp.lab?.title}</div>
+
+          {/* Upload Actions */}
+          <div className="flex flex-wrap items-center gap-4 bg-slate-950/40 border border-white/5 p-3 rounded-xl max-w-lg">
+            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex-shrink-0">Assets:</div>
+            {(exp.contentPath || exp.simulationPath) ? (
+              <span className="flex items-center gap-1.5 text-xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-lg">
+                <CheckCircle2 className="w-3.5 h-3.5" /> Experiment ZIP Attached
+              </span>
+            ) : (
+              <span className="flex items-center gap-1.5 text-xs font-semibold text-slate-400 bg-white/5 border border-white/10 px-2.5 py-1 rounded-lg">
+                <AlertCircle className="w-3.5 h-3.5" /> No ZIP Uploaded
+              </span>
+            )}
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3 border-t sm:border-t-0 sm:border-l border-white/5 pt-4 sm:pt-0 sm:pl-4 flex-shrink-0 w-full sm:w-auto justify-between sm:justify-start">
+          <ActiveBadge active={exp.isActive} onClick={onToggleActive} labels={['Published', 'Draft']} />
+          <div className="flex items-center gap-1">
+            <button onClick={onEdit} className="p-1.5 text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
+            <button onClick={onDelete} className="p-1.5 text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ════════════════════════════════════════════════════════════════
 //  EXPERIMENTS TAB
 // ════════════════════════════════════════════════════════════════
 function ExperimentsTab({ role, initialLabId = '' }) {
-  const [experiments, setExperiments] = useState([]);
-  const [labs,        setLabs]        = useState([]);
-  const [subjects,    setSubjects]    = useState([]);
-  const [loading,     setLoading]     = useState(true);
-  const [modal,       setModal]       = useState(null);
-  const [deleting,    setDeleting]    = useState(null);
+  const [experiments,   setExperiments]   = useState([]);
+  const [labs,          setLabs]          = useState([]);
+  const [subjects,      setSubjects]      = useState([]);
+  const [loading,       setLoading]       = useState(true);
+  const [modal,         setModal]         = useState(null);
+  const [deleting,      setDeleting]      = useState(null);
   const [subjectFilter, setSubjectFilter] = useState('');
-  const [labFilter,   setLabFilter]   = useState(initialLabId);
-  const [form,        setForm]        = useState({ title: '', description: '', duration: '60 min', difficulty: 'Beginner', labId: '', coverPic: '' });
-  const [saving,      setSaving]      = useState(false);
-  const [error,       setError]       = useState('');
-  const [uploading,   setUploading]   = useState({});
-  const [uploadMsg,   setUploadMsg]   = useState({});
+  const [labFilter,     setLabFilter]     = useState(initialLabId);
+  const [form,          setForm]          = useState({ title: '', description: '', duration: '60 min', difficulty: 'Beginner', labId: '', coverPic: '' });
+  const [saving,        setSaving]        = useState(false);
+  const [error,         setError]         = useState('');
+  const [uploading,     setUploading]     = useState({});
+  const [uploadMsg,     setUploadMsg]     = useState({});
+  const [isReordering,  setIsReordering]  = useState(false);
+  const [saveStatus,    setSaveStatus]    = useState('');
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
 
   const initialized = useRef(false);
 
@@ -461,6 +801,50 @@ function ExperimentsTab({ role, initialLabId = '' }) {
     return true;
   });
 
+  const saveOrder = async (newOrder) => {
+    setSaveStatus('Saving...');
+    try {
+      const items = newOrder.map((e, idx) => ({ id: e.id, order: idx }));
+      const res = await api.post('/experiments/reorder', { items });
+      if (res.ok) {
+        setSaveStatus('Saved!');
+        setTimeout(() => setSaveStatus(''), 2500);
+      } else {
+        setSaveStatus('Failed to save');
+      }
+    } catch (err) {
+      console.error(err);
+      setSaveStatus('Error saving');
+    }
+  };
+
+  const handleDragEnd = (event) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = filtered.findIndex((item) => item.id === active.id);
+    const newIndex = filtered.findIndex((item) => item.id === over.id);
+    if (oldIndex !== -1 && newIndex !== -1) {
+      const reordered = arrayMove(filtered, oldIndex, newIndex);
+      setExperiments((prev) => {
+        const others = prev.filter((e) => !reordered.some((r) => r.id === e.id));
+        return [...reordered, ...others];
+      });
+      saveOrder(reordered);
+    }
+  };
+
+  const handleMove = (index, direction) => {
+    const targetIndex = index + direction;
+    if (targetIndex < 0 || targetIndex >= filtered.length) return;
+    const reordered = arrayMove(filtered, index, targetIndex);
+    setExperiments((prev) => {
+      const others = prev.filter((e) => !reordered.some((r) => r.id === e.id));
+      return [...reordered, ...others];
+    });
+    saveOrder(reordered);
+  };
+
   const openAdd  = () => { setForm({ title: '', description: '', duration: '60 min', difficulty: 'Beginner', labId: labFilter || labs[0]?.id || '', coverPic: '', zipFile: null }); setError(''); setModal('add'); };
   const openEdit = (e) => { setForm({ title: e.title, description: e.description || '', duration: e.duration, difficulty: e.difficulty, labId: e.labId, coverPic: e.coverPic || '', zipFile: null }); setError(''); setModal({ edit: e }); };
 
@@ -498,8 +882,6 @@ function ExperimentsTab({ role, initialLabId = '' }) {
   const toggleActive = async (e) => { await api.post(`/experiments/${e.id}/update`, { isActive: !e.isActive }); load(); };
   const confirmDelete = async () => { await api.post(`/experiments/${deleting.id}/delete`); setDeleting(null); load(); };
 
-
-
   const DIFF_STYLE = {
     Beginner:     'bg-emerald-500/10 border-emerald-500/25 text-emerald-400',
     Intermediate: 'bg-amber-500/10 border-amber-500/25 text-amber-400',
@@ -513,36 +895,75 @@ function ExperimentsTab({ role, initialLabId = '' }) {
           <h3 className="text-white font-bold text-lg">Experiments</h3>
           <p className="text-slate-400 text-xs mt-0.5">Upload documentation ZIPs and interactive simulation archives</p>
         </div>
-        <button onClick={openAdd} className="flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white text-sm font-semibold rounded-xl transition-all shadow-lg shadow-blue-500/20">
-          <Plus className="w-4 h-4" /> Add Experiment
-        </button>
+        <div className="flex items-center gap-2 flex-wrap">
+          <button
+            onClick={() => {
+              if (!isReordering && !labFilter) {
+                const availableLabs = labs.filter((l) => !subjectFilter || l.subjectId === subjectFilter);
+                if (availableLabs.length > 0) {
+                  setLabFilter(availableLabs[0].id);
+                }
+              }
+              setIsReordering(!isReordering);
+            }}
+            className={`flex items-center justify-center gap-2 px-4 py-2 border rounded-xl text-sm font-semibold transition-all ${
+              isReordering
+                ? 'bg-blue-600/20 border-blue-500 text-blue-300 shadow-lg shadow-blue-500/10'
+                : 'bg-white/5 border-white/10 hover:bg-white/10 text-slate-300 hover:text-white'
+            }`}
+          >
+            <ArrowUpDown className="w-4 h-4" />
+            {isReordering ? 'Done Rearranging' : 'Rearrange Experiments'}
+          </button>
+          <button onClick={openAdd} className="flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white text-sm font-semibold rounded-xl transition-all shadow-lg shadow-blue-500/20">
+            <Plus className="w-4 h-4" /> Add Experiment
+          </button>
+        </div>
       </div>
 
       {/* Two-Level Filters */}
-      <div className="flex flex-col sm:flex-row items-end gap-3 max-w-xl">
-        <div className="flex-1 w-full">
-          <label className="block text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Subject Area</label>
-          <Select value={subjectFilter} onChange={(e) => { setSubjectFilter(e.target.value); setLabFilter(''); }}>
-            <option value="">All Subjects</option>
-            {subjects.map((s) => <option key={s.id} value={s.id}>{s.icon} {s.title}</option>)}
-          </Select>
+      <div className="flex flex-col sm:flex-row items-end justify-between gap-4">
+        <div className="flex flex-col sm:flex-row items-end gap-3 max-w-xl w-full">
+          <div className="flex-1 w-full">
+            <label className="block text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Subject Area</label>
+            <Select value={subjectFilter} onChange={(e) => { setSubjectFilter(e.target.value); setLabFilter(''); }}>
+              <option value="">All Subjects</option>
+              {subjects.map((s) => <option key={s.id} value={s.id}>{s.icon} {s.title}</option>)}
+            </Select>
+          </div>
+          <div className="flex-1 w-full">
+            <label className="block text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Laboratory</label>
+            <Select value={labFilter} onChange={(e) => setLabFilter(e.target.value)}>
+              <option value="">All Labs</option>
+              {labs
+                .filter((l) => !subjectFilter || l.subjectId === subjectFilter)
+                .map((l) => <option key={l.id} value={l.id}>{l.icon} {l.title}</option>)
+              }
+            </Select>
+          </div>
+          {(subjectFilter || labFilter) && (
+            <button onClick={() => { setSubjectFilter(''); setLabFilter(''); }} className="px-3 py-2.5 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-slate-300 text-xs font-semibold whitespace-nowrap transition-colors">
+              Clear Filters ✖
+            </button>
+          )}
         </div>
-        <div className="flex-1 w-full">
-          <label className="block text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Laboratory</label>
-          <Select value={labFilter} onChange={(e) => setLabFilter(e.target.value)}>
-            <option value="">All Labs</option>
-            {labs
-              .filter((l) => !subjectFilter || l.subjectId === subjectFilter)
-              .map((l) => <option key={l.id} value={l.id}>{l.icon} {l.title}</option>)
-            }
-          </Select>
-        </div>
-        {(subjectFilter || labFilter) && (
-          <button onClick={() => { setSubjectFilter(''); setLabFilter(''); }} className="px-3 py-2.5 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-slate-300 text-xs font-semibold whitespace-nowrap transition-colors">
-            Clear Filters ✖
-          </button>
+        {saveStatus && (
+          <span className="flex items-center gap-1.5 text-xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1.5 rounded-xl self-end">
+            <CheckCircle2 className="w-4 h-4" /> {saveStatus}
+          </span>
         )}
       </div>
+
+      {isReordering && (
+        <div className="flex items-center justify-between p-3.5 bg-gradient-to-r from-blue-900/30 to-indigo-900/30 border border-blue-500/30 rounded-xl text-xs text-blue-200">
+          <div className="flex items-center gap-2">
+            <GripVertical className="w-4 h-4 text-blue-400" />
+            <span>
+              <strong>Rearrange Mode:</strong> Drag experiments using the grip handle or click the ▲ / ▼ arrows to adjust their order in this lab. Changes save automatically.
+            </span>
+          </div>
+        </div>
+      )}
 
       {loading ? (
         <div className="flex justify-center py-20 text-slate-400"><Loader2 className="w-8 h-8 animate-spin" /></div>
@@ -552,47 +973,34 @@ function ExperimentsTab({ role, initialLabId = '' }) {
           <p className="text-sm font-medium">No experiments found. Create your first experiment.</p>
         </div>
       ) : (
-        <div className="space-y-4">
-          {filtered.map((exp) => (
-            <div key={exp.id} className="bg-slate-900/40 border border-white/10 rounded-2xl p-5 hover:border-blue-500/20 transition-all">
-              <div className="flex items-start justify-between gap-4 flex-wrap sm:flex-nowrap">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap mb-2">
-                    <h4 className="text-white font-bold text-base truncate">{exp.title}</h4>
-                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${DIFF_STYLE[exp.difficulty] || 'bg-slate-800 text-slate-400'}`}>
-                      {exp.difficulty}
-                    </span>
-                    <span className="text-[10px] font-medium text-slate-500 bg-white/5 border border-white/5 px-2 py-0.5 rounded-md">⏱ {exp.duration}</span>
-                  </div>
-                  {exp.description && <p className="text-slate-400 text-xs mb-3 leading-relaxed">{exp.description}</p>}
-                  <div className="text-[10px] text-slate-500 mb-4">{exp.lab?.subject?.title} ➔ {exp.lab?.title}</div>
-                  
-                  {/* Upload Actions */}
-                  <div className="flex flex-wrap items-center gap-4 bg-slate-950/40 border border-white/5 p-3 rounded-xl max-w-lg">
-                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex-shrink-0">Assets:</div>
-                    {(exp.contentPath || exp.simulationPath) ? (
-                      <span className="flex items-center gap-1.5 text-xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-lg">
-                        <CheckCircle2 className="w-3.5 h-3.5" /> Experiment ZIP Attached
-                      </span>
-                    ) : (
-                      <span className="flex items-center gap-1.5 text-xs font-semibold text-slate-400 bg-white/5 border border-white/10 px-2.5 py-1 rounded-lg">
-                        <AlertCircle className="w-3.5 h-3.5" /> No ZIP Uploaded
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3 border-t sm:border-t-0 sm:border-l border-white/5 pt-4 sm:pt-0 sm:pl-4 flex-shrink-0 w-full sm:w-auto justify-between sm:justify-start">
-                  <ActiveBadge active={exp.isActive} onClick={() => toggleActive(exp)} labels={['Published', 'Draft']} />
-                  <div className="flex items-center gap-1">
-                    <button onClick={() => openEdit(exp)} className="p-1.5 text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
-                    <button onClick={() => setDeleting(exp)} className="p-1.5 text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
-                  </div>
-                </div>
-              </div>
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext
+            items={filtered.map((e) => e.id)}
+            strategy={verticalListSortingStrategy}
+          >
+            <div className="space-y-4">
+              {filtered.map((exp, index) => (
+                <SortableExperimentItem
+                  key={exp.id}
+                  exp={exp}
+                  index={index}
+                  total={filtered.length}
+                  isReordering={isReordering}
+                  onMoveUp={() => handleMove(index, -1)}
+                  onMoveDown={() => handleMove(index, 1)}
+                  onEdit={() => openEdit(exp)}
+                  onDelete={() => setDeleting(exp)}
+                  onToggleActive={() => toggleActive(exp)}
+                  diffStyle={DIFF_STYLE}
+                />
+              ))}
             </div>
-          ))}
-        </div>
+          </SortableContext>
+        </DndContext>
       )}
 
       {modal && (
