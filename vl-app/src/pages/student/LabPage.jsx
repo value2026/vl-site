@@ -28,7 +28,9 @@ export default function LabPage() {
           const labsList = await labsRes.json();
           const currentLab = labsList.find((l) => l.id === labId);
           setLab(currentLab);
-          setExperiments(await expsRes.json());
+          const loadedExps = await expsRes.json();
+          loadedExps.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+          setExperiments(loadedExps);
         }
       } catch (err) {
         console.error('Failed to load lab page data', err);

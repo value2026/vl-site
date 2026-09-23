@@ -23,7 +23,10 @@ const getExperiments = async (req, res) => {
       include: {
         lab: { select: { id: true, title: true, subjectId: true, subject: { select: { id: true, title: true } } } },
       },
-      orderBy: { createdAt: 'asc' },
+      orderBy: [
+        { order: 'asc' },
+        { createdAt: 'asc' },
+      ],
     });
     res.json(experiments);
   } catch (err) {
@@ -64,7 +67,10 @@ const getAllExperiments = async (req, res) => {
         lab: { select: { id: true, title: true, subjectId: true, coverPic: true, subject: { select: { id: true, title: true } } } },
         createdBy: { select: { name: true, role: true } },
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: [
+        { order: 'asc' },
+        { createdAt: 'asc' },
+      ],
     });
     res.json(experiments);
   } catch (err) {
@@ -468,8 +474,32 @@ const getExperimentDocs = async (req, res) => {
   }
 };
 
+// POST /api/experiments/reorder
+const reorderExperiments = async (req, res) => {
+  try {
+    const { items } = req.body; // [{ id: string, order: number }]
+    if (!Array.isArray(items)) {
+      return res.status(400).json({ message: 'items must be an array of { id, order }' });
+    }
+
+    await Promise.all(
+      items.map(({ id, order }) =>
+        prisma.experiment.update({
+          where: { id },
+          data: { order: Number(order) || 0 },
+        }).catch((e) => console.warn(`Could not update order for experiment ${id}:`, e.message))
+      )
+    );
+
+    res.json({ success: true, message: 'Experiments reordered successfully' });
+  } catch (err) {
+    console.error('reorderExperiments error:', err);
+    res.status(500).json({ message: 'Failed to reorder experiments' });
+  }
+};
+
 module.exports = {
   getExperiments, getAllExperiments, getExperiment, getExperimentSection,
   createExperiment, updateExperiment, deleteExperiment,
-  uploadZip, getExperimentDocs,
+  uploadZip, getExperimentDocs, reorderExperiments,
 };

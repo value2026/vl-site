@@ -120,6 +120,7 @@ model Lab {
   icon        String  @default("🔬")
   coverPic    String? // URL to lab cover image
   isActive    Boolean @default(true)
+  order       Int     @default(0)
 
   subjectId String
   subject   Subject @relation(fields: [subjectId], references: [id])
@@ -147,6 +148,7 @@ model Experiment {
   difficulty  String  @default("Beginner")
   coverPic    String? // URL to experiment cover image
   isActive    Boolean @default(true)
+  order       Int     @default(0)
 
   // Paths to extracted zip content (relative to uploads/)
   contentPath    String? // e.g. experiments/{id}/content

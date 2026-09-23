@@ -5,7 +5,7 @@ const { upload } = require('../middleware/upload');
 const {
   getExperiments, getAllExperiments, getExperiment, getExperimentSection,
   createExperiment, updateExperiment, deleteExperiment,
-  uploadZip, getExperimentDocs,
+  uploadZip, getExperimentDocs, reorderExperiments,
 } = require('../controllers/experimentsController');
 
 // Public
@@ -15,10 +15,11 @@ router.get('/:id/docs',        getExperimentDocs);
 router.get('/:id/content/:section', getExperimentSection);
 
 // Staff
-router.get('/all/list', verifyToken, requireRole('admin', 'vl_manager', 'vl_coordinator', 'nodal_centre', 'teacher'), getAllExperiments);
-router.post('/',        verifyToken, requireRole('admin', 'vl_manager', 'vl_coordinator', 'nodal_centre', 'teacher'), createExperiment);
-router.post('/:id/update',      verifyToken, requireRole('admin', 'vl_manager', 'vl_coordinator', 'nodal_centre', 'teacher'), updateExperiment);
-router.post('/:id/delete',   verifyToken, requireRole('admin', 'vl_manager', 'vl_coordinator', 'nodal_centre', 'teacher'), deleteExperiment);
+router.get('/all/list',   verifyToken, requireRole('admin', 'vl_manager', 'vl_coordinator', 'nodal_centre', 'teacher'), getAllExperiments);
+router.post('/reorder',   verifyToken, requireRole('admin', 'vl_manager', 'vl_coordinator', 'nodal_centre', 'teacher'), reorderExperiments);
+router.post('/',          verifyToken, requireRole('admin', 'vl_manager', 'vl_coordinator', 'nodal_centre', 'teacher'), createExperiment);
+router.post('/:id/update',verifyToken, requireRole('admin', 'vl_manager', 'vl_coordinator', 'nodal_centre', 'teacher'), updateExperiment);
+router.post('/:id/delete',verifyToken, requireRole('admin', 'vl_manager', 'vl_coordinator', 'nodal_centre', 'teacher'), deleteExperiment);
 
 // File uploads
 router.post(

@@ -49,6 +49,8 @@ export default function SubjectPage() {
       result.sort((a, b) => a.title.localeCompare(b.title));
     } else if (sortOption === 'Name (Z-A)') {
       result.sort((a, b) => b.title.localeCompare(a.title));
+    } else {
+      result.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
     }
     return result;
   }, [labs, searchQuery, sortOption]);
