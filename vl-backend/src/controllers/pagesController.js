@@ -1,5 +1,4 @@
-const { PrismaClient } = require('../generated/client');
-const prisma = new PrismaClient();
+const prisma = require('../db');
 const { sendHostWorkshopRequestEmail } = require('../utils/mailer');
 
 // Default section data for the home page

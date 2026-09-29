@@ -1,4 +1,4 @@
-const { PrismaClient } = require('./src/generated/client');
+const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 prisma.experiment.findMany({ where: { simulationPath: { contains: 'build' } } })
   .then(x => console.log(x))

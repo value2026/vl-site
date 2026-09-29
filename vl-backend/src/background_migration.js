@@ -1,4 +1,4 @@
-const { PrismaClient } = require('./generated/client');
+const { PrismaClient } = require('@prisma/client');
 const migrateStudents = require('../uploads/migrate_students');
 
 async function run() {
