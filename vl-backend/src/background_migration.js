@@ -1,4 +1,4 @@
-const { PrismaClient } = require('./generated/client');
+const { PrismaClient } = require('@prisma/client');
 const migrateInstitutions = require('../uploads/migrate_institutions');
 const migrateStudents = require('../uploads/migrate_students');
 
