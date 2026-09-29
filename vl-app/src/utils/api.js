@@ -119,7 +119,23 @@ export const safeJson = async (res) => {
   }
 };
 
-export const fileUrl = (path) => `${FILES}/${path}`;
+export const fileUrl = (path) => {
+  if (!path) return '';
+  if (typeof path === 'string') {
+    if (path.includes('/files/')) {
+      const sub = path.substring(path.indexOf('/files/') + 7);
+      return `${FILES}/${sub.replace(/^\/+/, '')}`;
+    }
+    if (path.startsWith('http://') || path.startsWith('https://')) {
+      if (typeof window !== 'undefined' && window.location?.protocol === 'https:' && path.startsWith('http:')) {
+        return path.replace(/^http:/, 'https:');
+      }
+      return path;
+    }
+    return `${FILES}/${path.replace(/^\/+/, '')}`;
+  }
+  return path;
+};
 
 export const getSlug = (str) => {
   if (!str) return '';
