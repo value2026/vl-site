@@ -1,5 +1,4 @@
-const { PrismaClient } = require('./generated/client');
-const prisma = new PrismaClient();
+const prisma = require('./db');
 
 async function updateHero() {
   const section = await prisma.pageSection.findFirst({

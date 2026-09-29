@@ -3,4 +3,7 @@ npm-debug.log
 .env
 dist
 .git
+logs
+src/generated
 fix-nodal.js
+

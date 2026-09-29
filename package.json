@@ -4,7 +4,11 @@
   "description": "A comprehensive Virtual Labs portal featuring interactive simulations, role-based access control, analytics, and content management.",
   "main": "replace.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "npm --prefix vl-app run build",
+    "build:frontend": "npm --prefix vl-app run build",
+    "start:backend": "npm --prefix vl-backend run start",
+    "start": "npm --prefix vl-backend run start"
   },
   "repository": {
     "type": "git",
