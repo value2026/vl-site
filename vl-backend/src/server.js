@@ -64,10 +64,21 @@ app.use(cors((req, callback) => {
         allowedOrigins.indexOf(origin) !== -1 ||
         origin === requestOrigin
       ) {
-        originCallback(null, true);
-      } else {
-        originCallback(new Error('Not allowed by CORS'));
+        return originCallback(null, true);
       }
+      try {
+        const parsed = new URL(origin);
+        if (
+          parsed.hostname.endsWith('amrita.edu') ||
+          parsed.hostname === 'localhost' ||
+          parsed.hostname === '127.0.0.1' ||
+          parsed.hostname.startsWith('10.') ||
+          parsed.hostname.startsWith('192.168.')
+        ) {
+          return originCallback(null, true);
+        }
+      } catch (_) {}
+      originCallback(new Error('Not allowed by CORS'));
     },
     credentials: true,
   });

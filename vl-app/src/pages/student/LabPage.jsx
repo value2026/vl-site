@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Clock, ChevronRight, Play, Loader2 } from 'lucide-react';
+import { Clock, ChevronRight, Play, Loader2, Monitor, FlaskConical, Filter, ChevronDown, ArrowRight } from 'lucide-react';
 import StudentNav from '../../components/student/StudentNav';
-import { api, getSlug } from '../../utils/api';
+import { api, getSlug, fileUrl } from '../../utils/api';
 
 const DIFFICULTY_STYLE = {
   Beginner:     'bg-emerald-50 text-emerald-700 border-emerald-200',
@@ -106,9 +106,9 @@ export default function LabPage() {
               {/* Dynamic Subject Glow */}
               <div className={`absolute inset-0 bg-gradient-to-br ${subject?.gradient || 'from-[#6A4BFF] to-[#4524ED]'} rounded-full blur-[70px] opacity-20`}></div>
               
-              {lab.imageUrl ? (
+              {(lab.coverPic || lab.imageUrl) ? (
                 <img 
-                  src={lab.imageUrl.startsWith('http') ? lab.imageUrl : import.meta.env.BASE_URL + lab.imageUrl.replace(/^\//, '')} 
+                  src={fileUrl(lab.coverPic || lab.imageUrl)} 
                   alt="Lab Illustration" 
                   className="w-60 h-60 object-contain relative z-10 drop-shadow-xl" 
                 />
