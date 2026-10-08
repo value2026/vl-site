@@ -14,6 +14,7 @@ const quickLinks = [
   { label: 'Nodal Centres', href: '/nodal-centres' },
   { label: 'Publications', href: '/publications' },
   { label: 'Contact', href: '/contact' },
+  { label: 'Research and Collaboration', href: '/research-collaboration' },
 ];
 
 const labLinks = [
