@@ -14,4 +14,5 @@ export const navLinks = [
     ],
   },
   { label: 'Contact', href: '/contact' },
+  { label: 'Research and Collaboration', href: '/research-collaboration' },
 ];

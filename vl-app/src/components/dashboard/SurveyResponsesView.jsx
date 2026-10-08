@@ -105,10 +105,13 @@ export default function SurveyResponsesView({ pageSlug, token, API_URL }) {
             <h3 className="text-xl font-bold text-white mb-1">
               {pageSlug === 'student-survey' ? 'Student Survey Responses' :
                pageSlug === 'contact' ? 'Contact Messages' :
+               pageSlug === 'research-collaboration' ? 'Research Applications' :
                'Faculty Survey Responses'}
             </h3>
             <p className="text-slate-400 text-sm">
-              {pageSlug === 'contact' ? 'Review messages submitted through the contact us form.' : 'Review all submitted feedback and evaluations.'}
+              {pageSlug === 'contact' ? 'Review messages submitted through the contact us form.' :
+               pageSlug === 'research-collaboration' ? 'Review submitted research collaboration applications.' :
+               'Review all submitted feedback and evaluations.'}
             </p>
           </div>
         </div>

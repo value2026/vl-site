@@ -16,6 +16,7 @@ import NodalCentres  from './pages/NodalCentres';
 import Publications  from './pages/Publications';
 import News          from './pages/News';
 import Contact       from './pages/Contact';
+import ResearchCollaboration from './pages/ResearchCollaboration';
 import Survey        from './pages/Survey';
 import Login         from './pages/Login';
 import ForgotPassword from './pages/ForgotPassword';
@@ -27,6 +28,7 @@ import NodalCentreDashboard from './pages/dashboards/NodalCentreDashboard';
 import TeacherDashboard     from './pages/dashboards/TeacherDashboard';
 import ManagePages          from './pages/dashboards/ManagePages';
 import ContactMessages      from './pages/dashboards/ContactMessages';
+import ResearchApplications from './pages/dashboards/ResearchApplications';
 import VLManagerDashboard   from './pages/dashboards/VLManagerDashboard';
 import VLCoordinatorDashboard from './pages/dashboards/VLCoordinatorDashboard';
 import InstitutionsManagement from './pages/dashboards/InstitutionsManagement';
@@ -274,6 +276,11 @@ function AppLayout() {
             <DashboardLayout title="Contact Messages"><ContactMessages /></DashboardLayout>
           </ProtectedRoute>
         } />
+        <Route path="/dashboard/admin/research-applications" element={
+          <ProtectedRoute allowedRole="admin">
+            <DashboardLayout title="Research Applications"><ResearchApplications /></DashboardLayout>
+          </ProtectedRoute>
+        } />
         <Route path="/dashboard/admin/institutions" element={
           <ProtectedRoute allowedRole="admin">
             <DashboardLayout title="Institutions"><InstitutionsManagement /></DashboardLayout>
@@ -305,6 +312,11 @@ function AppLayout() {
         <Route path="/dashboard/vl-manager/messages" element={
           <ProtectedRoute allowedRole="vl_manager">
             <DashboardLayout title="Contact Messages"><ContactMessages /></DashboardLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/dashboard/vl-manager/research-applications" element={
+          <ProtectedRoute allowedRole="vl_manager">
+            <DashboardLayout title="Research Applications"><ResearchApplications /></DashboardLayout>
           </ProtectedRoute>
         } />
         <Route path="/dashboard/vl-manager/institutions" element={
@@ -363,6 +375,11 @@ function AppLayout() {
         <Route path="/dashboard/vl-coordinator/surveys" element={
           <ProtectedRoute allowedRole="vl_coordinator">
             <DashboardLayout title="Surveys"><SurveysDashboard /></DashboardLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/dashboard/vl-coordinator/research-applications" element={
+          <ProtectedRoute allowedRole="vl_coordinator">
+            <DashboardLayout title="Research Applications"><ResearchApplications /></DashboardLayout>
           </ProtectedRoute>
         } />
         <Route path="/dashboard/vl-coordinator/pages" element={
@@ -495,6 +512,7 @@ function AppLayout() {
           <Route path="/survey/faculty"      element={<Survey slug="faculty-survey" />} />
           <Route path="/survey/student"      element={<Survey slug="student-survey" />} />
           <Route path="/contact"             element={<Contact />} />
+          <Route path="/research-collaboration" element={<ResearchCollaboration />} />
           <Route path="*"                    element={<ComingSoon page="Page Not Found" />} />
         </Routes>
       </div>
