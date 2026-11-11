@@ -281,23 +281,24 @@ async function main() {
         let contentPath = eData.contentPath || null;
         let simulationPath = eData.simulationPath || null;
 
-        if (expId && !contentPath && !simulationPath) {
+        if (expId && (!contentPath || !simulationPath)) {
           const fs = require('fs');
           const path = require('path');
-          let uploadsDir = path.join(__dirname, '../uploads/experiments', expId);
-          if (fs.existsSync(path.join(uploadsDir, 'content'))) {
-            contentPath = `experiments/${expId}/content`;
-          }
-          if (fs.existsSync(path.join(uploadsDir, 'simulation'))) {
-            simulationPath = `experiments/${expId}/simulation`;
-          }
-          if (!contentPath && !simulationPath) {
-            uploadsDir = path.join(__dirname, '../uploads', expId);
-            if (fs.existsSync(path.join(uploadsDir, 'content'))) {
-              contentPath = `${expId}/content`;
+          const candidateDirs = [
+            { abs: path.join(__dirname, '../uploads/labs', lab.id, expId), rel: `labs/${lab.id}/${expId}` },
+            { abs: path.join(__dirname, '../uploads/experiments', expId), rel: `experiments/${expId}` },
+            { abs: path.join(__dirname, '../uploads', expId), rel: expId },
+          ];
+          for (const dir of candidateDirs) {
+            if (!contentPath && fs.existsSync(path.join(dir.abs, 'content'))) {
+              contentPath = `${dir.rel}/content`;
             }
-            if (fs.existsSync(path.join(uploadsDir, 'simulation'))) {
-              simulationPath = `${expId}/simulation`;
+            if (!simulationPath) {
+              if (fs.existsSync(path.join(dir.abs, 'sim-root/simulation/index.html'))) {
+                simulationPath = `${dir.rel}/sim-root/simulation`;
+              } else if (fs.existsSync(path.join(dir.abs, 'simulation/index.html')) || fs.existsSync(path.join(dir.abs, 'simulation'))) {
+                simulationPath = `${dir.rel}/simulation`;
+              }
             }
           }
         }
@@ -309,8 +310,8 @@ async function main() {
             description: eData.description,
             duration: eData.duration,
             difficulty: eData.difficulty,
-            contentPath,
-            simulationPath: simulationPath || (eData.title === 'Stack Operations' ? null : null),
+            ...(contentPath ? { contentPath } : {}),
+            ...(simulationPath ? { simulationPath } : {}),
           },
           create: {
             id: expId,

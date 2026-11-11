@@ -1,4 +1,4 @@
-const { PrismaClient } = require('../src/generated/client');
+const { PrismaClient } = require('@prisma/client');
 const fs = require('fs');
 const path = require('path');
 
@@ -33,14 +33,14 @@ async function linkUploads() {
       if (hasContent || hasSim) {
         const folderName = path.basename(dir);
         
-        const match = experiments.find(exp => {
-          if (folderName === exp.id || relativePath.includes(exp.id)) return true;
-          const titleSlug = slugify(exp.title);
-          const folderSlug = slugify(folderName);
-          const cleanTitle = titleSlug.replace(/-/g, '');
-          const cleanFolder = folderSlug.replace(/-/g, '');
-          return titleSlug.includes(folderSlug) || folderSlug.includes(titleSlug) || cleanTitle.includes(cleanFolder) || cleanFolder.includes(cleanTitle);
-        });
+        const folderSlug = slugify(folderName);
+        const cleanFolder = folderSlug.replace(/-/g, '');
+        const match = experiments.find(exp => folderName === exp.id || relativePath.includes(exp.id))
+          || (cleanFolder.length >= 3 ? experiments.find(exp => {
+            const titleSlug = slugify(exp.title);
+            const cleanTitle = titleSlug.replace(/-/g, '');
+            return titleSlug.includes(folderSlug) || folderSlug.includes(titleSlug) || cleanTitle.includes(cleanFolder) || cleanFolder.includes(cleanTitle);
+          }) : undefined);
 
         if (match) {
           let targetRelPath = relativePath.replace(/\\/g, '/');
@@ -85,7 +85,7 @@ async function linkUploads() {
             const simFolderName = items.find(i => i.isDirectory() && (i.name === 'simulation' || i.name === 'sim-root')).name;
             
             // If it's sim-root, the actual HTML is inside sim-root/simulation
-            if (simFolderName === 'sim-root' && fs.existsSync(path.join(dir, 'sim-root', 'simulation'))) {
+            if (simFolderName === 'sim-root' && fs.existsSync(path.join(uploadsDir, targetRelPath, 'sim-root', 'simulation'))) {
               updateData.simulationPath = `${targetRelPath}/sim-root/simulation`;
             } else {
               updateData.simulationPath = `${targetRelPath}/${simFolderName}`;
