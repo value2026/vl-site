@@ -14,6 +14,8 @@ const {
   changePassword,
   recordLogout,
   refreshTokenEndpoint,
+  activateAccount,
+  resendActivation,
 } = require('../controllers/authController');
 const { verifyToken }  = require('../middleware/auth');
 
