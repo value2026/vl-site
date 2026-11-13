@@ -125,9 +125,19 @@ const getDashboardStats = async (req, res) => {
   try {
     const role = req.user.role;
     const userId = req.user.id;
+    const { nodalCentreId, startDate, endDate } = req.query;
+
+    const dateFilter = {};
+    if (startDate) dateFilter.gte = new Date(startDate);
+    if (endDate) {
+      const end = new Date(endDate);
+      end.setHours(23, 59, 59, 999);
+      dateFilter.lte = end;
+    }
+    const hasDate = Object.keys(dateFilter).length > 0;
 
     // Filter by Nodal Centre / Teacher if applicable
-    let userFilter = {};
+    let userFilter = { role: { not: 'guest' } };
     let labFilter = {};
     if (role === 'teacher') {
       userFilter = { nodalCentreId: req.user.nodalCentreId }; // Teachers see school network
@@ -137,29 +147,35 @@ const getDashboardStats = async (req, res) => {
       labFilter = { nodalCentreId: userId };
     } else if (role === 'vl_coordinator') {
       userFilter = { createdById: userId };
+    } else if (nodalCentreId && nodalCentreId !== 'all') {
+      userFilter = { nodalCentreId };
     }
 
     // Exclude guest accounts from institutional metrics
     const nonGuestUserWhere = (role !== 'admin' && role !== 'vl_manager')
       ? { ...userFilter, role: { not: 'guest' } }
       : { role: { not: 'guest' } };
-    const visitUserFilter = (role !== 'admin' && role !== 'vl_manager')
-      ? { experiment: { lab: labFilter }, user: { role: { not: 'guest' } } }
-      : { user: { role: { not: 'guest' } } };
 
     // 1. Basic Counts
+    const effectiveUserFilter = (role !== 'admin' && role !== 'vl_manager') ? userFilter : (nodalCentreId && nodalCentreId !== 'all' ? { nodalCentreId } : {});
+    const scopedUserFilter = { ...effectiveUserFilter, role: { not: 'guest' } };
+    const visitUserFilter = { user: scopedUserFilter, ...((role !== 'admin' && role !== 'vl_manager') ? { experiment: { lab: labFilter } } : {}) };
+
     const [totalUsers, totalLabs, totalExps, totalVisits, totalFeedback] = await Promise.all([
       prisma.user.count({ where: nonGuestUserWhere }),
       prisma.lab.count({ where: (role !== 'admin' && role !== 'vl_manager') ? labFilter : {} }),
       prisma.experiment.count({ where: (role !== 'admin' && role !== 'vl_manager') ? { lab: labFilter } : {} }),
       prisma.experimentVisit.count({
         where: {
-          user: nonGuestUserWhere,
-          ...((role !== 'admin' && role !== 'vl_manager') ? { experiment: { lab: labFilter } } : {}),
+          ...visitUserFilter,
+          ...(hasDate ? { createdAt: dateFilter } : {})
         },
       }),
       prisma.feedback.count({
-        where: (role !== 'admin' && role !== 'vl_manager') ? { experiment: { lab: labFilter } } : {},
+        where: {
+          ...((role !== 'admin' && role !== 'vl_manager') ? { experiment: { lab: labFilter } } : {}),
+          ...(hasDate ? { createdAt: dateFilter } : {})
+        },
       }),
     ]);
 
@@ -174,28 +190,28 @@ const getDashboardStats = async (req, res) => {
         by: ['userId'],
         where: {
           createdAt: { gte: oneDayAgo },
-          user: nonGuestUserWhere,
+          ...visitUserFilter,
         },
       }).then(r => r.length),
       prisma.experimentVisit.groupBy({
         by: ['userId'],
         where: {
           createdAt: { gte: oneWeekAgo },
-          user: nonGuestUserWhere,
+          ...visitUserFilter,
         },
       }).then(r => r.length),
       prisma.experimentVisit.groupBy({
         by: ['userId'],
         where: {
           createdAt: { gte: oneMonthAgo },
-          user: nonGuestUserWhere,
+          ...visitUserFilter,
         },
       }).then(r => r.length),
     ]);
 
     // 3. User Registration Trends (Daily/Monthly)
     const rawRegistrations = await prisma.user.findMany({
-      where: nonGuestUserWhere,
+      where: scopedUserFilter,
       select: { createdAt: true },
     });
 
@@ -211,7 +227,10 @@ const getDashboardStats = async (req, res) => {
 
     // 4. Most Visited Experiments & Labs
     const rawVisits = await prisma.experimentVisit.findMany({
-      where: visitUserFilter,
+      where: {
+        ...visitUserFilter,
+        ...(hasDate ? { createdAt: dateFilter } : {})
+      },
       include: {
         experiment: {
           select: {
@@ -243,7 +262,10 @@ const getDashboardStats = async (req, res) => {
 
     // 5. Quiz Performance & Top Students
     const attempts = await prisma.quizAttempt.findMany({
-      where: { user: nonGuestUserWhere },
+      where: {
+        ...visitUserFilter,
+        ...(hasDate ? { createdAt: dateFilter } : {})
+      },
       include: {
         user: { select: { name: true, email: true } }
       }
@@ -345,12 +367,31 @@ const getAcademicReport = async (req, res) => {
   try {
     const role = req.user.role;
     const userId = req.user.id;
+    const { startDate, endDate, nodalCentreId, dept, course } = req.query;
+
+    const dateFilter = {};
+    if (startDate) dateFilter.gte = new Date(startDate);
+    if (endDate) {
+      const end = new Date(endDate);
+      end.setHours(23, 59, 59, 999);
+      dateFilter.lte = end;
+    }
+    const hasDate = Object.keys(dateFilter).length > 0;
 
     let studentFilter = { role: 'student' };
     if (role === 'teacher') {
       studentFilter.nodalCentreId = req.user.nodalCentreId;
     } else if (role === 'nodal_centre') {
       studentFilter.nodalCentreId = userId;
+    } else if (nodalCentreId && nodalCentreId !== 'all') {
+      studentFilter.nodalCentreId = nodalCentreId;
+    }
+
+    if (dept && dept !== 'all') {
+      studentFilter.dept = { equals: dept, mode: 'insensitive' };
+    }
+    if (course && course !== 'all') {
+      studentFilter.course = { equals: course, mode: 'insensitive' };
     }
 
     const students = await prisma.user.findMany({
@@ -359,12 +400,19 @@ const getAcademicReport = async (req, res) => {
         id: true,
         name: true,
         email: true,
+        dept: true,
+        course: true,
+        yearSemester: true,
+        batch: true,
         createdAt: true,
+        nodalCentre: { select: { id: true, name: true, code: true } },
         experimentVisits: {
-          select: { duration: true, experimentId: true },
+          where: hasDate ? { createdAt: dateFilter } : {},
+          select: { duration: true, experimentId: true, createdAt: true },
         },
         quizAttempts: {
-          select: { score: true, maxScore: true, passed: true },
+          where: hasDate ? { createdAt: dateFilter } : {},
+          select: { score: true, maxScore: true, passed: true, createdAt: true },
         },
       },
       orderBy: { name: 'asc' },
@@ -389,7 +437,12 @@ const getAcademicReport = async (req, res) => {
         id: s.id,
         name: s.name,
         email: s.email,
+        dept: s.dept || '—',
+        course: s.course || '—',
+        yearSemester: s.yearSemester || '—',
+        nodalCentreName: s.nodalCentre?.name || 'Independent / Direct',
         uniqueLabsVisited: uniqueExps,
+        totalVisits,
         totalTimeSpentMinutes: minutesSpent,
         quizAttemptsCount: totalQuizzes,
         quizPassRate: passRate,
@@ -558,13 +611,59 @@ const buildReportUserWhere = (req) => {
 
 const getQuizReport = async (req, res) => {
   try {
+    const role = req.user.role;
+    const userId = req.user.id;
+    const { startDate, endDate, nodalCentreId, experimentId, passed } = req.query;
+
+    const dateFilter = {};
+    if (startDate) dateFilter.gte = new Date(startDate);
+    if (endDate) {
+      const end = new Date(endDate);
+      end.setHours(23, 59, 59, 999);
+      dateFilter.lte = end;
+    }
+    const hasDate = Object.keys(dateFilter).length > 0;
+
+    let userFilter = {};
+    if (role === 'teacher') {
+      userFilter = { nodalCentreId: req.user.nodalCentreId };
+    } else if (role === 'nodal_centre') {
+      userFilter = { nodalCentreId: userId };
+    } else if (role === 'vl_coordinator') {
+      userFilter = { createdById: userId };
+    } else if (nodalCentreId && nodalCentreId !== 'all') {
+      userFilter.nodalCentreId = nodalCentreId;
+    }
+    userFilter.role = { not: 'guest' };
+
+    const whereClause = {};
+    if (role !== 'admin' && role !== 'vl_manager') {
+      whereClause.user = userFilter;
+    } else if (Object.keys(userFilter).length > 0) {
+      whereClause.user = userFilter;
+    }
+
+    if (hasDate) whereClause.createdAt = dateFilter;
+    if (experimentId && experimentId !== 'all') whereClause.experimentId = experimentId;
+    if (passed !== undefined && passed !== 'all') {
+      whereClause.passed = passed === 'true' || passed === true;
+    }
+
     const attempts = await prisma.quizAttempt.findMany({
-      where: buildReportUserWhere(req),
+      where: whereClause,
       include: {
-        user: { select: { name: true, email: true, dept: true } },
-        experiment: { select: { title: true, lab: { select: { title: true } } } },
+        user: {
+          select: {
+            name: true,
+            email: true,
+            dept: true,
+            nodalCentre: { select: { name: true } }
+          }
+        },
+        experiment: { select: { id: true, title: true, lab: { select: { title: true } } } },
       },
       orderBy: { createdAt: 'desc' },
+      take: 2000,
     });
 
     res.json(attempts);
@@ -576,13 +675,57 @@ const getQuizReport = async (req, res) => {
 
 const getFeedbackReport = async (req, res) => {
   try {
+    const role = req.user.role;
+    const userId = req.user.id;
+    const { startDate, endDate, nodalCentreId, rating } = req.query;
+
+    const dateFilter = {};
+    if (startDate) dateFilter.gte = new Date(startDate);
+    if (endDate) {
+      const end = new Date(endDate);
+      end.setHours(23, 59, 59, 999);
+      dateFilter.lte = end;
+    }
+    const hasDate = Object.keys(dateFilter).length > 0;
+
+    let userFilter = {};
+    if (role === 'teacher') {
+      userFilter = { nodalCentreId: req.user.nodalCentreId };
+    } else if (role === 'nodal_centre') {
+      userFilter = { nodalCentreId: userId };
+    } else if (role === 'vl_coordinator') {
+      userFilter = { createdById: userId };
+    } else if (nodalCentreId && nodalCentreId !== 'all') {
+      userFilter.nodalCentreId = nodalCentreId;
+    }
+    userFilter.role = { not: 'guest' };
+
+    const whereClause = {};
+    if (role !== 'admin' && role !== 'vl_manager') {
+      whereClause.user = userFilter;
+    } else if (Object.keys(userFilter).length > 0) {
+      whereClause.user = userFilter;
+    }
+
+    if (hasDate) whereClause.createdAt = dateFilter;
+    if (rating && rating !== 'all') {
+      whereClause.rating = parseInt(rating);
+    }
+
     const feedbacks = await prisma.feedback.findMany({
-      where: buildReportUserWhere(req),
+      where: whereClause,
       include: {
-        user: { select: { name: true, email: true } },
+        user: {
+          select: {
+            name: true,
+            email: true,
+            nodalCentre: { select: { name: true } }
+          }
+        },
         experiment: { select: { title: true, lab: { select: { title: true } } } },
       },
       orderBy: { createdAt: 'desc' },
+      take: 2000,
     });
 
     res.json(feedbacks);
@@ -594,14 +737,51 @@ const getFeedbackReport = async (req, res) => {
 
 const getPagewiseReport = async (req, res) => {
   try {
+    const role = req.user.role;
+    const userId = req.user.id;
+    const { startDate, endDate, nodalCentreId, labId } = req.query;
+
+    const dateFilter = {};
+    if (startDate) dateFilter.gte = new Date(startDate);
+    if (endDate) {
+      const end = new Date(endDate);
+      end.setHours(23, 59, 59, 999);
+      dateFilter.lte = end;
+    }
+    const hasDate = Object.keys(dateFilter).length > 0;
+
+    let userFilter = {};
+    if (role === 'teacher') {
+      userFilter = { nodalCentreId: req.user.nodalCentreId };
+    } else if (role === 'nodal_centre') {
+      userFilter = { nodalCentreId: userId };
+    } else if (role === 'vl_coordinator') {
+      userFilter = { createdById: userId };
+    } else if (nodalCentreId && nodalCentreId !== 'all') {
+      userFilter.nodalCentreId = nodalCentreId;
+    }
+    userFilter.role = { not: 'guest' };
+
+    const whereClause = {};
+    if (role !== 'admin' && role !== 'vl_manager') {
+      whereClause.user = userFilter;
+    } else if (Object.keys(userFilter).length > 0) {
+      whereClause.user = userFilter;
+    }
+    if (hasDate) whereClause.createdAt = dateFilter;
+    if (labId && labId !== 'all') {
+      whereClause.experiment = { labId };
+    }
+
     const visits = await prisma.experimentVisit.findMany({
-      where: buildReportUserWhere(req),
+      where: whereClause,
       include: {
         experiment: {
           select: {
             id: true,
             title: true,
-            lab: { select: { title: true } }
+            labId: true,
+            lab: { select: { id: true, title: true } }
           }
         }
       }
@@ -641,6 +821,125 @@ const getPagewiseReport = async (req, res) => {
   }
 };
 
+// ── GET NODAL CENTRE USAGE REPORT ─────────────────────────────
+// GET /api/analytics/reports/nodal-centres
+const getNodalCentreReport = async (req, res) => {
+  try {
+    const role = req.user.role;
+    const userId = req.user.id;
+    const { startDate, endDate, nodalCentreId } = req.query;
+
+    const dateFilter = {};
+    if (startDate) dateFilter.gte = new Date(startDate);
+    if (endDate) {
+      const end = new Date(endDate);
+      end.setHours(23, 59, 59, 999);
+      dateFilter.lte = end;
+    }
+    const hasDate = Object.keys(dateFilter).length > 0;
+
+    let instFilter = { isActive: true };
+    if (role === 'nodal_centre') {
+      instFilter = { id: userId };
+    } else if (role === 'teacher' && req.user.nodalCentreId) {
+      instFilter = { id: req.user.nodalCentreId };
+    } else if (nodalCentreId && nodalCentreId !== 'all') {
+      instFilter = { id: nodalCentreId };
+    }
+
+    const institutions = await prisma.institution.findMany({
+      where: instFilter,
+      select: {
+        id: true,
+        name: true,
+        code: true,
+        collegeId: true,
+        users: {
+          select: {
+            id: true,
+            role: true,
+            dept: true,
+            course: true,
+            experimentVisits: {
+              where: hasDate ? { createdAt: dateFilter } : {},
+              select: { duration: true, experimentId: true, createdAt: true }
+            },
+            quizAttempts: {
+              where: hasDate ? { createdAt: dateFilter } : {},
+              select: { score: true, maxScore: true, passed: true }
+            }
+          }
+        }
+      },
+      orderBy: { name: 'asc' }
+    });
+
+    const report = institutions.map(inst => {
+      const allUsers = inst.users || [];
+      const students = allUsers.filter(u => u.role === 'student');
+      const teachers = allUsers.filter(u => u.role === 'teacher');
+
+      let totalVisits = 0;
+      let totalDurationSec = 0;
+      const uniqueStudentActiveSet = new Set();
+      const uniqueExpsSet = new Set();
+      let totalQuizAttempts = 0;
+      let passedQuizAttempts = 0;
+      let scoreSumRatio = 0;
+
+      allUsers.forEach(u => {
+        const visits = u.experimentVisits || [];
+        if (visits.length > 0 && u.role === 'student') {
+          uniqueStudentActiveSet.add(u.id);
+        }
+        visits.forEach(v => {
+          totalVisits++;
+          totalDurationSec += (v.duration || 0);
+          if (v.experimentId) uniqueExpsSet.add(v.experimentId);
+        });
+
+        const quizzes = u.quizAttempts || [];
+        quizzes.forEach(q => {
+          totalQuizAttempts++;
+          if (q.passed) passedQuizAttempts++;
+          if (q.maxScore > 0) scoreSumRatio += (q.score / q.maxScore);
+        });
+      });
+
+      const avgQuizScore = totalQuizAttempts > 0
+        ? Math.round((scoreSumRatio / totalQuizAttempts) * 100)
+        : 0;
+      const quizPassRate = totalQuizAttempts > 0
+        ? Math.round((passedQuizAttempts / totalQuizAttempts) * 100)
+        : 0;
+
+      return {
+        id: inst.id,
+        name: inst.name,
+        code: inst.code,
+        collegeId: inst.collegeId,
+        totalRegisteredStudents: students.length,
+        totalRegisteredTeachers: teachers.length,
+        activeStudents: uniqueStudentActiveSet.size,
+        totalVisits,
+        totalMinutesSpent: Math.round(totalDurationSec / 60),
+        uniqueExperimentsRun: uniqueExpsSet.size,
+        totalQuizAttempts,
+        avgQuizScore,
+        quizPassRate,
+      };
+    });
+
+    // Sort by totalVisits descending
+    report.sort((a, b) => b.totalVisits - a.totalVisits);
+
+    res.json(report);
+  } catch (err) {
+    console.error('getNodalCentreReport error:', err);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
 module.exports = {
   recordVisit,
   updateVisit,
@@ -653,4 +952,5 @@ module.exports = {
   getQuizReport,
   getFeedbackReport,
   getPagewiseReport,
+  getNodalCentreReport,
 };

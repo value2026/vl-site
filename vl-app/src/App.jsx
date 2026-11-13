@@ -22,6 +22,7 @@ import Login         from './pages/Login';
 import GuestAccess   from './pages/GuestAccess';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword  from './pages/ResetPassword';
+import ActivateAccount from './pages/ActivateAccount';
 
 // Dashboard pages (admin / nodal centre / teacher)
 import AdminDashboard       from './pages/dashboards/AdminDashboard';
@@ -229,7 +230,7 @@ function FloatingDashboardButton() {
 function AppLayout() {
   const { pathname, search } = useLocation();
   const isDashboard  = DASHBOARD_PATHS.some((p) => pathname.startsWith(p));
-  const hideShell    = isDashboard || pathname === '/login' || pathname === '/guest' || pathname === '/forgot-password' || pathname === '/reset-password';
+  const hideShell    = isDashboard || pathname === '/login' || pathname === '/guest' || pathname === '/forgot-password' || pathname === '/reset-password' || pathname === '/activate';
 
   useEffect(() => {
     if (isDashboard) {
@@ -245,6 +246,7 @@ function AppLayout() {
         <Route path="/guest" element={<GuestAccess />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/activate" element={<ActivateAccount />} />
 
         {/* Shared Profile Route */}
         <Route path="/dashboard/profile" element={

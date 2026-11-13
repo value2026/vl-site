@@ -24,11 +24,12 @@ const ROLE_LABELS = {
   vl_coordinator: 'VL Co-ordinator',
 };
 
-export default function UserTable({ users, loading, onRefresh, hideActions = false, viewOnly = false }) {
+export default function UserTable({ users, loading, onRefresh, hideActions = false, viewOnly = false, initialInstitution = 'all' }) {
   const { user: self } = useAuth();
   const [search, setSearch]   = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [institutionFilter, setInstitutionFilter] = useState(initialInstitution || 'all');
   const [sortKey, setSortKey] = useState('createdAt');
   const [sortDir, setSortDir] = useState('desc');
   const [error, setError] = useState('');
@@ -47,14 +48,30 @@ export default function UserTable({ users, loading, onRefresh, hideActions = fal
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
+  // Derive unique institutions present in the users list
+  const institutionOptions = Array.from(
+    new Map(
+      users
+        .filter(u => u.nodalCentre?.name || u.nodalCentreId)
+        .map(u => [u.nodalCentreId || u.nodalCentre?.name, {
+          id: u.nodalCentreId || u.nodalCentre?.name,
+          name: u.nodalCentre?.name || u.org || 'Unnamed Institution'
+        }])
+    ).values()
+  ).sort((a, b) => a.name.localeCompare(b.name));
+
   const filtered = users
     .filter((u) => {
       const matchSearch = u.name.toLowerCase().includes(search.toLowerCase()) ||
                           u.email.toLowerCase().includes(search.toLowerCase()) ||
-                          ROLE_LABELS[u.role]?.toLowerCase().includes(search.toLowerCase());
+                          ROLE_LABELS[u.role]?.toLowerCase().includes(search.toLowerCase()) ||
+                          (u.nodalCentre?.name && u.nodalCentre.name.toLowerCase().includes(search.toLowerCase()));
       const matchRole = roleFilter === 'all' || u.role === roleFilter;
       const matchStatus = statusFilter === 'all' || (statusFilter === 'active' ? u.isActive : !u.isActive);
-      return matchSearch && matchRole && matchStatus;
+      const matchInstitution = institutionFilter === 'all' ||
+                               u.nodalCentreId === institutionFilter ||
+                               u.nodalCentre?.name === institutionFilter;
+      return matchSearch && matchRole && matchStatus && matchInstitution;
     })
     .sort((a, b) => {
       const va = a[sortKey] || '';
@@ -72,7 +89,7 @@ export default function UserTable({ users, loading, onRefresh, hideActions = fal
   // Reset page when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [search, roleFilter, statusFilter, sortKey, sortDir]);
+  }, [search, roleFilter, statusFilter, institutionFilter, sortKey, sortDir]);
 
   const totalPages = Math.ceil(filtered.length / itemsPerPage) || 1;
   const paginatedUsers = filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
@@ -245,11 +262,26 @@ export default function UserTable({ users, loading, onRefresh, hideActions = fal
             className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
           />
         </div>
+
+        {/* Institution Filter Dropdown */}
+        <select
+          value={institutionFilter}
+          onChange={(e) => setInstitutionFilter(e.target.value)}
+          className="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 appearance-none min-w-[180px] max-w-[260px] truncate cursor-pointer"
+          title="Filter by Institution / Nodal Centre"
+        >
+          <option value="all" className="bg-slate-900">All Institutions</option>
+          {institutionOptions.map(inst => (
+            <option key={inst.id} value={inst.id} className="bg-slate-900">
+              {inst.name}
+            </option>
+          ))}
+        </select>
         
         {viewOnly && (
           <button 
             onClick={handleExportCSV}
-            className="flex items-center gap-2 px-4 py-2.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/20 rounded-xl text-sm font-semibold transition-all shadow-sm whitespace-nowrap"
+            className="flex items-center gap-2 px-4 py-2.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/20 rounded-xl text-sm font-semibold transition-all shadow-sm whitespace-nowrap cursor-pointer"
           >
             <Download className="w-4 h-4" /> Export CSV
           </button>

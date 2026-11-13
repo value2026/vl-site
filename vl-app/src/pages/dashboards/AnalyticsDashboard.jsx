@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import {
   TrendingUp, Users, Eye, FileText, CheckCircle2,
   Tv, Smartphone, Laptop, Loader2, Award, Clock, Star,
-  AlertCircle
+  AlertCircle, Building2, Filter, RotateCcw, Calendar
 } from 'lucide-react';
 import { api } from '../../utils/api';
 import UserTable from '../../components/dashboard/UserTable';
@@ -117,6 +117,54 @@ export default function AnalyticsDashboard() {
   const [users, setUsers] = useState([]);
   const [usersLoading, setUsersLoading] = useState(true);
 
+  // Filters for Academic & Lab Reports dashboard
+  const [institutions, setInstitutions] = useState([]);
+  const [selectedNodalCentre, setSelectedNodalCentre] = useState('all');
+  const [dateRangePreset, setDateRangePreset] = useState('all');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+
+  // Load institutions list for dropdown
+  useEffect(() => {
+    const fetchInstitutions = async () => {
+      try {
+        const res = await api.get('/institutions');
+        if (res.ok) setInstitutions(await res.json());
+      } catch (err) {
+        console.error('Error fetching institutions:', err);
+      }
+    };
+    fetchInstitutions();
+  }, []);
+
+  const handleDatePresetChange = (preset) => {
+    setDateRangePreset(preset);
+    const now = new Date();
+    if (preset === 'today') {
+      const todayStr = now.toISOString().split('T')[0];
+      setStartDate(todayStr);
+      setEndDate(todayStr);
+    } else if (preset === '7days') {
+      const past = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+      setStartDate(past.toISOString().split('T')[0]);
+      setEndDate(now.toISOString().split('T')[0]);
+    } else if (preset === '30days') {
+      const past = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+      setStartDate(past.toISOString().split('T')[0]);
+      setEndDate(now.toISOString().split('T')[0]);
+    } else if (preset === 'all') {
+      setStartDate('');
+      setEndDate('');
+    }
+  };
+
+  const resetFilters = () => {
+    setSelectedNodalCentre('all');
+    setDateRangePreset('all');
+    setStartDate('');
+    setEndDate('');
+  };
+
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -133,8 +181,17 @@ export default function AnalyticsDashboard() {
 
   useEffect(() => {
     const fetchStats = async () => {
+      setLoading(true);
       try {
-        const res = await api.get('/analytics/dashboard');
+        const params = new URLSearchParams();
+        if (selectedNodalCentre && selectedNodalCentre !== 'all') {
+          params.set('nodalCentreId', selectedNodalCentre);
+        }
+        if (startDate) params.set('startDate', startDate);
+        if (endDate) params.set('endDate', endDate);
+        const qStr = params.toString() ? `?${params.toString()}` : '';
+
+        const res = await api.get(`/analytics/dashboard${qStr}`);
         if (res.ok) setStats(await res.json());
       } catch (err) {
         console.error(err);
@@ -143,7 +200,7 @@ export default function AnalyticsDashboard() {
       }
     };
     fetchStats();
-  }, []);
+  }, [selectedNodalCentre, startDate, endDate]);
 
   useEffect(() => {
     if (activeTab === 'google-analytics' && !gaStats && !gaLoading) {
@@ -218,6 +275,78 @@ export default function AnalyticsDashboard() {
 
       {activeTab === 'academic' ? (
         <div className="space-y-6">
+          {/* Nodal Centre & Timeline Filter Bar */}
+          <div className="bg-slate-900/40 border border-white/10 rounded-2xl p-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold text-slate-300 flex items-center gap-1.5 uppercase tracking-wider">
+                <Filter className="w-3.5 h-3.5 text-blue-400" /> Filter Usage:
+              </span>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-3">
+              {/* Nodal Centre Dropdown */}
+              <div className="flex items-center gap-2">
+                <Building2 className="w-4 h-4 text-slate-400" />
+                <select
+                  value={selectedNodalCentre}
+                  onChange={(e) => setSelectedNodalCentre(e.target.value)}
+                  className="bg-slate-950/70 border border-white/10 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-blue-500 transition-all"
+                >
+                  <option value="all">All Nodal Centres ({institutions.length})</option>
+                  {institutions.map(inst => (
+                    <option key={inst.id} value={inst.id}>
+                      {inst.name} {inst.code ? `(${inst.code})` : ''}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Timeline Preset */}
+              <div className="flex items-center gap-2">
+                <Calendar className="w-4 h-4 text-slate-400" />
+                <select
+                  value={dateRangePreset}
+                  onChange={(e) => handleDatePresetChange(e.target.value)}
+                  className="bg-slate-950/70 border border-white/10 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-blue-500 transition-all"
+                >
+                  <option value="all">All Time</option>
+                  <option value="today">Today</option>
+                  <option value="7days">Last 7 Days</option>
+                  <option value="30days">Last 30 Days</option>
+                  <option value="custom">Custom Range...</option>
+                </select>
+              </div>
+
+              {/* Custom Date Inputs */}
+              {dateRangePreset === 'custom' && (
+                <div className="flex items-center gap-2">
+                  <input
+                    type="date"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    className="bg-slate-950 border border-white/10 rounded-lg px-2 py-1 text-xs text-white focus:outline-none focus:border-blue-500"
+                  />
+                  <span className="text-xs text-slate-500">to</span>
+                  <input
+                    type="date"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    className="bg-slate-950 border border-white/10 rounded-lg px-2 py-1 text-xs text-white focus:outline-none focus:border-blue-500"
+                  />
+                </div>
+              )}
+
+              {(selectedNodalCentre !== 'all' || dateRangePreset !== 'all') && (
+                <button
+                  onClick={resetFilters}
+                  className="text-xs text-rose-400 hover:text-rose-300 flex items-center gap-1 font-semibold ml-1 cursor-pointer transition-colors"
+                >
+                  <RotateCcw className="w-3 h-3" /> Reset
+                </button>
+              )}
+            </div>
+          </div>
+
           {/* Overview stats cards */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {[

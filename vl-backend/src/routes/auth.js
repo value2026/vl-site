@@ -14,6 +14,8 @@ const {
   changePassword,
   recordLogout,
   refreshTokenEndpoint,
+  activateAccount,
+  resendActivation,
 } = require('../controllers/authController');
 const { verifyToken }  = require('../middleware/auth');
 
@@ -63,5 +65,9 @@ router.post('/logout', recordLogout); // Log logout reason
 router.post('/forgot-password', forgotPassword);
 router.post('/reset-password',  resetPassword);
 router.post('/change-password',  verifyToken, changePassword);
+
+// Account activation (admin-created users)
+router.post('/activate',          activateAccount);
+router.post('/resend-activation', resendActivation);
 
 module.exports = router;

@@ -47,54 +47,62 @@ async function getTransporter() {
 }
 
 /**
- * Sends a welcome email to the newly created user containing their credentials.
+ * Sends an activation email to a newly created user with a link to set their password.
  */
-async function sendWelcomeEmail(user, plainTextPassword) {
+async function sendActivationEmail(user, token) {
   const from = process.env.SMTP_FROM || '"Virtual Labs Admin" <no-reply@virtuallabs.in>';
   const frontendUrl = (process.env.FRONTEND_URL || '').replace(/\/+$/, '');
-  const loginUrl = `${frontendUrl}/login`;
-  
+  const activationLink = `${frontendUrl}/activate?token=${token}`;
+
   const htmlContent = `
-    <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 550px; margin: 0 auto; padding: 24px; border: 1px solid #f1f5f9; rounded: 16px; background-color: #ffffff;">
+    <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 550px; margin: 0 auto; padding: 24px; border: 1px solid #f1f5f9; border-radius: 16px; background-color: #ffffff;">
       <div style="text-align: center; margin-bottom: 24px; border-bottom: 1px solid #f1f5f9; padding-bottom: 16px;">
         <span style="font-size: 24px;">🔬</span>
         <h2 style="color: #0f172a; margin-top: 10px; margin-bottom: 0;">Welcome to Virtual Labs</h2>
-        <p style="color: #64748b; font-size: 13px; margin: 4px 0 0 0;">Your academic simulator account is ready</p>
+        <p style="color: #64748b; font-size: 13px; margin: 4px 0 0 0;">Activate your account to get started</p>
       </div>
 
       <p style="color: #334155; font-size: 14px; line-height: 1.5;">Hello <strong>${user.name}</strong>,</p>
-      <p style="color: #334155; font-size: 14px; line-height: 1.5;">An account has been created for you by the administrator on the Virtual Labs platform. You can now log in using the credentials below:</p>
-
-      <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; margin: 20px 0; font-family: monospace; font-size: 14px;">
-        <div style="margin-bottom: 8px;"><strong style="color: #475569;">Username:</strong> <span style="color: #0f172a; font-weight: bold;">${user.username}</span></div>
-        <div style="margin-bottom: 8px;"><strong style="color: #475569;">Email:</strong> <span style="color: #0f172a;">${user.email}</span></div>
-        <div><strong style="color: #475569;">Password:</strong> <span style="color: #dc2626; font-weight: bold;">${plainTextPassword}</span></div>
-      </div>
-
-      <p style="color: #ef4444; font-size: 11px; font-weight: bold; margin: -10px 0 20px 0;">⚠️ Please change your password immediately after logging in for security.</p>
-
-      <div style="text-align: center; margin: 24px 0;">
-        <a href="${loginUrl}" target="_blank" style="background-color: #2563eb; color: #ffffff; padding: 12px 28px; border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: bold; display: inline-block;">Log In to Platform</a>
-      </div>
-
-      <p style="color: #64748b; font-size: 11px; border-top: 1px solid #f1f5f9; padding-top: 16px; margin-top: 24px; text-align: center;">
-        This is an automated message. Please do not reply directly to this email.
+      <p style="color: #334155; font-size: 14px; line-height: 1.5;">
+        An account has been created for you on the Virtual Labs platform.<br/>
+        Click the button below to <strong>set your password</strong> and activate your account.
       </p>
+
+      <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; margin: 20px 0; font-size: 14px;">
+        <div style="margin-bottom: 6px;"><strong style="color: #475569;">Username:</strong> <span style="color: #0f172a; font-weight: bold;">${user.username}</span></div>
+        <div><strong style="color: #475569;">Email:</strong> <span style="color: #0f172a;">${user.email}</span></div>
+      </div>
+
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="${activationLink}" target="_blank"
+           style="background-color: #16a34a; color: #ffffff; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-size: 15px; font-weight: bold; display: inline-block;">
+          ✅ Activate My Account
+        </a>
+      </div>
+
+      <p style="color: #64748b; font-size: 12px; line-height: 1.5;">
+        This activation link will expire in <strong>24 hours</strong>. If you did not expect this email, please ignore it.
+      </p>
+
+      <div style="margin-top: 16px; font-size: 11px; color: #94a3b8; border-top: 1px solid #f1f5f9; padding-top: 16px; word-break: break-all;">
+        If the button doesn't work, copy and paste this link into your browser:<br/>
+        <a href="${activationLink}" style="color: #2563eb;">${activationLink}</a>
+      </div>
     </div>
   `;
 
   const textContent = `
 Hello ${user.name},
 
-Welcome to Virtual Labs! An account has been created for you on the platform.
+Welcome to Virtual Labs! An account has been created for you.
 
-Your credentials:
 Username: ${user.username}
 Email: ${user.email}
-Password: ${plainTextPassword}
 
-Please log in at: ${loginUrl}
-Make sure to change your password after logging in for security.
+To set your password and activate your account, visit:
+${activationLink}
+
+This link is valid for 24 hours.
   `;
 
   try {
@@ -102,21 +110,18 @@ Make sure to change your password after logging in for security.
     const info = await transporter.sendMail({
       from,
       to: user.email,
-      subject: 'Welcome to Virtual Labs — Your Account Credentials',
+      subject: 'Activate Your Virtual Labs Account',
       text: textContent,
       html: htmlContent,
     });
-    console.log(`✉️ Mailer: Welcome email sent successfully to ${user.email} (Id: ${info.messageId})`);
-    
-    // If it's an Ethereal test account, log the URL where it can be previewed!
+    console.log(`✉️ Mailer: Activation email sent to ${user.email} (Id: ${info.messageId})`);
     if (info.messageId && info.messageId.includes('ethereal')) {
       const nodemailerLib = require('nodemailer');
-      console.log('✉️ Ethereal Preview URL:', nodemailerLib.getTestMessageUrl(info));
+      console.log('✉️ Ethereal Activation Preview URL:', nodemailerLib.getTestMessageUrl(info));
     }
-    
     return true;
   } catch (err) {
-    console.error('❌ Mailer Error: Failed to send welcome email.', err);
+    console.error('❌ Mailer Error: Failed to send activation email.', err);
     return false;
   }
 }
@@ -446,7 +451,7 @@ This code expires in 15 minutes.
 }
 
 module.exports = {
-  sendWelcomeEmail,
+  sendActivationEmail,
   sendPasswordResetEmail,
   sendWorkshopApprovalEmail,
   sendHostWorkshopRequestEmail,

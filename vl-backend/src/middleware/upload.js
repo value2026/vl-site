@@ -12,7 +12,8 @@ const storage = multer.diskStorage({
     cb(null, tmpDir);
   },
   filename: (_req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`);
+    const safeName = file.originalname.replace(/\s+/g, '-');
+    cb(null, `${Date.now()}-${safeName}`);
   },
 });
 
@@ -27,7 +28,7 @@ const fileFilter = (_req, file, cb) => {
 const upload = multer({
   storage,
   fileFilter,
-  limits: { fileSize: 100 * 1024 * 1024 }, // 100 MB
+  limits: { fileSize: 1000 * 1024 * 1024 }, // 1000 MB
 });
 
 // ── Extracts zip to targetDir, then deletes the temp zip ────

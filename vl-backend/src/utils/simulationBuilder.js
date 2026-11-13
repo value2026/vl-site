@@ -10,8 +10,25 @@ const PUBLIC_UPLOADS = path.join(__dirname, '..', '..', 'uploads');
  */
 function ensureRootIndexHtml(dir) {
   if (!fs.existsSync(dir)) return;
+
+  const findInDir = (currentDir, filename) => {
+    if (!fs.existsSync(currentDir)) return null;
+    const items = fs.readdirSync(currentDir);
+    const found = items.find(i => i.toLowerCase() === filename.toLowerCase());
+    return found ? path.join(currentDir, found) : null;
+  };
+
   const rootIndex = path.join(dir, 'index.html');
-  if (fs.existsSync(rootIndex)) return;
+  const existingIndex = findInDir(dir, 'index.html');
+
+  if (existingIndex) {
+    if (path.basename(existingIndex) !== 'index.html') {
+      try {
+        fs.copyFileSync(existingIndex, rootIndex);
+      } catch (_) {}
+    }
+    return;
+  }
 
   const findIndexRecursive = (currentDir, depth = 0) => {
     if (depth > 4) return null;
@@ -42,7 +59,14 @@ function ensureRootIndexHtml(dir) {
         fs.cpSync(src, dst, { recursive: true, force: true });
       }
     }
-    // Clean up the empty parent directory if it's not the root itself
+
+    const movedIndex = findInDir(dir, 'index.html');
+    if (movedIndex && path.basename(movedIndex) !== 'index.html') {
+      try {
+        fs.copyFileSync(movedIndex, rootIndex);
+      } catch (_) {}
+    }
+
     try {
       if (parentDir !== dir && fs.existsSync(parentDir)) {
         fs.rmSync(parentDir, { recursive: true, force: true });
