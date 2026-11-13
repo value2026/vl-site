@@ -1,6 +1,7 @@
+const crypto           = require('crypto');
 const bcrypt           = require('bcryptjs');
 const prisma           = require('../db');
-const { sendWelcomeEmail, sendEmailVerificationOtp } = require('../utils/mailer');
+const { sendActivationEmail, sendEmailVerificationOtp } = require('../utils/mailer');
 
 // Store pending email updates in memory: targetId -> { email, otp, expiresAt }
 const emailUpdateOtps = new Map();
@@ -113,30 +114,6 @@ const getUsers = async (req, res) => {
   }
 };
 
-// Helper function to generate a secure random password
-const generateRandomPassword = () => {
-  const lowercase = 'abcdefghijklmnopqrstuvwxyz';
-  const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  const numbers   = '0123456789';
-  const symbols   = '!@#$%^&*';
-  const allChars  = lowercase + uppercase + numbers + symbols;
-
-  let password = '';
-  // Ensure at least one of each character type for basic strength
-  password += lowercase[Math.floor(Math.random() * lowercase.length)];
-  password += uppercase[Math.floor(Math.random() * uppercase.length)];
-  password += numbers[Math.floor(Math.random() * numbers.length)];
-  password += symbols[Math.floor(Math.random() * symbols.length)];
-
-  // Fill the rest up to 10 characters
-  for (let i = 0; i < 6; i++) {
-    password += allChars[Math.floor(Math.random() * allChars.length)];
-  }
-
-  // Shuffle the password
-  return password.split('').sort(() => 0.5 - Math.random()).join('');
-};
-
 // ── POST /api/users ────────────────────────────────────────────
 const createUser = async (req, res) => {
   try {
@@ -209,9 +186,11 @@ const createUser = async (req, res) => {
       }
     }
 
-    // Autogenerate a secure password
-    const plainTextPassword = generateRandomPassword();
-    const hashed = await bcrypt.hash(plainTextPassword, 12);
+    // Generate activation token (user will set their own password via email link)
+    const activationToken = crypto.randomBytes(32).toString('hex');
+    const activationTokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+    // Store a placeholder hashed password — unusable until account is activated
+    const hashed = await bcrypt.hash(crypto.randomBytes(32).toString('hex'), 12);
 
     const newUser = await prisma.user.create({
       data: {
@@ -248,6 +227,11 @@ const createUser = async (req, res) => {
           ? req.body.customPermissions
           : (ROLE_DEFAULT_PERMISSIONS[newRole] || []),
         managedSubjectIds: req.body.managedSubjectIds ? req.body.managedSubjectIds : [],
+
+        // Activation
+        isActivated:           false,
+        activationToken:       activationToken,
+        activationTokenExpiry: activationTokenExpiry,
       },
       select: {
         id:           true,
@@ -265,9 +249,9 @@ const createUser = async (req, res) => {
       },
     });
 
-    // Send welcome email in background
-    sendWelcomeEmail(newUser, plainTextPassword).catch(err => {
-      console.error('❌ Mailer error: Failed to dispatch welcome email inside createUser:', err);
+    // Send activation email in background
+    sendActivationEmail(newUser, activationToken).catch(err => {
+      console.error('❌ Mailer error: Failed to dispatch activation email inside createUser:', err);
     });
 
     res.status(201).json(newUser);
@@ -549,17 +533,24 @@ const bulkCreateStudents = async (req, res) => {
         targetCentreId = collegeIdMap.get(String(targetSchoolId).trim());
       }
 
-      // Password handling
-      const rawPassword = (password && String(password).trim()) ? String(password).trim() : generateRandomPassword();
+      // Password handling — for bulk we still use a placeholder hash; each user activates via email
+      const rawPassword = (password && String(password).trim()) ? String(password).trim() : null;
       let hashedPassword;
 
-      // Check if password is already a bcrypt hash (starts with $2a$, $2b$, $2y$)
-      if (/^\$2[aby]\$/.test(rawPassword)) {
+      if (rawPassword && /^\$2[aby]\$/.test(rawPassword)) {
+        // Already a bcrypt hash (migration mode)
         hashedPassword = rawPassword;
-      } else {
-        // Fast hashing
+      } else if (rawPassword) {
+        // Provided plain password (migration mode — use as-is)
         hashedPassword = await bcrypt.hash(rawPassword, 10);
+      } else {
+        // Normal creation — placeholder hash, user sets password via activation link
+        hashedPassword = await bcrypt.hash(crypto.randomBytes(32).toString('hex'), 10);
       }
+
+      // Generate activation token
+      const bulkActivationToken = crypto.randomBytes(32).toString('hex');
+      const bulkActivationExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
       batchToInsert.push({
         name:          name.trim(),
@@ -578,8 +569,13 @@ const bulkCreateStudents = async (req, res) => {
         studentId:     student.studentId || null,
         section:       student.section ? String(student.section).trim() : null,
         mobile:        student.mobile || null,
-        // Save unhashed password strictly if email sending is enabled for NEW users, otherwise ignored
+        // Activation fields — only set if no password was explicitly provided (migration bypass)
+        isActivated:           !!rawPassword, // migration users are pre-activated
+        activationToken:       rawPassword ? null : bulkActivationToken,
+        activationTokenExpiry: rawPassword ? null : bulkActivationExpiry,
+        // Temp field for email sending
         _plainPassword: rawPassword,
+        _activationToken: bulkActivationToken,
       });
     }
 
@@ -587,7 +583,7 @@ const bulkCreateStudents = async (req, res) => {
 
     if (batchToInsert.length > 0) {
       // Prepare array for createMany (strip temporary fields)
-      const dataForDb = batchToInsert.map(({ _plainPassword, ...userObj }) => userObj);
+      const dataForDb = batchToInsert.map(({ _plainPassword, _activationToken, ...userObj }) => userObj);
 
       try {
         const result = await prisma.user.createMany({
@@ -608,13 +604,14 @@ const bulkCreateStudents = async (req, res) => {
         }
       }
 
-      // STRICT CHECK: Send welcome emails ONLY if sendEmails is true AND NOT in migration mode
+      // Send activation emails ONLY if sendEmails is true AND NOT in migration mode
       if (sendEmails && !isMigration) {
-        // Send welcome emails in background for new users
         for (const item of batchToInsert) {
-          sendWelcomeEmail(item, item._plainPassword).catch(err => {
-            console.error(`❌ Mailer error for ${item.email}:`, err.message);
-          });
+          if (!item.isActivated && item._activationToken) {
+            sendActivationEmail(item, item._activationToken).catch(err => {
+              console.error(`❌ Activation email error for ${item.email}:`, err.message);
+            });
+          }
         }
       }
     }

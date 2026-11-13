@@ -18,6 +18,7 @@ async function main() {
         email: adminEmail,
         password: hashed,
         role: 'admin',
+        isActivated: true,  // admin is always pre-activated
       },
     });
     console.log('✅ Admin user created!');

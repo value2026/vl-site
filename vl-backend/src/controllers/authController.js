@@ -3,7 +3,7 @@ const bcrypt        = require('bcryptjs');
 const jwt           = require('jsonwebtoken');
 const { OAuth2Client } = require('google-auth-library');
 const prisma        = require('../db');
-const { sendPasswordResetEmail, sendGuestVerificationEmail } = require('../utils/mailer');
+const { sendPasswordResetEmail, sendGuestVerificationEmail, sendActivationEmail } = require('../utils/mailer');
 const { logAudit, logError } = require('../utils/logger');
 
 const GUEST_SYSTEM_EMAIL = 'guest@virtuallabs.local';
@@ -906,18 +906,95 @@ const refreshTokenEndpoint = async (req, res) => {
   }
 };
 
+// POST /api/auth/activate
+const activateAccount = async (req, res) => {
+  try {
+    const { token, newPassword } = req.body;
+
+    if (!token || !newPassword) {
+      return res.status(400).json({ message: 'Activation token and new password are required' });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({ message: 'Password must be at least 6 characters long' });
+    }
+
+    const user = await prisma.user.findFirst({
+      where: {
+        activationToken: token,
+        activationTokenExpiry: { gte: new Date() },
+        isActivated: false,
+      }
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        message: 'This activation link is invalid or has expired. Please contact your administrator.',
+        code: 'INVALID_ACTIVATION_TOKEN',
+      });
+    }
+
+    const hashed = await bcrypt.hash(newPassword, 12);
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        password:              hashed,
+        isActivated:           true,
+        activationToken:       null,
+        activationTokenExpiry: null,
+      }
+    });
+
+    logAudit({
+      action: 'ACCOUNT_ACTIVATED',
+      user: user.email,
+      ip: req.ip || req.connection.remoteAddress
+    });
+
+    res.json({ message: 'Account activated successfully! You can now log in.' });
+  } catch (err) {
+    console.error('ActivateAccount error:', err);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+// POST /api/auth/resend-activation
+const resendActivation = async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ message: 'Email is required' });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email: email.toLowerCase().trim() }
+    });
+
+    // Always return a vague success for security
+    if (!user || user.isActivated !== false) {
+      return res.json({ message: 'If this account exists and is pending activation, a new link has been sent.' });
+    }
+
+    const token = crypto.randomBytes(32).toString('hex');
+    const expiry = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { activationToken: token, activationTokenExpiry: expiry }
+    });
+
+    await sendActivationEmail(user, token);
+
+    res.json({ message: 'If this account exists and is pending activation, a new link has been sent.' });
+  } catch (err) {
+    console.error('ResendActivation error:', err);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
 module.exports = {
-  login,
-  guestRegister,
-  verifyGuestEmail,
-  resendGuestVerification,
-  googleAuth,
-  getAuthConfig,
-  getMe,
-  updateGuestProfile,
-  forgotPassword,
-  resetPassword,
-  changePassword,
-  recordLogout,
-  refreshTokenEndpoint,
+  login, guestRegister, verifyGuestEmail, resendGuestVerification, googleAuth, getAuthConfig,
+  getMe, updateGuestProfile, forgotPassword, resetPassword, changePassword, recordLogout,
+  refreshTokenEndpoint, activateAccount, resendActivation,
 };
