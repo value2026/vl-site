@@ -15,11 +15,12 @@ const ROLE_BADGE = {
   sim_admin:      'bg-indigo-500/20 text-indigo-300 border-indigo-500/30',
   vl_manager:     'bg-pink-500/20 text-pink-300 border-pink-500/30',
   vl_coordinator: 'bg-violet-500/20 text-violet-300 border-violet-500/30',
+  guest:          'bg-slate-500/20 text-slate-300 border-slate-500/30',
 };
 
 const ROLE_LABELS = {
   admin: 'Admin', nodal_centre: 'Nodal Centre', teacher: 'Teacher', student: 'Student',
-  content_admin: 'Content Admin', sim_admin: 'Sim Admin', vl_manager: 'VL Manager',
+  guest: 'Guest', content_admin: 'Content Admin', sim_admin: 'Sim Admin', vl_manager: 'VL Manager',
   vl_coordinator: 'VL Co-ordinator',
 };
 

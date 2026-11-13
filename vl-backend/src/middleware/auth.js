@@ -59,4 +59,17 @@ const requirePermission = (permissionStr) => (req, res, next) => {
   next();
 };
 
-module.exports = { verifyToken, requireRole, requirePermission };
+/**
+ * Forbids specific roles (e.g., guest) from accessing or mutating protected endpoints.
+ */
+const forbidRoles = (...roles) => (req, res, next) => {
+  if (!req.user) {
+    return res.status(403).json({ message: 'Insufficient permissions' });
+  }
+  if (roles.includes(req.user.role)) {
+    return res.status(403).json({ message: 'This action is not available for guest accounts' });
+  }
+  next();
+};
+
+module.exports = { verifyToken, requireRole, requirePermission, forbidRoles };

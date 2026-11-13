@@ -205,28 +205,39 @@ export function AuthProvider({ children }) {
     return () => clearInterval(interval);
   }, [token]);
 
-  const login = async (email, password) => {
+  const postAuthJson = async (endpoint, payload, fallbackMessage) => {
     let res;
     try {
-      res = await fetch(`${API_URL}/auth/login`, {
+      res = await fetch(`${API_URL}${endpoint}`, {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ email, password }),
+        body:    JSON.stringify(payload),
       });
-    } catch (err) {
+    } catch {
       throw new Error('Network error. Please check your connection or try again later.');
     }
 
     let data;
     const isJson = res.headers.get('content-type')?.includes('application/json');
-    
+
     if (isJson) {
       data = await res.json();
     } else {
       throw new Error(`Server is currently unavailable (Status: ${res.status}). Please try again later.`);
     }
 
-    if (!res.ok) throw new Error(data.message || 'Login failed');
+    if (!res.ok) {
+      const error = new Error(data.message || fallbackMessage);
+      error.requiresVerification = Boolean(data.requiresVerification);
+      if (data.email) error.email = data.email;
+      throw error;
+    }
+
+    return data;
+  };
+
+  const postAuthSession = async (endpoint, payload, fallbackMessage) => {
+    const data = await postAuthJson(endpoint, payload, fallbackMessage);
 
     localStorage.removeItem('vl_token');
     localStorage.removeItem('vl_refresh_token');
@@ -239,8 +250,27 @@ export function AuthProvider({ children }) {
     return data.user;
   };
 
+  const login = (email, password) =>
+    postAuthSession('/auth/login', { email, password }, 'Login failed');
+
+  const guestRegister = (payload) =>
+    postAuthJson('/auth/guest/register', payload, 'Guest registration failed');
+
+  const verifyGuestEmail = (payload) =>
+    postAuthJson('/auth/guest/verify-email', payload, 'Email verification failed');
+
+  const resendGuestVerification = (email) =>
+    postAuthJson('/auth/guest/resend-verification', { email }, 'Could not resend verification code');
+
+  const googleLogin = (payload) =>
+    postAuthSession(
+      '/auth/google',
+      typeof payload === 'string' ? { credential: payload } : payload,
+      'Google sign-in failed'
+    );
+
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, logout, updateProfile, API_URL }}>
+    <AuthContext.Provider value={{ user, token, loading, login, guestRegister, verifyGuestEmail, resendGuestVerification, googleLogin, logout, updateProfile, API_URL }}>
       {children}
 
       {/* Sign Out Animation Overlay */}

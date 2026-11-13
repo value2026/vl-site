@@ -21,16 +21,17 @@ export default function Header() {
   const getDashboardLink = () => {
     if (!user) return '/login';
     const map = {
-      admin:          '/dashboard/admin',
-      vl_manager:     '/dashboard/vl-manager',
+      admin: '/dashboard/admin',
+      vl_manager: '/dashboard/vl-manager',
       vl_coordinator: '/dashboard/vl-coordinator',
-      nodal_centre:   '/dashboard/nodal',
-      teacher:        '/dashboard/teacher',
-      student:        '/student',
+      nodal_centre: '/dashboard/nodal',
+      teacher: '/dashboard/teacher',
+      student: '/student',
+      guest: '/labs',
     };
     return map[user.role] || '/student';
   };
-  const [scrolled, setScrolled]     = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
   const location = useLocation();
   const headerRef = useRef(null);
@@ -98,10 +99,10 @@ export default function Header() {
 
           {/* Right Logo */}
           <Link to="/" className="hidden md:block flex-shrink-0 group">
-            <img 
+            <img
               src={assetUrl('/amrita-vishwa-vidyapeetham-university-logo-colored-version.svg')}
-              alt="Amrita Vishwa Vidyapeetham" 
-              className="h-10 sm:h-[3.25rem] w-auto object-contain transition-transform group-hover:scale-105" 
+              alt="Amrita Vishwa Vidyapeetham"
+              className="h-10 sm:h-[3.25rem] w-auto object-contain transition-transform group-hover:scale-105"
             />
           </Link>
         </div>
@@ -111,18 +112,17 @@ export default function Header() {
       <div className={`transition-all duration-300 ${scrolled ? 'fixed top-0 left-0 right-0 shadow-md bg-white/95 backdrop-blur-xl border-b border-slate-200 z-50' : 'bg-white border-y border-slate-200 z-40 relative shadow-sm'}`}>
         <div className="container-custom">
           <div className="flex items-center justify-between h-14">
-            
+
             {/* Desktop Navigation */}
             <nav className="hidden xl:flex items-center gap-1.5" aria-label="Main navigation">
               {displayNavLinks.map((link) =>
                 link.children ? (
                   <div key={link.label} className="relative flex-shrink-0">
                     <button
-                      className={`flex items-center gap-1 px-4 py-2 rounded-full text-[14px] font-semibold whitespace-nowrap transition-all duration-300 ${
-                        isActive(link.href)
-                          ? 'text-primary-800 bg-primary-50'
-                          : 'text-gray-600 hover:text-primary-800 hover:bg-gray-50'
-                      }`}
+                      className={`flex items-center gap-1 px-4 py-2 rounded-full text-[14px] font-semibold whitespace-nowrap transition-all duration-300 ${isActive(link.href)
+                        ? 'text-primary-800 bg-primary-50'
+                        : 'text-gray-600 hover:text-primary-800 hover:bg-gray-50'
+                        }`}
                       onClick={() =>
                         setOpenDropdown(openDropdown === link.label ? null : link.label)
                       }
@@ -131,9 +131,8 @@ export default function Header() {
                     >
                       <span className="whitespace-nowrap">{link.label}</span>
                       <ChevronDown
-                        className={`w-3.5 h-3.5 flex-shrink-0 transition-transform duration-200 ${
-                          openDropdown === link.label ? 'rotate-180' : ''
-                        }`}
+                        className={`w-3.5 h-3.5 flex-shrink-0 transition-transform duration-200 ${openDropdown === link.label ? 'rotate-180' : ''
+                          }`}
                       />
                     </button>
                     {openDropdown === link.label && (
@@ -154,11 +153,10 @@ export default function Header() {
                   <Link
                     key={link.label}
                     to={link.href}
-                    className={`px-4 py-2 rounded-full text-[14px] font-semibold whitespace-nowrap flex-shrink-0 transition-all duration-300 ${
-                      isActive(link.href)
-                        ? 'text-primary-800 bg-primary-50'
-                        : 'text-gray-600 hover:text-primary-800 hover:bg-gray-50'
-                    }`}
+                    className={`px-4 py-2 rounded-full text-[14px] font-semibold whitespace-nowrap flex-shrink-0 transition-all duration-300 ${isActive(link.href)
+                      ? 'text-primary-800 bg-primary-50'
+                      : 'text-gray-600 hover:text-primary-800 hover:bg-gray-50'
+                      }`}
                   >
                     {link.label}
                   </Link>
@@ -170,13 +168,13 @@ export default function Header() {
             <div className="hidden xl:flex items-center gap-3">
               {user ? (
                 <>
-                  <Link 
-                    to={getDashboardLink()} 
+                  <Link
+                    to={getDashboardLink()}
                     className="group relative inline-flex items-center gap-2.5 px-5 py-2 rounded-full bg-gradient-to-r from-indigo-600 via-primary-700 to-purple-600 text-white font-extrabold text-[14px] shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 hover:scale-[1.03] active:scale-[0.98] transition-all duration-300 overflow-hidden border border-white/20 whitespace-nowrap flex-shrink-0"
                   >
                     {/* Shimmer sweep effect */}
                     <div className="absolute inset-0 w-1/2 h-full bg-white/20 skew-x-12 -translate-x-full group-hover:translate-x-[300%] transition-transform duration-1000 ease-out" />
-                    
+
                     {/* Live pulse dot */}
                     <span className="relative flex h-2 w-2">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -184,9 +182,9 @@ export default function Header() {
                     </span>
 
                     <LayoutDashboard className="w-4 h-4 flex-shrink-0 group-hover:rotate-12 transition-transform duration-300" />
-                    <span className="tracking-wide">{user?.role === 'student' ? 'Learning Workspace' : 'Management Workspace'}</span>
+                    <span className="tracking-wide">{(user?.role === 'student' || user?.role === 'guest') ? 'Learning Workspace' : 'Management Workspace'}</span>
                   </Link>
-                  <button 
+                  <button
                     onClick={() => setShowSignOutModal(true)}
                     className="group relative inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-gradient-to-r from-rose-50 to-red-50 hover:from-rose-500 hover:to-red-600 text-rose-700 hover:text-white font-bold text-[14px] border border-rose-200/80 hover:border-transparent shadow-sm hover:shadow-md hover:shadow-rose-500/20 transition-all duration-300 hover:scale-[1.03] active:scale-[0.98] whitespace-nowrap flex-shrink-0"
                     title="Sign Out"
@@ -240,9 +238,8 @@ export default function Header() {
                   >
                     {link.label}
                     <ChevronDown
-                      className={`w-4 h-4 transition-transform ${
-                        openDropdown === link.label ? 'rotate-180' : ''
-                      }`}
+                      className={`w-4 h-4 transition-transform ${openDropdown === link.label ? 'rotate-180' : ''
+                        }`}
                     />
                   </button>
                   {openDropdown === link.label && (
@@ -263,11 +260,10 @@ export default function Header() {
                 <Link
                   key={link.label}
                   to={link.href}
-                  className={`block px-4 py-3 rounded-xl text-[14px] font-semibold transition-colors ${
-                    isActive(link.href)
-                      ? 'bg-primary-50 text-primary-800'
-                      : 'text-gray-700 hover:bg-gray-50 hover:text-primary-800'
-                  }`}
+                  className={`block px-4 py-3 rounded-xl text-[14px] font-semibold transition-colors ${isActive(link.href)
+                    ? 'bg-primary-50 text-primary-800'
+                    : 'text-gray-700 hover:bg-gray-50 hover:text-primary-800'
+                    }`}
                 >
                   {link.label}
                 </Link>
@@ -276,8 +272,8 @@ export default function Header() {
             <div className="pt-3 border-t border-slate-100 mt-2 space-y-2 pb-2">
               {user ? (
                 <>
-                  <Link 
-                    to={getDashboardLink()} 
+                  <Link
+                    to={getDashboardLink()}
                     className="group relative w-full flex items-center justify-center gap-2.5 bg-gradient-to-r from-indigo-600 via-primary-700 to-purple-600 text-white shadow-lg shadow-indigo-500/25 rounded-xl py-3 text-[14px] font-extrabold overflow-hidden border border-white/20 transition-all active:scale-[0.98]"
                   >
                     <span className="relative flex h-2 w-2">
@@ -285,9 +281,9 @@ export default function Header() {
                       <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400 border border-white/40"></span>
                     </span>
                     <LayoutDashboard className="w-4 h-4" />
-                    <span>{user?.role === 'student' ? 'Learning Workspace' : 'Management Workspace'}</span>
+                    <span>{(user?.role === 'student' || user?.role === 'guest') ? 'Learning Workspace' : 'Management Workspace'}</span>
                   </Link>
-                  <button 
+                  <button
                     onClick={() => setShowSignOutModal(true)}
                     className="group relative w-full flex items-center justify-center gap-2 bg-gradient-to-r from-rose-50 to-red-50 hover:from-rose-500 hover:to-red-600 text-rose-700 hover:text-white border border-rose-200/80 hover:border-transparent shadow-sm rounded-xl py-3 text-[14px] font-bold transition-all active:scale-[0.98]"
                   >
@@ -311,13 +307,13 @@ export default function Header() {
             <h3 className="text-xl font-bold text-slate-800 mb-2">Sign Out</h3>
             <p className="text-slate-600 mb-6">Are you sure you want to sign out of your account?</p>
             <div className="flex gap-3 justify-end">
-              <button 
+              <button
                 onClick={() => setShowSignOutModal(false)}
                 className="px-5 py-2.5 font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors"
               >
                 Cancel
               </button>
-              <button 
+              <button
                 onClick={() => {
                   setShowSignOutModal(false);
                   logout();

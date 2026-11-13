@@ -9,7 +9,7 @@ const ROLE_COLORS = {
   student:      'bg-emerald-500/20 text-emerald-300',
 };
 const ROLE_LABELS = {
-  admin: 'Admin', nodal_centre: 'Nodal Centre', teacher: 'Teacher', student: 'Student'
+  admin: 'Admin', nodal_centre: 'Nodal Centre', teacher: 'Teacher', student: 'Student', guest: 'Guest'
 };
 
 export default function MeetingSchedulerModal({ isOpen, onClose, contact: preContact, onSuccess }) {

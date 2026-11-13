@@ -8,6 +8,7 @@ const ROLE_LABELS = {
   nodal_centre:  'Nodal Centre Admin',
   teacher:       'Faculty / Instructor',
   student:       'Student',
+  guest:         'Guest',
   vl_manager:    'VL Manager',
   vl_coordinator:'VL Co-ordinator',
 };

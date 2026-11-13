@@ -4,7 +4,7 @@ import { api } from '../../utils/api';
 import { trackEvent, trackError, EVENTS } from '../../utils/analytics';
 import { useEffect } from 'react';
 
-export default function QuizBlock({ experimentId, experimentName, userId, quizType, questions = [], onComplete }) {
+export default function QuizBlock({ experimentId, experimentName, userId, quizType, questions = [], onComplete, isGuest = false }) {
   const [answers, setAnswers] = useState({}); // { [questionIndex]: 'a' | 'b' ... }
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -49,7 +49,7 @@ export default function QuizBlock({ experimentId, experimentName, userId, quizTy
 
   const handleSelect = (qIdx, optionKey) => {
     if (submitted) return; // lock inputs after submit
-    setAnswers({ ...answers, [qIdx]: optionKey });
+    setAnswers((prev) => ({ ...prev, [qIdx]: optionKey }));
   };
 
   const handleSubmit = async () => {
@@ -79,14 +79,16 @@ export default function QuizBlock({ experimentId, experimentName, userId, quizTy
     }
 
     try {
-      const res = await api.post('/analytics/quiz', {
-        experimentId,
-        quizType,
-        score: calculatedScore,
-        maxScore: questions.length,
-      });
-      if (!res.ok) {
-        console.warn('Failed to record quiz attempt in analytics.');
+      if (!isGuest) {
+        const res = await api.post('/analytics/quiz', {
+          experimentId,
+          quizType,
+          score: calculatedScore,
+          maxScore: questions.length,
+        });
+        if (!res.ok) {
+          console.warn('Failed to record quiz attempt in analytics.');
+        }
       }
       trackEvent({
         category: 'experiment',
@@ -237,10 +239,19 @@ export default function QuizBlock({ experimentId, experimentName, userId, quizTy
               Complete all questions to view explanations and submit scores.
             </p>
             <button
+              type="button"
               onClick={handleSubmit}
-              className="w-full sm:w-auto px-6 py-2.5 rounded-xl text-sm font-bold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-sm hover:shadow transition-all"
+              disabled={loading}
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-sm hover:shadow transition-all disabled:opacity-60 cursor-pointer"
             >
-              Submit Answers
+              {loading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
+                  Submitting...
+                </>
+              ) : (
+                'Submit Answers'
+              )}
             </button>
           </>
         ) : (
@@ -255,6 +266,7 @@ export default function QuizBlock({ experimentId, experimentName, userId, quizTy
                 </h4>
                 <p className="text-gray-500 text-xs">
                   You scored {Math.round((score / questions.length) * 100)}%
+                  {isGuest && ' • Practice mode — score is not saved to academic records'}
                 </p>
               </div>
             </div>

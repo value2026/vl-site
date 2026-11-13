@@ -14,6 +14,7 @@ enum Role {
   nodal_centre
   teacher
   student
+  guest
   vl_manager
   vl_coordinator
 }
@@ -46,6 +47,17 @@ model User {
   designation       String?
   facultyDept       String?
   facultyInst       String?
+  ageGroup          String?
+  gender            String?
+  profession        String?
+  university                  String?
+
+  // Email verification fields
+  emailVerified               Boolean   @default(true)
+  emailVerificationOtpHash    String?
+  emailVerificationTokenHash  String?
+  emailVerificationExpiresAt  DateTime?
+  emailVerificationAttempts   Int       @default(0)
   
   // Password reset fields
   resetToken        String?

@@ -13,6 +13,7 @@ const ROLE_LABELS = {
   nodal_centre: { label: 'Nodal Centre',  gradient: 'from-orange-500 to-amber-500',  badge: 'bg-orange-500/20 text-orange-300 border-orange-500/30' },
   teacher:      { label: 'Teacher',       gradient: 'from-blue-500 to-indigo-600',   badge: 'bg-blue-500/20 text-blue-300 border-blue-500/30' },
   student:      { label: 'Student',       gradient: 'from-emerald-500 to-green-600', badge: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' },
+  guest:        { label: 'Guest',         gradient: 'from-slate-500 to-slate-600',   badge: 'bg-slate-500/20 text-slate-300 border-slate-500/30' },
 };
 
 const getClientSessionInfo = () => {

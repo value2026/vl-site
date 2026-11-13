@@ -1,6 +1,6 @@
 const express = require('express');
 const router  = express.Router();
-const { verifyToken, requireRole } = require('../middleware/auth');
+const { verifyToken, requireRole, forbidRoles } = require('../middleware/auth');
 const {
   getPapers,
   createPaper,
@@ -18,8 +18,9 @@ const {
   markAllNotificationsRead
 } = require('../controllers/assignmentsController');
 
-// All assignment routes require authentication
+// All assignment routes require authentication and exclude guest sessions
 router.use(verifyToken);
+router.use(forbidRoles('guest'));
 
 // Student specific routes
 router.get('/my-assignments', requireRole('student'), getMyAssignments);
