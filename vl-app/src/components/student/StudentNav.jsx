@@ -1,16 +1,17 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { FlaskConical, Search, User, LogOut, LayoutDashboard, ChevronDown, X, Bell, ClipboardList, Globe, ArrowLeft } from 'lucide-react';
+import { Search, User, LogOut, LayoutDashboard, ChevronDown, Bell, ClipboardList, Globe, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { api } from '../../utils/api';
+import SearchDialog from './SearchDialog';
 
 export default function StudentNav({ breadcrumb = [] }) {
   const { user, logout } = useAuth();
   const navigate          = useNavigate();
   const location          = useLocation();
   const [dropOpen, setDropOpen]   = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
   const dropRef = useRef(null);
+  const searchDialogRef = useRef(null);
 
   // Notifications State
   const [notifications, setNotifications] = useState([]);
@@ -27,7 +28,7 @@ export default function StudentNav({ breadcrumb = [] }) {
   };
 
   useEffect(() => {
-    if (user) {
+    if (user && user.role !== 'guest') {
       fetchNotifications();
       const interval = setInterval(fetchNotifications, 30000);
       return () => clearInterval(interval);
@@ -89,7 +90,7 @@ export default function StudentNav({ breadcrumb = [] }) {
       {/* Breadcrumb */}
       {breadcrumb.length > 0 && (
         <div className="hidden md:flex items-center gap-1.5 text-sm text-gray-500 overflow-hidden">
-          <Link to={user?.role === 'student' ? '/labs' : '/'} className="hover:text-blue-600 transition-colors flex-shrink-0">Home</Link>
+          <Link to={(user?.role === 'student' || user?.role === 'guest') ? '/labs' : '/'} className="hover:text-blue-600 transition-colors flex-shrink-0">Home</Link>
           {breadcrumb.map((crumb, i) => (
             <span key={i} className="flex items-center gap-1.5 min-w-0">
               <span className="text-gray-300">/</span>
@@ -107,14 +108,20 @@ export default function StudentNav({ breadcrumb = [] }) {
 
       {/* Search */}
       <button
-        onClick={() => setSearchOpen(!searchOpen)}
+        type="button"
+        onClick={() => {
+          setDropOpen(false);
+          setNotifOpen(false);
+          searchDialogRef.current?.openModal();
+        }}
         className="p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all"
         aria-label="Search"
       >
-        <Search className="w-4 h-4" />
+        <Search className="w-4 h-4" aria-hidden="true" />
       </button>
  
-      {/* Notifications Bell */}
+      {/* Notifications Bell (hidden for guest users) */}
+      {user && user.role !== 'guest' && (
       <div className="relative" ref={notifRef}>
         <button
           onClick={() => {
@@ -182,6 +189,7 @@ export default function StudentNav({ breadcrumb = [] }) {
           </div>
         )}
       </div>
+      )}
 
       {/* Account dropdown or Login button */}
       {!user ? (
@@ -219,6 +227,7 @@ export default function StudentNav({ breadcrumb = [] }) {
                     : user?.role === 'vl_manager' ? 'VL Manager'
                     : user?.role === 'nodal_centre' ? 'Nodal Centre'
                     : user?.role === 'teacher' ? 'Teacher'
+                    : user?.role === 'guest' ? 'Guest'
                     : 'Student'}
                 </div>
               </div>
@@ -233,7 +242,16 @@ export default function StudentNav({ breadcrumb = [] }) {
                   <Globe className="w-4 h-4 text-gray-400" />
                   Website Home
                 </Link>
-                {user?.role !== 'student' ? (
+                {user?.role === 'guest' ? (
+                  <Link
+                    to="/guest/profile"
+                    onClick={() => setDropOpen(false)}
+                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                  >
+                    <User className="w-4 h-4 text-gray-400" />
+                    Profile
+                  </Link>
+                ) : user?.role !== 'student' ? (
                   <>
                     <Link
                       to={user?.role === 'admin' ? '/dashboard/admin'
@@ -293,25 +311,7 @@ export default function StudentNav({ breadcrumb = [] }) {
       </div>
 
       {/* Search overlay */}
-      {searchOpen && (
-        <div className="fixed inset-0 z-[60] flex items-start justify-center pt-20 px-4 bg-black/30 backdrop-blur-sm">
-          <div className="w-full max-w-xl bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden">
-            <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-100">
-              <Search className="w-5 h-5 text-gray-400 flex-shrink-0" />
-              <input
-                autoFocus
-                type="text"
-                placeholder="Search subjects, labs, experiments…"
-                className="flex-1 text-sm text-gray-900 placeholder-gray-400 outline-none"
-              />
-              <button onClick={() => setSearchOpen(false)} className="text-gray-400 hover:text-gray-600">
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-            <div className="px-4 py-3 text-xs text-gray-400 text-center">Start typing to search across all labs</div>
-          </div>
-        </div>
-      )}
+      <SearchDialog ref={searchDialogRef} />
     </nav>
   );
 }

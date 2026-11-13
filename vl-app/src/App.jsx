@@ -19,6 +19,7 @@ import Contact       from './pages/Contact';
 import ResearchCollaboration from './pages/ResearchCollaboration';
 import Survey        from './pages/Survey';
 import Login         from './pages/Login';
+import GuestAccess   from './pages/GuestAccess';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword  from './pages/ResetPassword';
 
@@ -42,6 +43,7 @@ import SubjectPage    from './pages/student/SubjectPage';
 import LabPage        from './pages/student/LabPage';
 import ExperimentPage from './pages/student/ExperimentPage';
 import StudentAccount from './pages/student/StudentAccount';
+import GuestProfile   from './pages/student/GuestProfile';
 import StudentAssignments from './pages/student/StudentAssignments';
 import DoAssignment from './pages/student/DoAssignment';
 import TeacherAssignments from './pages/dashboards/TeacherAssignments';
@@ -158,6 +160,7 @@ function ProtectedRoute({ children, allowedRole }) {
         nodal_centre:  '/dashboard/nodal',
         teacher:       '/dashboard/teacher',
         student:       '/student',
+        guest:         '/labs',
       };
       return <Navigate to={dashMap[user.role] || '/login'} replace />;
     }
@@ -168,7 +171,7 @@ function ProtectedRoute({ children, allowedRole }) {
 
 // ── Public layout (with header + footer) ─────────────────────
 
-const DASHBOARD_PATHS = ['/dashboard', '/student', '/labs', '/subject', '/lab', '/experiment'];
+const DASHBOARD_PATHS = ['/dashboard', '/student', '/guest/profile', '/labs', '/subject', '/lab', '/experiment'];
 
 function getDashboardLabel(path) {
   if (path.includes('/labs')) return 'Back to Lab Management';
@@ -191,10 +194,10 @@ function FloatingDashboardButton() {
   const { user } = useAuth();
   const { pathname } = useLocation();
   
-  if (!user || user.role === 'student') return null;
+  if (!user || user.role === 'student' || user.role === 'guest') return null;
   
   // Hide on dashboard pages and student learning pages (immersive view)
-  const hidePaths = ['/dashboard', '/labs', '/subject', '/lab', '/experiment', '/student'];
+  const hidePaths = ['/dashboard', '/labs', '/subject', '/lab', '/experiment', '/student', '/guest/profile'];
   if (hidePaths.some(p => pathname.startsWith(p))) return null;
   
   const defaultMap = {
@@ -226,7 +229,7 @@ function FloatingDashboardButton() {
 function AppLayout() {
   const { pathname, search } = useLocation();
   const isDashboard  = DASHBOARD_PATHS.some((p) => pathname.startsWith(p));
-  const hideShell    = isDashboard || pathname === '/login' || pathname === '/forgot-password' || pathname === '/reset-password';
+  const hideShell    = isDashboard || pathname === '/login' || pathname === '/guest' || pathname === '/forgot-password' || pathname === '/reset-password';
 
   useEffect(() => {
     if (isDashboard) {
@@ -239,6 +242,7 @@ function AppLayout() {
       <>
         <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/guest" element={<GuestAccess />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
 
@@ -480,13 +484,18 @@ function AppLayout() {
 
         {/* Protected Student Account & Assignment Routes */}
         <Route path="/student/account" element={
-          <ProtectedRoute><StudentAccount /></ProtectedRoute>
+          <ProtectedRoute allowedRole="student"><StudentAccount /></ProtectedRoute>
         } />
         <Route path="/student/assignments" element={
-          <ProtectedRoute><StudentAssignments /></ProtectedRoute>
+          <ProtectedRoute allowedRole="student"><StudentAssignments /></ProtectedRoute>
         } />
         <Route path="/student/assignments/take/:id" element={
-          <ProtectedRoute><DoAssignment /></ProtectedRoute>
+          <ProtectedRoute allowedRole="student"><DoAssignment /></ProtectedRoute>
+        } />
+
+        {/* Protected Guest Profile Route */}
+        <Route path="/guest/profile" element={
+          <ProtectedRoute allowedRole="guest"><GuestProfile /></ProtectedRoute>
         } />
       </Routes>
       <FloatingDashboardButton />

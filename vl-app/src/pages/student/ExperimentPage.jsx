@@ -298,8 +298,10 @@ export default function ExperimentPage() {
   const sessionStartTime = useRef(Date.now());
 
   // Log active visit on mount
+  const canTrackVisit = Boolean(user && user.role !== 'guest');
+
   useEffect(() => {
-    if (experiment) {
+    if (experiment && canTrackVisit) {
       const logVisit = async () => {
         try {
           const res = await api.post('/analytics/visit', {
@@ -317,7 +319,7 @@ export default function ExperimentPage() {
       };
       logVisit();
     }
-  }, [experiment, expId]);
+  }, [experiment, expId, canTrackVisit]);
 
   // Log active tab visits and periodically update duration
   useEffect(() => {
@@ -463,6 +465,7 @@ export default function ExperimentPage() {
 
 
   const handleFeedbackComplete = async (rating, comment) => {
+    if (isGuest) return;
     try {
       await api.post('/analytics/feedback', {
         experimentId: expId,
@@ -506,6 +509,9 @@ export default function ExperimentPage() {
 
   const lab = experiment.lab;
   const subject = lab?.subject;
+
+  const isGuest = user?.role === 'guest';
+  const visibleSections = isGuest ? SECTIONS.filter((s) => s.id !== 'feedback') : SECTIONS;
 
   // ── Render section content ──────────────────────────────────
   const renderContent = () => {
@@ -551,6 +557,7 @@ export default function ExperimentPage() {
               userId={user?.id}
               quizType="pretest" 
               questions={sections.pretest?.questions || []} 
+              isGuest={isGuest}
               onComplete={() => setCompletedSections(prev => ({ ...prev, pretest: true }))}
             />
           </div>
@@ -685,6 +692,7 @@ export default function ExperimentPage() {
               userId={user?.id}
               quizType="posttest" 
               questions={sections.posttest?.questions || []} 
+              isGuest={isGuest}
               onComplete={() => setCompletedSections(prev => ({ ...prev, posttest: true }))}
             />
           </div>
@@ -728,6 +736,7 @@ export default function ExperimentPage() {
         );
 
       case 'feedback':
+        if (isGuest) return null;
         return (
           <div>
             <SectionHeader title="Feedback" subtitle="Help us improve this experiment by sharing your experience." />
@@ -775,7 +784,7 @@ export default function ExperimentPage() {
             <ChevronLeft className="w-4 h-4" />
           </button>
           
-          <Link to={user?.role === 'student' ? '/labs' : '/'} className="hover:text-blue-600 transition-colors flex-shrink-0">Home</Link>
+          <Link to={(user?.role === 'student' || isGuest) ? '/labs' : '/'} className="hover:text-blue-600 transition-colors flex-shrink-0">Home</Link>
           <span className="text-gray-300">/</span>
           {subject && (
             <>
@@ -826,7 +835,7 @@ export default function ExperimentPage() {
           </div>
 
           <nav className="flex-1 overflow-y-auto">
-            {SECTIONS.map(({ id, label, icon: Icon, color, bg }) => {
+            {visibleSections.map(({ id, label, icon: Icon, color, bg }) => {
               const isActive = active === id;
               return (
                 <button

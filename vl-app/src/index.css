@@ -256,3 +256,15 @@
   background-color: #f1f5f9;
 }
 
+/* Native modal search dialog backdrop and scroll containment */
+dialog.vl-search-dialog:modal {
+  overscroll-behavior: contain;
+}
+
+dialog.vl-search-dialog::backdrop {
+  overflow: hidden;
+  overscroll-behavior: contain;
+  background: rgba(15, 23, 42, 0.35);
+  backdrop-filter: blur(4px);
+}
+

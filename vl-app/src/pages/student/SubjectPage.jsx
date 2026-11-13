@@ -14,7 +14,7 @@ export default function SubjectPage() {
   const [sortOption, setSortOption] = useState('Default');
 
   const fromHome = location.state?.fromHome;
-  const backLink = fromHome ? '/' : '/student';
+  const backLink = fromHome ? '/' : '/labs';
   const backText = fromHome ? '← Back to Home' : '← Back to Subjects';
 
   useEffect(() => {

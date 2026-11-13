@@ -29,6 +29,7 @@ const ROLE_DEFAULT_PERMISSIONS = {
   vl_coordinator:['manage_users', 'manage_content', 'manage_simulations', 'manage_institutions', 'manage_workshops'],
   teacher:       [],
   student:       [],
+  guest:         [],
   admin:         [],
 };
 
@@ -281,6 +282,9 @@ const updateUser = async (req, res) => {
   try {
     const { role: callerRole, id: callerId } = req.user;
     const { id: targetId } = req.params;
+    if (callerRole === 'guest') {
+      return res.status(403).json({ message: 'Guest accounts cannot modify user profiles' });
+    }
     const { name, email, password, isActive, customPermissions, managedSubjectIds, otp } = req.body;
 
     const target = await prisma.user.findUnique({ where: { id: targetId } });

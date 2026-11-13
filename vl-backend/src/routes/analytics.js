@@ -1,6 +1,6 @@
 const express = require('express');
 const router  = express.Router();
-const { verifyToken, requireRole } = require('../middleware/auth');
+const { verifyToken, requireRole, forbidRoles } = require('../middleware/auth');
 const {
   recordVisit,
   updateVisit,
@@ -16,12 +16,12 @@ const {
 } = require('../controllers/analyticsController');
 const { getGA4Stats } = require('../controllers/gaController');
 
-// Recording stats (public for student role)
-router.post('/visit',          verifyToken, recordVisit);
-router.post('/visit/:id/update',       verifyToken, updateVisit);
-router.post('/quiz',           verifyToken, recordQuizAttempt);
-router.post('/feedback',       verifyToken, recordFeedback);
-router.get('/my-performance', verifyToken, getMyPerformance);
+// Recording stats (registered users; guest users excluded)
+router.post('/visit',            verifyToken, forbidRoles('guest'), recordVisit);
+router.post('/visit/:id/update', verifyToken, forbidRoles('guest'), updateVisit);
+router.post('/quiz',             verifyToken, forbidRoles('guest'), recordQuizAttempt);
+router.post('/feedback',         verifyToken, forbidRoles('guest'), recordFeedback);
+router.get('/my-performance',    verifyToken, forbidRoles('guest'), getMyPerformance);
 
 // Viewing dashboard stats (staff only)
 router.get('/dashboard',        verifyToken, requireRole('admin', 'vl_manager', 'vl_coordinator', 'nodal_centre', 'teacher'), getDashboardStats);
