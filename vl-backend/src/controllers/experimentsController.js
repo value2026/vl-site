@@ -2,7 +2,7 @@ const prisma = require('../db');
 const path = require('path');
 const fs   = require('fs');
 const { extractZip, uploadsPath, UPLOADS_DIR } = require('../middleware/upload');
-const { compileSimulation } = require('../utils/simulationBuilder');
+const { compileSimulation, patchFlashSimulation } = require('../utils/simulationBuilder');
 const { marked } = require('marked');
 const { getExternalBaseUrl } = require('../utils/requestUrl');
 
@@ -340,18 +340,28 @@ const uploadZip = async (req, res) => {
         }
         fs.mkdirSync(absoluteSimRootDir, { recursive: true });
 
-        fs.cpSync(tempSimPath, path.join(absoluteSimRootDir, 'simulation'), { recursive: true });
+        const deployedSimDir = path.join(absoluteSimRootDir, 'simulation');
+        fs.cpSync(tempSimPath, deployedSimDir, { recursive: true });
+        patchFlashSimulation(deployedSimDir);
 
         for (const dir of siblingDirs) {
           const src = path.join(effectiveExtractDir, dir);
           // Preserve EXACT casing so references like Assets/, Scripts/, Lib/ work on case-sensitive Linux
           const dstExact = path.join(absoluteSimRootDir, dir);
           fs.cpSync(src, dstExact, { recursive: true });
-          // Also create a lowercased alias if original was capitalized
-          if (dir !== dir.toLowerCase()) {
-            const dstLower = path.join(absoluteSimRootDir, dir.toLowerCase());
+          // Also create both lowercased and capitalized aliases (e.g. common <-> Common)
+          const lower = dir.toLowerCase();
+          const capitalized = dir.charAt(0).toUpperCase() + dir.slice(1);
+          if (dir !== lower) {
+            const dstLower = path.join(absoluteSimRootDir, lower);
             if (!fs.existsSync(dstLower)) {
               fs.cpSync(src, dstLower, { recursive: true });
+            }
+          }
+          if (dir !== capitalized) {
+            const dstCap = path.join(absoluteSimRootDir, capitalized);
+            if (!fs.existsSync(dstCap)) {
+              fs.cpSync(src, dstCap, { recursive: true });
             }
           }
         }

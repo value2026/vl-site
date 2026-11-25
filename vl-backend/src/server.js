@@ -84,10 +84,195 @@ app.use((req, res, next) => {
   next();
 });
 
+// ── Flash Cross-Domain Policy ─────────────────────────────────
+const FLASH_CROSS_DOMAIN_XML = `<?xml version="1.0"?>
+<!DOCTYPE cross-domain-policy SYSTEM "http://www.adobe.com/xml/dtds/cross-domain-policy.dtd">
+<cross-domain-policy>
+    <site-control permitted-cross-domain-policies="all"/>
+    <allow-access-from domain="*" secure="false"/>
+    <allow-http-request-headers-from domain="*" headers="*" secure="false"/>
+</cross-domain-policy>`;
+
+app.get(['/crossdomain.xml', '/files/crossdomain.xml', '/v2/crossdomain.xml', '/v2/files/crossdomain.xml'], (_req, res) => {
+  res.type('application/xml').send(FLASH_CROSS_DOMAIN_XML);
+});
+
 // ── Static file serving for uploaded content ──────────────────
 // Files at /files/experiments/{id}/content/aim.html etc.
 const uploadsDir = path.join(__dirname, '../uploads');
+
+// Case-insensitive file path resolver for Linux environments
+function resolveCaseInsensitivePath(baseDir, reqPath) {
+  let parts = [];
+  try {
+    parts = decodeURIComponent(reqPath).split('/').filter(Boolean);
+  } catch {
+    return null;
+  }
+  let current = path.resolve(baseDir);
+
+  for (const part of parts) {
+    if (part === '.' || part === '..') return null;
+    const target = path.join(current, part);
+    if (fs.existsSync(target)) {
+      current = target;
+      continue;
+    }
+    try {
+      const entries = fs.readdirSync(current);
+      const lowerPart = part.toLowerCase();
+      const match = entries.find(e => e.toLowerCase() === lowerPart);
+      if (!match) return null;
+      current = path.join(current, match);
+    } catch {
+      return null;
+    }
+  }
+
+  try {
+    const stat = fs.statSync(current);
+    return stat.isFile() ? current : null;
+  } catch {
+    return null;
+  }
+}
+
+// Automatically patch Flash simulation on disk if needed
+function patchFlashSimulationOnDisk(dir) {
+  if (!dir || !fs.existsSync(dir)) return;
+  const indexHtmlPath = path.join(dir, 'index.html');
+  if (fs.existsSync(indexHtmlPath)) {
+    try {
+      let html = fs.readFileSync(indexHtmlPath, 'utf8');
+      if (html.includes('copyText') || html.includes('flashplayer')) {
+        const dynamicScript = `
+// Dynamically compute SWF path relative to current URL
+(function() {
+  try {
+    const currentUrl = window.location.href.split('?')[0].split('#')[0];
+    const basePath = currentUrl.substring(0, currentUrl.lastIndexOf('/'));
+    const swfPath = basePath + '/flash/simulation/index.swf';
+    const el = document.getElementById('copyText');
+    if (el) el.textContent = swfPath;
+  } catch(e) {}
+})();
+`;
+        const jsDir = path.join(dir, 'js');
+        const mainJsPath = path.join(jsDir, 'main.js');
+        if (fs.existsSync(mainJsPath)) {
+          let js = fs.readFileSync(mainJsPath, 'utf8');
+          if (!js.includes('swfPath') && !js.includes('window.location.href')) {
+            js = dynamicScript.trim() + '\n\n' + js;
+            fs.writeFileSync(mainJsPath, js, 'utf8');
+          }
+        }
+      }
+    } catch {}
+  }
+}
+
+// Normalize existing sim-root folder casing and patch simulation links on startup
+function normalizeExistingSimRoots(uploadsRoot) {
+  const labsDir = path.join(uploadsRoot, 'labs');
+  if (!fs.existsSync(labsDir)) return;
+  try {
+    const labEntries = fs.readdirSync(labsDir);
+    for (const labId of labEntries) {
+      const labPath = path.join(labsDir, labId);
+      if (!fs.statSync(labPath).isDirectory()) continue;
+      const expEntries = fs.readdirSync(labPath);
+      for (const expId of expEntries) {
+        const expPath = path.join(labPath, expId);
+        if (!fs.statSync(expPath).isDirectory()) continue;
+
+        const simRootPath = path.join(expPath, 'sim-root');
+        if (fs.existsSync(simRootPath) && fs.statSync(simRootPath).isDirectory()) {
+          const commonLower = path.join(simRootPath, 'common');
+          const commonUpper = path.join(simRootPath, 'Common');
+
+          if (fs.existsSync(commonLower) && !fs.existsSync(commonUpper)) {
+            try { fs.cpSync(commonLower, commonUpper, { recursive: true }); } catch {}
+          } else if (fs.existsSync(commonUpper) && !fs.existsSync(commonLower)) {
+            try { fs.cpSync(commonUpper, commonLower, { recursive: true }); } catch {}
+          }
+
+          const simDir = path.join(simRootPath, 'simulation');
+          patchFlashSimulationOnDisk(simDir);
+        }
+
+        const standardSimDir = path.join(expPath, 'simulation');
+        if (fs.existsSync(standardSimDir)) {
+          patchFlashSimulationOnDisk(standardSimDir);
+        }
+      }
+    }
+  } catch (err) {
+    console.warn('Notice: Existing sim-roots scan completed:', err.message);
+  }
+}
+
+// Run normalization asynchronously on server startup
+normalizeExistingSimRoots(uploadsDir);
+
+// Middleware: Intercept Flash simulation index.html to dynamically set #copyText to actual current URL
+app.use('/files', (req, res, next) => {
+  if (req.method !== 'GET' && req.method !== 'HEAD') return next();
+
+  let decodedPath = '';
+  try {
+    decodedPath = decodeURIComponent(req.path);
+  } catch {
+    return next();
+  }
+
+  let targetPath = path.join(uploadsDir, decodedPath);
+  try {
+    if (fs.existsSync(targetPath) && fs.statSync(targetPath).isDirectory()) {
+      targetPath = path.join(targetPath, 'index.html');
+    }
+  } catch {
+    return next();
+  }
+
+  if (targetPath.endsWith('index.html') && fs.existsSync(targetPath)) {
+    try {
+      let content = fs.readFileSync(targetPath, 'utf8');
+      if (content.includes('copyText') || content.includes('flashplayer')) {
+        const dynamicScript = `
+<script>
+(function() {
+  try {
+    var el = document.getElementById("copyText");
+    if (el) {
+      var currentUrl = window.location.href.split('?')[0].split('#')[0];
+      var basePath = currentUrl.substring(0, currentUrl.lastIndexOf("/"));
+      el.textContent = basePath + "/flash/simulation/index.swf";
+    }
+  } catch(e) {}
+})();
+</script>`;
+        if (!content.includes('basePath + "/flash/simulation/index.swf"')) {
+          content = content.replace('</body>', dynamicScript + '\n</body>');
+        }
+        return res.type('html').send(content);
+      }
+    } catch {}
+  }
+  next();
+});
+
+// Standard static file serving
 app.use('/files', express.static(uploadsDir));
+
+// Fallback for case-sensitive filesystems (Linux)
+app.use('/files', (req, res, next) => {
+  if (req.method !== 'GET' && req.method !== 'HEAD') return next();
+  const resolved = resolveCaseInsensitivePath(uploadsDir, req.path);
+  if (resolved) {
+    return res.sendFile(resolved);
+  }
+  next();
+});
 
 // ── Routes ────────────────────────────────────────────────────
 app.use('/api/auth',        authRoutes);
