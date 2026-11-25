@@ -96,12 +96,53 @@ async function compileSimulation(zipFilePath, outputSubDir) {
 
   zip.extractAllTo(targetDir, true);
   ensureRootIndexHtml(targetDir);
+  patchFlashSimulation(targetDir);
 
   console.log('✅ Simulation Deployer: Static simulation build deployed successfully!');
   return outputSubDir.replace(/\\/g, '/');
 }
 
+/**
+ * Automatically patches Flash simulation wrappers so that the copyText link points
+ * dynamically to the current host URL instead of a hardcoded external domain.
+ */
+function patchFlashSimulation(dir) {
+  if (!dir || !fs.existsSync(dir)) return;
+  const indexHtmlPath = path.join(dir, 'index.html');
+  if (fs.existsSync(indexHtmlPath)) {
+    try {
+      let html = fs.readFileSync(indexHtmlPath, 'utf8');
+      if (html.includes('copyText') || html.includes('flashplayer')) {
+        const dynamicScript = `
+// Dynamically compute SWF path relative to current URL
+(function() {
+  try {
+    const currentUrl = window.location.href.split('?')[0].split('#')[0];
+    const basePath = currentUrl.substring(0, currentUrl.lastIndexOf('/'));
+    const swfPath = basePath + '/flash/simulation/index.swf';
+    const el = document.getElementById('copyText');
+    if (el) el.textContent = swfPath;
+  } catch(e) {}
+})();
+`;
+        const jsDir = path.join(dir, 'js');
+        const mainJsPath = path.join(jsDir, 'main.js');
+        if (fs.existsSync(mainJsPath)) {
+          let js = fs.readFileSync(mainJsPath, 'utf8');
+          if (!js.includes('swfPath') && !js.includes('window.location.href')) {
+            js = dynamicScript.trim() + '\n\n' + js;
+            fs.writeFileSync(mainJsPath, js, 'utf8');
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('Warning: Could not patch flash simulation links:', e.message);
+    }
+  }
+}
+
 module.exports = {
   compileSimulation,
-  ensureRootIndexHtml
+  ensureRootIndexHtml,
+  patchFlashSimulation
 };

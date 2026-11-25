@@ -2,7 +2,7 @@ const prisma = require('../db');
 const path = require('path');
 const fs   = require('fs');
 const { extractZip, uploadsPath, UPLOADS_DIR } = require('../middleware/upload');
-const { compileSimulation } = require('../utils/simulationBuilder');
+const { compileSimulation, patchFlashSimulation } = require('../utils/simulationBuilder');
 const { marked } = require('marked');
 const { getExternalBaseUrl } = require('../utils/requestUrl');
 
@@ -288,16 +288,26 @@ const uploadZip = async (req, res) => {
     for (const entry of fs.readdirSync(effectiveExtractDir)) {
       if (entry.startsWith('.')) continue;
       const src = path.join(effectiveExtractDir, entry);
-      const dst = path.join(absoluteContentDir, entry.toLowerCase()); // normalize doc names to lowercase
       const stat = fs.statSync(src);
+      const entryLower = entry.toLowerCase();
 
       if (stat.isDirectory()) {
-        if (DOC_DIRS.has(entry.toLowerCase())) {
-          fs.cpSync(src, path.join(absoluteContentDir, entry.toLowerCase()), { recursive: true });
+        if (DOC_DIRS.has(entryLower)) {
+          // Copy preserving exact casing (e.g. Images or images)
+          fs.cpSync(src, path.join(absoluteContentDir, entry), { recursive: true });
+          // If original folder name wasn't lowercased, also copy to lowercased folder name
+          if (entry !== entryLower) {
+            fs.cpSync(src, path.join(absoluteContentDir, entryLower), { recursive: true });
+          }
         }
       } else {
-        if (DOC_FILES.has(entry.toLowerCase()) || entry.toLowerCase().endsWith('.md') || entry.toLowerCase().endsWith('.json')) {
-          fs.copyFileSync(src, dst);
+        if (DOC_FILES.has(entryLower) || entryLower.endsWith('.md') || entryLower.endsWith('.json')) {
+          // Copy preserving exact casing
+          fs.copyFileSync(src, path.join(absoluteContentDir, entry));
+          // If original filename wasn't lowercased, also copy to lowercased filename
+          if (entry !== entryLower) {
+            fs.copyFileSync(src, path.join(absoluteContentDir, entryLower));
+          }
         }
       }
     }
@@ -330,12 +340,30 @@ const uploadZip = async (req, res) => {
         }
         fs.mkdirSync(absoluteSimRootDir, { recursive: true });
 
-        fs.cpSync(tempSimPath, path.join(absoluteSimRootDir, 'simulation'), { recursive: true });
+        const deployedSimDir = path.join(absoluteSimRootDir, 'simulation');
+        fs.cpSync(tempSimPath, deployedSimDir, { recursive: true });
+        patchFlashSimulation(deployedSimDir);
 
         for (const dir of siblingDirs) {
           const src = path.join(effectiveExtractDir, dir);
-          const dst = path.join(absoluteSimRootDir, dir.toLowerCase());
-          fs.cpSync(src, dst, { recursive: true });
+          // Preserve EXACT casing so references like Assets/, Scripts/, Lib/ work on case-sensitive Linux
+          const dstExact = path.join(absoluteSimRootDir, dir);
+          fs.cpSync(src, dstExact, { recursive: true });
+          // Also create both lowercased and capitalized aliases (e.g. common <-> Common)
+          const lower = dir.toLowerCase();
+          const capitalized = dir.charAt(0).toUpperCase() + dir.slice(1);
+          if (dir !== lower) {
+            const dstLower = path.join(absoluteSimRootDir, lower);
+            if (!fs.existsSync(dstLower)) {
+              fs.cpSync(src, dstLower, { recursive: true });
+            }
+          }
+          if (dir !== capitalized) {
+            const dstCap = path.join(absoluteSimRootDir, capitalized);
+            if (!fs.existsSync(dstCap)) {
+              fs.cpSync(src, dstCap, { recursive: true });
+            }
+          }
         }
 
         finalSimPath = `${relativeSimRoot}/simulation`;
@@ -429,13 +457,23 @@ const getExperimentDocs = async (req, res) => {
 
     const hostPrefix = `${getExternalBaseUrl(req)}/files/${experiment.contentPath}/`;
 
+    // Helper to find file case-insensitively on Linux filesystems
+    const findDocFile = (dirPath, targetFilename) => {
+      const exactPath = path.join(dirPath, targetFilename);
+      if (fs.existsSync(exactPath)) return exactPath;
+      if (!fs.existsSync(dirPath)) return null;
+      const allFiles = fs.readdirSync(dirPath);
+      const match = allFiles.find(f => f.toLowerCase() === targetFilename.toLowerCase());
+      return match ? path.join(dirPath, match) : null;
+    };
+
     for (const [key, filename] of Object.entries(textFiles)) {
-      const filePath = path.join(absoluteDir, filename);
-      if (fs.existsSync(filePath)) {
+      const filePath = findDocFile(absoluteDir, filename);
+      if (filePath) {
         const rawMarkdown = fs.readFileSync(filePath, 'utf8');
         let html = marked.parse(rawMarkdown);
-        // Rewrite relative image references inside HTML to absolute hosting paths
-        html = html.replace(/src=["'](\.\/)?images\//g, `src="${hostPrefix}images/`);
+        // Rewrite relative image references inside HTML to absolute hosting paths (case-insensitive for images/)
+        html = html.replace(/src=["'](\.\/)?images\//gi, `src="${hostPrefix}images/`);
         // Ensure all markdown links open in a new tab separately
         html = html.replace(/<a\s+(?:(?!(?:target=))[^>])+>/gi, (match) => {
           return match.replace(/<a\s+/i, '<a target="_blank" rel="noopener noreferrer" ');
@@ -453,8 +491,8 @@ const getExperimentDocs = async (req, res) => {
     };
 
     for (const [key, filename] of Object.entries(quizFiles)) {
-      const filePath = path.join(absoluteDir, filename);
-      if (fs.existsSync(filePath)) {
+      const filePath = findDocFile(absoluteDir, filename);
+      if (filePath) {
         try {
           const raw = fs.readFileSync(filePath, 'utf8');
           docs[key] = JSON.parse(raw);
