@@ -206,7 +206,7 @@ const HOME_DEFAULTS = [
       videos: [
         {
           id: 'v1',
-          title: 'Amrita VALUE Virtual Labs Introduction',
+          title: 'Amrita Virtual Labs Introduction',
           duration: '3:05 · Official Overview',
           videoUrl: 'https://www.youtube.com/watch?v=ViqHtlZSOjM',
           thumbnailUrl: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&auto=format&fit=crop&q=60'
@@ -722,7 +722,7 @@ async function seedWorkshopPage() {
       order: 2,
       isVisible: true,
       content: {
-        p1: "Amrita Vishwa Vidyapeetham's VALUE project is running a series of workshops on Virtual Labs in Physical & Chemical Sciences, Biological Sciences, Mechanical Engineering and Computer Science. These workshops will offer an introduction to the innovative world of Virtual Laboratories for both physical and chemical sciences.",
+        p1: "Amrita Virtual Labs at Amrita Vishwa Vidyapeetham is running a series of workshops on Virtual Labs in Physical & Chemical Sciences, Biological Sciences, Mechanical Engineering and Computer Science. These workshops will offer an introduction to the innovative world of Virtual Laboratories for both physical and chemical sciences.",
         p2: "Virtual Labs are a new immersive e-learning tool that provides a media-rich, interactive user interface that teachers can use to supplement their curriculum. These Virtual Labs are located on an open webpage that can be accessed by anyone through a web browser, on any Internet-connected computer in the world. A variety of laboratory experiments can be conducted virtually using animation, simulation or remotely triggered hardware. Laboratory experiments are modeled very close to real-life experiments and when used as a learning tool by students it allows them to learn the material more efficiently and can actually make doing the practical experiments easier.",
         p3: "The workshop offers a fantastic opportunity for all faculty members involved in the education of physics, chemistry, biological sciences, computer science and mechanical engineering to learn more about Virtual Labs. We will showcase our online laboratory experiments including a hands-on training session in using the Virtual Labs website.",
         initiativeText: "This project is an initiative of MoE (Ministry of Education) under National Mission on Education through ICT (NME-ICT). These experiments and labs are hosted for open access through www.vlab.co.in.",
@@ -737,7 +737,7 @@ async function seedWorkshopPage() {
       order: 3,
       isVisible: true,
       content: {
-        p1: "Nodal Centre Forum will be held in addition to the workshop. This is an exciting new venture which allows people to follow the progress of the VALUE Virtual Labs and provides a platform for everyone to contribute towards the future development of labs and experiments.",
+        p1: "Nodal Centre Forum will be held in addition to the workshop. This is an exciting new venture which allows people to follow the progress of Amrita Virtual Labs and provides a platform for everyone to contribute towards the future development of labs and experiments.",
         p2: "By simply registering your institution you benefit from a whole host of services and resources. Nodal Centres as proposed by MoE (Ministry of Education) will help promote the use of Virtual Labs in Higher Education.",
         btnLabel: "Learn more about Nodal Centres →",
         btnHref: "/nodal-centres"
