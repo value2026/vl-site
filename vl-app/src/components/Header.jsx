@@ -83,13 +83,13 @@ export default function Header() {
       <div className={`bg-white transition-all duration-300 ${scrolled ? 'h-0 overflow-hidden opacity-0 py-0' : 'py-4 opacity-100'}`}>
         <div className="container-custom flex items-center justify-between">
           {/* Custom Logo from Image */}
-          <Link to="/" className="flex flex-col justify-center flex-shrink-0 group" aria-label="VALUE @ Amrita Home">
+          <Link to="/" className="flex flex-col justify-center flex-shrink-0 group" aria-label="Amrita Virtual Labs Home">
             <div className="flex items-baseline mt-1">
               <span className="text-primary-800 text-[2rem] font-black tracking-tighter uppercase font-heading">
-                VALUE
+                Amrita
               </span>
               <span className="text-slate-600 text-[2rem] font-light ml-1.5 font-heading">
-                @ Amrita
+                Virtual Labs
               </span>
             </div>
             <span className="text-slate-500 text-[12px] font-semibold tracking-wider mt-0.5 uppercase">
@@ -205,7 +205,7 @@ export default function Header() {
               {/* Show compact logo on mobile nav bar when top banner is hidden on scroll */}
               <div className={`transition-opacity duration-300 ${scrolled ? 'opacity-100 visible' : 'opacity-0 invisible hidden'}`}>
                 <span className="font-heading font-black text-primary-800 text-lg tracking-tighter whitespace-nowrap">
-                  VALUE <span className="font-light text-slate-600">@ Amrita</span>
+                  Amrita <span className="font-light text-slate-600">Virtual Labs</span>
                 </span>
               </div>
               <div className={scrolled ? '' : 'ml-auto'}>

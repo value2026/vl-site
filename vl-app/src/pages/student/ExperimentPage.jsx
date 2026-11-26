@@ -761,13 +761,13 @@ export default function ExperimentPage() {
           {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
 
-        <Link to="/" className="flex items-center gap-2 flex-shrink-0 group" aria-label="VALUE @ Amrita Home">
+        <Link to="/" className="flex items-center gap-2 flex-shrink-0 group" aria-label="Amrita Virtual Labs Home">
           <div className="flex items-baseline mt-0.5 ml-1">
             <span className="text-[#1e3a8a] text-base md:text-[1.1rem] font-bold tracking-tight uppercase" style={{ fontFamily: 'Arial, sans-serif' }}>
-              VALUE
+              Amrita
             </span>
             <span className="text-[#4b5563] text-base md:text-[1.1rem] italic ml-1.5" style={{ fontFamily: 'Georgia, serif' }}>
-              @ Amrita
+              Virtual Labs
             </span>
           </div>
         </Link>

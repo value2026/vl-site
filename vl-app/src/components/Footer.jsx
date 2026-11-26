@@ -80,7 +80,7 @@ export default function Footer() {
               </div>
               <div className="flex flex-col justify-center pt-1">
                 <span className="block text-white font-bold text-[1rem] leading-none tracking-wide" style={{ fontFamily: 'Arial, sans-serif' }}>
-                  VALUE @ Amrita
+                  Amrita Virtual Labs
                 </span>
                 <span className="block text-[11px] text-[#A51C4A] font-bold tracking-[0.08em] uppercase mt-1.5">
                   Amrita Vishwa Vidyapeetham

@@ -11,7 +11,7 @@ export default function MediaSection({ sectionTitle, sectionSubtitle, content = 
   const DEFAULT_VIDEOS = [
     {
       id: 'v1',
-      title: 'Amrita VALUE Virtual Labs Introduction',
+      title: 'Amrita Virtual Labs Introduction',
       duration: '3:05 · Official Overview',
       videoUrl: 'https://www.youtube.com/watch?v=ViqHtlZSOjM',
       thumbnailUrl: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&auto=format&fit=crop&q=60'

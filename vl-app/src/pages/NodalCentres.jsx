@@ -362,7 +362,7 @@ export default function NodalCentres() {
                 <span className="tag">About the Program</span>
                 <h2 className="section-title mt-4">What is the Nodal Centre Program?</h2>
                 <p className="section-subtitle">
-                  The Nodal Centre Program allows educational institutions to follow the progress of VALUE Virtual Labs and contribute towards the future development of Virtual Labs and experiments. Sponsored by MoE (Ministry of Education), it comes with no registration fees, no software products, and no hidden costs.
+                  The Nodal Centre Program allows educational institutions to follow the progress of Amrita Virtual Labs and contribute towards the future development of Virtual Labs and experiments. Sponsored by MoE (Ministry of Education), it comes with no registration fees, no software products, and no hidden costs.
                 </p>
               </div>
               <div className="grid sm:grid-cols-3 gap-6 mb-14">

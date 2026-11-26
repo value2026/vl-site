@@ -95,7 +95,7 @@ export default function DashboardLayout({ children, title }) {
             <img src={assetUrl('/amrita-icon.jpg')} alt="Amrita Logo" className="w-8 h-8 object-contain rounded" />
           </div>
           <div>
-            <div className="text-white font-bold text-sm leading-tight">VALUE @ Amrita</div>
+            <div className="text-white font-bold text-sm leading-tight">Amrita Virtual Labs</div>
             <div className="text-slate-400 text-[10px] font-medium uppercase tracking-wider">Management Portal</div>
           </div>
         </Link>
