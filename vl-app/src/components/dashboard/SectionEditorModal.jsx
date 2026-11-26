@@ -14,6 +14,7 @@ import CloudinaryUploader from './CloudinaryUploader';
 import ConfirmModal from './ConfirmModal';
 import { useAuth } from '../../context/AuthContext';
 import { api } from '../../utils/api';
+import { DEFAULT_SOCIAL_LINKS, SOCIAL_PLATFORM_OPTIONS } from '../../utils/socialLinks';
 
 const LinkModalContext = createContext(null);
 
@@ -233,7 +234,7 @@ function RepeatableList({ label, items = [], onChange, fields, onConfirmRequest,
   const add = () => {
     const blank = { _id: Math.random().toString(36).substring(2, 9) };
     fields.forEach(f => {
-      blank[f.key] = '';
+      blank[f.key] = f.type === 'select' && f.options?.length ? f.options[0].value : '';
       if (f.key === 'date') {
         const today = new Date();
         blank[f.key] = today.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
@@ -867,6 +868,19 @@ const REPEATABLE_CONFIGS = {
     },
   },
   footer: {
+    socialLinks: {
+      label: 'Social Media Links',
+      fields: [
+        {
+          key: 'platform',
+          label: 'Platform',
+          type: 'select',
+          options: SOCIAL_PLATFORM_OPTIONS,
+        },
+        { key: 'label', label: 'Display Label (Tooltip)', placeholder: 'e.g. YouTube, LinkedIn, Instagram' },
+        { key: 'href',  label: 'Profile / Page URL', placeholder: 'https://www.youtube.com/@...' },
+      ],
+    },
     importantLinks: {
       label: 'Important Links',
       fields: [
@@ -1979,6 +1993,19 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
                 onChange={v => setContentKey('customFields', v)}
                 onAutoSave={v => handleAutoSave('customFields', v)}
                 fields={REPEATABLE_CONFIGS.footer.customFields.fields}
+                onConfirmRequest={setConfirmConfig}
+              />
+
+              <SectionDivider label="Social Media Links" />
+              <p className="text-slate-400 text-xs -mt-2">
+                Add, reorder, edit, or remove social media icons shown in the site footer.
+              </p>
+              <RepeatableList
+                label="Social Media Links"
+                items={content.socialLinks ?? DEFAULT_SOCIAL_LINKS}
+                onChange={v => setContentKey('socialLinks', v)}
+                onAutoSave={v => handleAutoSave('socialLinks', v)}
+                fields={REPEATABLE_CONFIGS.footer.socialLinks.fields}
                 onConfirmRequest={setConfirmConfig}
               />
 

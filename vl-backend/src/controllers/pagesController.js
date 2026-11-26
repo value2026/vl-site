@@ -226,11 +226,18 @@ const HOME_DEFAULTS = [
     label: 'Global Footer',
     order: 8,
     title: 'Footer Details',
-    subtitle: 'Manage the official contact information displayed across all pages.',
+    subtitle: 'Manage the official contact information, links, and social media displayed across all pages.',
     content: {
       email: 'virtual_labs@am.amrita.edu',
       phone: '+91 9446 007 135',
       address: 'Amrita Virtual Labs\nAmrita Vishwa Vidyapeetham\nAmritapuri Campus, Kollam\nKerala — 690 525',
+      socialLinks: [
+        { platform: 'facebook', label: 'Facebook', href: 'https://www.facebook.com' },
+        { platform: 'twitter', label: 'X (Twitter)', href: 'https://x.com' },
+        { platform: 'youtube', label: 'YouTube', href: 'https://www.youtube.com' },
+        { platform: 'linkedin', label: 'LinkedIn', href: 'https://www.linkedin.com' },
+        { platform: 'instagram', label: 'Instagram', href: 'https://www.instagram.com' },
+      ],
       importantLinks: [
         { label: 'Amrita University', href: '#' },
         { label: 'NMEICT', href: '#' },

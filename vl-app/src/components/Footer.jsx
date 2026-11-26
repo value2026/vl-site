@@ -1,11 +1,20 @@
-import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import {
-  FlaskConical, Mail, Phone, MapPin,
-  AtSign, Rss, Globe, Share2,
-} from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { Mail, Phone, MapPin } from 'lucide-react';
 import { assetUrl } from '../utils/url';
 import { apiUrl } from '../utils/api';
+import {
+  DEFAULT_SOCIAL_LINKS,
+  SocialIcon,
+  getSocialHoverClasses,
+  normalizeSocialUrl,
+} from '../utils/socialLinks';
+
+async function fetchHomeSections() {
+  const res = await fetch(apiUrl('/pages/home/sections'));
+  if (!res.ok) throw new Error('Failed to fetch footer content');
+  return res.json();
+}
 
 const quickLinks = [
   { label: 'Home', href: '/' },
@@ -25,33 +34,14 @@ const labLinks = [
   { label: 'Mechanical Engg.', href: '/nodal-centres' },
 ];
 
-const socials = [
-  { Icon: AtSign,  href: '#', label: 'Twitter/X' },
-  { Icon: Globe,   href: '#', label: 'Website' },
-  { Icon: Rss,     href: '#', label: 'RSS Feed' },
-  { Icon: Share2,  href: '#', label: 'Share' },
-];
-
 export default function Footer() {
-  const [dynamicContent, setDynamicContent] = useState(null);
+  const { data: sections } = useQuery({
+    queryKey: ['home-sections'],
+    queryFn: fetchHomeSections,
+    staleTime: 60_000,
+  });
 
-  useEffect(() => {
-    const fetchFooter = async () => {
-      try {
-        const res = await fetch(apiUrl('/pages/home/sections'));
-        if (res.ok) {
-          const sections = await res.json();
-          const footerSec = sections.find(s => s.sectionKey === 'footer');
-          if (footerSec && footerSec.content) {
-            setDynamicContent(footerSec.content);
-          }
-        }
-      } catch (err) {
-        console.error('Failed to fetch footer content', err);
-      }
-    };
-    fetchFooter();
-  }, []);
+  const dynamicContent = sections?.find(s => s.sectionKey === 'footer')?.content || null;
 
   const email = dynamicContent?.email || 'virtual_labs@am.amrita.edu';
   const phone = dynamicContent?.phone || '+91 9446 007 135';
@@ -67,6 +57,18 @@ export default function Footer() {
   const customFieldsList = (Array.isArray(dynamicContent?.customFields) && dynamicContent.customFields.length > 0)
     ? dynamicContent.customFields.filter(f => f && f.label && f.value)
     : [];
+
+  // Social media links (editable from Admin Dashboard -> Manage Pages -> Home Page -> Global Footer)
+  const rawSocials = Array.isArray(dynamicContent?.socialLinks)
+    ? dynamicContent.socialLinks
+    : DEFAULT_SOCIAL_LINKS;
+  const socialLinks = rawSocials
+    .map((item) => ({
+      platform: item?.platform || 'website',
+      label: item?.label?.trim() || item?.platform || 'Social',
+      href: normalizeSocialUrl(item?.href),
+    }))
+    .filter((item) => Boolean(item.href));
 
   return (
     <footer className="bg-[#0F172A] text-slate-400" aria-labelledby="footer-heading">
@@ -91,18 +93,23 @@ export default function Footer() {
               An initiative by Amrita Vishwa Vidyapeetham under NMEICT, Ministry of Education, Government of India — providing
               quality virtual laboratory experiences for students across India.
             </p>
-            <div className="flex gap-3">
-              {socials.map(({ Icon, href, label }) => (
-                <a
-                  key={label}
-                  href={href}
-                  aria-label={label}
-                  className="w-11 h-11 bg-transparent hover:bg-white/5 border border-slate-700/80 rounded-[0.85rem] flex items-center justify-center transition-colors duration-200 text-slate-400 hover:text-white"
-                >
-                  <Icon className="w-4 h-4" strokeWidth={1.5} />
-                </a>
-              ))}
-            </div>
+            {socialLinks.length > 0 && (
+              <div className="flex flex-wrap gap-3">
+                {socialLinks.map((social, idx) => (
+                  <a
+                    key={`${social.platform}-${social.href}-${idx}`}
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={social.label}
+                    title={social.label}
+                    className={`w-11 h-11 bg-transparent border border-slate-700/80 rounded-[0.85rem] flex items-center justify-center transition-colors duration-200 text-slate-400 ${getSocialHoverClasses(social.platform)}`}
+                  >
+                    <SocialIcon platform={social.platform} className="w-4 h-4" />
+                  </a>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Quick links */}
