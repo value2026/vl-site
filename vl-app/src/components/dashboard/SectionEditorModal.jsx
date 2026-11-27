@@ -876,6 +876,44 @@ const REPEATABLE_CONFIGS = {
       ],
     },
   },
+  nc_apply: {
+    eligibilityItems: {
+      label: 'Eligibility Criteria',
+      fields: [
+        { key: 'text', label: 'Criterion', placeholder: 'Recognised college or university in India', type: 'textarea' },
+      ],
+    },
+    steps: {
+      label: 'Application Steps',
+      fields: [
+        { key: 'step',  label: 'Step Number', placeholder: '01' },
+        { key: 'title', label: 'Step Title',  placeholder: 'Download EOI Form' },
+        { key: 'desc',  label: 'Description', placeholder: 'Download the Expression of Interest form...', type: 'textarea' },
+      ],
+    },
+  },
+  nc_demo: {
+    highlights: {
+      label: 'Feature Highlights',
+      fields: [
+        { key: 'icon',  label: 'Icon (MonitorPlay, Users, CheckCircle2, Award, Globe)', placeholder: 'MonitorPlay' },
+        { key: 'title', label: 'Highlight Title', placeholder: 'Live Walkthrough' },
+        { key: 'desc',  label: 'Description',     placeholder: 'A live guided tour of the Virtual Labs platform...', type: 'textarea' },
+      ],
+    },
+    onlineReqItems: {
+      label: 'Online Training Requirements',
+      fields: [
+        { key: 'text', label: 'Requirement', placeholder: 'Laptop/Computer with ≥2 Mbps internet' },
+      ],
+    },
+    offlineReqItems: {
+      label: 'Offline Training Requirements',
+      fields: [
+        { key: 'text', label: 'Requirement', placeholder: 'Computer lab with individual internet access' },
+      ],
+    },
+  },
   footer: {
     importantLinks: {
       label: 'Important Links',
@@ -910,8 +948,19 @@ function TextField({ label, value, onChange, placeholder, multiline = false, hel
 
   return (
     <div>
-      <div className="mb-2">
+      <div className="mb-2 flex items-center justify-between gap-2">
         <label className="text-sm font-medium text-slate-300 block">{label}</label>
+        {Boolean(value) && (
+          <button
+            type="button"
+            onClick={() => onChange('')}
+            className="inline-flex items-center gap-1 text-[11px] font-medium text-slate-500 hover:text-red-400 transition-colors cursor-pointer"
+            title={`Clear ${label}`}
+          >
+            <Trash2 className="w-3 h-3" />
+            Clear
+          </button>
+        )}
       </div>
       {multiline ? (
         <textarea value={value || ''} onChange={e => onChange(e.target.value)} placeholder={placeholder} rows={3} className={`${cls} resize-y`} />
@@ -919,6 +968,197 @@ function TextField({ label, value, onChange, placeholder, multiline = false, hel
         <input type="text" value={value || ''} onChange={e => onChange(e.target.value)} placeholder={placeholder} className={cls} />
       )}
       {helperText && <p className="text-xs text-slate-400 mt-1">{helperText}</p>}
+    </div>
+  );
+}
+
+// ── Reusable Training Registration Form Fields Builder ────────
+function TrainingFormFieldsBuilder({ questions = [], onChange, setConfirmConfig, loading = false }) {
+  const handleAddField = () => {
+    const newQ = {
+      id: Date.now().toString(),
+      text: 'New Field',
+      type: 'text',
+      placeholder: '',
+      required: true,
+      options: [],
+    };
+    onChange([...(questions || []), newQ]);
+  };
+
+  const handleMove = (idx, dir) => {
+    const target = idx + dir;
+    if (target < 0 || target >= questions.length) return;
+    const next = [...questions];
+    [next[idx], next[target]] = [next[target], next[idx]];
+    onChange(next);
+  };
+
+  const handleRemove = (idx, label) => {
+    setConfirmConfig({
+      title: 'Delete Form Field',
+      message: `Are you sure you want to delete "${label || 'this field'}"?`,
+      onConfirm: () => {
+        const next = [...questions];
+        next.splice(idx, 1);
+        onChange(next);
+      },
+    });
+  };
+
+  const handleUpdate = (idx, patch) => {
+    onChange(questions.map((item, i) => (i === idx ? { ...item, ...patch } : item)));
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-wrap justify-between items-center gap-3">
+        <p className="text-xs text-slate-400">
+          Add, edit, reorder, or delete Training Registration Form fields. Changes apply to both the Nodal Centres Demo tab and the Free Demo modal.
+        </p>
+        <button
+          type="button"
+          onClick={handleAddField}
+          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white shadow-md transition-colors flex-shrink-0 cursor-pointer"
+        >
+          <Plus className="w-3.5 h-3.5" />
+          Add New Field
+        </button>
+      </div>
+
+      {loading ? (
+        <div className="flex items-center justify-center gap-2 py-8 text-slate-400 text-sm">
+          <Loader2 className="w-4 h-4 animate-spin" />
+          Loading form fields…
+        </div>
+      ) : (
+        <div className="space-y-4 max-h-[520px] overflow-y-auto pr-2">
+          {(questions || []).map((q, idx) => {
+            const needsOptions = ['select', 'radio', 'checkbox'].includes(q.type);
+            const supportsPlaceholder = ['text', 'email', 'textarea'].includes(q.type || 'text');
+            return (
+              <div key={q.id || idx} className="p-4 bg-slate-800 rounded-xl border border-slate-700 relative">
+                <div className="flex items-center justify-between gap-2 mb-3">
+                  <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+                    Field #{idx + 1}
+                  </span>
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      type="button"
+                      disabled={idx === 0}
+                      onClick={() => handleMove(idx, -1)}
+                      className="px-2 py-1 text-xs rounded bg-slate-700 hover:bg-slate-600 text-slate-200 disabled:opacity-30 cursor-pointer"
+                      title="Move Up"
+                    >
+                      ↑
+                    </button>
+                    <button
+                      type="button"
+                      disabled={idx === questions.length - 1}
+                      onClick={() => handleMove(idx, 1)}
+                      className="px-2 py-1 text-xs rounded bg-slate-700 hover:bg-slate-600 text-slate-200 disabled:opacity-30 cursor-pointer"
+                      title="Move Down"
+                    >
+                      ↓
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleRemove(idx, q.text)}
+                      className="inline-flex items-center gap-1 px-2 py-1 text-xs rounded bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-colors cursor-pointer"
+                      title="Delete Field"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      Delete
+                    </button>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+                  <div>
+                    <label className="text-xs font-medium text-slate-400 block mb-1">Field Type</label>
+                    <select
+                      value={q.type || 'text'}
+                      onChange={e => {
+                        const nextType = e.target.value;
+                        const nextOpts = ['select', 'radio', 'checkbox'].includes(nextType) && (!q.options || q.options.length === 0)
+                          ? ['Option 1', 'Option 2']
+                          : (q.options || []);
+                        handleUpdate(idx, { type: nextType, options: nextOpts });
+                      }}
+                      className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    >
+                      <option value="text">Short Text</option>
+                      <option value="email">Email Address</option>
+                      <option value="textarea">Long Text (Paragraph)</option>
+                      <option value="select">Dropdown Select</option>
+                      <option value="radio">Multiple Choice (Radio)</option>
+                      <option value="checkbox">Checkboxes (Multi-select)</option>
+                      <option value="date">Date Picker</option>
+                      <option value="time">Time Picker</option>
+                    </select>
+                  </div>
+                  <div className="flex items-end pb-1.5">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={Boolean(q.required)}
+                        onChange={e => handleUpdate(idx, { required: e.target.checked })}
+                        className="rounded border-slate-600 text-blue-500 bg-slate-900 focus:ring-blue-500/50"
+                      />
+                      <span className="text-sm text-slate-300">Required Field</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div className="mb-3">
+                  <label className="text-xs font-medium text-slate-400 block mb-1">Question / Field Label</label>
+                  <input
+                    type="text"
+                    value={q.text || ''}
+                    onChange={e => handleUpdate(idx, { text: e.target.value })}
+                    placeholder="e.g. Name of the faculty member"
+                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  />
+                </div>
+
+                {supportsPlaceholder && (
+                  <div className="mb-3">
+                    <label className="text-xs font-medium text-slate-400 block mb-1">Placeholder Text (optional)</label>
+                    <input
+                      type="text"
+                      value={q.placeholder || ''}
+                      onChange={e => handleUpdate(idx, { placeholder: e.target.value })}
+                      placeholder="e.g. Enter your answer..."
+                      className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    />
+                  </div>
+                )}
+
+                {needsOptions && (
+                  <div>
+                    <label className="text-xs font-medium text-slate-400 block mb-1">Options (one per line)</label>
+                    <textarea
+                      rows={3}
+                      value={(q.options || []).join('\n')}
+                      onChange={e => {
+                        const opts = e.target.value.split('\n').map(s => s.trim()).filter(Boolean);
+                        handleUpdate(idx, { options: opts });
+                      }}
+                      placeholder={"Option 1\nOption 2\nOption 3"}
+                      className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    />
+                  </div>
+                )}
+              </div>
+            );
+          })}
+          {(!questions || questions.length === 0) && (
+            <div className="text-center py-8 bg-slate-900/50 rounded-xl border border-dashed border-slate-700 text-slate-500 text-sm">
+              No fields configured yet. Click "+ Add New Field" to start.
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -949,6 +1189,9 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
   const [successMsg,  setSuccessMsg]  = useState('');
   const [confirmConfig, setConfirmConfig] = useState(null);
   const [linkModalConfig, setLinkModalConfig] = useState(null);
+  const [trainingFormSection, setTrainingFormSection] = useState(null);
+  const [trainingQuestions, setTrainingQuestions] = useState([]);
+  const [trainingFormLoading, setTrainingFormLoading] = useState(false);
 
   useEffect(() => {
     if (section.sectionKey === 'featured_simulation') {
@@ -967,8 +1210,30 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
         }
       };
       fetchExps();
+    } else if (section.sectionKey === 'nc_demo') {
+      const fetchTrainingForm = async () => {
+        setTrainingFormLoading(true);
+        try {
+          const res = await fetch(`${API_URL}/pages/nodal-centre-request/sections`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          if (res.ok) {
+            const sections = await res.json();
+            const formSec = sections.find(s => s.sectionKey === 'formSchema');
+            if (formSec) {
+              setTrainingFormSection(formSec);
+              setTrainingQuestions(formSec.content?.questions || []);
+            }
+          }
+        } catch (err) {
+          console.error('Error fetching training registration form schema:', err);
+        } finally {
+          setTrainingFormLoading(false);
+        }
+      };
+      fetchTrainingForm();
     }
-  }, [section.sectionKey]);
+  }, [section.sectionKey, API_URL, token]);
 
   const setContentKey = useCallback((key, val) => {
     setContent(prev => ({ ...prev, [key]: val }));
@@ -985,11 +1250,48 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
         body: JSON.stringify(payload),
       });
       if (!res.ok) throw new Error('Failed to save');
-      return res.json();
+      const saved = await res.json();
+
+      // If editing nc_demo, also persist updated Training Registration Form fields to formSchema
+      if (section.sectionKey === 'nc_demo' && trainingFormSection?.id) {
+        const formRes = await fetch(`${API_URL}/pages/nodal-centre-request/sections/${trainingFormSection.id}/update`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization:  `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            title: payload.content?.formTitle !== undefined ? payload.content.formTitle : trainingFormSection.title,
+            subtitle: trainingFormSection.subtitle,
+            content: {
+              ...(trainingFormSection.content || {}),
+              availabilityBadge: payload.content?.availabilityBadge,
+              trainingInfo: payload.content?.trainingInfo,
+              onlineReqTitle: payload.content?.onlineReqTitle,
+              onlineReqItems: payload.content?.onlineReqItems,
+              offlineReqTitle: payload.content?.offlineReqTitle,
+              offlineReqItems: payload.content?.offlineReqItems,
+              formDisclaimer: payload.content?.formDisclaimer,
+              submitButtonLabel: payload.content?.submitButtonLabel,
+              successTitle: payload.content?.successTitle,
+              successMessage: payload.content?.successMessage,
+              questions: trainingQuestions,
+            },
+          }),
+        });
+        if (!formRes.ok) throw new Error('Failed to save Training Registration Form fields');
+      }
+
+      return saved;
     },
     onSuccess: () => {
       queryClient.invalidateQueries([`${pageSlug}-sections`]);
       queryClient.invalidateQueries(['admin-page-sections', pageSlug]);
+      if (section.sectionKey === 'nc_demo' || section.sectionKey === 'formSchema') {
+        queryClient.invalidateQueries(['nodal-centre-request-sections']);
+        queryClient.invalidateQueries(['admin-page-sections', 'nodal-centre-request']);
+        queryClient.invalidateQueries(['nodal-centres-sections']);
+      }
       setSuccessMsg('Saved successfully!');
       setTimeout(() => {
         setSuccessMsg('');
@@ -2066,6 +2368,182 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
                 onAutoSave={v => handleAutoSave('features', v)}
                 fields={REPEATABLE_CONFIGS.nc_unique_id.features.fields}
                 onConfirmRequest={setConfirmConfig}
+              />
+            </>
+          )}
+
+          {section.sectionKey === 'nc_apply' && (
+            <>
+              <SectionDivider label="Application Header & Criteria" />
+              <TextField label="Section Tag" value={content.tag} onChange={v => setContentKey('tag', v)} placeholder="Application" />
+              <TextField label="Eligibility Heading" value={content.eligibilityTitle} onChange={v => setContentKey('eligibilityTitle', v)} placeholder="Eligibility Criteria" />
+              <RepeatableList
+                label="Eligibility Criteria List"
+                items={content.eligibilityItems || []}
+                onChange={v => setContentKey('eligibilityItems', v)}
+                onAutoSave={v => handleAutoSave('eligibilityItems', v)}
+                fields={REPEATABLE_CONFIGS.nc_apply.eligibilityItems.fields}
+                onConfirmRequest={setConfirmConfig}
+              />
+
+              <SectionDivider label="How to Apply Steps" />
+              <TextField label="Steps Heading" value={content.stepsTitle} onChange={v => setContentKey('stepsTitle', v)} placeholder="How to Apply" />
+              <RepeatableList
+                label="Steps List"
+                items={content.steps || []}
+                onChange={v => setContentKey('steps', v)}
+                onAutoSave={v => handleAutoSave('steps', v)}
+                fields={REPEATABLE_CONFIGS.nc_apply.steps.fields}
+                onConfirmRequest={setConfirmConfig}
+              />
+
+              <SectionDivider label="Expression of Interest (EOI) Card" />
+              <TextField label="EOI Card Title" value={content.eoiTitle} onChange={v => setContentKey('eoiTitle', v)} placeholder="Expression of Interest Form" />
+              <TextField label="EOI Description" value={content.eoiDescription} onChange={v => setContentKey('eoiDescription', v)} placeholder="Download and fill the EOI form, then send it to virtual_labs@am.amrita.edu" multiline />
+              <TextField label="Download Button Label" value={content.eoiButtonLabel} onChange={v => setContentKey('eoiButtonLabel', v)} placeholder="Download EOI Form" />
+              <TextField label="EOI Form File / Link URL" value={content.eoiLink} onChange={v => setContentKey('eoiLink', v)} placeholder="/workshop_NodalCentre.pdf" />
+            </>
+          )}
+
+          {section.sectionKey === 'nc_demo' && (
+            <>
+              <SectionDivider label="Free Online Demo Header & Highlights" />
+              <TextField label="Section Tag" value={content.tag} onChange={v => setContentKey('tag', v)} placeholder="Demo Session" />
+              <RepeatableList
+                label="Feature Highlights List"
+                items={content.highlights || []}
+                onChange={v => setContentKey('highlights', v)}
+                onAutoSave={v => handleAutoSave('highlights', v)}
+                fields={REPEATABLE_CONFIGS.nc_demo.highlights.fields}
+                onConfirmRequest={setConfirmConfig}
+              />
+
+              <SectionDivider label="Registration Form Content & Requirements" />
+              <TextField label="Form Card Heading" value={content.formTitle} onChange={v => setContentKey('formTitle', v)} placeholder="Training Registration Form" />
+              <TextField label="Availability Badge" value={content.availabilityBadge} onChange={v => setContentKey('availabilityBadge', v)} placeholder="Currently available only in India" />
+              <TextField label="Training Info Paragraph" value={content.trainingInfo} onChange={v => setContentKey('trainingInfo', v)} placeholder="Virtual lab training will be conducted by Subject Matter Experts of Amrita Virtual Labs..." multiline />
+
+              <TextField label="Online Requirements Heading" value={content.onlineReqTitle} onChange={v => setContentKey('onlineReqTitle', v)} placeholder="Online training requirements:" />
+              <RepeatableList
+                label="Online Training Requirements"
+                items={content.onlineReqItems || []}
+                onChange={v => setContentKey('onlineReqItems', v)}
+                onAutoSave={v => handleAutoSave('onlineReqItems', v)}
+                fields={REPEATABLE_CONFIGS.nc_demo.onlineReqItems.fields}
+                onConfirmRequest={setConfirmConfig}
+              />
+
+              <TextField label="Offline Requirements Heading" value={content.offlineReqTitle} onChange={v => setContentKey('offlineReqTitle', v)} placeholder="Offline training requirements:" />
+              <RepeatableList
+                label="Offline Training Requirements"
+                items={content.offlineReqItems || []}
+                onChange={v => setContentKey('offlineReqItems', v)}
+                onAutoSave={v => handleAutoSave('offlineReqItems', v)}
+                fields={REPEATABLE_CONFIGS.nc_demo.offlineReqItems.fields}
+                onConfirmRequest={setConfirmConfig}
+              />
+
+              <SectionDivider label="Form Footer & Confirmation Message" />
+              <TextField label="Disclaimer Text" value={content.formDisclaimer} onChange={v => setContentKey('formDisclaimer', v)} placeholder="By submitting, you express interest in becoming an official MoE (Ministry of Education) Nodal Centre." multiline />
+              <TextField label="Submit Button Label" value={content.submitButtonLabel} onChange={v => setContentKey('submitButtonLabel', v)} placeholder="Submit Request" />
+              <TextField label="Success Heading" value={content.successTitle} onChange={v => setContentKey('successTitle', v)} placeholder="Request Submitted!" />
+              <TextField label="Success Message" value={content.successMessage} onChange={v => setContentKey('successMessage', v)} placeholder="Your application has been received. Our team will review your details and contact you shortly." multiline />
+
+              <SectionDivider label="Training Registration Form Fields" />
+              <TrainingFormFieldsBuilder
+                questions={trainingQuestions}
+                onChange={setTrainingQuestions}
+                setConfirmConfig={setConfirmConfig}
+                loading={trainingFormLoading}
+              />
+
+              <SectionDivider label="Contact Details" />
+              <TextField label="Contact Email" value={content.contactEmail} onChange={v => setContentKey('contactEmail', v)} placeholder="virtual_labs@am.amrita.edu" />
+              <TextField label="Contact Phone" value={content.contactPhone} onChange={v => setContentKey('contactPhone', v)} placeholder="+91 9446007135 / 0476 280 4528" />
+            </>
+          )}
+
+          {/* ── TRAINING REGISTRATION FORM (formSchema) ────────────── */}
+          {section.sectionKey === 'formSchema' && (
+            <>
+              <SectionDivider label="Form Info & Training Requirements" />
+              <TextField
+                label="Availability Badge"
+                value={content.availabilityBadge}
+                onChange={v => setContentKey('availabilityBadge', v)}
+                placeholder="(Currently, the training programme is available only in India)"
+              />
+              <TextField
+                label="Training Info Paragraph"
+                value={content.trainingInfo}
+                onChange={v => setContentKey('trainingInfo', v)}
+                placeholder="Virtual lab training will be conducted by the Subject Matter Experts of Amrita Virtual Labs..."
+                multiline
+              />
+
+              <TextField
+                label="Online Requirements Heading"
+                value={content.onlineReqTitle}
+                onChange={v => setContentKey('onlineReqTitle', v)}
+                placeholder="Requirements for online training:"
+              />
+              <RepeatableList
+                label="Online Training Requirements"
+                items={content.onlineReqItems || []}
+                onChange={v => setContentKey('onlineReqItems', v)}
+                onAutoSave={v => handleAutoSave('onlineReqItems', v)}
+                fields={REPEATABLE_CONFIGS.nc_demo.onlineReqItems.fields}
+                onConfirmRequest={setConfirmConfig}
+              />
+
+              <TextField
+                label="Offline Requirements Heading"
+                value={content.offlineReqTitle}
+                onChange={v => setContentKey('offlineReqTitle', v)}
+                placeholder="Facilitating condition for offline training:"
+              />
+              <RepeatableList
+                label="Offline Training Requirements"
+                items={content.offlineReqItems || []}
+                onChange={v => setContentKey('offlineReqItems', v)}
+                onAutoSave={v => handleAutoSave('offlineReqItems', v)}
+                fields={REPEATABLE_CONFIGS.nc_demo.offlineReqItems.fields}
+                onConfirmRequest={setConfirmConfig}
+              />
+
+              <SectionDivider label="Form Footer & Confirmation Message" />
+              <TextField
+                label="Disclaimer Text"
+                value={content.formDisclaimer}
+                onChange={v => setContentKey('formDisclaimer', v)}
+                placeholder="By submitting this form, you express interest in becoming an official MoE (Ministry of Education) Nodal Centre."
+                multiline
+              />
+              <TextField
+                label="Submit Button Label"
+                value={content.submitButtonLabel}
+                onChange={v => setContentKey('submitButtonLabel', v)}
+                placeholder="Submit Request"
+              />
+              <TextField
+                label="Success Heading"
+                value={content.successTitle}
+                onChange={v => setContentKey('successTitle', v)}
+                placeholder="Request Submitted!"
+              />
+              <TextField
+                label="Success Message"
+                value={content.successMessage}
+                onChange={v => setContentKey('successMessage', v)}
+                placeholder="Your application to become a Nodal Centre has been received. Our team will review your details and contact you shortly."
+                multiline
+              />
+
+              <SectionDivider label="Training Registration Form Fields" />
+              <TrainingFormFieldsBuilder
+                questions={content.questions || []}
+                onChange={qs => setContentKey('questions', qs)}
+                setConfirmConfig={setConfirmConfig}
               />
             </>
           )}

@@ -60,6 +60,8 @@ const SECTION_ICONS = {
   nc_list:             <Building2 className="w-5 h-5 text-blue-400" />,
   nc_inaugurations:    <Ribbon className="w-5 h-5 text-purple-400" />,
   nc_unique_id:        <KeyRound className="w-5 h-5 text-yellow-400" />,
+  nc_apply:            <FileText className="w-5 h-5 text-emerald-400" />,
+  nc_demo:             <Megaphone className="w-5 h-5 text-amber-400" />,
   survey_header:       <FileText className="w-5 h-5 text-blue-400" />
 };
 
