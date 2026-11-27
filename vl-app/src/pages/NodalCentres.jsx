@@ -276,6 +276,7 @@ export default function NodalCentres() {
   let benefits = BENEFITS;
   let inaugurations = INAUGURATION_EVENTS;
   let heroSec = null;
+  let aboutSec = null;
   let benefitsSec = null;
   let listSec = null;
   let inaugSec = null;
@@ -283,6 +284,7 @@ export default function NodalCentres() {
 
   if (sections) {
     listSec = sections.find(s => s.sectionKey === 'nc_list');
+    aboutSec = sections.find(s => s.sectionKey === 'nc_about');
     benefitsSec = sections.find(s => s.sectionKey === 'nc_benefits');
     heroSec = sections.find(s => s.sectionKey === 'nc_hero');
     inaugSec = sections.find(s => s.sectionKey === 'nc_inaugurations');
@@ -292,6 +294,29 @@ export default function NodalCentres() {
     if (benefitsSec?.content?.items) benefits = benefitsSec.content.items.map(b => b.text || b);
     if (inaugSec?.content?.items) inaugurations = inaugSec.content.items;
   }
+
+  const ABOUT_ICON_MAP = {
+    Users,
+    Globe,
+    Award,
+    Building,
+    ClipboardList,
+    KeyRound,
+    CheckCircle2,
+    MapPin,
+    Calendar,
+  };
+  const DEFAULT_ABOUT_STATS = [
+    { icon: 'Users', title: '500+', sub: 'Registered Institutions' },
+    { icon: 'Globe', title: '28', sub: 'States Covered' },
+    { icon: 'Award', title: '0', sub: 'Registration Fee' },
+  ];
+  const aboutTag = aboutSec?.content?.tag || 'About the Program';
+  const aboutTitle = aboutSec?.title || 'What is the Nodal Centre Program?';
+  const aboutSubtitle = aboutSec?.subtitle || 'The Nodal Centre Program allows educational institutions to follow the progress of Amrita Virtual Labs and contribute towards the future development of Virtual Labs and experiments. Sponsored by MoE (Ministry of Education), it comes with no registration fees, no software products, and no hidden costs.';
+  const aboutStats = (Array.isArray(aboutSec?.content?.stats) && aboutSec.content.stats.length > 0)
+    ? aboutSec.content.stats
+    : DEFAULT_ABOUT_STATS;
 
   // Set default unique ID content if not present
   const uniqueIdTitle = uniqueIdSec?.title || 'Unique Login ID';
@@ -356,32 +381,34 @@ export default function NodalCentres() {
       {activeTab === 'overview' && (
         <div>
           {/* About Section */}
-          <section className="py-20 bg-white">
-            <div className="container-custom max-w-4xl">
-              <div className="text-center mb-14">
-                <span className="tag">About the Program</span>
-                <h2 className="section-title mt-4">What is the Nodal Centre Program?</h2>
-                <p className="section-subtitle">
-                  The Nodal Centre Program allows educational institutions to follow the progress of Amrita Virtual Labs and contribute towards the future development of Virtual Labs and experiments. Sponsored by MoE (Ministry of Education), it comes with no registration fees, no software products, and no hidden costs.
-                </p>
+          {(!aboutSec || aboutSec.isVisible !== false) && (
+            <section className="py-20 bg-white">
+              <div className="container-custom max-w-4xl">
+                <div className="text-center mb-14">
+                  <span className="tag">{aboutTag}</span>
+                  <h2 className="section-title mt-4">{aboutTitle}</h2>
+                  <p className="section-subtitle">
+                    {aboutSubtitle}
+                  </p>
+                </div>
+                <div className="grid sm:grid-cols-3 gap-6 mb-14">
+                  {aboutStats.map(({ icon, title, sub }, idx) => {
+                    const fallbackIcons = [Users, Globe, Award];
+                    const Icon = (typeof icon === 'string' ? ABOUT_ICON_MAP[icon.trim()] : icon) || fallbackIcons[idx % fallbackIcons.length];
+                    return (
+                      <div key={sub || idx} className="card p-8 text-center border border-gray-100">
+                        <div className="w-14 h-14 bg-primary-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                          <Icon className="w-7 h-7 text-primary-700" />
+                        </div>
+                        <div className="text-4xl font-heading font-extrabold text-gray-900 mb-1">{title}</div>
+                        <div className="text-gray-500 text-sm">{sub}</div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
-              <div className="grid sm:grid-cols-3 gap-6 mb-14">
-                {[
-                  { icon: Users, title: '500+', sub: 'Registered Institutions' },
-                  { icon: Globe, title: '28', sub: 'States Covered' },
-                  { icon: Award, title: '0', sub: 'Registration Fee' },
-                ].map(({ icon: Icon, title, sub }) => (
-                  <div key={sub} className="card p-8 text-center border border-gray-100">
-                    <div className="w-14 h-14 bg-primary-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                      <Icon className="w-7 h-7 text-primary-700" />
-                    </div>
-                    <div className="text-4xl font-heading font-extrabold text-gray-900 mb-1">{title}</div>
-                    <div className="text-gray-500 text-sm">{sub}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
+            </section>
+          )}
 
           {/* Benefits */}
           <section className="py-20 bg-gray-50">

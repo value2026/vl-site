@@ -264,7 +264,7 @@ async function getSections(req, res) {
       needsSeed = true;
     } else {
       // Check if newly added sections are missing
-      if (slug === 'nodal-centres' && page.sections.length < 5) needsSeed = true;
+      if (slug === 'nodal-centres' && (!page.sections.some(s => s.sectionKey === 'nc_about') || page.sections.length < 6)) needsSeed = true;
       if (slug === 'home' && (!page.sections.some(s => s.sectionKey === 'outreach_stats') || page.sections.length < 10)) needsSeed = true;
       if (slug === 'project' && page.sections.length < 4) needsSeed = true;
       if (slug === 'workshop' && page.sections.length < 4) needsSeed = true;
@@ -625,10 +625,26 @@ async function seedNodalCentresPage() {
   const heroSection = {
     sectionKey: 'nc_hero',
     label: 'Nodal Centres Hero',
-    order: -1,
+    order: -2,
     title: 'Join the Virtual Labs Network',
     subtitle: 'Become a nodal centre and bring world-class virtual lab experiences to your students. Sponsored by MHRD (NME-ICT) — no registration fees, no hidden costs.',
     content: { tag: 'Nodal Centres' }
+  };
+
+  const aboutSection = {
+    sectionKey: 'nc_about',
+    label: 'About the Program',
+    order: -1,
+    title: 'What is the Nodal Centre Program?',
+    subtitle: 'The Nodal Centre Program allows educational institutions to follow the progress of Amrita Virtual Labs and contribute towards the future development of Virtual Labs and experiments. Sponsored by MoE (Ministry of Education), it comes with no registration fees, no software products, and no hidden costs.',
+    content: {
+      tag: 'About the Program',
+      stats: [
+        { icon: 'Users', title: '500+', sub: 'Registered Institutions' },
+        { icon: 'Globe', title: '28', sub: 'States Covered' },
+        { icon: 'Award', title: '0', sub: 'Registration Fee' },
+      ]
+    }
   };
 
   const inaugSection = {
@@ -668,7 +684,7 @@ async function seedNodalCentresPage() {
     }
   };
 
-  for (const sec of [heroSection, benefitsSection, listSection, inaugSection, uniqueIdSection]) {
+  for (const sec of [heroSection, aboutSection, benefitsSection, listSection, inaugSection, uniqueIdSection]) {
     await prisma.pageSection.upsert({
       where: { pageId_sectionKey: { pageId: page.id, sectionKey: sec.sectionKey } },
       update: {},
@@ -677,6 +693,7 @@ async function seedNodalCentresPage() {
         sectionKey: sec.sectionKey,
         label: sec.label,
         title: sec.title,
+        subtitle: sec.subtitle || null,
         content: sec.content,
         isVisible: true,
         order: sec.order,

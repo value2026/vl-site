@@ -824,6 +824,16 @@ const REPEATABLE_CONFIGS = {
       ],
     },
   },
+  nc_about: {
+    stats: {
+      label: 'Program Stats',
+      fields: [
+        { key: 'title', label: 'Stat Value (e.g. 500+)', placeholder: '500+' },
+        { key: 'sub',   label: 'Stat Label',             placeholder: 'Registered Institutions' },
+        { key: 'icon',  label: 'Icon (Users, Globe, Award)', placeholder: 'Users' },
+      ],
+    },
+  },
   nc_benefits: {
     items: {
       label: 'Benefits',
@@ -1995,6 +2005,23 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
           )}
 
           {/* ── NODAL CENTRES ───────────────────────────────── */}
+          {section.sectionKey === 'nc_about' && (
+            <>
+              <SectionDivider label="About the Program" />
+              <TextField label="Section Tag" value={content.tag} onChange={v => setContentKey('tag', v)} placeholder="About the Program" />
+
+              <SectionDivider label="Program Stats Cards" />
+              <RepeatableList
+                label="Stats List"
+                items={content.stats || []}
+                onChange={v => setContentKey('stats', v)}
+                onAutoSave={v => handleAutoSave('stats', v)}
+                fields={REPEATABLE_CONFIGS.nc_about.stats.fields}
+                onConfirmRequest={setConfirmConfig}
+              />
+            </>
+          )}
+
           {section.sectionKey === 'nc_benefits' && (
             <>
               <SectionDivider label="Nodal Centre Benefits" />

@@ -55,6 +55,7 @@ const SECTION_ICONS = {
   publications_list:   <BookOpen className="w-5 h-5 text-cyan-400" />,
   project_timeline:    <Clock className="w-5 h-5 text-rose-400" />,
   project_objectives:  <Target className="w-5 h-5 text-red-400" />,
+  nc_about:            <BarChart3 className="w-5 h-5 text-sky-400" />,
   nc_benefits:         <Gift className="w-5 h-5 text-teal-400" />,
   nc_list:             <Building2 className="w-5 h-5 text-blue-400" />,
   nc_inaugurations:    <Ribbon className="w-5 h-5 text-purple-400" />,
