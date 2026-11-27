@@ -144,16 +144,36 @@ export default function Footer() {
                 { label: 'UGC', href: '#' },
                 { label: 'National Education Policy', href: '#' },
                 { label: 'Virtual Labs India', href: '#' }
-              ]).map(({ label, href }) => (
-                <li key={label}>
-                  <Link
-                    to={href}
-                    className="text-sm hover:text-white hover:translate-x-1 inline-flex transition-all duration-150"
-                  >
-                    {label}
-                  </Link>
-                </li>
-              ))}
+              ]).map(({ label, href }, idx) => {
+                const rawHref = (href || '').trim();
+                const isPlaceholder = !rawHref || rawHref === '#';
+                const isInternal = rawHref.startsWith('/');
+                const externalHref = (!isPlaceholder && !isInternal && !/^(https?:\/\/|mailto:|tel:)/i.test(rawHref))
+                  ? `https://${rawHref}`
+                  : rawHref;
+
+                return (
+                  <li key={`${label}-${idx}`}>
+                    {isInternal ? (
+                      <Link
+                        to={rawHref}
+                        className="text-sm hover:text-white hover:translate-x-1 inline-flex transition-all duration-150"
+                      >
+                        {label}
+                      </Link>
+                    ) : (
+                      <a
+                        href={isPlaceholder ? '#' : externalHref}
+                        target={isPlaceholder ? undefined : '_blank'}
+                        rel={isPlaceholder ? undefined : 'noopener noreferrer'}
+                        className="text-sm hover:text-white hover:translate-x-1 inline-flex transition-all duration-150"
+                      >
+                        {label}
+                      </a>
+                    )}
+                  </li>
+                );
+              })}
             </ul>
           </div>
 
