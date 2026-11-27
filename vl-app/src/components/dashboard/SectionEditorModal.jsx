@@ -827,7 +827,7 @@ const REPEATABLE_CONFIGS = {
   },
   nc_about: {
     stats: {
-      label: 'Program Stats',
+      label: 'Programme Stats',
       fields: [
         { key: 'title', label: 'Stat Value (e.g. 500+)', placeholder: '500+' },
         { key: 'sub',   label: 'Stat Label',             placeholder: 'Registered Institutions' },
@@ -1095,7 +1095,7 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
                     className="w-full bg-slate-800 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-red-500/50"
                   >
                     <option value="left">Left Align</option>
-                    <option value="center">Center Align</option>
+                    <option value="center">Centre Align</option>
                     <option value="right">Right Align</option>
                   </select>
                 </div>
@@ -1513,9 +1513,9 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
 
                 return (
                   <>
-                    <SectionDivider label="Customize Spotlight Content" />
+                    <SectionDivider label="Customise Spotlight Content" />
                     <p className="text-slate-400 text-xs -mt-2 mb-3">
-                      Select which carousel simulation card you want to customize below.
+                      Select which carousel simulation card you want to customise below.
                     </p>
 
                     {/* Tabs for Carousel Items */}
@@ -1602,7 +1602,7 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
                     </div>
 
                     <SectionDivider label={`Preview Image (Item #${activeIdx + 1})`} />
-                    <p className="text-slate-500 text-xs -mt-2">Upload or customize the right-panel image for this specific carousel item.</p>
+                    <p className="text-slate-500 text-xs -mt-2">Upload or customise the right-panel image for this specific carousel item.</p>
                     <CloudinaryUploader
                       label={`Simulation Preview Image for Item #${activeIdx + 1}`}
                       value={activeSim.imageUrl || ''}
@@ -1767,7 +1767,7 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
               <SectionDivider label="Advertisement Banner Settings" />
               <TextField label="Institution Name" value={content.institution} onChange={v => setContentKey('institution', v)} placeholder="Amrita Vishwa Vidyapeetham" />
               <TextField label="Ad Heading" value={content.heading} onChange={v => setContentKey('heading', v)} placeholder="PhD Admissions 2026" />
-              <TextField label="Ad Description" value={content.description} onChange={v => setContentKey('description', v)} placeholder="Enter details about the program, fellowships, etc." multiline />
+              <TextField label="Ad Description" value={content.description} onChange={v => setContentKey('description', v)} placeholder="Enter details about the programme, fellowships, etc." multiline />
               <div className="grid grid-cols-2 gap-4">
                 <TextField label="Button Label" value={content.buttonLabel} onChange={v => setContentKey('buttonLabel', v)} placeholder="Apply Now" />
                 <TextField label="Button Href / Target URL" value={content.buttonHref} onChange={v => setContentKey('buttonHref', v)} placeholder="https://amrita.edu/admissions" />
@@ -1906,7 +1906,7 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
               />
               <TextField 
                 label="Paragraph 2 (Virtual Labs Detail)" 
-                value={content.p2 !== undefined && content.p2 !== '' ? content.p2 : "Virtual Labs are a new immersive e-learning tool that provides a media-rich, interactive user interface that teachers can use to supplement their curriculum. These Virtual Labs are located on an open webpage that can be accessed by anyone through a web browser, on any Internet-connected computer in the world. A variety of laboratory experiments can be conducted virtually using animation, simulation or remotely triggered hardware. Laboratory experiments are modeled very close to real-life experiments and when used as a learning tool by students it allows them to learn the material more efficiently and can actually make doing the practical experiments easier."} 
+                value={content.p2 !== undefined && content.p2 !== '' ? content.p2 : "Virtual Labs are a new immersive e-learning tool that provides a media-rich, interactive user interface that teachers can use to supplement their curriculum. These Virtual Labs are located on an open webpage that can be accessed by anyone through a web browser, on any Internet-connected computer in the world. A variety of laboratory experiments can be conducted virtually using animation, simulation or remotely triggered hardware. Laboratory experiments are modelled very close to real-life experiments and when used as a learning tool by students it allows them to learn the material more efficiently and can actually make doing the practical experiments easier."} 
                 onChange={v => setContentKey('p2', v)} 
                 multiline 
                 helperText="Second paragraph explaining Virtual Labs platform" 
@@ -2034,10 +2034,10 @@ export default function SectionEditorModal({ section, pageSlug = 'home', onClose
           {/* ── NODAL CENTRES ───────────────────────────────── */}
           {section.sectionKey === 'nc_about' && (
             <>
-              <SectionDivider label="About the Program" />
-              <TextField label="Section Tag" value={content.tag} onChange={v => setContentKey('tag', v)} placeholder="About the Program" />
+              <SectionDivider label="About the Programme" />
+              <TextField label="Section Tag" value={content.tag} onChange={v => setContentKey('tag', v)} placeholder="About the Programme" />
 
-              <SectionDivider label="Program Stats Cards" />
+              <SectionDivider label="Programme Stats Cards" />
               <RepeatableList
                 label="Stats List"
                 items={content.stats || []}

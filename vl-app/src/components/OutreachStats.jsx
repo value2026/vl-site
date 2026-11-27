@@ -7,7 +7,7 @@ import {
 const DEFAULT_STATS = [
   { value: '236237',    suffix: '',  label: 'Registered Users',       sub: 'On Amrita Virtual Labs',        icon: '👤' },
   { value: '4408490',   suffix: '',  label: 'Unique Visitors',        sub: 'From around the world',         icon: '🌐' },
-  { value: '103737',    suffix: '',  label: 'Students Trained',       sub: 'Through outreach programs',     icon: '🎓' },
+  { value: '103737',    suffix: '',  label: 'Students Trained',       sub: 'Through outreach programmes',   icon: '🎓' },
   { value: '276',       suffix: '',  label: 'Nodal Centres',         sub: 'Across India',                  icon: '🏛️' },
   { value: '2950',      suffix: '',  label: 'Workshops Conducted',    sub: 'Across India',                  icon: '🏫' },
   { value: '69158',     suffix: '',  label: 'Teachers Trained',       sub: 'Empowering educators',          icon: '👩‍🏫' },

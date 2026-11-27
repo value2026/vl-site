@@ -38,7 +38,7 @@ const TABS = [
 
 const BENEFITS = [
   'Free bi-monthly online training of select experiments for students and faculty.',
-  'Free support during the implementation phase of the program.',
+  'Free support during the implementation phase of the programme.',
   'Assistance in the integration of virtual lab scores into the regular curriculum.',
   'Exclusive features for faculty: lab question paper development, online lab exam setup, and results reporting.',
   'Information on upcoming events and invitation to Nodal Centre activities and forums.',
@@ -311,9 +311,9 @@ export default function NodalCentres() {
     { icon: 'Globe', title: '28', sub: 'States Covered' },
     { icon: 'Award', title: '0', sub: 'Registration Fee' },
   ];
-  const aboutTag = aboutSec?.content?.tag || 'About the Program';
-  const aboutTitle = aboutSec?.title || 'What is the Nodal Centre Program?';
-  const aboutSubtitle = aboutSec?.subtitle || 'The Nodal Centre Program allows educational institutions to follow the progress of Amrita Virtual Labs and contribute towards the future development of Virtual Labs and experiments. Sponsored by MoE (Ministry of Education), it comes with no registration fees, no software products, and no hidden costs.';
+  const aboutTag = aboutSec?.content?.tag || 'About the Programme';
+  const aboutTitle = aboutSec?.title || 'What is the Nodal Centre Programme?';
+  const aboutSubtitle = aboutSec?.subtitle || 'The Nodal Centre Programme allows educational institutions to follow the progress of Amrita Virtual Labs and contribute towards the future development of Virtual Labs and experiments. Sponsored by MoE (Ministry of Education), it comes with no registration fees, no software products, and no hidden costs.';
   const aboutStats = (Array.isArray(aboutSec?.content?.stats) && aboutSec.content.stats.length > 0)
     ? aboutSec.content.stats
     : DEFAULT_ABOUT_STATS;
@@ -323,9 +323,9 @@ export default function NodalCentres() {
   const uniqueIdSubtitle = uniqueIdSec?.subtitle || 'Registered Nodal Centres receive a unique institutional login ID granting access to exclusive faculty features, progress tracking, and lab management tools.';
   const uniqueIdTag = uniqueIdSec?.content?.tag || 'Access';
   const uniqueIdFeatures = uniqueIdSec?.content?.features || [
-    { icon: KeyRound, title: 'Institutional Login', desc: 'A dedicated login ID tied to your institution for centralized access management.' },
+    { icon: KeyRound, title: 'Institutional Login', desc: 'A dedicated login ID tied to your institution for centralised access management.' },
     { icon: ClipboardList, title: 'Lab Exam Setup', desc: 'Set up, schedule, and monitor online virtual lab exams directly from your dashboard.' },
-    { icon: Users, title: 'Student Enrollment', desc: 'Enroll students under your nodal centre and track their experiment completions and scores.' },
+    { icon: Users, title: 'Student Enrolment', desc: 'Enrol students under your nodal centre and track their experiment completions and scores.' },
     { icon: Award, title: 'Results Reporting', desc: 'Generate and export detailed performance reports for students and faculty.' },
   ];
   const uniqueIdInstructions = uniqueIdSec?.content?.instructions || 'Nodal coordinator can submit the list of students and faculty members for obtaining the unique login id in the prescribed format to virtual_labs@am.amrita.edu with the subject line - Login ID request - your institute name.';
@@ -489,9 +489,9 @@ export default function NodalCentres() {
           <div className="container-custom max-w-4xl">
             <div className="text-center mb-14">
               <span className="tag">Application</span>
-              <h2 className="section-title mt-4">Apply for Nodal Centre Program</h2>
+              <h2 className="section-title mt-4">Apply for Nodal Centre Programme</h2>
               <p className="section-subtitle">
-                We are looking for expressions of interest from reputed educational and research institutions. The program is completely free — sponsored by MoE (Ministry of Education) under NME-ICT.
+                We are looking for expressions of interest from reputed educational and research institutions. The programme is completely free — sponsored by MoE (Ministry of Education) under NME-ICT.
               </p>
             </div>
 
@@ -666,7 +666,7 @@ export default function NodalCentres() {
             <div className="mt-12 card p-8 border border-dashed border-primary-300 bg-primary-50/40 text-center">
               <Ribbon className="w-10 h-10 text-primary-600 mx-auto mb-4" />
               <h3 className="font-heading text-xl font-bold text-gray-900 mb-2">Hosting an Inauguration?</h3>
-              <p className="text-gray-500 text-sm mb-6">If your institution is planning to launch a Nodal Centre and would like to organize an inauguration event, reach out to our team for support.</p>
+              <p className="text-gray-500 text-sm mb-6">If your institution is planning to launch a Nodal Centre and would like to organise an inauguration event, reach out to our team for support.</p>
               <a href="mailto:virtual_labs@am.amrita.edu" className="btn-primary">
                 <Mail className="w-4 h-4" /> Get in Touch
               </a>

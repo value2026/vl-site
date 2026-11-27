@@ -94,7 +94,7 @@ const HOME_DEFAULTS = [
         { value: '236237',  suffix: '',  label: 'Registered Users',        sub: 'On Amrita Virtual Labs',   icon: '👤' },
         { value: '4408490', suffix: '',  label: 'Unique Visitors',         sub: 'From around the world',    icon: '🌐' },
         { value: '2950',    suffix: '',  label: 'Workshops Conducted',     sub: 'Across India',             icon: '🏫' },
-        { value: '103737',  suffix: '',  label: 'Students Trained',        sub: 'Through outreach programs',icon: '🎓' },
+        { value: '103737',  suffix: '',  label: 'Students Trained',        sub: 'Through outreach programmes',icon: '🎓' },
         { value: '69158',   suffix: '',  label: 'Teachers Trained',        sub: 'Empowering educators',     icon: '👩‍🏫' },
         { value: '145',     suffix: '',  label: 'Engineering Colleges',    sub: 'Nodal Centres',            icon: '⚙️' },
         { value: '131',     suffix: '',  label: 'Arts & Science Colleges', sub: 'Nodal Centres',            icon: '🔬' },
@@ -117,7 +117,7 @@ const HOME_DEFAULTS = [
       portalUrl: 'https://www.vlab.co.in',
       portalLabel: 'www.vlab.co.in',
       partnersTag: 'OUR PARTNERS',
-      footerNote: 'A Government of India initiative to democratize quality STEM education',
+      footerNote: 'A Government of India initiative to democratise quality STEM education',
       sponsors: [
         { id: 'iit-bombay', name: 'IIT Bombay', acronym: 'IITB', description: 'Lead Institute', tag: 'TECHNICAL LEADERSHIP', theme: 'blue', logoUrl: '/logos/iit-bombay.svg', websiteUrl: 'https://www.iitb.ac.in', isSponsor: false },
         { id: 'iit-delhi', name: 'IIT Delhi', acronym: 'IITD', description: 'Partner Institute', tag: 'ACADEMIC EXCELLENCE', theme: 'purple', logoUrl: '/logos/iit-delhi.svg', websiteUrl: 'https://home.iitd.ac.in', isSponsor: false },
@@ -538,7 +538,7 @@ async function seedProjectPage() {
         { text: 'Train students, researchers, and educators on the platform' },
         { text: 'Create a repository of open-access lab content' },
         { text: 'Foster collaboration between top institutions' },
-        { text: 'Democratize quality STEM education for Tier-2 and Tier-3 cities' },
+        { text: 'Democratise quality STEM education for Tier-2 and Tier-3 cities' },
       ]
     }
   };
@@ -640,12 +640,12 @@ async function seedNodalCentresPage() {
 
   const aboutSection = {
     sectionKey: 'nc_about',
-    label: 'About the Program',
+    label: 'About the Programme',
     order: -1,
-    title: 'What is the Nodal Centre Program?',
-    subtitle: 'The Nodal Centre Program allows educational institutions to follow the progress of Amrita Virtual Labs and contribute towards the future development of Virtual Labs and experiments. Sponsored by MoE (Ministry of Education), it comes with no registration fees, no software products, and no hidden costs.',
+    title: 'What is the Nodal Centre Programme?',
+    subtitle: 'The Nodal Centre Programme allows educational institutions to follow the progress of Amrita Virtual Labs and contribute towards the future development of Virtual Labs and experiments. Sponsored by MoE (Ministry of Education), it comes with no registration fees, no software products, and no hidden costs.',
     content: {
-      tag: 'About the Program',
+      tag: 'About the Programme',
       stats: [
         { icon: 'Users', title: '500+', sub: 'Registered Institutions' },
         { icon: 'Globe', title: '28', sub: 'States Covered' },
@@ -683,9 +683,9 @@ async function seedNodalCentresPage() {
       templateLink: '/login_id_template.xlsx',
       templateLabel: 'Click Here To Download Login ID Template',
       features: [
-        { icon: 'KeyRound', title: 'Institutional Login', desc: 'A dedicated login ID tied to your institution for centralized access management.' },
+        { icon: 'KeyRound', title: 'Institutional Login', desc: 'A dedicated login ID tied to your institution for centralised access management.' },
         { icon: 'ClipboardList', title: 'Lab Exam Setup', desc: 'Set up, schedule, and monitor online virtual lab exams directly from your dashboard.' },
-        { icon: 'Users', title: 'Student Enrollment', desc: 'Enroll students under your nodal centre and track their experiment completions and scores.' },
+        { icon: 'Users', title: 'Student Enrolment', desc: 'Enrol students under your nodal centre and track their experiment completions and scores.' },
         { icon: 'Award', title: 'Results Reporting', desc: 'Generate and export detailed performance reports for students and faculty.' },
       ]
     }
@@ -740,7 +740,7 @@ async function seedWorkshopPage() {
       isVisible: true,
       content: {
         p1: "Amrita Virtual Labs at Amrita Vishwa Vidyapeetham is running a series of workshops on Virtual Labs in Physical & Chemical Sciences, Biological Sciences, Mechanical Engineering and Computer Science. These workshops will offer an introduction to the innovative world of Virtual Laboratories for both physical and chemical sciences.",
-        p2: "Virtual Labs are a new immersive e-learning tool that provides a media-rich, interactive user interface that teachers can use to supplement their curriculum. These Virtual Labs are located on an open webpage that can be accessed by anyone through a web browser, on any Internet-connected computer in the world. A variety of laboratory experiments can be conducted virtually using animation, simulation or remotely triggered hardware. Laboratory experiments are modeled very close to real-life experiments and when used as a learning tool by students it allows them to learn the material more efficiently and can actually make doing the practical experiments easier.",
+        p2: "Virtual Labs are a new immersive e-learning tool that provides a media-rich, interactive user interface that teachers can use to supplement their curriculum. These Virtual Labs are located on an open webpage that can be accessed by anyone through a web browser, on any Internet-connected computer in the world. A variety of laboratory experiments can be conducted virtually using animation, simulation or remotely triggered hardware. Laboratory experiments are modelled very close to real-life experiments and when used as a learning tool by students it allows them to learn the material more efficiently and can actually make doing the practical experiments easier.",
         p3: "The workshop offers a fantastic opportunity for all faculty members involved in the education of physics, chemistry, biological sciences, computer science and mechanical engineering to learn more about Virtual Labs. We will showcase our online laboratory experiments including a hands-on training session in using the Virtual Labs website.",
         initiativeText: "This project is an initiative of MoE (Ministry of Education) under National Mission on Education through ICT (NME-ICT). These experiments and labs are hosted for open access through www.vlab.co.in.",
         imageUrl: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
@@ -957,8 +957,8 @@ async function seedNodalCentreRequestPage() {
         ]},
         { id: '8', text: 'Expected number of participants (including students and faculty members)', type: 'text', required: true, options: [] },
         { id: '9', text: 'Select the mode of training', type: 'radio', required: true, options: ['Online', 'Offline'] },
-        { id: '10', text: 'Proposed Date for the training program', type: 'date', required: true, options: [] },
-        { id: '11', text: 'Proposed Time for the training program', type: 'time', required: true, options: [] }
+        { id: '10', text: 'Proposed Date for the training programme', type: 'date', required: true, options: [] },
+        { id: '11', text: 'Proposed Time for the training programme', type: 'time', required: true, options: [] }
       ]
     }
   };

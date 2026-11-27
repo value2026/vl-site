@@ -476,7 +476,7 @@ function LabsTab({ onSelectLab }) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/5 pb-4">
         <div>
           <h3 className="text-white font-bold text-lg">Labs</h3>
-          <p className="text-slate-400 text-xs mt-0.5">Organize experiments under different subject categories</p>
+          <p className="text-slate-400 text-xs mt-0.5">Organise experiments under different subject categories</p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
           <button

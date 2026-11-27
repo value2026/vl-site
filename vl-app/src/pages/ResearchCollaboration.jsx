@@ -160,7 +160,7 @@ export default function ResearchCollaboration() {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                        Institution / Organization <span className="text-red-500">*</span>
+                        Institution / Organisation <span className="text-red-500">*</span>
                       </label>
                       <input
                         name="institution"

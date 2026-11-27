@@ -93,7 +93,7 @@ export default function Header() {
               </span>
             </div>
             <span className="text-slate-500 text-[12px] font-semibold tracking-wider mt-0.5 uppercase">
-              Virtual Amrita Laboratories Universalizing Education
+              Virtual Amrita Laboratories Universalising Education
             </span>
           </Link>
 
