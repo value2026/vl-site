@@ -44,7 +44,7 @@ async function fetchSearchCatalog() {
     api.get('/experiments'),
   ]);
   if (!subRes.ok || !labRes.ok || !expRes.ok) {
-    throw new Error('Could not load labs catalog. Please try again.');
+    throw new Error('Could not load labs catalogue. Please try again.');
   }
   const [subjects, labs, experiments] = await Promise.all([
     subRes.json(),
@@ -312,7 +312,7 @@ const SearchDialog = forwardRef(function SearchDialog(_props, ref) {
           ) : isLoading ? (
             <div className="flex items-center justify-center gap-2 py-8 text-xs text-gray-500">
               <Loader2 className="w-4 h-4 animate-spin text-indigo-600" aria-hidden="true" />
-              <span>Loading labs catalog…</span>
+              <span>Loading labs catalogue…</span>
             </div>
           ) : isError ? (
             <div className="px-4 py-6 text-center">

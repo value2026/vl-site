@@ -339,7 +339,7 @@ export default function StudentAcademicReports() {
           <h3 className="text-white font-bold text-xl flex items-center gap-2">
             Academic & Institution Reports
           </h3>
-          <p className="text-slate-400 text-xs mt-0.5">Filter and analyze nodal centre usage, student lab progress, and evaluation metrics</p>
+          <p className="text-slate-400 text-xs mt-0.5">Filter and analyse nodal centre usage, student lab progress, and evaluation metrics</p>
         </div>
         <div className="flex items-center gap-3">
           <button

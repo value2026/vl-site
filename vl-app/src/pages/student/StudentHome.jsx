@@ -98,7 +98,7 @@ export default function StudentHome() {
                     Welcome back, {user?.name?.split(' ')[0]}! <span className="inline-block animate-wave">👋</span>
                   </h1>
                   <p className="text-slate-300/80 text-[13px] md:text-sm leading-relaxed font-light">
-                    Your personalized dashboard tracking active labs, completion records, and simulation analytics. Get started or continue your saved experiments.
+                    Your personalised dashboard tracking active labs, completion records, and simulation analytics. Get started or continue your saved experiments.
                   </p>
                 </div>
               </div>

@@ -116,7 +116,7 @@ export default function NodalCentreRequestModal({ onClose }) {
               
               <div className="bg-blue-50/50 border border-blue-100 rounded-2xl p-5 sm:p-6 mb-6">
                 <p className="text-sm text-blue-800 font-semibold mb-4 bg-blue-100/50 inline-block px-3 py-1 rounded-full">
-                  (Currently, the training program is available only in India)
+                  (Currently, the training programme is available only in India)
                 </p>
                 
                 <p className="text-slate-700 text-sm leading-relaxed mb-6">

@@ -185,7 +185,7 @@ export default function WorkshopRegistrationsModal({ workshop, onClose }) {
                     <th className="px-5 py-4 font-semibold">Date Registered</th>
                     <th className="px-5 py-4 font-semibold">Name / Primary Info</th>
                     <th className="px-5 py-4 font-semibold">Email / Contact</th>
-                    <th className="px-5 py-4 font-semibold">Institution / Organization</th>
+                    <th className="px-5 py-4 font-semibold">Institution / Organisation</th>
                     <th className="px-5 py-4 font-semibold text-right">Actions</th>
                   </tr>
                 </thead>
