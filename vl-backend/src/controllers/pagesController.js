@@ -271,7 +271,7 @@ async function getSections(req, res) {
       needsSeed = true;
     } else {
       // Check if newly added sections are missing
-      if (slug === 'nodal-centres' && (!page.sections.some(s => s.sectionKey === 'nc_about') || page.sections.length < 6)) needsSeed = true;
+      if (slug === 'nodal-centres' && (!page.sections.some(s => s.sectionKey === 'nc_about') || !page.sections.some(s => s.sectionKey === 'nc_apply') || !page.sections.some(s => s.sectionKey === 'nc_demo') || page.sections.length < 8)) needsSeed = true;
       if (slug === 'home' && (!page.sections.some(s => s.sectionKey === 'outreach_stats') || page.sections.length < 10)) needsSeed = true;
       if (slug === 'project' && page.sections.length < 4) needsSeed = true;
       if (slug === 'workshop' && page.sections.length < 4) needsSeed = true;
@@ -691,7 +691,73 @@ async function seedNodalCentresPage() {
     }
   };
 
-  for (const sec of [heroSection, aboutSection, benefitsSection, listSection, inaugSection, uniqueIdSection]) {
+  const applySection = {
+    sectionKey: 'nc_apply',
+    label: 'Apply for Nodal Centre',
+    order: 4,
+    title: 'Apply for Nodal Centre Programme',
+    subtitle: 'We are looking for expressions of interest from reputed educational and research institutions. The programme is completely free — sponsored by MoE (Ministry of Education) under NME-ICT.',
+    content: {
+      tag: 'Application',
+      eligibilityTitle: 'Eligibility Criteria',
+      eligibilityItems: [
+        { text: 'Recognised college or university in India' },
+        { text: 'Minimum computer lab with 20+ terminals' },
+        { text: 'Broadband internet connectivity (2 Mbps+)' },
+        { text: 'Dedicated faculty coordinator' },
+        { text: 'Willingness to integrate labs into curriculum' },
+        { text: 'Commitment to host minimum 2 workshops/year' },
+      ],
+      stepsTitle: 'How to Apply',
+      steps: [
+        { step: '01', title: 'Download EOI Form', desc: 'Download the Expression of Interest form from the link below.' },
+        { step: '02', title: 'Fill & Submit', desc: 'Complete all fields and submit via email to our team.' },
+        { step: '03', title: 'Verification', desc: "Our team will verify your institution's details within 5 working days." },
+        { step: '04', title: 'Onboarding', desc: 'Receive login credentials and schedule your first training session.' },
+      ],
+      eoiTitle: 'Expression of Interest Form',
+      eoiDescription: 'Download and fill the EOI form, then send it to virtual_labs@am.amrita.edu',
+      eoiButtonLabel: 'Download EOI Form',
+      eoiLink: '/workshop_NodalCentre.pdf',
+    }
+  };
+
+  const demoSection = {
+    sectionKey: 'nc_demo',
+    label: 'Free Online Demo',
+    order: 5,
+    title: 'Free Online Demo',
+    subtitle: 'Register for a live online demonstration of Virtual Labs for your faculty and students — completely free of charge. Our team will walk you through available experiments and how to integrate them into your curriculum.',
+    content: {
+      tag: 'Demo Session',
+      highlights: [
+        { icon: 'MonitorPlay', title: 'Live Walkthrough', desc: 'A live guided tour of the Virtual Labs platform covering experiments, dashboards, and assessments.' },
+        { icon: 'Users', title: 'For Faculty & Students', desc: 'Sessions tailored separately for faculty coordinators and student groups.' },
+        { icon: 'CheckCircle2', title: 'No Cost, No Obligation', desc: 'Completely free with no commitment required. Simply register your interest.' },
+      ],
+      formTitle: 'Training Registration Form',
+      availabilityBadge: 'Currently available only in India',
+      trainingInfo: 'Virtual lab training will be conducted by Subject Matter Experts of Amrita Virtual Labs. A nodal centre can propose a tentative schedule for online/offline training.',
+      onlineReqTitle: 'Online training requirements:',
+      onlineReqItems: [
+        { text: 'Laptop/Computer with ≥2 Mbps internet' },
+        { text: 'Webcam, speakers & microphone/headset' },
+      ],
+      offlineReqTitle: 'Offline training requirements:',
+      offlineReqItems: [
+        { text: 'Computer lab with individual internet access' },
+        { text: 'Projector/screen, mike and speakers' },
+      ],
+      formDisclaimer: 'By submitting, you express interest in becoming an official MoE (Ministry of Education) Nodal Centre.',
+      submitButtonLabel: 'Submit Request',
+      successTitle: 'Request Submitted!',
+      successMessage: 'Your application has been received. Our team will review your details and contact you shortly.',
+      contactEmail: 'virtual_labs@am.amrita.edu',
+      contactPhone: '+91 9446007135 / 0476 280 4528',
+    }
+  };
+
+  for (const sec of [heroSection, aboutSection, benefitsSection, listSection, inaugSection, uniqueIdSection, applySection, demoSection]) {
     await prisma.pageSection.upsert({
       where: { pageId_sectionKey: { pageId: page.id, sectionKey: sec.sectionKey } },
       update: {},

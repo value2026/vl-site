@@ -5,6 +5,7 @@ import { apiUrl } from '../../utils/api';
 export default function NodalCentreRequestModal({ onClose }) {
   const [formData, setFormData] = useState({});
   const [questions, setQuestions] = useState([]);
+  const [formMeta, setFormMeta] = useState(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -17,8 +18,11 @@ export default function NodalCentreRequestModal({ onClose }) {
         if (!res.ok) throw new Error('Failed to load application form');
         const sections = await res.json();
         const formSec = sections.find(s => s.sectionKey === 'formSchema');
-        if (formSec && formSec.content?.questions) {
-          setQuestions(formSec.content.questions);
+        if (formSec) {
+          setFormMeta(formSec);
+          if (formSec.content?.questions) {
+            setQuestions(formSec.content.questions);
+          }
         }
       } catch (err) {
         setError(err.message);
@@ -28,6 +32,34 @@ export default function NodalCentreRequestModal({ onClose }) {
     };
     fetchSchema();
   }, []);
+
+  const mc = formMeta?.content || {};
+  const modalTitle = formMeta?.title !== undefined ? formMeta.title : 'Training Registration Form';
+  const modalSubtitle = formMeta?.subtitle !== undefined ? formMeta.subtitle : 'Host a Virtual Labs Workshop at your Nodal Centre';
+  const availabilityBadge = mc.availabilityBadge !== undefined ? mc.availabilityBadge : '(Currently, the training programme is available only in India)';
+  const trainingInfo = mc.trainingInfo !== undefined ? mc.trainingInfo : 'Virtual lab training will be conducted by the Subject Matter Experts of Amrita Virtual Labs. A nodal centre can propose a tentative schedule for the virtual lab online/offline training.';
+  const onlineReqTitle = mc.onlineReqTitle !== undefined ? mc.onlineReqTitle : 'Requirements for online training:';
+  const onlineReqItems = Array.isArray(mc.onlineReqItems)
+    ? mc.onlineReqItems.map(item => (typeof item === 'string' ? item : item.text)).filter(Boolean)
+    : [
+        'Laptop/Computer with internet connectivity of at least 2 Mbps.',
+        'Webcam',
+        'Speakers and Microphone/Headset with mic',
+      ];
+  const offlineReqTitle = mc.offlineReqTitle !== undefined ? mc.offlineReqTitle : 'Facilitating condition for offline training:';
+  const offlineReqItems = Array.isArray(mc.offlineReqItems)
+    ? mc.offlineReqItems.map(item => (typeof item === 'string' ? item : item.text)).filter(Boolean)
+    : [
+        'Computer lab facility with an internet connection for the hands-on session (individual computer for each participant).',
+        'Projector/screen, mike and speakers – For the presentation and demonstration.',
+      ];
+  const formDisclaimer = mc.formDisclaimer !== undefined ? mc.formDisclaimer : 'By submitting this form, you express interest in becoming an official MoE (Ministry of Education) Nodal Centre.';
+  const submitButtonLabel = mc.submitButtonLabel || 'Submit Request';
+  const successTitle = mc.successTitle || 'Request Submitted!';
+  const successMessage = mc.successMessage || 'Your application to become a Nodal Centre has been received. Our team will review your details and contact you shortly.';
+  const showOnlineCard = Boolean(onlineReqTitle || onlineReqItems.length > 0);
+  const showOfflineCard = Boolean(offlineReqTitle || offlineReqItems.length > 0);
+  const showInfoBlock = Boolean(availabilityBadge || trainingInfo || showOnlineCard || showOfflineCard);
 
   const handleInputChange = (id, value) => {
     setFormData(prev => ({ ...prev, [id]: value }));
@@ -75,8 +107,8 @@ export default function NodalCentreRequestModal({ onClose }) {
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-slate-100 bg-slate-50 rounded-t-2xl">
           <div>
-            <h3 className="text-xl font-bold text-slate-900 leading-snug">Training Registration Form</h3>
-            <p className="text-sm text-slate-500 mt-1">Host a Virtual Labs Workshop at your Nodal Centre</p>
+            {modalTitle && <h3 className="text-xl font-bold text-slate-900 leading-snug">{modalTitle}</h3>}
+            {modalSubtitle && <p className="text-sm text-slate-500 mt-1">{modalSubtitle}</p>}
           </div>
           <button onClick={onClose} className="p-2 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-200 transition-colors">
             <X className="w-5 h-5" />
@@ -94,9 +126,9 @@ export default function NodalCentreRequestModal({ onClose }) {
               <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mb-4">
                 <CheckCircle2 className="w-8 h-8 text-emerald-600" />
               </div>
-              <h4 className="text-xl font-bold text-slate-900 mb-2">Request Submitted!</h4>
+              <h4 className="text-xl font-bold text-slate-900 mb-2">{successTitle}</h4>
               <p className="text-slate-500 max-w-md">
-                Your application to become a Nodal Centre has been received. Our team will review your details and contact you shortly.
+                {successMessage}
               </p>
               <button onClick={onClose} className="mt-8 px-6 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold transition-colors">Close Window</button>
             </div>
@@ -114,34 +146,51 @@ export default function NodalCentreRequestModal({ onClose }) {
                 </div>
               )}
               
-              <div className="bg-blue-50/50 border border-blue-100 rounded-2xl p-5 sm:p-6 mb-6">
-                <p className="text-sm text-blue-800 font-semibold mb-4 bg-blue-100/50 inline-block px-3 py-1 rounded-full">
-                  (Currently, the training programme is available only in India)
-                </p>
-                
-                <p className="text-slate-700 text-sm leading-relaxed mb-6">
-                  Virtual lab training will be conducted by the Subject Matter Experts of Amrita Virtual Labs. A nodal centre can propose a tentative schedule for the virtual lab online/offline training.
-                </p>
-
-                <div className="grid sm:grid-cols-2 gap-6">
-                  <div className="bg-white rounded-xl p-4 border border-blue-50">
-                    <h5 className="font-bold text-slate-800 text-sm mb-3">Requirements for online training:</h5>
-                    <ul className="text-sm text-slate-600 space-y-2 list-disc list-inside">
-                      <li>Laptop/Computer with internet connectivity of at least 2 Mbps.</li>
-                      <li>Webcam</li>
-                      <li>Speakers and Microphone/Headset with mic</li>
-                    </ul>
-                  </div>
+              {showInfoBlock && (
+                <div className="bg-blue-50/50 border border-blue-100 rounded-2xl p-5 sm:p-6 mb-6">
+                  {availabilityBadge && (
+                    <p className="text-sm text-blue-800 font-semibold mb-4 bg-blue-100/50 inline-block px-3 py-1 rounded-full">
+                      {availabilityBadge}
+                    </p>
+                  )}
                   
-                  <div className="bg-white rounded-xl p-4 border border-blue-50">
-                    <h5 className="font-bold text-slate-800 text-sm mb-3">Facilitating condition for offline training:</h5>
-                    <ul className="text-sm text-slate-600 space-y-2 list-disc list-inside">
-                      <li>Computer lab facility with an internet connection for the hands-on session (individual computer for each participant).</li>
-                      <li>Projector/screen, mike and speakers – For the presentation and demonstration.</li>
-                    </ul>
-                  </div>
+                  {trainingInfo && (
+                    <p className="text-slate-700 text-sm leading-relaxed mb-6">
+                      {trainingInfo}
+                    </p>
+                  )}
+
+                  {(showOnlineCard || showOfflineCard) && (
+                    <div className={`grid ${showOnlineCard && showOfflineCard ? 'sm:grid-cols-2' : 'grid-cols-1'} gap-6`}>
+                      {showOnlineCard && (
+                        <div className="bg-white rounded-xl p-4 border border-blue-50">
+                          {onlineReqTitle && <h5 className="font-bold text-slate-800 text-sm mb-3">{onlineReqTitle}</h5>}
+                          {onlineReqItems.length > 0 && (
+                            <ul className="text-sm text-slate-600 space-y-2 list-disc list-inside">
+                              {onlineReqItems.map((item, idx) => (
+                                <li key={idx}>{item}</li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
+                      )}
+                      
+                      {showOfflineCard && (
+                        <div className="bg-white rounded-xl p-4 border border-blue-50">
+                          {offlineReqTitle && <h5 className="font-bold text-slate-800 text-sm mb-3">{offlineReqTitle}</h5>}
+                          {offlineReqItems.length > 0 && (
+                            <ul className="text-sm text-slate-600 space-y-2 list-disc list-inside">
+                              {offlineReqItems.map((item, idx) => (
+                                <li key={idx}>{item}</li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
-              </div>
+              )}
 
               {questions.map((q) => (
                 <div key={q.id} className="bg-slate-50 border border-slate-200 p-5 rounded-xl shadow-sm">
@@ -156,7 +205,7 @@ export default function NodalCentreRequestModal({ onClose }) {
                       min={q.type === 'date' ? new Date().toISOString().split('T')[0] : undefined}
                       onChange={(e) => handleInputChange(q.id, e.target.value)}
                       className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors shadow-inner"
-                      placeholder={`Enter your ${q.type === 'email' ? 'email address' : 'answer'}...`}
+                      placeholder={q.placeholder || `Enter your ${q.type === 'email' ? 'email address' : 'answer'}...`}
                     />
                   ) : q.type === 'textarea' ? (
                     <textarea
@@ -164,7 +213,7 @@ export default function NodalCentreRequestModal({ onClose }) {
                       rows={4}
                       onChange={(e) => handleInputChange(q.id, e.target.value)}
                       className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors shadow-inner resize-y"
-                      placeholder="Type your answer here..."
+                      placeholder={q.placeholder || 'Type your answer here...'}
                     />
                   ) : q.type === 'select' ? (
                     <select
@@ -218,7 +267,7 @@ export default function NodalCentreRequestModal({ onClose }) {
         {!success && questions.length > 0 && !loading && (
           <div className="p-6 border-t border-slate-100 bg-slate-50 rounded-b-2xl flex justify-between items-center">
             <p className="text-xs text-slate-500 italic max-w-[60%]">
-              By submitting this form, you express interest in becoming an official MoE (Ministry of Education) Nodal Centre.
+              {formDisclaimer}
             </p>
             <div className="flex gap-3">
               <button
@@ -235,7 +284,7 @@ export default function NodalCentreRequestModal({ onClose }) {
                 className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl flex items-center gap-2 text-sm font-bold shadow-lg shadow-blue-500/20 disabled:opacity-70 transition-colors"
               >
                 {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-                Submit Request
+                {submitButtonLabel}
               </button>
             </div>
           </div>
